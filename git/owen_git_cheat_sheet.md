@@ -236,4 +236,24 @@ git branch -D [branchname]
 
 
 
-## Connecting to GitHub with SSH
+### Connecting to GitHub with SSH
+
+1. Generate a new SSH key:
+
+```
+ssh-keygen -t rsa -b 4096 -C "sherwin_ad@yahoo.com"
+```
+
+1. Copy the contents of the file ~/.ssh/id_rsa.pub to your SSH keys in your GitHub account settings.
+2. Test SSH key:
+
+```
+$ ssh -T git@github.com
+Hi developius! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+1. Change directory into the local clone of your repository (if you're not already there) and run:
+
+```
+git remote set-url origin git@github.com:username/your-repository.git
+```
