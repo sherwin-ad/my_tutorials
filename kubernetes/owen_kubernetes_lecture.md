@@ -1,0 +1,3123 @@
+
+
+
+
+# Kubernetes
+
+## Table of Contents
+* [Kubernetes Meaning](#kubernetes-meaning)
+
+* [Kubernetes Architecture](#Kubernetes-Architecture)
+
+* [Kubernetes Architecture](#Kubernetes-Architecture)
+
+* [Kubernetes Architecture](#Kubernetes-Architecture)
+
+* [Kubernetes Architecture](#Kubernetes-Architecture)
+
+* [Kubernetes Architecture](#Kubernetes-Architecture)
+
+* [Kubernetes Architecture](#Kubernetes-Architecture)
+
+  
+
+
+## Kubernetes Meaning
+
+* Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications.
+
+## Kubernetes Architecture
+![Kubernetes Architecture](images/kubernetes_diagram.svg)
+![Kubernetes Architecture1](images/kubernetes_architecture.png)
+
+## Node
+* The node serves as a worker machine in a K8s cluster
+* Node can be physical computer or a virtual machine
+
+**Node Requirements**
+
+1. A kubelet running
+2. Container tooling like Docker
+3. A kube-proxy process running
+4. Supervisord
+
+## Pod
+
+* A pod is the smallest and simplest unit in the Kubernetes object model. 
+* It represents a single instance of an application. 
+* Each pod is made up of a container or a series of tightly coupled containers, along with options that govern how the containers are run. 
+* Pods can be connected to persistent storage in order to run stateful applications.
+
+**What's in the Pod?**
+
+* Your Docker application container
+* Storage resources
+* Unique network IP
+* Options that govern how the containers should run
+
+### Pod States
+* Pending
+* Running
+* Succeeded
+* Failed
+* CrashLoopBackOff
+
+
+## Controller
+
+### Benefits of Controllers
+* Application reliability
+* Scaling
+* Load balancing
+
+### Kinds of Controllers
+1. ReplicaSets <br>
+- Ensures that a specified number of replicas for a pod are running at all times
+
+2. Deployments <br>
+- provides declarative updates for pods and ReplicaSets
+
+   * Deployment Controller Use Cases
+      * Pod management: Running a ReplicaSet allows us to deploy a number of pods, and check their status as a single unit 
+      * Scaling a ReplicaSet scales put the pods, and allows for the deployment to handle more traffic 
+      * Pause and Resume:
+          * Used with larger changesets 
+          * Pause deployment, make changes, resume deployment
+      * Status
+          * Easy way to check the health of pods, and identify issues
+
+3. DaemonSets <br>
+- ensure that all nodes run a copy of a specific pod <br>
+- As nodes are added or removed from the cluster, a DaemonSet will add or remove the required pods
+
+4. Jobs <br>
+- Supervisor process for pods carrying out batch jobs <br>
+- Run individual processes that run once and complete successfully
+
+5. Services <br>
+- Allow the communication between one set of deployments eith another <br>
+- Use a service to get pods in two deployments to talk to each other.
+
+    * Kinds of Services
+        * Internal: IP is only reachable within the cluster
+        * External: endpoint available through node ip: port (called Nodeport)
+        * Load balancer: Exposes application to the internet with a load balancer (available with a cloud provider)
+
+## Labels
+* Labels are key/value pairs that are attached to the objects like pods, services and deployments. Labels are for users of Kubernetes to identify attributes for objects
+
+### Example of Labels
+"release" : "stable", "release" : "canary"
+
+"environment" : "dev", "environment" : "qa", "environment" : "prod"
+
+"tier" : "frontend", "tier" : "backend", "tier" : "cache"
+
+### Selectors
+1. Equility-based
+     *  = - Two labels or values of labels should be equal
+     *  != - The values of the labels should not be equal
+2. Set-based
+     * IN: A value should be inside a set of defined values
+     * NOTIN: A value should not be in a set of defined values
+     * EXISTS: Determines whether a label exists or not
+
+### Running the Kubernetes Dashboard
+List available addons in minikube
+```
+minikube addons list
+|-----------------------------|----------|--------------|
+|         ADDON NAME          | PROFILE  |    STATUS    |
+|-----------------------------|----------|--------------|
+| dashboard                   | minikube | enabled ✅   |
+| default-storageclass        | minikube | enabled ✅   |
+| efk                         | minikube | disabled     |
+| freshpod                    | minikube | disabled     |
+| gvisor                      | minikube | disabled     |
+| helm-tiller                 | minikube | disabled     |
+| ingress                     | minikube | disabled     |
+| ingress-dns                 | minikube | disabled     |
+| istio                       | minikube | disabled     |
+| istio-provisioner           | minikube | disabled     |
+| logviewer                   | minikube | disabled     |
+| metrics-server              | minikube | disabled     |
+| nvidia-driver-installer     | minikube | disabled     |
+| nvidia-gpu-device-plugin    | minikube | disabled     |
+| registry                    | minikube | disabled     |
+| registry-aliases            | minikube | disabled     |
+| registry-creds              | minikube | disabled     |
+| storage-provisioner         | minikube | enabled ✅   |
+| storage-provisioner-gluster | minikube | disabled     |
+|-----------------------------|----------|--------------|
+```
+
+Run the Kubernetes Dashboard in minikube
+```
+$ minikube dashboard
+🤔  Verifying dashboard health ...
+🚀  Launching proxy ...
+🤔  Verifying proxy health ...
+🎉  Opening http://127.0.0.1:46261/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
+Opening in existing browser session.
+```
+
+
+### Real world examples
+
+guestbook.yaml
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+    tier: backend
+    role: master
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+    tier: backend
+    role: master
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-master
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: master
+        tier: backend
+    spec:
+      containers:
+      - name: master
+        image: gcr.io/google_containers/redis:e2e  # or just image: redis
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-slave
+  labels:
+    app: redis
+    tier: backend
+    role: slave
+spec:
+  ports:
+  - port: 6379
+  selector:
+    app: redis
+    tier: backend
+    role: slave
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: slave
+      tier: backend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: slave
+        tier: backend
+    spec:
+      containers:
+      - name: slave
+        image: gcr.io/google_samples/gb-redisslave:v1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: GET_HOSTS_FROM
+          value: dns
+          # If your cluster config does not include a dns service, then to
+          # instead access an environment variable to find the master
+          # service's host, comment out the 'value: dns' line above, and
+          # uncomment the line below:
+          # value: env
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: guestbook
+    tier: frontend
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+  selector:
+    app: guestbook
+    tier: frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  selector:
+    matchLabels:
+      app: guestbook
+      tier: frontend
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: guestbook
+        tier: frontend
+    spec:
+      containers:
+      - name: php-redis
+        image: gcr.io/google-samples/gb-frontend:v4
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: GET_HOSTS_FROM
+          value: dns
+          # If your cluster config does not include a dns service, then to
+          # instead access environment variables to find service host
+          # info, comment out the 'value: dns' line above, and uncomment the
+          # line below:
+          # value: env
+        ports:
+        - containerPort: 80
+```
+
+```
+$ kubectl create -f guestbook
+.yaml 
+service/redis-master created
+deployment.apps/redis-master created
+service/redis-slave created
+deployment.apps/redis-slave created
+service/frontend created
+deployment.apps/frontend created
+
+$ kubectl get deployments.apps 
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+frontend       0/3     3            0           2m25s
+redis-master   1/1     1            1           2m26s
+redis-slave    1/2     2            1           2m26s
+
+$ kubectl get service
+NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+frontend       NodePort    10.100.218.92   <none>        80:31288/TCP   2m32s
+kubernetes     ClusterIP   10.96.0.1       <none>        443/TCP        2m32s
+redis-master   ClusterIP   10.96.73.220    <none>        6379/TCP       2m33s
+redis-slave    ClusterIP   10.100.13.142   <none>        6379/TCP       2m33s
+```
+
+
+#### Run the Kubernetes Dashboard in minikube
+
+```
+$ minikube dashboard
+🤔  Verifying dashboard health ...
+🚀  Launching proxy ...
+🤔  Verifying proxy health ...
+🎉  Opening http://127.0.0.1:46795/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
+Opening in existing browser session.
+```
+
+### Working with configmaps
+
+reader-deployment.yaml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logreader
+spec:
+  selector:
+    matchLabels:
+      name: logreader
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        name: logreader
+    spec:
+      containers:
+      - name: logreader
+        image: karthequian/reader:latest
+        env:
+        - name: log_level
+          value: "error"
+```
+
+```
+$ kubectl create -f reader-deployment.yaml 
+deployment.apps/logreader created
+
+$ kubectl get pods
+NAME                         READY   STATUS    RESTARTS   AGE
+logreader-5f9c7846bd-5bxf6   1/1     Running   0          2m16s
+
+$ kubectl logs logreader-5f9c7846bd-5bxf6
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+Log level passed via env variables was: 'error'
+
+```
+
+#### Learn how to declare a configmap
+Applications require a way for us to pass data to them that can be changed at deploy time. Examples of this might be log-levels or urls of external systems that the application might need at startup time. Instead of hardcoding these values, we can use a configmap in kubernetes, and pass these values as environment variables to the container.
+
+Create a configmap
+```
+$ kubectl create configmap logger --from-literal=log_level=debug
+configmap/logger created
+
+$ kubectl get configmaps 
+NAME     DATA   AGE
+logger   1      6m33s
+
+$ kubectl get configmaps/logger -o yaml
+apiVersion: v1
+data:
+  log_level: debug
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2020-04-11T02:15:55Z"
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:log_level: {}
+    manager: kubectl
+    operation: Update
+    time: "2020-04-11T02:15:55Z"
+  name: logger
+  namespace: default
+  resourceVersion: "196886"
+  selfLink: /api/v1/namespaces/default/configmaps/logger
+  uid: e6712d8f-083c-4dc0-a181-893872e618c0
+
+```
+
+reader-configmap-deployment.yaml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logreader-dynamic
+spec:
+  selector:
+    matchLabels:
+      name: logreader-dynamic
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: logreader-dynamic
+    spec:
+      containers:
+      - name: logreader
+        image: karthequian/reader:latest
+        env:
+        - name: log_level
+          valueFrom:
+            configMapKeyRef:
+              name: logger #Read from a configmap called log-level
+              key: log_level  #Read the key called log_level
+```
+
+```
+$ kubectl create -f reader-configmap-deployment.yaml 
+deployment.apps/logreader-dynamic created
+
+$ kubectl get pods
+NAME                                 READY   STATUS    RESTARTS   AGE
+logreader-5f9c7846bd-5bxf6           1/1     Running   0          24m
+logreader-dynamic-655748b758-j7dt5   1/1     Running   0          6m15s
+
+$ kubectl logs logreader-dynamic-655748b758-j7dt5
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+```
+
+### Working with secrets
+
+#### Learn how to declare a secret
+Just like configuration data, applications might also require other data that might be of more sensitive in nature- for example database passwords, or API tokens. Passing these in the yaml for a deployment or pod would make them visible to everyone.
+
+Create a secret
+```
+$ kubectl create secret generic apikey --from-literal=api_key=123456767
+secret/apikey created
+
+$ kubectl get secrets 
+NAME                  TYPE                                  DATA   AGE
+apikey                Opaque                                1      85s
+
+$ kubectl get secret apikey -o yaml
+apiVersion: v1
+data:
+  api_key: MTIzNDU2NzY3
+kind: Secret
+metadata:
+  creationTimestamp: "2020-04-11T02:38:52Z"
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:api_key: {}
+      f:type: {}
+    manager: kubectl
+    operation: Update
+    time: "2020-04-11T02:38:52Z"
+  name: apikey
+  namespace: default
+  resourceVersion: "199959"
+  selfLink: /api/v1/namespaces/default/secrets/apikey
+  uid: d8906e0a-229a-413e-94e4-15b61941554f
+```
+
+
+#### Understand how to add a secret to a deployment
+
+secretreader-deployment.yaml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secretreader
+spec:
+  selector:
+    matchLabels:
+      name: secretreader
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: secretreader
+    spec:
+      containers:
+      - name: secretreader
+        image: karthequian/secretreader:latest
+        env:
+        - name: api_key
+          valueFrom:
+            secretKeyRef:
+              name: apikey
+              key: api_key
+```
+
+```
+$ kubectl create -f secretreader-deployment.yaml 
+deployment.apps/secretreader created
+
+$ kubectl get pods
+NAME                           READY   STATUS    RESTARTS   AGE
+secretreader-96555f9c9-5qhwt   1/1     Running   0          3m18s
+
+$ kubectl logs secretreader-96555f9c9-5qhwt
+api_key passed via env variable was: '123456767'
+api_key passed via env variable was: '123456767'
+api_key passed via env variable was: '123456767'
+api_key passed via env variable was: '123456767'
+api_key passed via env variable was: '123456767'
+api_key passed via env variable was: '123456767'
+```
+
+### Jobs in Kubernetes
+
+#### How to run jobs
+Jobs are a construct that run a pod once, and then stop. However, unlike pods in deployments, the output of the job is kept around until you decide to remove it.
+
+simplejob.yaml
+```
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: finalcountdown
+spec:
+  template:
+    metadata:
+      name: finalcountdown
+    spec:
+      containers:
+      - name: counter
+        image: busybox
+        command:
+         - bin/sh
+         - -c
+         - "for i in 9 8 7 6 5 4 3 2 1 ; do echo $i ; done"
+      restartPolicy: Never #could also be Always or OnFailure
+```
+
+Create jobs
+```
+$ kubectl create -f simplejob.yaml 
+job.batch/finalcountdown created
+
+$ kubectl get jobs
+NAME             COMPLETIONS   DURATION   AGE
+finalcountdown   1/1           10s        54s
+
+$ kubectl get pods
+NAME                           READY   STATUS      RESTARTS   AGE
+finalcountdown-mxtsd           0/1     Completed   0          83s
+
+$ kubectl logs finalcountdown-mxtsd
+9
+8
+7
+6
+5
+4
+3
+2
+1
+
+```
+
+#### How to run cron jobs
+Cron jobs are like jobs, but they run periodically.
+
+```
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hellocron
+spec:
+  schedule: "*/1 * * * *" #Runs every minute (cron syntax) or @hourly.
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hellocron
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from your Kubernetes cluster
+          restartPolicy: OnFailure #could also be Always or Never
+  suspend: false #Set to true if you want to suspend in the future
+```
+
+```
+$ kubectl create -f cronjob.yaml 
+cronjob.batch/hellocron created
+
+kubectl get cronjobs
+NAME        SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+hellocron   */1 * * * *   False     0        29s             108s
+```
+
+#### How to stop cronjobs
+
+Edit cronjobs and change suspend: false to true
+```
+$ kubectl edit cronjobs/hellocron
+
+or 
+
+$ kubectl patch cronjobs hellocron -p "{\"spec\" : {\"suspend\" : true }}"
+
+$ kubectl get cronjobs.batch 
+NAME        SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+hellocron   */1 * * * *   True      0        8m11s           15m
+
+```
+
+
+#### Daemonsets 
+A DaemonSet ensures that all Nodes run a copy of a Pod. As nodes are added to the cluster, Pods are added to them. Examples of a daemon set would be running your logging or monitoring agent on your nodes.
+
+daemonset.yaml 
+```
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: example-daemonset
+  namespace: default
+  labels:
+    k8s-app: example-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: example-daemonset
+  template:
+    metadata:
+      labels:
+        name: example-daemonset
+    spec:
+      #nodeSelector: minikube # Specify if you want to run on specific nodes
+      containers:
+      - name: example-daemonset
+        image: busybox
+        args:
+        - /bin/sh
+        - -c
+        - date; sleep 1000
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+      terminationGracePeriodSeconds: 30
+```
+
+```
+$ kubectl create -f daemonset.yaml 
+daemonset.apps/example-daemonset created
+
+# List daemonsets
+$ kubectl get daemonsets
+NAME                DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+example-daemonset   1         1         1       1            1           <none>          25s
+
+# List pods
+$ kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+example-daemonset-88jfx   1/1     Running   0          57s
+```
+
+daemonset-infra-development.yaml
+```
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: example-daemonset2
+  namespace: default
+  labels:
+    k8s-app: example-daemonset2
+spec:
+  selector:
+    matchLabels:
+      name: example-daemonset2
+  template:
+    metadata:
+      labels:
+        name: example-daemonset2
+    spec:
+      containers:
+      - name: example-daemonset2
+        image: busybox
+        args:
+        - /bin/sh
+        - -c
+        - date; sleep 1000
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+      terminationGracePeriodSeconds: 30
+      nodeSelector: 
+        infra: "development"
+```
+
+```
+$ kubectl create -f daemonset-infra-development.yaml 
+daemonset.apps/example-daemonset2 created
+
+$ kubectl get daemonsets.apps --show-labels
+NAME                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR       AGE     LABELS
+example-daemonset    1         1         1       1            1           <none>              116m    k8s-app=example-daemonset
+example-daemonset2   1         1         1       1            1           infra=development   2m31s   k8s-app=example-daemonset2
+```
+
+daemonset-infra-prod.yaml
+```
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: prod-daemonset
+  namespace: default
+  labels:
+    k8s-app: prod-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: prod-daemonset
+  template:
+    metadata:
+      labels:
+        name: prod-daemonset
+    spec:
+      containers:
+      - name: prod-daemonset
+        image: busybox
+        args:
+        - /bin/sh
+        - -c
+        - date; sleep 1000
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+      terminationGracePeriodSeconds: 30
+      nodeSelector: 
+        infra: "production"
+```
+
+```
+$ kubectl create -f daemonset-infra-prod.yaml 
+daemonset.apps/prod-daemonset created
+
+$ kubectl get daemonsets.apps --show-labels
+NAME                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR       AGE     LABELS
+example-daemonset    1         1         1       1            1           <none>              116m    k8s-app=example-daemonset
+example-daemonset2   1         1         1       1            1           infra=development   2m31s   k8s-app=example-daemonset2
+prod-daemonset       0         0         0       0            0           infra=production    85s     k8s-app=prod-daemonset
+```
+
+### Statefulsets 
+Manages the deployment and scaling of a set of Pods, and provides guarantees about the ordering and uniqueness of these Pods. Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods.
+
+statefulset.yaml
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: zk-cs
+  labels:
+    app: zk
+spec:
+  ports:
+  - port: 2181
+    name: client
+  selector:
+    app: zk
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zk
+spec:
+  selector:
+    matchLabels:
+      app: zk
+  serviceName: zk-hs
+  replicas: 1
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: zk
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - none
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: kubernetes-zookeeper
+        imagePullPolicy: Always
+        image: "gcr.io/google_containers/kubernetes-zookeeper:1.0-3.4.10"
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "0.5"
+        ports:
+        - containerPort: 2181
+          name: client
+        - containerPort: 2888
+          name: server
+        - containerPort: 3888
+          name: leader-election
+        command:
+        - sh
+        - -c
+        - "start-zookeeper \
+          --servers=1 \
+          --data_dir=/var/lib/zookeeper/data \
+          --data_log_dir=/var/lib/zookeeper/data/log \
+          --conf_dir=/opt/zookeeper/conf \
+          --client_port=2181 \
+          --election_port=3888 \
+          --server_port=2888 \
+          --tick_time=2000 \
+          --init_limit=10 \
+          --sync_limit=5 \
+          --heap=512M \
+          --max_client_cnxns=60 \
+          --snap_retain_count=3 \
+          --purge_interval=12 \
+          --max_session_timeout=40000 \
+          --min_session_timeout=4000 \
+          --log_level=INFO"
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "zookeeper-ready 2181"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "zookeeper-ready 2181"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: datadir
+          mountPath: /var/lib/zookeeper
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+```
+
+```
+$ kubectl create -f statefulset.yaml 
+service/zk-cs created
+statefulset.apps/zk created
+
+$ kubectl get statefulsets.apps 
+NAME   READY   AGE
+zk     0/1     37s
+
+$ kubectl get pods
+NAME                       READY   STATUS              RESTARTS   AGE
+example-daemonset-88jfx    1/1     Running             9          154m
+example-daemonset2-vfm4v   1/1     Running             1          22m
+zk-0                       1/1     Running             0          45s
+
+```
+
+### Namespaces
+* Great for large enterprises
+* Allows teams to access resources, with accountability
+* Great way to divide cluster resources between users
+* Provides scope for names - must be unique in the namespace
+* "Default" namespace created when you launch Kubernetes
+* Objects placed in "default" namespace at start
+* Newer applications install their resources in a different namespace
+* Kubernetes supports multiple virtual clusters backed by thr same physical cluster. These virtual clusters are namespaces.
+
+#### Namespaces Use Cases
+1. Roles an resposibilities in an enterprise
+2. Partioning landscapes: dev vs. tes vs. prod
+3. Customer partioning for non-multi-tenant scenarios
+4. Application partioning
+
+```
+# Return all existing namespace
+kubectl get namespace
+
+# Create namespace
+kubectl create namespace
+
+# Delete namespace
+kubectl delete namespace
+```
+
+
+### Kubelet
+* is the "Kubernetes node agent" that runs on each node
+
+##### Kubelet Roles
+* Communicate with API server to see if pods have been assigned to nodes
+* Executes pod containers via a container engine
+* Mounts nad runs pod volumes and secrets
+* Executes health checks to identify pod/node status
+
+##### Kubelet and Podspec
+* Podspec: YAML file that describes a pod
+* The kubelet takes a set of Podspecs that are provided ny the kube-apiserver and ensures that the containers described in those Podspecs are running and healthy
+* Kubelet only manages containers that were created by the API server - not any container running on the node
+
+### kube-proxy: The Network Proxy
+* Process that runs on all worker nodes
+* Reflects services as defined on each node, and can do simple network stream or round-robin forwarding across a set of backends
+* Service cluster IPs and ports are currently found through Docker--link compatible environment variables specifying ports opened by the service proxy
+
+##### Modes of kube-proxy
+1. User space mode
+2. Iptables mode
+3. Ipvs mode (alpha feature)
+
+##### Why These Modes Are Important
+* Services defined against the API server: kube-proxy watches the API server for the addition and removal of services
+* For each new service, kube-proxy opens a randomly chosen port on the local mode
+* Connections made to the chosen port are proxied to one of the corresponding back-end pods
+
+### Control plane
+
+* is the nerve center of our Kubernetes cluster
+* here we find the master node, which includes the Kubernetes components that control the cluster, along with data about the cluster’s state and configuration. 
+* is in constant contact with your worker nodes.
+
+### Master node
+
+* Inside the master node, core Kubernetes components handle the important work of making sure your containers are running in sufficient numbers and with the necessary resources.
+
+### kube-apiserver
+
+* Need to interact with your Kubernetes cluster? Talk to the API. The Kubernetes API is the front end of the Kubernetes control plane, handling internal and external requests. The API server determines if a request is valid and, if it is, processes it. You can access the API through REST calls, through the kubectl command-line interface, or through other command-line tools such as kubeadm.
+
+### kube-scheduler
+
+* Is your cluster healthy? If new containers are needed, where will they fit? These are the concerns of the Kubernetes scheduler.
+
+* The scheduler considers the resource needs of a pod, such as CPU or memory, along with the health of the cluster. Then it schedules the pod to an appropriate worker node.
+
+### kube-controller-manager
+
+* Controllers take care of actually running the cluster, and the Kubernetes controller-manager contains several controller functions in one. One controller consults the scheduler and makes sure the correct number of pods is running. If a pod goes down, another controller notices and responds. A controller connects services to pods, so requests go to the right endpoints. And there are controllers for creating accounts and API access tokens.
+
+### etcd
+
+* Configuration data and information about the state of the cluster lives in etcd, a key-value store database. Fault-tolerant and distributed, etcd is designed to be the ultimate source of truth about your cluster.
+
+### Worker nodes
+
+* A Kubernetes cluster needs at least one worker node, but will normally have many. Pods are scheduled and orchestrated to run on worker nodes. Need to scale up the capacity of your cluster? Add more worker nodes.
+
+
+### Container runtime engine
+
+* To run the containers, each worker has a container runtime engine. Docker is one example, but Kubernetes supports other Open Container Initiative-compliant runtimes as well, such as rkt and CRI-O.
+
+### kubelet
+
+ * Each worker node contains a kubelet, a tiny application that communicates with the master node. The kublet makes sure containers are running in a pod. When the master node needs something to happen in a worker node, the kubelet executes the action.
+
+### kube-proxy
+
+* Each worker node also contains kube-proxy, a network proxy for facilitating Kubernetes networking services. The kube-proxy handles network communications inside or outside of your cluster—relying either on your operating system’s packet filtering layer, or forwarding the traffic itself.
+
+### Persistent storage
+
+* Beyond just managing the containers that run an application, Kubernetes can also manage the application data attached to a cluster. Kubernetes allows users to request storage resources without having to know the details of the underlying storage infrastructure. Persistent volumes are specific to a cluster, rather than a pod, and thus can outlive the life of a pod.
+
+### Container registry
+
+* The container images that Kubernetes relies on are stored in a container registry. This can be a registry you configure, or a third party registry.
+
+### Underlying infrastructure
+
+* Where you run Kubernetes is up to you. This can be bare metal servers, virtual machines, public cloud providers, private clouds, and hybrid cloud environments. One of Kubernetes’s key advantages is it works on many different kinds of infrastructure.
+
+
+
+
+### Install and Set Up kubectl
+
+1. Download the latest release with the command:
+```
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+```
+2. Make the kubectl binary executable.
+```
+chmod +x ./kubectl
+```
+3. Move the binary in to your PATH.
+```
+sudo mv ./kubectl /usr/local/bin/kubectl
+```
+4. Test to ensure the version you installed is up-to-date:
+```
+kubectl version --client
+```
+
+### Install Minikube via direct download
+```
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube
+```
+
+Here’s an easy way to add the Minikube executable to your path:
+```
+sudo mkdir -p /usr/local/bin/
+sudo install minikube /usr/local/bin/
+```
+
+### Start Minikube
+```
+minikube start
+```
+
+
+
+### Create a Deployment
+
+1. Use the kubectl create command to create a Deployment that manages a Pod. The Pod runs a Container based on the provided Docker image.
+
+   ```
+   $ kubectl create deployment hw --image=karthequian/helloworld
+     deployment.apps/hw created
+   ```
+
+2. View the Deployments
+
+   ```
+   $ kubectl get services
+   NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+hw           NodePort    10.107.112.170   <none>        80:30150/TCP   2m13s
+   kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP        11h$ kubectl get deployments
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   hw     1/1     1            1           3m33s
+   ```
+   
+3.  View the Pods
+
+   ```
+   $ kubectl get pods
+   NAME                  READY   STATUS    RESTARTS   AGE
+   hw-7c7f969bd4-fbzbx   1/1     Running   0          4m51s
+   ```
+
+4. View the Replicasets
+
+   ``` 
+   $ kubectl get replicasets
+   NAME            DESIRED   CURRENT   READY   AGE
+   hw-7c7f969bd4   1         1         1       10m
+   ```
+
+
+### Create a Service
+
+1. Expose the Pod to the public internet using the `kubectl expose` command:
+
+   ```
+   $ kubectl expose deployment hw --type=NodePort --port=80
+   service/hw exposed
+   ```
+
+2. View the Service you just created
+
+   ```
+   $ kubectl get services
+   NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+   hw           NodePort    10.107.112.170   <none>        80:30150/TCP   2m13s
+   kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP        11h
+   ```
+
+3. To see the application in the browser
+
+   ```
+   $ minikube service hw
+   |-----------|------|-------------|-----------------------------|
+   | NAMESPACE | NAME | TARGET PORT |             URL             |
+   |-----------|------|-------------|-----------------------------|
+   | default   | hw   |          80 | http://192.168.99.100:30150 |
+   |-----------|------|-------------|-----------------------------|
+   🎉  Opening service default/hw in default browser...
+   ```
+
+### Enable addons in minikube
+
+1. List the currently supported addons:
+
+   ```
+   $ minikube addons list
+   |-----------------------------|----------|--------------|
+   |         ADDON NAME          | PROFILE  |    STATUS    |
+   |-----------------------------|----------|--------------|
+   | dashboard                   | minikube | enabled ✅   |
+   | default-storageclass        | minikube | enabled ✅   |
+   | efk                         | minikube | disabled     |
+   | freshpod                    | minikube | disabled     |
+   | gvisor                      | minikube | disabled     |
+   | helm-tiller                 | minikube | disabled     |
+   | ingress                     | minikube | disabled     |
+   | ingress-dns                 | minikube | disabled     |
+   | istio                       | minikube | disabled     |
+   | istio-provisioner           | minikube | disabled     |
+   | logviewer                   | minikube | disabled     |
+   | metrics-server              | minikube | disabled     |
+   | nvidia-driver-installer     | minikube | disabled     |
+   | nvidia-gpu-device-plugin    | minikube | disabled     |
+   | registry                    | minikube | disabled     |
+   | registry-aliases            | minikube | disabled     |
+   | registry-creds              | minikube | disabled     |
+   | storage-provisioner         | minikube | enabled ✅   |
+   | storage-provisioner-gluster | minikube | disabled     |
+   |-----------------------------|----------|--------------|
+   ```
+
+2. Enable an addon, for example, `metrics-server`:
+
+   ```
+   $ minikube addons enable metrics-server
+   🌟  The 'metrics-server' addon is enabledView the Pod and Service you just created:
+   ```
+
+3. View the Pod and Service you just created:
+
+   ```
+   $ kubectl get pod,svc -n kube-system
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   pod/coredns-66bff467f8-j29vq           1/1     Running   26         47d
+   pod/coredns-66bff467f8-zkf4h           1/1     Running   27         47d
+   pod/etcd-minikube                      1/1     Running   23         47d
+   pod/kube-apiserver-minikube            1/1     Running   142        47d
+   pod/kube-controller-manager-minikube   1/1     Running   37         47d
+   pod/kube-proxy-gdfcq                   1/1     Running   23         47d
+   pod/kube-scheduler-minikube            1/1     Running   37         47d
+   pod/metrics-server-7bc6d75975-hqfmg    1/1     Running   11         43d
+   pod/storage-provisioner                1/1     Running   33         47d
+   
+   NAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+   service/kube-dns         ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP   47d
+   service/metrics-server   ClusterIP   10.100.105.221   <none>        443/TCP                  43d
+   ```
+
+4. List all that are deployed
+
+   ```
+   $ kubectl get all
+   NAME                      READY   STATUS    RESTARTS   AGE
+   pod/hw-7c7f969bd4-fbzbx   1/1     Running   0          37m
+   
+   NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+   service/hw           NodePort    10.107.112.170   <none>        80:30150/TCP   20m
+   service/kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP        11h
+   
+   NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
+   deployment.apps/hw   1/1     1            1           37m
+   
+   NAME                            DESIRED   CURRENT   READY   AGE
+   replicaset.apps/hw-7c7f969bd4   1         1         1       37m
+   ```
+
+5.  View the YAML of the deployment/hw
+
+   ```
+   $ kubectl get deployment/hw -o yaml
+   ```
+
+
+
+### Scale deployment
+
+```
+$ kubectl scale --replicas=3 deployment/helloworld-deployment
+deployment.apps/helloworld-deployment scaled
+
+# View deployments
+sherwinowen@owenbox:~$ kubectl get deployments/helloworld-deployment
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+helloworld-deployment   3/3     3            3           16m
+
+# View pods
+sherwinowen@owenbox:~$ kubectl get pods
+NAME                                         READY   STATUS    RESTARTS   AGE
+helloworld-all-deployment-7cf6df685c-fqzcx   1/1     Running   0          7m50s
+helloworld-deployment-7cf6df685c-kq6d4       1/1     Running   0          84s
+helloworld-deployment-7cf6df685c-q4ph6       1/1     Running   0          17m
+helloworld-deployment-7cf6df685c-t5vdk       1/1     Running   0          84s
+hw-7c7f969bd4-fbzbx                          1/1     Running   0          80m
+
+# View replicasets
+sherwinowen@owenbox:~$ kubectl get rs
+NAME                                   DESIRED   CURRENT   READY   AGE
+helloworld-all-deployment-7cf6df685c   1         1         1       10m
+helloworld-deployment-7cf6df685c       3         3         3       19m
+hw-7c7f969bd4   
+```
+
+
+
+### Add change and delete labels
+
+1. Adding labels during build time
+
+helloworld-pod-with-labels.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: helloworld
+  labels:
+    env: production
+    author: karthequian
+    application_type: ui
+    release-version: "1.0"
+spec:
+  containers:
+  - name: helloworld
+    image: karthequian/helloworld:latest
+```
+
+* Deploy the code above by using the command 
+
+```
+$ kubectl create -f helloworld-pod-with-labels.yml
+pod/helloworld created
+```
+
+2. Viewing labels
+
+```
+$ kubectl get pods --show-labels
+NAME         READY   STATUS    RESTARTS   AGE    LABELS
+helloworld   1/1     Running   0          116s   application_type=ui,author=karthequian,env=production,release-version=1.0
+```
+
+3. Adding labels nodes and pods
+
+```
+# Adding labels to node
+$ kubectl label node <node-name> <label-key>=<label-value>
+
+# Adding labels to pod
+$ kubectl label pod/helloworld app=helloworldapp --overwrite
+pod/helloworld labeled
+
+$ kubectl get pods --show-labels
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+helloworld   1/1     Running   0          17m   app=helloworldapp,application_type=ui,author=karthequian,env=production,release-version=1.0
+```
+
+4. Deleting a label to nodes and pods
+
+```
+# Deleting labels to node
+$ kubectl label node <node-name> <label-key>-
+
+$ kubectl label node minikube infra-
+node/minikube labeled
+
+# Deleting labels to pod
+$ kubectl label pod/helloworld app-
+pod/helloworld labeled
+
+$ kubectl get pods --show-labels
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+helloworld   1/1     Running   0          18m   application_type=ui,author=karthequian,env=production,release-version=1.0
+```
+
+5. Searching by labels
+
+sample-infrastructure-with-labels.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: homepage-dev
+  labels:
+    env: development
+    dev-lead: karthik
+    team: web
+    application_type: ui
+    release-version: "12.0"
+spec:
+  containers:
+  - name: helloworld
+    image: karthequian/helloworld:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: homepage-staging
+  labels:
+    env: staging
+    team: web
+    dev-lead: karthik
+    application_type: ui
+    release-version: "12.0"
+spec:
+  containers:
+  - name: helloworld
+    image: karthequian/helloworld:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: homepage-prod
+  labels:
+    env: production
+    team: web
+    dev-lead: karthik
+    application_type: ui
+    release-version: "12.0"
+spec:
+  containers:
+  - name: helloworld
+    image: karthequian/helloworld:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: login-dev
+  labels:
+    env: development
+    team: auth
+    dev-lead: jim
+    application_type: api
+    release-version: "1.0"
+spec:
+  containers:
+  - name: login
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: login-staging
+  labels:
+    env: staging
+    team: auth
+    dev-lead: jim
+    application_type: api
+    release-version: "1.0"
+spec:
+  containers:
+  - name: login
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: login-prod
+  labels:
+    env: production
+    team: auth
+    dev-lead: jim
+    application_type: api
+    release-version: "1.0"
+spec:
+  containers:
+  - name: login
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cart-dev
+  labels:
+    env: development
+    team: ecommerce
+    dev-lead: carisa
+    application_type: api
+    release-version: "1.0"
+spec:
+  containers:
+  - name: cart
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cart-staging
+  labels:
+    env: staging
+    team: ecommerce
+    dev-lead: carisa
+    application_type: api
+    release-version: "1.0"
+spec:
+  containers:
+  - name: cart
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cart-prod
+  labels:
+    env: production
+    team: ecommerce
+    dev-lead: carisa
+    application_type: api
+    release-version: "1.0"
+spec:
+  containers:
+  - name: cart
+    image: karthequian/ruby:latest
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: social-dev
+  labels:
+    env: development
+    team: marketing
+    dev-lead: carisa
+    application_type: api
+    release-version: "2.0"
+spec:
+  containers:
+  - name: social
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: social-staging
+  labels:
+    env: staging
+    team: marketing
+    dev-lead: marketing
+    application_type: api
+    release-version: "1.0"
+spec:
+  containers:
+  - name: social
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: social-prod
+  labels:
+    env: production
+    team: marketing
+    dev-lead: marketing
+    application_type: api
+    release-version: "1.0"
+spec:
+  containers:
+  - name: social
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: catalog-dev
+  labels:
+    env: development
+    team: ecommerce
+    dev-lead: daniel
+    application_type: api
+    release-version: "4.0"
+spec:
+  containers:
+  - name: catalog
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: catalog-staging
+  labels:
+    env: staging
+    team: ecommerce
+    dev-lead: daniel
+    application_type: api
+    release-version: "4.0"
+spec:
+  containers:
+  - name: catalog
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: catalog-prod
+  labels:
+    env: production
+    team: ecommerce
+    dev-lead: daniel
+    application_type: api
+    release-version: "4.0"
+spec:
+  containers:
+  - name: catalog
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quote-dev
+  labels:
+    env: development
+    team: ecommerce
+    dev-lead: amy
+    application_type: api
+    release-version: "2.0"
+spec:
+  containers:
+  - name: quote
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quote-staging
+  labels:
+    env: staging
+    team: ecommerce
+    dev-lead: amy
+    application_type: api
+    release-version: "2.0"
+spec:
+  containers:
+  - name: quote
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quote-prod
+  labels:
+    env: production
+    team: ecommerce
+    dev-lead: amy
+    application_type: api
+    release-version: "1.0"
+spec:
+  containers:
+  - name: quote
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ordering-dev
+  labels:
+    env: development
+    team: purchasing
+    dev-lead: chen
+    application_type: backend
+    release-version: "2.0"
+spec:
+  containers:
+  - name: ordering
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ordering-staging
+  labels:
+    env: staging
+    team: purchasing
+    dev-lead: chen
+    application_type: backend
+    release-version: "2.0"
+spec:
+  containers:
+  - name: ordering
+    image: karthequian/ruby:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ordering-prod
+  labels:
+    env: production
+    team: purchasing
+    dev-lead: chen
+    application_type: backend
+    release-version: "2.0"
+spec:
+  containers:
+  - name: ordering
+    image: karthequian/ruby:latest
+---
+```
+
+* Deploy the code above by using the command 
+
+```
+$ kubectl create -f sample-infrastructure-with-labels.yml 
+pod/homepage-dev created
+pod/homepage-staging created
+pod/homepage-prod created
+pod/login-dev created
+pod/login-staging created
+pod/login-prod created
+pod/cart-dev created
+pod/cart-staging created
+pod/cart-prod created
+pod/social-dev created
+pod/social-staging created
+pod/social-prod created
+pod/catalog-dev created
+pod/catalog-staging created
+pod/catalog-prod created
+pod/quote-dev created
+pod/quote-staging created
+pod/quote-prod created
+pod/ordering-dev created
+pod/ordering-staging created
+pod/ordering-prod created
+```
+
+* You can search for labels with the flag `--selector` (or `-l`).
+
+* Search pods in production environment
+
+```
+$ kubectl get pods --selector env=production
+NAME            READY   STATUS    RESTARTS   AGE
+cart-prod       1/1     Running   1          15m
+catalog-prod    1/1     Running   1          15m
+homepage-prod   1/1     Running   0          15m
+login-prod      1/1     Running   1          15m
+ordering-prod   1/1     Running   1          15m
+quote-prod      1/1     Running   1          15m
+social-prod     1/1     Running   1          15m
+
+$ kubectl get pods --selector env=production --show-labels 
+NAME            READY   STATUS    RESTARTS   AGE   LABELS
+cart-prod       1/1     Running   1          16m   application_type=api,dev-lead=carisa,env=production,release-version=1.0,team=ecommerce
+catalog-prod    1/1     Running   1          16m   application_type=api,dev-lead=daniel,env=production,release-version=4.0,team=ecommerce
+homepage-prod   1/1     Running   0          16m   application_type=ui,dev-lead=karthik,env=production,release-version=12.0,team=web
+login-prod      1/1     Running   1          16m   application_type=api,dev-lead=jim,env=production,release-version=1.0,team=auth
+ordering-prod   1/1     Running   1          16m   application_type=backend,dev-lead=chen,env=production,release-version=2.0,team=purchasing
+quote-prod      1/1     Running   1          16m   application_type=api,dev-lead=amy,env=production,release-version=1.0,team=ecommerce
+social-prod     1/1     Running   1          16m   application_type=api,dev-lead=marketing,env=production,release-version=1.0,team=marketing
+```
+
+* Multiple Search
+
+```
+$ kubectl get pods -l dev-lead!=karthik,env=staging
+NAME               READY   STATUS    RESTARTS   AGE
+cart-staging       1/1     Running   2          23m
+catalog-staging    1/1     Running   2          23m
+login-staging      1/1     Running   2          23m
+ordering-staging   1/1     Running   2          23m
+quote-staging      1/1     Running   2          23m
+social-staging     1/1     Running   2          23m
+```
+
+* Complicated search 
+
+```
+$ kubectl get pods -l 'release-version in (1.2,2.0)'
+NAME               READY   STATUS    RESTARTS   AGE
+ordering-dev       1/1     Running   3          39m
+ordering-prod      1/1     Running   3          39m
+ordering-staging   1/1     Running   3          39m
+quote-dev          1/1     Running   3          39m
+quote-staging      1/1     Running   3          39m
+social-dev         1/1     Running   3          39m
+
+$ kubectl get pods -l 'release-version notin (1.2,2.0)'
+NAME               READY   STATUS    RESTARTS   AGE
+cart-dev           1/1     Running   3          40m
+cart-prod          1/1     Running   3          40m
+cart-staging       1/1     Running   3          40m
+catalog-dev        1/1     Running   3          40m
+catalog-prod       1/1     Running   3          40m
+catalog-staging    1/1     Running   3          40m
+homepage-dev       1/1     Running   0          40m
+homepage-prod      1/1     Running   0          40m
+homepage-staging   1/1     Running   0          40m
+login-dev          1/1     Running   3          40m
+login-prod         1/1     Running   3          40m
+login-staging      1/1     Running   3          40m
+quote-prod         1/1     Running   3          40m
+social-prod        1/1     Running   3          40m
+social-staging     1/1     Running   3          40m
+
+```
+
+* Delete pods with dev-lead=karthik
+
+```
+$ kubectl delete pods -l dev-lead=karthik
+pod "homepage-dev" deleted
+pod "homepage-prod" deleted
+pod "homepage-staging" deleted$ kubectl delete pods -l dev-lead=karthik
+pod "homepage-dev" deleted
+pod "homepage-prod" deleted
+pod "homepage-staging" deleted
+
+```
+
+### Application health checks
+
+#### Add HTTP health check to the helloworld deployment
+
+We will take our existing hellworld deployment, and add a readiness and liveness probe healthchecks.
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deployment
+spec:
+  selector:
+    matchLabels:
+      app: helloworld
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: karthequian/helloworld:latest
+        ports:
+        - containerPort: 80
+```
+
+**A readiness probe is used to know when a container is ready to start accepting traffic.**
+
+The yaml has the following parameters:
+
+```
+readinessProbe:
+  # length of time to wait for a pod to initialize
+  # after pod startup, before applying health checking
+  initialDelaySeconds: 10
+  # Amount of time to wait before timing out
+  timeoutSeconds: 1
+  # Probe for http
+  httpGet:
+    # Path to probe
+    path: /
+    # Port to probe
+    port: 80
+```
+
+**A liveness probe is used to know when a container might need to be restarted.**
+
+A liveness probe yaml has the following parameters that need to be filled out:
+
+```
+livenessProbe:
+  # length of time to wait for a pod to initialize
+  # after pod startup, before applying health checking
+  initialDelaySeconds: 100
+  # Amount of time to wait before timing out
+  timeoutSeconds: 1
+  # Probe for http
+  httpGet:
+    # Path to probe
+    path: /
+    # Port to probe
+    port: 80
+```
+
+Thus, our deployment yaml now becomes:
+
+```
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: helloworld-deployment-with-probe
+spec:
+  selector:
+    matchLabels:
+      app: helloworld
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: karthequian/helloworld:latest
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          # length of time to wait for a pod to initialize
+          # after pod startup, before applying health checking
+          initialDelaySeconds: 10
+          # Amount of time to wait before timing out
+          initialDelaySeconds: 1
+          # Probe for http
+          httpGet:
+            # Path to probe
+            path: /
+            # Port to probe
+            port: 80
+        livenessProbe:
+          # length of time to wait for a pod to initialize
+          # after pod startup, before applying health checking
+          initialDelaySeconds: 100
+          # Amount of time to wait before timing out
+          timeoutSeconds: 1
+          # Probe for http
+          httpGet:
+            # Path to probe
+            path: /
+            # Port to probe
+            port: 80
+
+```
+
+We run this yaml the same as we had done before:
+
+```
+kubectl create -f helloworld-deployment-with-probes.yml
+
+
+kubectl get deployments
+NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
+helloworld-deployment-with-probe   1/1     1            1           35h
+
+
+kubectl get pods
+NAME                                                READY   STATUS    RESTARTS   AGE
+helloworld-deployment-with-probe-6c6c649897-rdmrn   1/1     Running   1          35h
+
+```
+
+#### Simulate a failing deployment that fails a readiness probe
+
+We will now try to simulate a bad helloworld pod that fails a readiness probe. Instead of checking port 80 like the last example, we will run a readiness check on port 90 to simulate a failing scenario. Thus, our yaml now is:
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deployment-with-bad-readiness-probe
+spec:
+  selector:
+    matchLabels:
+      app: helloworld
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: karthequian/helloworld:latest
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          # length of time to wait for a pod to initialize
+          # after pod startup, before applying health checking
+          initialDelaySeconds: 10
+          # Amount of time to wait before timing out
+          initialDelaySeconds: 1
+          # Probe for http
+          httpGet:
+            # Path to probe
+            path: /
+            # Port to probe
+            port: 90
+```
+
+We will run this yaml with the command `kubectl create -f helloworld-with-bad-readiness-probe.yaml`. After about a minute, we will notice that our pod is still not in a read state when we run the `kubectl get pods` command.
+
+```
+kubectl get deployments
+NAME                                             READY   UP-TO-DATE   AVAILABLE   AGE
+helloworld-deployment-with-bad-readiness-probe   0/1     1            0           4s
+helloworld-deployment-with-probe                 1/1     1            1           35h
+
+
+kubectl get pods
+NAME                                                              READY   STATUS    RESTARTS   AGE
+helloworld-deployment-with-bad-readiness-probe-77746bdd47-qhzmj   0/1     Running   0          14s
+helloworld-deployment-with-probe-6c6c649897-rdmrn                 1/1     Running   1          35h
+```
+
+**Describing the pod will show that the pod failed readiness:**
+
+```
+kubectl describe po/helloworld-deployment-with-bad-readiness-probe-77746bdd47-qhzmj
+Name:         helloworld-deployment-with-bad-readiness-probe-77746bdd47-qhzmj
+Namespace:    default
+Priority:     0
+Node:         minikube/192.168.99.100
+Start Time:   Thu, 09 Apr 2020 07:51:48 +0800
+Labels:       app=helloworld
+              pod-template-hash=77746bdd47
+Annotations:  <none>
+Status:       Running
+IP:           172.17.0.6
+IPs:
+  IP:           172.17.0.6
+Controlled By:  ReplicaSet/helloworld-deployment-with-bad-readiness-probe-77746bdd47
+Containers:
+  helloworld:
+    Container ID:   docker://9eb34236390e457c4c5eee65c1536d8b154a9fed7fb33c73af958a00c9944fcf
+    Image:          karthequian/helloworld:latest
+    Image ID:       docker-pullable://karthequian/helloworld@sha256:da1f6fc8eb1d02af1a2eaf48111c945c4e0fe5ac5476048db99a109a865531fd
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Thu, 09 Apr 2020 07:51:53 +0800
+    Ready:          False
+    Restart Count:  0
+    Readiness:      http-get http://:90/ delay=1s timeout=1s period=10s #success=1 #failure=3
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dvvd9 (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  default-token-dvvd9:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dvvd9
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type     Reason     Age               From               Message
+  ----     ------     ----              ----               -------
+  Normal   Scheduled  40s               default-scheduler  Successfully assigned default/helloworld-deployment-with-bad-readiness-probe-77746bdd47-qhzmj to minikube
+  Normal   Pulling    39s               kubelet, minikube  Pulling image "karthequian/helloworld:latest"
+  Normal   Pulled     35s               kubelet, minikube  Successfully pulled image "karthequian/helloworld:latest"
+  Normal   Created    35s               kubelet, minikube  Created container helloworld
+  Normal   Started    35s               kubelet, minikube  Started container helloworld
+  Warning  Unhealthy  7s (x3 over 27s)  kubelet, minikube  Readiness probe failed: Get http://172.17.0.6:90/: dial tcp 172.17.0.6:90: connect: connection refused
+```
+
+#### Simulate a failing deployment that fails a liveness probe
+
+Next, we will simulate a bad helloworld pod that fails a liveness probe. Instead of checking port 80 like the last example, we will run a liveness check on port 90 to simulate a failing scenario. Thus, our yaml now is:
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deployment-with-bad-liveness-probe
+spec:
+  selector:
+    matchLabels:
+      app: helloworld
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: karthequian/helloworld:latest
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          # length of time to wait for a pod to initialize
+          # after pod startup, before applying health checking
+          initialDelaySeconds: 10
+          # How often (in seconds) to perform the probe.
+          periodSeconds: 5
+          # Amount of time to wait before timing out
+          timeoutSeconds: 1
+          # Kubernetes will try failureThreshold times before giving up and restarting the Pod
+          failureThreshold: 2
+          # Probe for http
+          httpGet:
+            # Path to probe
+            path: /
+            # Port to probe
+            port: 90
+```
+We will run this yaml with the command `kubectl create -f helloworld-with-bad-liveness-probe.yaml`. After about a minute, we will notice that our pod is still not in a read state when we run the `kubectl get pods` command.
+
+```
+$ kubectl create -f helloworld-with-bad-liveness-probe.yaml 
+deployment.apps/helloworld-deployment-with-bad-liveness-probe created
+```
+
+
+```
+kubectl get deployments.apps 
+NAME                                             READY   UP-TO-DATE   AVAILABLE   AGE
+helloworld-deployment-with-bad-liveness-probe    1/1     1            1           59s
+helloworld-deployment-with-bad-readiness-probe   0/1     1            0           7m57s
+helloworld-deployment-with-probe                 1/1     1            1           36h
+
+kubectl get pods/helloworld-deployment-with-bad-liveness-probe-f48c8668b-pn7j8
+NAME                                                            READY   STATUS             RESTARTS   AGE
+helloworld-deployment-with-bad-liveness-probe-f48c8668b-pn7j8   0/1     CrashLoopBackOff   7          10m
+```
+
+When we describe our pod, we notice that it is failing the liveness probe:
+
+```
+kubectl describe pods/helloworld-deployment-with-bad-liveness-probe-f48c8668b-pn7j8
+Name:         helloworld-deployment-with-bad-liveness-probe-f48c8668b-pn7j8
+Namespace:    default
+Priority:     0
+Node:         minikube/192.168.99.100
+Start Time:   Thu, 09 Apr 2020 07:58:46 +0800
+Labels:       app=helloworld
+              pod-template-hash=f48c8668b
+Annotations:  <none>
+Status:       Running
+IP:           172.17.0.8
+IPs:
+  IP:           172.17.0.8
+Controlled By:  ReplicaSet/helloworld-deployment-with-bad-liveness-probe-f48c8668b
+Containers:
+  helloworld:
+    Container ID:   docker://ba91449188ec9969a2205ab6917554be474a55751528f0b168160c95f983af30
+    Image:          karthequian/helloworld:latest
+    Image ID:       docker-pullable://karthequian/helloworld@sha256:da1f6fc8eb1d02af1a2eaf48111c945c4e0fe5ac5476048db99a109a865531fd
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       CrashLoopBackOff
+    Last State:     Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Thu, 09 Apr 2020 08:03:25 +0800
+      Finished:     Thu, 09 Apr 2020 08:03:44 +0800
+    Ready:          False
+    Restart Count:  6
+    Liveness:       http-get http://:90/ delay=10s timeout=1s period=5s #success=1 #failure=2
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dvvd9 (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  default-token-dvvd9:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dvvd9
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type     Reason     Age                    From               Message
+
+----     ------     ----                   ----               -------
+  Normal   Scheduled  6m16s                  default-scheduler  Successfully assigned default/helloworld-deployment-with-bad-liveness-probe-f48c8668b-pn7j8 to minikube
+  Warning  Unhealthy  5m13s (x6 over 5m58s)  kubelet, minikube  Liveness probe failed: Get http://172.17.0.8:90/: dial tcp 172.17.0.8:90: connect: connection refused
+  Normal   Killing    5m13s (x3 over 5m53s)  kubelet, minikube  Container helloworld failed liveness probe, will be restarted
+  Normal   Pulling    5m12s (x4 over 6m15s)  kubelet, minikube  Pulling image "karthequian/helloworld:latest"
+  Normal   Pulled     5m9s (x4 over 6m11s)   kubelet, minikube  Successfully pulled image "karthequian/helloworld:latest"
+  Normal   Created    5m9s (x4 over 6m11s)   kubelet, minikube  Created container helloworld
+  Normal   Started    5m8s (x4 over 6m11s)   kubelet, minikube  Started container helloworld
+  Warning  BackOff    64s (x16 over 4m33s)   kubelet, minikube  Back-off restarting failed container
+```
+
+### Handling application upgrades
+
+helloworld-black.yaml
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: navbar-deployment
+spec:
+  selector:
+    matchLabels:
+      app: helloworld
+  replicas: 3 # tells deployment to run 3 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: karthequian/helloworld:black
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: navbar-service
+spec:
+  # if your cluster supports it, uncomment the following to automatically create
+  # an external load-balanced IP for the frontend service.
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: helloworld
+
+```
+
+Let's deploy our initial version of our application with --record option to reord our rollout history
+
+```
+$ kubectl create -f helloworld-black.yaml --record
+deployment.apps/navbar-deployment created
+service/navbar-service created
+```
+
+Browse the service/navbar-service in the browser
+
+```
+sherwinowen@owenbox:~$ minikube service navbar-service
+|-----------|----------------|-------------|-----------------------------|
+| NAMESPACE |      NAME      | TARGET PORT |             URL             |
+|-----------|----------------|-------------|-----------------------------|
+| default   | navbar-service |          80 | http://192.168.99.100:31924 |
+|-----------|----------------|-------------|-----------------------------|
+🎉  Opening service default/navbar-service in default browser...
+```
+
+
+
+![Service UI blue](images/service_ui.png)
+
+Change the deployment image
+
+
+```
+$ kubectl set image deployment/navbar-deployment helloworld=karthequian/helloworld:blue
+deployment.apps/navbar-deployment image updated
+
+$ kubectl get deployments.apps 
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+navbar-deployment   3/3     3            3           35m
+
+$ kubectl get rs
+NAME                           DESIRED   CURRENT   READY   AGE
+navbar-deployment-685664588f   0         0         0       40m
+navbar-deployment-7bf84b8b8d   3         3         3       6m52s
+
+$ kubectl get pods
+NAME                                 READY   STATUS    RESTARTS   AGE
+navbar-deployment-7bf84b8b8d-6fxc4   1/1     Running   0          9m40s
+navbar-deployment-7bf84b8b8d-ccxqg   1/1     Running   0          9m41s
+navbar-deployment-7bf84b8b8d-dcxz7   1/1     Running   0          9m43s
+```
+
+![Service UI blue](images/service_ui1.png)
+
+
+
+We can also take a look at the rollout history
+
+```
+kubectl rollout history deployment/navbar-deployment
+deployment.apps/navbar-deployment 
+REVISION  CHANGE-CAUSE
+1         kubectl create --filename=helloworld-black.yaml --record=true
+2         kubectl create --filename=helloworld-black.yaml --record=true
+```
+
+To rollback the deployment, we use the rollout undo command
+
+```
+$ kubectl rollout undo deployment/navbar-deployment
+deployment.apps/navbar-deployment rolled back
+```
+
+To rollback to a specific version
+
+```
+$ kubectl rollout undo deployment/navbar-deployment --to-revision=[revision number]
+```
+
+### Basic troubleshooting techniques
+
+helloworld-deployment.yaml
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deployment
+spec:
+  selector:
+    matchLabels:
+      app: helloworld
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: karthequian/helloworld:latest
+        ports:
+        - containerPort: 80
+```
+
+helloworld-with-bad-pod.yaml
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-helloworld-deployment
+spec:
+  selector:
+    matchLabels:
+      app: bad-helloworld
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: bad-helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: karthequian/unkown-pod:latest
+        ports:
+        - containerPort: 80
+```
+
+```
+$ kubectl create -f helloworld-deployment.yaml 
+deployment.apps/helloworld-deployment created
+
+$ kubectl create -f helloworld-with-bad-pod.yaml 
+deployment.apps/bad-helloworld-deployment created
+```
+
+#### 1. Kubernetes Techniques
+
+Check on deployments
+
+```
+$ kubectl get deployments.apps 
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+bad-helloworld-deployment   0/1     1            0           104s
+helloworld-deployment       1/1     1            1           2m20s
+
+$ kubectl describe deployments.apps bad-helloworld-deployment
+Name:                   bad-helloworld-deployment
+Namespace:              default
+CreationTimestamp:      Fri, 10 Apr 2020 10:51:55 +0800
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=bad-helloworld
+Replicas:               1 desired | 1 updated | 1 total | 0 available | 1 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=bad-helloworld
+  Containers:
+   helloworld:
+    Image:        karthequian/unkown-pod:latest
+    Port:         80/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+----           ------  ------
+  Available      False   MinimumReplicasUnavailable
+  Progressing    True    ReplicaSetUpdated
+OldReplicaSets:  <none>
+NewReplicaSet:   bad-helloworld-deployment-7659446849 (1/1 replicas created)
+Events:
+  Type    Reason             Age    From                   Message
+----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  3m18s  deployment-controller  Scaled up replica set bad-helloworld-deployment-7659446849 to 1
+```
+
+Check on pods
+
+```
+$ kubectl get pods
+NAME                                         READY   STATUS             RESTARTS   AGE
+bad-helloworld-deployment-7659446849-w9wxb   0/1     ImagePullBackOff   0          12m
+helloworld-deployment-7cf6df685c-h2mk8       1/1     Running            0          13m
+
+$ kubectl describe po/bad-helloworld-deployment-7659446849-w9wxb
+Name:         bad-helloworld-deployment-7659446849-w9wxb
+Namespace:    default
+Priority:     0
+Node:         minikube/192.168.99.100
+Start Time:   Fri, 10 Apr 2020 10:51:55 +0800
+Labels:       app=bad-helloworld
+              pod-template-hash=7659446849
+Annotations:  <none>
+Status:       Pending
+IP:           172.17.0.7
+IPs:
+  IP:           172.17.0.7
+Controlled By:  ReplicaSet/bad-helloworld-deployment-7659446849
+Containers:
+  helloworld:
+    Container ID:   
+    Image:          karthequian/unkown-pod:latest
+    Image ID:       
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dvvd9 (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  default-token-dvvd9:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dvvd9
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type     Reason     Age                   From               Message
+----     ------     ----                  ----               -------
+  Normal   Scheduled  12m                   default-scheduler  Successfully assigned default/bad-helloworld-deployment-7659446849-w9wxb to minikube
+  Normal   Pulling    10m (x4 over 12m)     kubelet, minikube  Pulling image "karthequian/unkown-pod:latest"
+  Warning  Failed     10m (x4 over 12m)     kubelet, minikube  Failed to pull image "karthequian/unkown-pod:latest": rpc error: code = Unknown desc = Error response from daemon: pull access denied for karthequian/unkown-pod, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+  Warning  Failed     10m (x4 over 12m)     kubelet, minikube  Error: ErrImagePull
+  Warning  Failed     7m41s (x16 over 12m)  kubelet, minikube  Error: ImagePullBackOff
+  Normal   BackOff    2m38s (x37 over 12m)  kubelet, minikube  Back-off pulling image "karthequian/unkown-pod:latest"
+
+```
+
+#### 2. Looking at log files
+
+```
+$ kubectl logs helloworld-deployment-7cf6df685c-h2mk8
+172.17.0.1 - - [10/Apr/2020:03:12:05 +0000] "GET / HTTP/1.1" 200 4395 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:05 +0000] "GET / HTTP/1.1" 200 4395 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:06 +0000] "GET /favicon.ico HTTP/1.1" 404 580 "http://192.168.99.100:30216/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:06 +0000] "GET /favicon.ico HTTP/1.1" 404 580 "http://192.168.99.100:30216/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:08 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:08 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:09 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:09 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:09 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:09 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:10 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:10 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:10 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+172.17.0.1 - - [10/Apr/2020:03:12:10 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+```
+
+#### 3. Executing commands in a container
+
+```
+$ kubectl get pods
+NAME                                         READY   STATUS             RESTARTS   AGE
+bad-helloworld-deployment-7659446849-w9wxb   0/1     ImagePullBackOff   0          24m
+helloworld-deployment-7cf6df685c-h2mk8       1/1     Running            0          24m
+
+$ kubectl exec -it helloworld-deployment-7cf6df685c-h2mk8 -- /bin/bash
+root@helloworld-deployment-7cf6df685c-h2mk8:/# `
+
+# Multiple containers in 1 pod use the -c option
+$ kubectl exec -it <pod-name> -c <container-name> -- /bin/bash
+```
+
+
+
+### Working with configmaps
+
+#### Learn how to declare a configmap
+
+Applications require a way for us to pass data to them that can be changed at deploy time. Examples of this might be log-levels or urls of external systems that the application might need at startup time. Instead of hardcoding these values, we can use a configmap in kubernetes, and pass these values as environment variables to the container.
+
+We will take an example of "log_level", and pass the value "debug" to a pod via a configmap in this example.
+
+1. Create configmaps
+
+```
+# To create a configmap for this literal type 
+$ kubectl create configmap logger --from-literal=log_level=debug
+configmap/logger created
+
+# To see all your configmaps: 
+$ kubectl get configmaps
+
+# To read the value in the logger configmap: 
+$ kubectl get configmap/logger -o yaml
+
+# To edit the value, we can run 
+$ kubectl edit configmap/logger
+```
+
+2. Create deployment using the configmap created
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logreader-dynamic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: logreader-dynamic
+  template:
+    metadata:
+      labels:
+        name: logreader-dynamic
+    spec:
+      containers:
+      - name: logreader
+        image: karthequian/reader:latest
+        env:
+        - name: log_level
+          valueFrom:
+            configMapKeyRef:
+              name: logger #Read from a configmap called log-level
+              key: log_level  #Read the key called log_level
+```
+
+3. Check the logs of the pod created
+
+```
+$ kubectl get pods
+NAME                                 READY   STATUS    RESTARTS   AGE
+logreader-5f9c7846bd-wlhkl           1/1     Running   1          4h31m
+logreader-dynamic-655748b758-rm6x8   1/1     Running   0          2m25s
+$ kubectl logs logreader-dynamic-655748b758-rm6x8
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+Log level passed via env variables was: 'debug'
+```
+
+### Working with secrets
+
+#### Learn how to declare a secret
+
+```
+# To create a secret `
+$ $ kubectl create secret generic owen-apikey --from-literal=api_key=1234567
+secret/owen-apikey created
+
+# To list secrets 
+$ kubectl get secrets
+NAME                  TYPE                                  DATA   AGE
+apikey                Opaque                                1      44d
+default-token-dvvd9   kubernetes.io/service-account-token   3      48d
+owen-apikey           Opaque                                1      3m33s
+
+# Notice that we can't read the value of the secret directly:
+$ kubectl get secret owen-apikey -o yaml
+apiVersion: v1
+data:
+  api_key: MTIzNDU2Nw==
+kind: Secret
+metadata:
+  creationTimestamp: "2020-05-25T06:30:49Z"
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:api_key: {}
+      f:type: {}
+    manager: kubectl
+    operation: Update
+    time: "2020-05-25T06:30:49Z"
+  name: owen-apikey
+  namespace: default
+  resourceVersion: "365590"
+  selfLink: /api/v1/namespaces/default/secrets/owen-apikey
+  uid: 72ef49c6-2a19-4ebe-ad75-bd8bb6e1cc3b
+type: Opaque
+```
+
+#### Understand how to add a secret to a deployment
+
+secretreader-deployment.yaml
+
+```
+piVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secretreader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: secretreader
+  template:
+    metadata:
+      labels:
+        name: secretreader
+    spec:
+      containers:
+      - name: secretreader
+        image: karthequian/secretreader:latest
+        env:
+        - name: api_key
+          valueFrom:
+            secretKeyRef:
+              name: owen-apikey
+              key: api_key
+```
+
+1. Create the deployment
+
+   ```
+   $ kubectl create -f secretreader-deployment.yaml 
+   deployment.apps/secretreader created
+   ```
+
+2. List the pods and check the logs
+
+   ```
+   # List the pods
+   $ kubectl get pods
+   NAME                                 READY   STATUS    RESTARTS   AGE
+   logreader-5f9c7846bd-wlhkl           1/1     Running   1          4h59m
+   logreader-dynamic-655748b758-rm6x8   1/1     Running   0          30m
+   secretreader-6db948585-jmgdg         1/1     Running   0          9s
+   
+   Check the logs of pod
+   $ kubectl logs secretreader-6db948585-jmgdg 
+   api_key passed via env variable was: '1234567'
+   api_key passed via env variable was: '1234567'
+   api_key passed via env variable was: '1234567'
+   api_key passed via env variable was: '1234567'
+   api_key passed via env variable was: '1234567'
+   ```
+
+   
+
+### Jobs in Kubernetes
+
+#### How to run jobs
+
+simplejob.yaml
+
+```
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: finalcountdown
+spec:
+  template:
+    metadata:
+      name: finalcountdown
+    spec:
+      containers:
+      - name: counter
+        image: busybox
+        command:
+         - bin/sh
+         - -c
+         - "for i in 9 8 7 6 5 4 3 2 1 ; do echo $i ; done"
+      restartPolicy: Never #could also be Always or OnFailure
+```
+
+
+
+Running a job is similar to running a deployment, and we can create this by 
+
+```
+$ kubectl create -f simplejob.yaml 
+job.batch/finalcountdown created
+
+# To list the jobs
+$ kubectl get pods 
+NAME                                 READY   STATUS      RESTARTS   AGE
+finalcountdown-jrjxj                 0/1     Completed   0          2m4s
+
+# To see the output of the job: 
+$ kubectl logs finalcountdown-jrjxj
+9
+8
+7
+6
+5
+4
+3
+2
+1
+
+```
+
+#### How to run cron jobs
+
+cronjob.yaml 
+
+```
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hellocron
+spec:
+  schedule: "*/1 * * * *" #Runs every minute (cron syntax) or @hourly.
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hellocron
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from your Kubernetes cluster
+          restartPolicy: OnFailure #could also be Always or Never
+  suspend: false #Set to true if you want to suspend in the future
+
+```
+
+Create cronjob
+
+```
+$ kubectl create -f cronjob.yaml 
+cronjob.batch/hellocron created
+```
+
+ View cronjobs
+
+```
+$ kubectl get cronjobs
+NAME        SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+hellocron   */1 * * * *   False     0        27s             3m7s
+```
+
+Stop cronjobs
+
+```
+$ kubectl edit cronjobs/hellocron
+cronjob.batch/hellocron edited
+
+# Change Suspend to True
+
+$ kubectl get cronjobs
+NAME        SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+hellocron   */1 * * * *   True      0        68s             11m
+```
+
+
+
+### Daemonsets
+
+A DaemonSet ensures that all Nodes run a copy of a Pod. As nodes are added to the cluster, Pods are added to them. 
+
+Examples of a daemon set would be running your logging or monitoring agent on your nodes.
+
+daemonset.yaml
+
+```
+apiVersion: apps/v1
+metadata:
+  name: example-daemonset
+  namespace: default
+  labels:
+    k8s-app: example-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: example-daemonset
+  template:
+    metadata:
+      labels:
+        name: example-daemonset
+    spec:
+      #nodeSelector: minikube # Specify if you want to run on specific nodes
+      containers:
+      - name: example-daemonset
+        image: busybox
+        args:
+        - /bin/sh
+        - -c
+        - date; sleep 1000
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+      terminationGracePeriodSeconds: 30
+```
+
+Create daemonset
+
+```
+$ kubectl create -f daemonset.yaml
+daemonset.apps/example-daemonset created
+```
+
+View daemonset
+**Note: node selector is none**
+
+```
+$ kubectl get daemonsets
+NAME                DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+example-daemonset   1         1         1       1            1           <none>          2m5s
+
+# Pods automatically created
+$ kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+example-daemonset-tck4v   1/1     Running   0          4m20s
+```
+
+Create daemonset with node selector
+
+daemonset-infra-development.yaml
+
+```
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: example-daemonset2
+  namespace: default
+  labels:
+    k8s-app: example-daemonset2
+spec:
+  selector:
+    matchLabels:
+      name: example-daemonset2
+  template:
+    metadata:
+      labels:
+        name: example-daemonset2
+    spec:
+      containers:
+      - name: example-daemonset2
+        image: busybox
+        args:
+        - /bin/sh
+        - -c
+        - date; sleep 1000
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+      terminationGracePeriodSeconds: 30
+      nodeSelector: 
+        infra: "development"
+```
+
+
+
+```
+$ kubectl create -f daemonset-infra-development.yaml 
+daemonset.apps/example-daemonset2 created
+
+# Note that daemonset example-daemonset2 has node selector "infra=development"
+$ kubectl get daemonsets
+NAME                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR       AGE
+example-daemonset    1         1         1       1            1           <none>              11m
+example-daemonset2   1         1         1       1            1           infra=development   3m11
+
+# Note: Node labels has infra=development
+$ kubectl get nodes --show-labels 
+NAME       STATUS   ROLES    AGE   VERSION   LABELS
+minikube   Ready    master   49d   v1.18.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,infra=development,kubernetes.io/arch=amd64,kubernetes.io/hostname=minikube,kubernetes.io/os=linux,minikube.k8s.io/commit=93af9c1e43cab9618e301bc9fa720c63d5efa393,minikube.k8s.io/name=minikube,minikube.k8s.io/updated_at=2020_04_06T14_44_20_0700,minikube.k8s.io/version=v1.9.2,node-role.kubernetes.io/master=
+```
+
+daemonset-infra-prod.yaml
+
+```
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: prod-daemonset
+  namespace: default
+  labels:
+    k8s-app: prod-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: prod-daemonset
+  template:
+    metadata:
+      labels:
+        name: prod-daemonset
+    spec:
+      containers:
+      - name: prod-daemonset
+        image: busybox
+        args:
+        - /bin/sh
+        - -c
+        - date; sleep 1000
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+      terminationGracePeriodSeconds: 30
+      nodeSelector: 
+        infra: "production"
+```
+
+Create daemonset
+
+```
+$ kubectl create -f daemonset-infra-prod.yaml 
+daemonset.apps/prod-daemonset created
+
+$ kubectl get daemonsets
+NAME                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR       AGE
+example-daemonset    1         1         1       1            1           <none>              16m
+example-daemonset2   1         1         1       1            1           infra=development   7m44s
+prod-daemonset       0         0         0       0            0           infra=production    84s
+
+# Note: Node labels has no infra=production
+$ kubectl get nodes --show-labels 
+NAME       STATUS   ROLES    AGE   VERSION   LABELS
+minikube   Ready    master   49d   v1.18.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,infra=development,kubernetes.io/arch=amd64,kubernetes.io/hostname=minikube,kubernetes.io/os=linux,minikube.k8s.io/commit=93af9c1e43cab9618e301bc9fa720c63d5efa393,minikube.k8s.io/name=minikube,minikube.k8s.io/updated_at=2020_04_06T14_44_20_0700,minikube.k8s.io/version=v1.9.2,node-role.kubernetes.io/master=
+```
+
+
+
+### Statefulsets 
+
+Manages the deployment and scaling of a set of Pods, and provides guarantees about the ordering and uniqueness of these Pods. Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods.
+
+statefulset.yaml
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: zk-cs
+  labels:
+    app: zk
+spec:
+  ports:
+  - port: 2181
+    name: client
+  selector:
+    app: zk
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zk
+spec:
+  serviceName: zk-hs
+  replicas: 1
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: zk
+  template:
+    metadata:
+      labels:
+        app: zk
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - none
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: kubernetes-zookeeper
+        imagePullPolicy: Always
+        image: "gcr.io/google_containers/kubernetes-zookeeper:1.0-3.4.10"
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "0.5"
+        ports:
+        - containerPort: 2181
+          name: client
+        - containerPort: 2888
+          name: server
+        - containerPort: 3888
+          name: leader-election
+        command:
+        - sh
+        - -c
+        - "start-zookeeper \
+          --servers=1 \
+          --data_dir=/var/lib/zookeeper/data \
+          --data_log_dir=/var/lib/zookeeper/data/log \
+          --conf_dir=/opt/zookeeper/conf \
+          --client_port=2181 \
+          --election_port=3888 \
+          --server_port=2888 \
+          --tick_time=2000 \
+          --init_limit=10 \
+          --sync_limit=5 \
+          --heap=512M \
+          --max_client_cnxns=60 \
+          --snap_retain_count=3 \
+          --purge_interval=12 \
+          --max_session_timeout=40000 \
+          --min_session_timeout=4000 \
+          --log_level=INFO"
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "zookeeper-ready 2181"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "zookeeper-ready 2181"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: datadir
+          mountPath: /var/lib/zookeeper
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+```
+
+
+
+```
+Create statefulset
+$ kubectl create -f statefulset.yaml 
+service/zk-cs created
+statefulset.apps/zk created
+
+# View statefulsets 
+$ kubectl get statefulsets
+NAME   READY   AGE
+zk     1/1     48s
+
+$ kubectl get pods
+NAME                       READY   STATUS    RESTARTS   AGE
+example-daemonset-tck4v    1/1     Running   2          45m
+example-daemonset2-shhzm   1/1     Running   2          37m
+zk-0                       1/1     Running   0          3m38s
+```
+
+
+
+### Production
+
+https://github.com/kelseyhightower/kubernetes-the-hard-way
+
+
+
+### Monitoring and Logging
+
+* Elasticsearch Logstash and Kibana (ELK)
+* CAdvisor
+* Heapster
+* Prometheus - Time series database with a query language to send monitoring or application metrics data
+* Grafana - Data visulatization Platform
+* Datadog  or Riverbed (enterprise tools)
+
+
+
+### Authentication and Authorization
+
+### Authentication
+
+* Does a user have access to the system?
+
+#### Authorization
+
+* Can the user perform an action in the system?
+
+
+
+#### Popular Authentication Modules
+
+* Client certs
+* Static token files (static password file)
+* OpenID Connect
+* Webhook mode
+
+
+
+#### Popular Authorization Modules
+
+* ABAC (Attribute-based access control)
+
+* RBAC (Role-based access control)
+
+* Webhook
+
+  

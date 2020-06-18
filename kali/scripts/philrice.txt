@@ -1,0 +1,4 @@
+dbmp.philrice.gov.ph
+mail.philrice.gov.ph
+prism.philrice.gov.ph
+www.philrice.gov.ph

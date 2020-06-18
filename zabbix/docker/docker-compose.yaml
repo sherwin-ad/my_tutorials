@@ -1,0 +1,58 @@
+version: "3"
+services:
+  zabbix-mysql:
+    restart: always
+    container_name: owen-zabbix-mysql
+    image: mysql:5.7
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=zabbixroot
+    volumes:
+      - $PWD/mysql:/var/lib/mysql
+    networks:
+      - net
+  zabbix-server:
+    restart: always
+    container_name: owen-zabbix-server
+    image: zabbix/zabbix-server-mysql:latest
+    ports:
+      - 10051:10051
+    environment:
+      - DB_SERVER_HOST=zabbix-mysql
+      - MYSQL_DATABASE=zabbix
+      - MYSQL_USER=zabbixadmin
+      - MYSQL_PASSWORD=zabbixpassword
+    links:
+      - zabbix-mysql
+    networks:
+      - net
+  zabbix-web:
+    restart: always
+    container_name: owen-zabbix-web
+    image: zabbix/zabbix-web-nginx-mysql:latest
+    environment:
+      - DB_SERVER_HOST=zabbix-mysql
+      - ZBX_SERVER_HOST=zabbix-server
+      - MYSQL_DATABASE=zabbix
+      - MYSQL_USER=zabbixadmin
+      - MYSQL_PASSWORD=zabbixpassword
+      - PHP_TZ=Asia/Manila
+    networks:
+      - net      
+    links:
+      - zabbix-mysql
+      - zabbix-server
+  zabbix-agent:
+    restart: always
+    container_name: owen-zabbix-agent
+    image: zabbix/zabbix-agent:latest
+    ports:
+      - 10050:10050
+    environment:
+      - ZBX_HOSTNAME=zabbix-server
+      - ZBX_SERVER_HOST=zabbix-server
+    networks:
+      - net  
+networks:
+  net: 
