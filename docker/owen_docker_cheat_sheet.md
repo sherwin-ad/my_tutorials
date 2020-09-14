@@ -880,7 +880,7 @@ volumes:
 
 ```
 # Running docker-compose file
-$ docker-compose up -f docker-compose.yml
+$ docker-compose -f docker-compose.yml up
 
 # To check the running containers, run
 $ docker-compose ps

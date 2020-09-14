@@ -21,7 +21,105 @@
 * [Reset Root Password](#Reset-Root-Password)
 
 
+
+## Create MySQL Users Accounts
+
+To create a new MySQL user account, run the following command:
+
+
+```
+mysql> CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'user_password';
+```
+
+To grant access from another host, change the hostname part with the remote machine IP. For example, to grant access from a machine with IP `10.8.0.5` you would run:
+
+```
+CREATE USER 'newuser'@'10.8.0.5' IDENTIFIED BY 'user_password';
+```
+
+To create a user that can connect from any host, use the `'%'` wildcard as a host part:
+
+```
+CREATE USER 'newuser'@'%' IDENTIFIED BY 'user_password';
+```
+
+To delete user  use the `DROP USER` statement:
+
+```
+DROP USER 'user'@'localhost'
+```
+
+
+
+## Grant Privileges to a MySQL User Account 
+
+The most commonly used privileges are:
+
+- `ALL PRIVILEGES` – Grants all privileges to a user account.
+- `CREATE` – The user account is allowed to [create databases](https://linuxize.com/post/how-to-create-a-mysql-database/) and tables.
+- `DROP` - The user account is allowed to [drop databases](https://linuxize.com/post/how-to-delete-a-mysql-database/) and tables.
+- `DELETE` - The user account is allowed to delete rows from a specific table.
+- `INSERT` - The user account is allowed to insert rows into a specific table.
+- `SELECT` – The user account is allowed to read a database.
+- `UPDATE` - The user account is allowed to update table rows.
+
+To grant specific privileges to a user account, use the following syntax:
+
+```
+GRANT permission1, permission2 ON database_name.table_name TO 'database_user'@'localhost';
+```
+
+Here are some examples:
+
+- Grand all privileges to a user account over a specific database:
+
+  ```
+  GRANT ALL PRIVILEGES ON database_name.* TO 'database_user'@'localhost';
+  ```
+  
+- WITH GRANT OPTION
+
+  ```
+  GRANT ALL PRIVILEGES ON database_name.* TO 'database_user'@'localhost' WITH GRANT OPTION;
+  ```
+
+- Grand all privileges to a user account on all databases:
+
+  ```
+  GRANT ALL PRIVILEGES ON *.* TO 'database_user'@'localhost';
+  ```
+
+
+- Grand all privileges to a user account over a specific table from a database:
+
+```
+  GRANT ALL PRIVILEGES ON database_name.table_name TO 'database_user'@'localhost';
+```
+
+- Grant multiple privileges to a user account over a specific database:
+
+ ```
+  GRANT SELECT, INSERT, DELETE ON database_name.* TO database_user@'localhost';
+ ```
+
+
+
+To find the privilege(s) granted to a specific MySQL user account, use the `SHOW GRANTS` statement:
+
+  ```
+SHOW GRANTS FOR 'database_user'@'localhost';
+  ```
+
+To revoke all privileges from a user account over a specific database, run the following command:
+
+  ```
+REVOKE ALL PRIVILEGES ON database_name.* FROM 'database_user'@'localhost';
+  ```
+
+
+
 ## Create Open Delete Database
+
 ```
 CREATE DATABASE dbNameYouWant
 CREATE DATABASE dbNameYouWant CHARACTER SET utf8
@@ -250,3 +348,11 @@ $ /etc/init.d/mysql start
 ```
 
 
+
+```
+
+```
+
+```
+
+```
