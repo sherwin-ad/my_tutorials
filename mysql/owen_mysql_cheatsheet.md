@@ -1,24 +1,8 @@
+[TOC]
+
+
 
 # MySql Cheat Sheet
-
-## Table of Contents
-* [Create Open Delete Database](#Create-Open-Delete-Database)
-* [Backup Database to SQL File](#Backup-Database-to-SQL-File)
-* [Restore from backup SQL File](#Restore-from-backup-SQL-File)
-* [Repair Tables After Unclean Shutdown](#Repair-Tables-After-Unclean-Shutdown)
-* [Browsing](#Browsing)
-* [Select Records](#Select-Records)
-* [Select/Join](#Select/Join)
-* [Conditions](#Conditions)
-* [Insert Records](#Insert-Records)
-* [Delete Records](#Delete-Records)
-* [Update Records](#Update-Records)
-* [Create Delete Modify Table](#Create-Delete-Modify-Table)
-* [Change field order](#Change-field-order)
-* [Keys](#Keys)
-* [Users and Privileges](#Users-and-Privileges)
-* [Main Data Types](#Main-Data-Types)
-* [Reset Root Password](#Reset-Root-Password)
 
 
 
