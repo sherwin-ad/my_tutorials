@@ -2831,6 +2831,15 @@ Status code distribution:
 
 ### Lab: Deploying application with Helm
 
+```
+# Authenticate kubectl with the cluster
+$ gcloud container clusters get-credentials my-cluster-1 --zone=asia-east2-a               
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for my-cluster-1.
+```
+
+
+
 **tiller-serviceaccount.yaml**
 
 ```

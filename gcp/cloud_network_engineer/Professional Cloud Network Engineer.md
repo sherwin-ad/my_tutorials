@@ -215,7 +215,7 @@ gcloud iam roles list --filter="serviceAccount"
 
 |                  | Premium Tier                                                 | Standard Tier                                                |
 | ---------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Ingress to GCP   | Traffic from your users enters Google's network at a location nearestto them. | Traffic from your users enters Goggle's network through peering, ISP, or transit networks in the region where you have deployed your GCP resources. |
+| Ingress to GCP   | Traffic from your users enters Google's network at a location nearest to them. | Traffic from your users enters Goggle's network through peering, ISP, or transit networks in the region where you have deployed your GCP resources. |
 | Engress from GCP | Egress traffic is sent through Google's network backbone, leaving at a global edge POP closest to your users. | Egress traffic is sent to the internet via peering or transit network, local to the GCP region from which it originates. |
 
 
@@ -851,7 +851,7 @@ spec:
 | TCP Proxy        | TCP without SLL ofload | No                 | Global             | External             | 25, 43, 110, 143,195, 443, 465, 587, 700, 993, 995, 1883, and 5223 | Proxy                 |
 | Network TCP/UDP  | TCP or UDP             | Yes                | Regional           | External             | Any                                                          | Pass-through          |
 | Internal TCP/UDP | TCP or UDP             | Yes                | Regional           | Internal             | Any                                                          | Pass-through          |
-| Internal HTTP(S) | HTTP or HTTPS          | No                 | Regiopnal          | Internal             | HTTP on 80 or 8080; HTTPS on 443                             | Pass-through          |
+| Internal HTTP(S) | HTTP or HTTPS          | No                 | Regional           | Internal             | HTTP on 80 or 8080; HTTPS on 443                             | Pass-through          |
 
 
 
