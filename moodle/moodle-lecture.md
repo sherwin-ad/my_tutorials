@@ -11,15 +11,14 @@
 ### Setup web server
 
 ```
-# Install Apache/MySQL client/PHP
-$ sudo apt install apache2 mysql-client php libapache2-mod-php
+# Install Apache/MySQL server and client/PHP
+$ sudo apt install apache2 mysql-client mysql-server php libapache2-mod-php
 
 
 # Install Additional Software
 $ sudo apt install graphviz aspell ghostscript clamav php7.4-pspell php7.4-curl php7.4-gd php7.4-intl php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-ldap php7.4-zip php7.4-soap php7.4-mbstring
 
-# Restart apache
-$ sudo service apache2 restart
+# Restart apachebasesudo service apache2 restart
 
 $ Install Git
 $ sudo apt install git
@@ -58,7 +57,8 @@ $ sudo chmod -R 0755 /var/www/html/moodle
 # Connect to mysql server
 $ mysql -h cdm-lms-db.cpuur4cknf6y.ap-southeast-1.rds.amazonaws.com -u admin -p
 
-# Create DBFLUSH PRIVILEGES;
+# Create DB
+FLUSH PRIVILEGES;
 mysql> CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 

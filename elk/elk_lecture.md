@@ -491,7 +491,8 @@ GET bank/_analyze
 }
 ```
 
-**Uset the letter tokenizer**
+**Use the letter tokenizer**
+
 ```
 GET bank/_analyze
 {
