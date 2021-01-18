@@ -120,6 +120,10 @@ mysql> SHOW GRANTS FOR 'moodle_dbuser'@'172.16.31.%';
 $ cd /var/moodledata
 $ tar -cpzvf dar-lms-moodledata.tar.gz *
 
+# Without directory structure
+$ sudo tar -cpzvf dar-beesuite-lms-htdocs-01072021.tar.gz -C /var/www/html/beesuite .
+
+
 
 # Extract tar file
 $ tar -xpzvf dar-lms-moodledata.tar.gz 
