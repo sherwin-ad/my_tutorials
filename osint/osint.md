@@ -856,26 +856,802 @@ Light Value                     : 14.0
 
 
 
-**breach-parse**
+#### breach-parse
 https://github.com/hmaverickadams/breach-parse
 
-Twint
+
+
+### Username and Account OSINT
+
+#### whatsmyname
+
+```
+# whatsmyname -u thecybermentor
+[sudo] password for osint: 
+263 sites found in file.
+[-] User not found at https://www.7cups.com/@thecybermentor
+Error when looking up https://learn.acloud.guru/profile/thecybermentor ('account_missing_code')
+[-] User not found at https://asciinema.org/~thecybermentor
+[-] User not found at https://audiojungle.net/user/thecybermentor
+[-] User not found at https://www.biggerpockets.com/users/thecybermentor
+[-] User not found at https://www.bookcrossing.com/mybookshelf/thecybermentor
+[-] User not found at https://www.buymeacoffee.com/thecybermentor
+[-] User not found at https://www.championat.com/user/thecybermentor/
+Error when looking up https://community.cloudflare.com/u/thecybermentor (Critical error.)
+[-] User not found at https://www.cnet.com/profiles/thecybermentor/
+[-] User not found at https://www.coroflot.com/thecybermentor
+[-] User not found at https://www.codewars.com/users/thecybermentor
+[-] User not found at https://coderwall.com/thecybermentor/
+[-] User not found at https://thecybermentor.crevado.com/
+[-] User not found at https://dating.ru/thecybermentor/
+[-] User not found at https://www.designspiration.com/thecybermentor/
+[-] User not found at https://dev.to/thecybermentor
+[-] User not found at https://ello.co/thecybermentor
+[-] User not found at https://www.eyeem.com/u/thecybermentor
+[-] User not found at https://fancy.com/thecybermentor
+
+```
+
+#### sherlock
+
+```
+ # sherlock thecybermentor
+
+[*] Checking username thecybermentor on:
+[-] ResearchGate: Illegal Username Format For This Site!
+[-] 2Dimensions: Not Found!
+[+] 500px: https://500px.com/thecybermentor
+[-] 7Cups: Not Found!
+[-] 9GAG: Not Found!
+[-] About.me: Not Found!
+[-] Academia.edu: Not Found!
+[-] Alík.cz: Not Found!
+[-] Anobii: Not Found!
+[-] Aptoide: Not Found!
+[-] Archive.org: Not Found!
+[-] AskFM: Not Found!
+[-] Error Connecting: Avízo.cz
+[-] Avízo.cz: Error!
+[-] BLIP.fm: Not Found!
+[+] Badoo: https://badoo.com/profile/thecybermentor
+[-] Bandcamp: Not Found!
+[-] Basecamp: Not Found!
+[-] Bazar.cz: Not Found!
+[-] Behance: Not Found!
+[-] BitBucket: Not Found!
+[-] BitCoinForum: Not Found!
+[-] Blogger: Not Found!
+[-] Bookcrossing: Not Found!
+[-] Brew: Not Found!
+[-] BuyMeACoffee: Not Found!
+[-] BuzzFeed: Not Found!
+[-] CNET: Not Found!
+[-] Canva: Not Found!
+[+] CapFriendly: https://www.capfriendly.com/users/thecybermentor
+[-] Carbonmade: Not Found!
+[+] CashMe: https://cash.me/thecybermentor
+[-] Cent: Not Found!
+[-] Chatujme.cz: Not Found!
+[-] Cloob: Not Found!
+[-] Codecademy: Not Found!
+[+] Codechef: https://www.codechef.com/users/thecybermentor
+[-] Codementor: Not Found!
+[-] Coderwall: Not Found!
+
+```
+
+ ```
+# whatsmyname -u thecybermentor > username.txt
+
+# cat username.txt | grep "User found"
+ ```
+
+### Phone number OSINT
+
+#### phoneinfoga
+
+```
+# phoneinfoga scan -n +639178509362                                                
+[i] Scanning phone number +639178509362
+[i] Running local scan...                                                             
+[+] Local format: 0917 850 9362                                                       
+[+] E164 format: +639178509362                                                        
+[+] International format: 639178509362                                                
+[+] Country found: +63 (PH)                                                           
+[+] Carrier: 
+[i] Running Numverify.com scan...                                                     
+[+] Valid: true                                                                       
+[+] Number: 639178509362
+[+] Local format: 09178509362                                                         
+[+] International format: +639178509362                                               
+[+] Country code: PH (+63)                                                            
+[+] Country: Philippines (Republic of the)
+[+] Location:                                                                         
+[+] Carrier:                                                                          
+[+] Line type: mobile                                                                 
+[i] Generating Google search dork requests...                                         
+[i] Social media footprints                                                           
+[+] Link: https://www.google.com/search?q=site%3Afacebook.com+intext%3A%22639178509362%22+OR+intext%3A%22%2B639178509362%22+OR+intext%3A%2209178509362%22                   
+[+] Link: https://www.google.com/search?q=site%3Atwitter.com+intext%3A%22639178509362%22+OR+intext%3A%22%2B639178509362%22+OR+intext%3A%2209178509362%22                    
+[+] Link: https://www.google.com/search?q=site%3Alinkedin.com+intext%3A%22639178509362%22+OR+intext%3A%22%2B639178509362%22+OR+intext%3A%2209178509362%22                   
+[+] Link: https://www.google.com/search?q=site%3Ainstagram.com+intext%3A%22639178509362%22+OR+intext%3A%22%2B639178509362%22+OR+intext%3A%2209178509362%22                  
+[i] Individual footprints
+[+] Link: https://www.google.com/search?q=site%3Anuminfo.net+intext%3A%22639178509362%22+OR+intext%3A%22%2B639178509362%22+OR+intext%3A%2209178509362%22                    
+[+] Link: https://www.google.com/search?q=site%3Async.me+intext%3A%22639178509362%22+OR+intext%3A%22%2B639178509362%22+OR+intext%3A%2209178509362%22                        
+[+] Link: https://www.google.com/search?q=site%3Awhocallsyou.de+intext%3A%2209178509362%22                                                                                  
+```
+
+Start web server in port 8080
+
+```
+# phoneinfoga serve -p 8080
+```
+
+![image-20210119102430548](images/image-20210119102430548.png)
+
+### Social Media OSINT
+
+#### Twint
 https://github.com/twintproject/twint
 
-Subfinder
+```
+Scrape all the Tweets of a user (doesn't include retweets but includes replies).
+# twint -u username 
+
+Scrape all Tweets from the user's timeline containing pineapple.
+# twint -u username -s pineapple 
+
+Collect every Tweet containing pineapple from everyone's Tweets.
+# twint -s pineapple 
+```
+
+
+
+### Website OSINT
+
+#### Wappalyzer
+
+https://www.wappalyzer.com/download/
+
+![image-20210119113849370](images/image-20210119113849370.png)
+
+ 
+
+#### whois
+
+```
+# whois tcm-sec.com
+   Domain Name: TCM-SEC.COM
+   Registry Domain ID: 2388533062_DOMAIN_COM-VRSN
+   Registrar WHOIS Server: whois.enom.com
+   Registrar URL: http://www.enom.com
+   Updated Date: 2020-09-27T04:30:58Z
+   Creation Date: 2019-05-07T19:12:02Z
+   Registry Expiry Date: 2022-05-07T19:12:02Z
+   Registrar: eNom, LLC
+   Registrar IANA ID: 48
+   Registrar Abuse Contact Email:
+   Registrar Abuse Contact Phone:
+   Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+   Name Server: NS1.A2HOSTING.COM
+   Name Server: NS2.A2HOSTING.COM
+   Name Server: NS3.A2HOSTING.COM
+   Name Server: NS4.A2HOSTING.COM
+   DNSSEC: unsigned
+   URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/
+>>> Last update of whois database: 2021-01-19T03:40:31Z <<< 
+```
+
+
+
+#### Install other tools
+
+```
+Run to edit bashrc file
+# nano ~/.bashrc
+
+Add the following at the of the bashrc file:
+export GOPATH=$HOME/go 
+export GOROOT=/usr/lib/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+
+Run to enable what we change in bashrc
+# source ~/.bashrc
+
+```
+
+
+
+##### Subfinder
 https://github.com/projectdiscovery/subfinder
 
-Assetfinder
-https://github.com/tomnomnom/assetfinder
+**Install subfinder**
 
-httprobe
+```
+GO111MODULE=on go get -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder
+```
+
+**Run subhfinder**
+
+```
+# subfinder -d tcm-sec.com
+
+        _     __ _         _
+____  _| |__ / _(_)_ _  __| |___ _ _
+(_-< || | '_ \  _| | ' \/ _  / -_) '_|
+/__/\_,_|_.__/_| |_|_||_\__,_\___|_| v2.4.5
+
+		projectdiscovery.io
+
+[WRN] Use with caution. You are responsible for your actions
+[WRN] Developers assume no liability and are not responsible for any misuse or damage.
+[WRN] By using subfinder, you also agree to the terms of the APIs used.
+
+[INF] Configuration file saved to /root/.config/subfinder/config.yaml
+[INF] Enumerating subdomains for tcm-sec.com
+cpcontacts.tcm-sec.com
+www.tcm-sec.com
+cpanel.tcm-sec.com
+mail.tcm-sec.com
+academy.tcm-sec.com
+cpcalendars.tcm-sec.com
+webdisk.tcm-sec.com
+webmail.tcm-sec.com
+autodiscover.tcm-sec.com
+www.academy.tcm-sec.com
+
+```
+
+
+
+##### Assetfinder
+https://github.com/tomnomnom/assetfinder 
+
+**Install assetfinder**
+
+```
+go get -u github.com/tomnomnom/assetfinder
+```
+
+**Run assetfinder**
+
+```
+# assetfinder tcm-sec.com | grep tcm-sec.com | sort -u
+academy.tcm-sec.com
+autodiscover.tcm-sec.com
+cpanel.tcm-sec.com
+cpcalendars.tcm-sec.com
+cpcontacts.tcm-sec.com
+mail.tcm-sec.com
+tcm-sec.com
+webdisk.tcm-sec.com
+webmail.tcm-sec.com
+www.academy.tcm-sec.com
+www.tcm-sec.com
+```
+
+
+
+##### httprobe
 https://github.com/tomnomnom/httprobe
 
-Amass
+**Install httprobe**
+
+```
+# go get -u github.com/tomnomnom/httprobe
+```
+
+Run httpprobe
+
+```
+# cat tcm-sec.txt | httprobe -s -p https:443
+https://webmail.tcm-sec.com:443
+https://cpcalendars.tcm-sec.com:443
+https://webdisk.tcm-sec.com:443
+https://cpcontacts.tcm-sec.com:443
+https://tcm-sec.com:443
+https://cpanel.tcm-sec.com:443
+https://academy.tcm-sec.com:443
+https://www.tcm-sec.com:443
+http://webdisk.tcm-sec.com:443
+http://cpanel.tcm-sec.com:443
+http://webmail.tcm-sec.com:443
+http://cpcontacts.tcm-sec.com:443
+http://tcm-sec.com:443
+http://academy.tcm-sec.com:443
+http://cpcalendars.tcm-sec.com:443
+http://www.tcm-sec.com:443
+
+```
+
+
+
+##### Amass
 https://github.com/OWASP/Amass
 
-GoWitness
+**Install amass**
+
+```
+# export GO111MODULE=on
+# go get -v github.com/OWASP/Amass/v3/...
+```
+
+**Run amass**
+
+```
+# amass enum -d tcm-sec.com
+cpanel.tcm-sec.com
+webdisk.tcm-sec.com
+cpcalendars.tcm-sec.com
+webmail.tcm-sec.com
+cpcontacts.tcm-sec.com
+mail.tcm-sec.com
+academy.tcm-sec.com
+www.tcm-sec.com
+tcm-sec.com
+
+OWASP Amass v3.11.1                               https://github.com/OWASP/Amass
+--------------------------------------------------------------------------------
+9 names discovered - cert: 8, archive: 1
+--------------------------------------------------------------------------------
+ASN: 55293 - A2HOSTING - A2 Hosting, Inc.
+	70.32.16.0/20     	7    Subdomain Name(s)
+ASN: 15169 - GOOGLE - Google LLC
+	74.125.195.0/24   	1    Subdomain Name(s)
+ASN: 13335 - CLOUDFLARENET - Cloudflare, Inc.
+	2606:4700::/47    	2    Subdomain Name(s)
+	104.16.0.0/14     	2    Subdomain Name(s)
+
+The enumeration has finished
+
+```
+
+
+
+##### GoWitness
 https://github.com/sensepost/gowitness/wiki/Installation
 
-Hunchly
-https://hunch.ly
+**Install gowitness**
+
+```
+# go get -u github.com/sensepost/gowitness
+```
+
+**Run gowitness**
+
+Get the screenshot of the subdomain website
+
+```
+# gowitness file -f ./alive.txt -P ./pics --no-http
+19 Jan 2021 16:08:09 INF preflight result statuscode=200 title="TCM Security Academy | TCM Security, Inc." url=https://academy.tcm-sec.com
+19 Jan 2021 16:08:09 INF preflight result statuscode=200 title="TCM Security Academy | TCM Security, Inc." url=https://academy.tcm-sec.com
+19 Jan 2021 16:08:10 INF preflight result statuscode=200 title="TCM Security – Penetration Testing & Consulting" url=https://www.tcm-sec.com
+19 Jan 2021 16:08:11 INF preflight result statuscode=200 title="TCM Security – Penetration Testing & Consulting" url=https://www.tcm-sec.com
+19 Jan 2021 16:08:40 WRN preflight result statuscode=401 title= url=https://cpcalendars.tcm-sec.com
+19 Jan 2021 16:08:43 INF preflight result statuscode=200 title="TCM Security – Penetration Testing & Consulting" url=https://tcm-sec.com
+19 Jan 2021 16:08:43 INF preflight result statuscode=200 title="Webmail Login" url=https://webmail.tcm-sec.com
+19 Jan 2021 16:08:44 WRN preflight result statuscode=401 title= url=https://cpcontacts.tcm-sec.com
+19 Jan 2021 16:08:44 INF preflight result statuscode=200 title="cPanel Login" url=https://cpanel.tcm-sec.com
+19 Jan 2021 16:08:47 WRN preflight result statuscode=401 title= url=https://webdisk.tcm-sec.com
+19 Jan 2021 16:08:52 INF processing complete
+```
+
+****
+
+
+
+ 
+
+## Exploring OSINT Frameworks
+
+### Recon-ng
+
+**Start recon-ng**
+
+```
+# recon-ng 
+[*] Version check disabled.
+
+    _/_/_/    _/_/_/_/    _/_/_/    _/_/_/    _/      _/            _/      _/    _/_/_/
+   _/    _/  _/        _/        _/      _/  _/_/    _/            _/_/    _/  _/       
+  _/_/_/    _/_/_/    _/        _/      _/  _/  _/  _/  _/_/_/_/  _/  _/  _/  _/  _/_/_/
+ _/    _/  _/        _/        _/      _/  _/    _/_/            _/    _/_/  _/      _/ 
+_/    _/  _/_/_/_/    _/_/_/    _/_/_/    _/      _/            _/      _/    _/_/_/    
+
+
+                                          /\
+                                         / \\ /\
+    Sponsored by...               /\  /\/  \\V  \/\
+                                 / \\/ // \\\\\ \\ \/\
+                                // // BLACK HILLS \/ \\
+                               www.blackhillsinfosec.com
+
+                  ____   ____   ____   ____ _____ _  ____   ____  ____
+                 |____] | ___/ |____| |       |   | |____  |____ |
+                 |      |   \_ |    | |____   |   |  ____| |____ |____
+                                   www.practisec.com
+
+                      [recon-ng v5.1.1, Tim Tomes (@lanmaster53)]                       
+
+[*] No modules enabled/installed.
+
+[recon-ng][default] >
+
+```
+
+**Search marketplace**
+
+```
+[recon-ng][default] > marketplace search
+
+  +---------------------------------------------------------------------------------------------------+
+  |                        Path                        | Version |     Status    |  Updated   | D | K |
+  +---------------------------------------------------------------------------------------------------+
+  | discovery/info_disclosure/cache_snoop              | 1.1     | not installed | 2020-10-13 |   |   |
+  | discovery/info_disclosure/interesting_files        | 1.1     | not installed | 2020-01-13 |   |   |
+  | exploitation/injection/command_injector            | 1.0     | not installed | 2019-06-24 |   |   |
+  | exploitation/injection/xpath_bruter                | 1.2     | not installed | 2019-10-08 |   |   |
+  | import/csv_file                                    | 1.1     | not installed | 2019-08-09 |   |   |
+  | import/list                                        | 1.1     | not installed | 2019-06-24 |   |   |
+  | import/masscan                                     | 1.0     | not installed | 2020-04-07 |   |   |
+  | import/nmap                                        | 1.1     | not installed | 2020-10-06 |   |   |
+  | recon/companies-contacts/bing_linkedin_cache       | 1.0     | not installed | 2019-06-24 |   | * |
+  | recon/companies-contacts/censys_email_address      | 1.0     | not installed | 2019-08-22 |   | * |
+  | recon/companies-contacts/pen                       | 1.1     | not installed | 2019-10-15 |   |   |
+  | recon/companies-domains/censys_subdomains          | 1.0     | not installed | 2019-08-22 |   | * |
+  | recon/companies-domains/pen                        | 1.1     | not installed | 2019-10-15 |   |   |
+  | recon/companies-domains/viewdns_reverse_whois      | 1.0     | not installed | 2019-08-08 |   |   |
+  | recon/companies-domains/whoxy_dns                  | 1.1     | not installed | 2020-06-17 |   | * |
+  | recon/companies-hosts/censys_org                   | 1.0     | not installed | 2019-08-22 |   | * |
+  | recon/companies-hosts/censys_tls_subjects          | 1.0     | not installed | 2019-08-22 |   | * |
+  | recon/companies-multi/github_miner                 | 1.1     | not installed | 2020-05-15 |   | * |
+  | recon/companies-multi/shodan_org                   | 1.1     | not installed | 2020-07-01 | * | * |
+  | recon/companies-multi/whois_miner                  | 1.1     | not installed | 2019-10-15 |   |   |
+  | recon/contacts-contacts/abc                        | 1.0     | not installed | 2019-10-11 | * |   |
+  | recon/contacts-contacts/mailtester                 | 1.0     | not installed | 2019-06-24 |   |   |
+  | recon/contacts-contacts/mangle                     | 1.0     | not installed | 2019-06-24 |   |   |
+  | recon/contacts-contacts/unmangle                   | 1.1     | not installed | 2019-10-27 |   |   |
+  | recon/contacts-credentials/hibp_breach             | 1.2     | not installed | 2019-09-10 |   | * |
+  | recon/contacts-credentials/hibp_paste              | 1.1     | not installed | 2019-09-10 |   | * |
+  | recon/contacts-credentials/scylla                  | 1.3     | not installed | 2020-09-14 |   |   |
+  | recon/contacts-domains/migrate_contacts            | 1.1     | not installed | 2020-05-17 |   |   |
+  | recon/contacts-profiles/fullcontact                | 1.1     | not installed | 2019-07-24 |   | * |
+  | recon/credentials-credentials/adobe                | 1.0     | not installed | 2019-06-24 |   |   |
+  | recon/credentials-credentials/bozocrack            | 1.0     | not installed | 2019-06-24 |   |   |
+  | recon/credentials-credentials/hashes_org           | 1.0     | not installed | 2019-06-24 |   | * |
+  | recon/domains-companies/censys_companies           | 1.0     | not installed | 2019-08-22 |   | * |
+
+```
+
+  
+
+**Install module hackertarget**
+
+```
+[recon-ng][default] > marketplace install hackertarget
+[*] Module installed: recon/domains-hosts/hackertarget
+[*] Reloading modules...
+```
+
+
+
+**Load module**
+
+```
+[recon-ng][default] > modules load hackertarget
+[recon-ng][default][hackertarget] >
+```
+
+  
+
+**Help**
+
+```
+[recon-ng][default][hackertarget] > info
+
+      Name: HackerTarget Lookup
+    Author: Michael Henriksen (@michenriksen)
+   Version: 1.1
+
+Description:
+  Uses the HackerTarget.com API to find host names. Updates the 'hosts' table with the results.
+
+Options:
+  Name    Current Value  Required  Description
+  ------  -------------  --------  -----------
+  SOURCE  default        yes       source of input (see 'info' for details)
+
+Source Options:
+  default        SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL
+  <string>       string representing a single input
+  <path>         path to a file containing a list of inputs
+  query <sql>    database query returning one column of inputs
+```
+
+
+
+**Set options** and run
+
+```
+> options set SOURCE tcm-sec.com
+SOURCE => tcm-sec.com
+[recon-ng][default][hackertarget] > run
+
+-----------
+TCM-SEC.COM
+-----------
+[*] Country: None
+[*] Host: webdisk.tcm-sec.com
+[*] Ip_Address: 70.32.23.61
+[*] Latitude: None
+[*] Longitude: None
+[*] Notes: None
+[*] Region: None
+[*] --------------------------------------------------
+[*] Country: None
+[*] Host: cpanel.tcm-sec.com
+[*] Ip_Address: 70.32.23.61
+[*] Latitude: None
+[*] Longitude: None
+[*] Notes: None
+[*] Region: None
+[*] --------------------------------------------------
+[*] Country: None
+[*] Host: webmail.tcm-sec.com
+[*] Ip_Address: 70.32.23.61
+[*] Latitude: None
+[*] Longitude: None
+[*] Notes: None
+[*] Region: None
+[*] --------------------------------------------------
+[*] Country: None
+[*] Host: cpcalendars.tcm-sec.com
+[*] Ip_Address: 70.32.23.61
+[*] Latitude: None
+[*] Longitude: None
+[*] Notes: None
+[*] Region: None
+[*] --------------------------------------------------
+[*] Country: None
+[*] Host: cpcontacts.tcm-sec.com
+[*] Ip_Address: 70.32.23.61
+[*] Latitude: None
+[*] Longitude: None
+[*] Notes: None
+[*] Region: None
+[*] --------------------------------------------------
+
+-------
+SUMMARY
+-------
+[*] 5 total (5 new) hosts found.
+```
+
+**Show hosts**
+
+```
+[recon-ng][default][hackertarget] > show hosts
+
+  +-------------------------------------------------------------------------------------------------------------------+
+  | rowid |           host          |   ip_address   | region | country | latitude | longitude | notes |    module    |
+  +-------------------------------------------------------------------------------------------------------------------+
+  | 1     | webdisk.tcm-sec.com     | 70.32.23.61    |        |         |          |           |       | hackertarget |
+  | 2     | cpanel.tcm-sec.com      | 70.32.23.61    |        |         |          |           |       | hackertarget |
+  | 3     | webmail.tcm-sec.com     | 70.32.23.61    |        |         |          |           |       | hackertarget |
+  | 4     | cpcalendars.tcm-sec.com | 70.32.23.61    |        |         |          |           |       | hackertarget |
+  | 5     | cpcontacts.tcm-sec.com  | 70.32.23.61    |        |         |          |           |       | hackertarget |
+  | 6     | tesla.com               | 199.66.11.62   |        |         |          |           |       | hackertarget |
+  | 7     | o7.ptr6980.tesla.com    | 149.72.144.42  |        |         |          |           |       | hackertarget |
+  | 8     | vpn1.tesla.com          | 8.45.124.215   |        |         |          |           |       | hackertarget |
+  | 9     | model3.tesla.com        | 205.234.27.221 |        |         |          |           |       | hackertarget |
+  | 10    | o3.ptr1444.tesla.com    | 149.72.152.236 |        |         |          |           |       | hackertarget |
+  | 11    | o2.ptr556.tesla.com     | 149.72.134.64  |        |         |          |           |       | hackertarget |
+  | 12    | o5.ptr8466.tesla.com    | 149.72.172.170 |        |         |          |           |       | hackertarget |
+  | 13    | o6.ptr9437.tesla.com    | 168.245.123.10 |        |         |          |           |       | hackertarget |
+  | 14    | o4.ptr1867.tesla.com    | 149.72.163.58  |        |         |          |           |       | hackertarget |
+  | 15    | mobile.tesla.com        | 209.133.79.82  |        |         |          |           |       | hackertarget |
+  | 16    | marketing.tesla.com     | 13.111.47.196  |        |         |          |           |       | hackertarget |
+  | 17    | referral.tesla.com      | 72.10.32.90    |        |         |          |           |       | hackertarget |
+  | 18    | mta2.email.tesla.com    | 13.111.4.231   |        |         |          |           |       | hackertarget |
+  | 19    | mta.email.tesla.com     | 13.111.14.190  |        |         |          |           |       | hackertarget |
+  | 20    | xmail.tesla.com         | 204.74.99.100  |        |         |          |           |       | hackertarget |
+  | 21    | comparison.tesla.com    | 64.125.183.133 |        |         |          |           |       | hackertarget |
+  | 22    | na-sso.tesla.com        | 199.66.9.46    |        |         |          |           |       | hackertarget |
+  | 23    | emails.tesla.com        | 13.111.18.27   |        |         |          |           |       | hackertarget |
+  | 24    | mta3.emails.tesla.com   | 13.111.88.2    |        |         |          |           |       | hackertarget |
+  | 25    | mta4.emails.tesla.com   | 13.111.88.52   |        |         |          |           |       | hackertarget |
+  | 26    | mta5.emails.tesla.com   | 13.111.88.53   |        |         |          |           |       | hackertarget |
+  | 27    | mta.emails.tesla.com    | 13.111.62.118  |        |         |          |           |       | hackertarget |
+  | 28    | click.emails.tesla.com  | 13.111.48.179  |        |         |          |           |       | hackertarget |
+  | 29    | view.emails.tesla.com   | 13.111.49.179  |        |         |          |           |       | hackertarget |
+  | 30    | events.tesla.com        | 13.111.47.195  |        |         |          |           |       | hackertarget |
+  | 31    | shop.eu.tesla.com       | 205.234.27.221 |        |         |          |           |       | hackertarget |
+  +-------------------------------------------------------------------------------------------------------------------+
+
+[*] 31 rows returned
+
+```
+
+**Install module profiler**
+
+```
+[recon-ng][default] > marketplace install profiler
+[*] Module installed: recon/profiles-profiles/profiler
+[*] Reloading modules...
+
+[recon-ng][default] > modules load profiler
+recon/domains-hosts/hackertarget  recon/profiles-profiles/profiler  
+
+[recon-ng][default][profiler] > info
+
+      Name: OSINT HUMINT Profile Collector
+    Author: Micah Hoffman (@WebBreacher)
+   Version: 1.0
+
+Description:
+  Takes each username from the profiles table and searches a variety of web sites for those users. The
+  list of valid sites comes from the parent project at https://github.com/WebBreacher/WhatsMyName
+
+Options:
+  Name    Current Value  Required  Description
+  ------  -------------  --------  -----------
+  SOURCE  default        yes       source of input (see 'info' for details)
+
+Source Options:
+  default        SELECT DISTINCT username FROM profiles WHERE username IS NOT NULL
+  <string>       string representing a single input
+  <path>         path to a file containing a list of inputs
+  query <sql>    database query returning one column of inputs
+
+Comments:
+  * Note: The global timeout option may need to be increased to support slower sites.
+  * Warning: Using this module behind a filtering proxy may cause false negatives as some of these
+  sites may be blocked.
+
+[recon-ng][default][profiler] > options set SOURCE thecybermentor
+SOURCE => thecybermentor
+
+[recon-ng][default][profiler] > run
+[*] Retrieving https://raw.githubusercontent.com/WebBreacher/WhatsMyName/master/web_accounts_list.json...
+
+  Looking Up Data For: Thecybermentor
+  -----------------------------------
+[*] Checking: 7cup
+[*] Checking: ACloudGuru
+[*] Checking: asciinema
+[*] Checking: Audiojungle
+[*] Checking: BiggerPockets
+[*] Checking: Bookcrossing
+[*] Checking: buymeacoffee
+[*] Checking: championat
+[*] Checking: Cloudflare
+[*] Checking: cnet
+[*] Checking: coroflot
+[*] Checking: Codewars
+[*] Checking: Coderwall
+[*] Checking: crevado
+[*] Checking: Dating.ru
+[*] Checking: Designspriation
+[*] Checking: dev.to
+[*] Checking: Ello.co
+[*] Checking: Eyeem
+[*] Checking: fancy.com
+[*] Checking: Gamepedia
+[*] Checking: Gab
+[*] Checking: gumroad
+[*] Checking: Hackernews
+[*] Checking: Hackernoon
+[*] Checking: Indiegogo
+[*] Checking: issuu
+[*] Checking: JSFiddle
+[*] Checking: Kickstarter
+[*] Checking: Ko-Fi
+[*] Checking: Linktree
+[*] Checking: linux.org.ru
+[*] Checking: lobste.rs
+[*] Checking: mastodon
+[*] Checking: MyAnimeList
+[*] Checking: Newgrounds
+[*] Checking: ok.ru
+....
+
+[recon-ng][default][profiler] > show profiles
+
+  +-------------------------------------------------------------------------------------------------------------------------------------------+
+  | rowid |    username    |           resource           |                         url                         | category | notes |  module  |
+  +-------------------------------------------------------------------------------------------------------------------------------------------+
+  | 1     | thecybermentor | GitHub                       | https://api.github.com/users/thecybermentor         | coding   |       | profiler |
+  | 2     | thecybermentor | Internet Archive User Search | https://archive.org/search.php?query=thecybermentor | misc     |       | profiler |
+  | 3     | thecybermentor | Keybase                      | https://keybase.io/thecybermentor                   | social   |       | profiler |
+  | 4     | thecybermentor | Patreon                      | https://www.patreon.com/thecybermentor              | finance  |       | profiler |
+  | 5     | thecybermentor | reddit                       | https://www.reddit.com/user/thecybermentor          | news     |       | profiler |
+  | 6     | thecybermentor | Telegram                     | https://t.me/thecybermentor                         | social   |       | profiler |
+  | 7     | thecybermentor | Twitch.tv                    | https://passport.twitch.tv/usernames/thecybermentor | gaming   |       | profiler |
+  | 8     | thecybermentor | Twitter                      | https://shadowban.eu/.api/thecybermentor            | social   |       | profiler |
+  +-------------------------------------------------------------------------------------------------------------------------------------------+
+
+[*] 8 rows returned
+
+```
+
+
+
+**sn0int**
+
+https://github.com/kpcyrd/sn0int
+
+
+
+**Spiderfoot**
+
+https://github.com/smicallef/spiderfoot
+
+
+
+### Maltego
+
+Run Maltego (CE) free
+
+![image-20210120164814915](images/image-20210120164814915.png)
+
+
+
+### Other Tools
+
+**The Only Web Capture Tool Designed For Online Investigations**
+
+**Hunchly**
+https://hunch.ly 
+
+
+
+## Automating Website OSINT
+
+
+
+```
+#!/bin/bash
+
+domain=$1
+RED="\033[1;31m"
+RESET="\033[0m"
+
+info_path=$domain/info
+subdomain_path=$domain/subdomains
+screenshot_path=$domain/screenshots
+
+if [ ! -d "$domain" ];then
+    mkdir $domain
+fi
+
+if [ ! -d "$info_path" ];then
+    mkdir $info_path
+fi
+
+if [ ! -d "$subdomain_path" ];then
+    mkdir $subdomain_path
+fi
+
+if [ ! -d "$screenshot_path" ];then
+    mkdir $screenshot_path
+fi
+
+echo -e "${RED} [+] Checkin' who it is...${RESET}"
+whois $1 > $info_path/whois.txt
+
+echo -e "${RED} [+] Launching subfinder...${RESET}"
+subfinder -d $domain > $subdomain_path/found.txt
+
+echo -e "${RED} [+] Running assetfinder...${RESET}"
+assetfinder $domain | grep $domain >> $subdomain_path/found.txt
+
+#echo -e "${RED} [+] Running Amass. This could take a while...${RESET}"
+#amass enum -d $domain >> $subdomain_path/found.txt
+
+echo -e "${RED} [+] Checking what's alive...${RESET}"
+cat $subdomain_path/found.txt | grep $domain | sort -u | httprobe -prefer-https | grep https | sed 's/https\?:\/\///' | tee -a $subdomain_path/alive.txt
+
+echo -e "${RED} [+] Taking dem screenshotz...${RESET}"
+gowitness file -f $subdomain_path/alive.txt -P $screenshot_path/ --no-http
+```
+
