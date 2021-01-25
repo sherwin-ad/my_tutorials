@@ -9,6 +9,36 @@
 
 
 
+## OSINT Flowcharts
+
+### Username
+
+![](images/username_osint_flowchart.jpg)
+
+
+
+### Realname
+
+![](images/realname_osint_flowchart.jpg)
+
+### Telephone
+
+![](images/telephone_osint_flowchart.jpg)
+
+### Location
+
+![](images/location_osint_flowchart.jpg)
+
+### Domain
+
+![](images/domain_osint_flowchart.jpg)
+
+### Email
+
+![](images/email_osint_flowchart.jpg)
+
+
+
 ## Intelligence Lifecycle
 
 ![](images/intelligence_lifecycle.png)
@@ -1655,3 +1685,34 @@ echo -e "${RED} [+] Taking dem screenshotz...${RESET}"
 gowitness file -f $subdomain_path/alive.txt -P $screenshot_path/ --no-http
 ```
 
+
+
+## Writing an OSINT Report
+
+
+
+
+
+
+
+## Additional Resources
+
+
+
+TraceLabs
+https://www.tracelabs.org/
+
+Innocent-Lives-Foundation
+https://www.innocentlivesfoundation.org/
+
+Alethe-Denis
+https://twitter.com/AletheDenis
+
+Joe-Gray
+https://twitter.com/C_3PJoe
+
+IntelTechniques
+https://inteltechniques.com/
+
+OSINT-Flowcharts
+https://inteltechniques.com/blog/2018/03/06/updated-osint-flowcharts/

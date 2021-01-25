@@ -1,36 +1,38 @@
-
+[TOC]
 
 
 
 # Kubernetes
 
-## Table of Contents
-* [Kubernetes Meaning](#kubernetes-meaning)
 
-* [Kubernetes Architecture](#Kubernetes-Architecture)
-
-* [Kubernetes Architecture](#Kubernetes-Architecture)
-
-* [Kubernetes Architecture](#Kubernetes-Architecture)
-
-* [Kubernetes Architecture](#Kubernetes-Architecture)
-
-* [Kubernetes Architecture](#Kubernetes-Architecture)
-
-* [Kubernetes Architecture](#Kubernetes-Architecture)
-
-  
 
 
 ## Kubernetes Meaning
 
 * Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications.
 
+
+
+## Kubernetes Features
+
+-  High Availability or no downtime
+- Scalability or high performance
+- Disaster recovery - backup and restore
+
+
+
+
+
 ## Kubernetes Architecture
 ![Kubernetes Architecture](images/kubernetes_diagram.svg)
 ![Kubernetes Architecture1](images/kubernetes_architecture.png)
 
+
+
+
+
 ## Node
+
 * The node serves as a worker machine in a K8s cluster
 * Node can be physical computer or a virtual machine
 
