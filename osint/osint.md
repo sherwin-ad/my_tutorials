@@ -439,18 +439,34 @@ https://haveibeenpwned.com/
 
 ## Username OSINT
 
-#### Hunting Usernames and Accounts
+#### Sherlock
 
-**NameChk**
+https://github.com/sherlock-project/sherlock
+
+```
+# python3 sherlock.py winchags
+
+Installing Module
+ModuleNotFoundError: No module named 'torrequest'
+# pip3 install torrequest
+```
+
+
+
+#### NameChk
 https://namechk.com/
 
-**WhatsMyName**
+#### WhatsMyName
 https://whatsmyname.app/
 
 ![ ](images/image-20210117182643358.png)
 
 **NameCheckup**
 https://namecheckup.com/
+
+
+
+
 
 
 
