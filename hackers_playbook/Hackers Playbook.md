@@ -353,6 +353,37 @@ Host script results:
 Nmap done: 1 IP address (1 host up) scanned in 2.02 seconds
 ```
 
+#### Metasploit
+
+```
+msf6 > use auxiliary/scanner/portscan/tcp
+msf6 auxiliary(scanner/portscan/tcp) > show options 
+
+Module options (auxiliary/scanner/portscan/tcp):
+
+   Name         Current Setting  Required  Description
+   ----         ---------------  --------  -----------
+   CONCURRENCY  10               yes       The number of concurrent ports to check per host
+   DELAY        0                yes       The delay between connections, per thread, in milliseconds
+   JITTER       0                yes       The delay jitter factor (maximum value by which to +/- DELAY) in milliseconds.
+   PORTS        1-10000          yes       Ports to scan (e.g. 22-25,80,110-900)
+   RHOSTS                        yes       The target host(s), range CIDR identifier, or hosts file with syntax 'file:<path>'
+   THREADS      1                yes       The number of concurrent threads (max one per host)
+   TIMEOUT      1000             yes       The socket connect timeout in milliseconds
+
+msf6 auxiliary(scanner/portscan/tcp) > set RHOSTS 192.168.101.113
+RHOSTS => 192.168.101.113
+msf6 auxiliary(scanner/portscan/tcp) > run
+
+[+] 192.168.101.113:      - 192.168.101.113:80 - TCP OPEN
+[+] 192.168.101.113:      - 192.168.101.113:135 - TCP OPEN
+[+] 192.168.101.113:      - 192.168.101.113:139 - TCP OPEN
+[+] 192.168.101.113:      - 192.168.101.113:445 - TCP OPEN
+[+] 192.168.101.113:      - 192.168.101.113:443 - TCP OPEN
+
+```
+
+
 
 
 #### Masscan
