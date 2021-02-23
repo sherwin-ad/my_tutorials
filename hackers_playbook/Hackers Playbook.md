@@ -8,6 +8,10 @@
 
 ## Passive Reconnaissance
 
+### Email Harvesting
+
+
+
 #### Recon-NG
 
 https://github.com/lanmaster53/recon-ng
@@ -56,11 +60,103 @@ kali@kali:~$ theHarvester -d megacorpone.com -b google
 
 
 
+#### Metasploit Email Collector
+
+```
+msf6 > use auxiliary/gather/search_email_collector
+
+msf6 auxiliary(gather/search_email_collector) > set DOMAIN bjmp.gov.ph
+DOMAIN => bjmp.gov.ph
+
+msf6 auxiliary(gather/search_email_collector) > run
+
+[*] Harvesting emails .....
+[*] Searching Google for email addresses from bjmp.gov.ph
+[*] Extracting emails from Google search results...
+[*] Searching Bing email addresses from bjmp.gov.ph
+[*] Extracting emails from Bing search results...
+[*] Searching Yahoo for email addresses from bjmp.gov.ph
+[*] Extracting emails from Yahoo search results...
+[*] Located 8 email addresses for bjmp.gov.ph
+[*] 	bjmpro12@bjmp.gov.ph
+[*] 	bjmpro4a@bjmp.gov.ph
+[*] 	bjmpro8@bjmp.gov.ph
+[*] 	bjmprocar@bjmp.gov.ph
+[*] 	chief@bjmp.gov.ph
+[*] 	chiefbjmp@bjmp.gov.ph
+[*] 	dictm@bjmp.gov.ph
+[*] 	director@bjmp.gov.ph
+[*] Auxiliary module execution completed
+
+```
+
+
+
 
 
 
 
 ## Active Reconnaissance
+
+### Host discovery 
+
+#### Metasploit Host discovery with ARP Sweep
+
+ARP Sweep allows us to enumerate live hosts in the local network using ARP requests, providing us with a simple and fast way to identify possible targets.
+
+```
+msf6 > use auxiliary/scanner/discovery/arp_sweep
+msf6 auxiliary(scanner/discovery/arp_sweep) > set RHOSTS 192.168.101.0/24
+RHOSTS => 192.168.101.0/24
+msf6 auxiliary(scanner/discovery/arp_sweep) > set THREADS 256
+THREADS => 256
+msf6 auxiliary(scanner/discovery/arp_sweep) > run
+[+] 192.168.101.2 appears to be up (UNKNOWN).
+[+] 192.168.101.2 appears to be up (UNKNOWN).
+[+] 192.168.101.103 appears to be up (UNKNOWN).
+[+] 192.168.101.107 appears to be up (Intel Corporate).
+[+] 192.168.101.108 appears to be up (UNKNOWN).
+[+] 192.168.101.109 appears to be up (UNKNOWN).
+[+] 192.168.101.110 appears to be up (UNKNOWN).
+[+] 192.168.101.111 appears to be up (UNKNOWN).
+[+] 192.168.101.112 appears to be up (UNKNOWN).
+[+] 192.168.101.113 appears to be up (VMware, Inc.).
+[+] 192.168.101.114 appears to be up (UNKNOWN).
+[+] 192.168.101.115 appears to be up (UNKNOWN).
+[+] 192.168.101.2 appears to be up (UNKNOWN).
+[+] 192.168.101.2 appears to be up (UNKNOWN).
+[*] Scanned 256 of 256 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+If enabled, the results will be stored in the Metasploit database. To display the hosts discovered, you can use the hosts command:
+
+```
+msf6 auxiliary(scanner/discovery/arp_sweep) > hosts 
+
+Hosts
+=====
+
+address          mac                name             os_name     os_flavor  os_sp  purpose  info  comments
+-------          ---                ----             -------     ---------  -----  -------  ----  --------
+161.49.61.11                                                                                      
+161.49.61.12                                                                                      
+192.168.100.107                     OWEN-PC          Windows 10                    client         
+192.168.101.2    bc:98:89:9d:3c:58                                                                
+192.168.101.103  28:cf:e9:7d:ff:17                                                                
+192.168.101.104                                      Unknown                       device         
+192.168.101.107  60:6c:66:af:04:e2                                                                
+192.168.101.108  28:6d:cd:4f:8a:c6                                                                
+192.168.101.109  28:6d:cd:4f:00:8d                                                                
+192.168.101.110  28:6d:cd:4f:88:e7                                                                
+192.168.101.111  84:7b:eb:0d:5b:64                                                                
+192.168.101.112  8e:57:89:77:47:f4                                                                
+192.168.101.113  00:0c:29:57:a0:26  DESKTOP-H5AKSBG  Windows 10  Pro               client         
+192.168.101.114  18:db:f2:39:6a:b3                                                                
+192.168.101.115  94:e9:79:fe:2a:2d                                                                
+222.127.142.211                                                                                   
+222.127.142.213                                      Unknown                       device 
+```
 
 ### DNS Enumeration
 
@@ -120,6 +216,38 @@ PORT   STATE SERVICE
 
 Nmap done: 1 IP address (1 host up) scanned in 5.60 seconds
 ```
+
+#### Metasploit DNS Enum
+
+```
+msf6 > use auxiliary/gather/enum_dns
+
+msf6 auxiliary(gather/enum_dns) > set DOMAIN bjmp.gov.ph
+DOMAIN => bjmp.gov.ph
+
+msf6 auxiliary(gather/enum_dns) > set THREADS 10
+THREADS => 10
+
+msf6 auxiliary(gather/enum_dns) > run
+
+[*] Querying DNS NS records for bjmp.gov.ph
+[+] bjmp.gov.ph NS: ns3.metroconnect.com.ph
+[+] bjmp.gov.ph NS: ns4.metroconnect.com.ph
+[*] Attempting DNS AXFR for bjmp.gov.ph from 161.49.61.11
+[*] Query bjmp.gov.ph DNS AXFR - no results were received
+[*] Attempting DNS AXFR for bjmp.gov.ph from 161.49.61.12
+[*] Query bjmp.gov.ph DNS AXFR - no results were received
+[*] Querying DNS CNAME records for bjmp.gov.ph
+[*] Querying DNS NS records for bjmp.gov.ph
+[*] Querying DNS MX records for bjmp.gov.ph
+[*] Querying DNS SOA records for bjmp.gov.ph
+[*] Querying DNS TXT records for bjmp.gov.ph
+[*] Querying DNS SRV records for bjmp.gov.ph
+[*] Auxiliary module execution completed
+
+```
+
+
 
 
 
@@ -355,6 +483,8 @@ Nmap done: 1 IP address (1 host up) scanned in 2.02 seconds
 
 #### Metasploit
 
+##### TCP Port Scanner
+
 ```
 msf6 > use auxiliary/scanner/portscan/tcp
 msf6 auxiliary(scanner/portscan/tcp) > show options 
@@ -383,6 +513,148 @@ msf6 auxiliary(scanner/portscan/tcp) > run
 
 ```
 
+##### TCP SYN Port Scanner
+
+The TCP SYN Port Scanner auxiliary module scans TCP services using a raw SYN scan, thus reducing the number of packets, as it never completes the three-way handshake
+
+```
+msf6 > use auxiliary/scanner/portscan/syn
+msf auxiliary(syn) > set INTERFACE eth0
+INTERFACE => eth0
+msf auxiliary(syn) > set PORTS 1-1000
+PORTS => 1-1000
+msf auxiliary(syn) > set THREADS 256
+THREADS => 256
+set RHOSTS 192.168.101.113
+RHOSTS => 192.168.101.113
+msf6 auxiliary(scanner/portscan/syn) > run
+[+]  TCP OPEN 192.168.101.113:80
+[+]  TCP OPEN 192.168.101.113:135
+[+]  TCP OPEN 192.168.101.113:139
+[+]  TCP OPEN 192.168.101.113:443
+[+]  TCP OPEN 192.168.101.113:445
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+##### Port scanning the Nmap way
+
+###### TCP connect
+
+The TCP connect [-sT] scan is the most basic and default scan type in Nmap. It follows the three-way handshake process to detect the open ports on the target machine. Let's perform this scan on one of our targets:
+
+```
+msf > nmap -sT 192.168.216.10
+[*] exec: nmap -sT 192.168.216.10
+
+Starting Nmap 7.60 ( https://nmap.org ) at 2017-10-19 08:53 EDT
+Nmap scan report for 192.168.216.10
+Host is up (0.49s latency).
+Not shown: 976 closed ports
+PORT STATE SERVICE
+22/tcp open ssh
+135/tcp open msrpc
+139/tcp open netbios-ssn
+....
+
+49158/tcp open unknown
+49159/tcp open unknown
+MAC Address: 00:0C:29:38:B3:A9 (VMware)
+
+Nmap done: 1 IP address (1 host up) scanned in 3.25 seconds
+```
+
+###### SYN Scan
+
+The SYN scan [-sS] is considered a stealth scanning technique, as it never forms a complete connection between the target and the scanner. Hence, it is also called **half-open scanning**. Let's analyze a SYN scan on the target:
+
+```
+msf > nmap -sS 192.168.216.10 -p 22-5000
+[*] exec: nmap -sS 192.168.216.10 -p 22-5000
+
+Starting Nmap 7.60 ( https://nmap.org ) at 2017-10-19 09:00 EDT
+Nmap scan report for 192.168.216.10
+Host is up (0.00063s latency).
+Not shown: 4967 closed ports
+PORT STATE SERVICE
+22/tcp open ssh
+135/tcp open msrpc
+
+...
+3920/tcp open exasoftport1
+4848/tcp open appserv-http
+MAC Address: 00:0C:29:38:B3:A9 (VMware)
+
+Nmap done: 1 IP address (1 host up) scanned in 685.27 seconds
+```
+
+SYN scans are difficult to detect by firewalls and **Intrusion Detection Systems (IDS)**
+
+###### UDP Scan
+
+The UDP scan [-sU] is the scanning technique to identify open UDP ports on the target. 0-byte UDP packets are sent to the target machine and the recipient of an ICMP port unreachable message shows that the port is closed; otherwise, it is considered open. It can be used in the following manner:
+
+```
+msf > nmap -sU 192.168.216.10
+[*] exec: nmap -sU 192.168.216.10
+
+Starting Nmap 7.60 ( https://nmap.org ) at 2017-10-19 09:09 EDT
+Nmap scan report for 192.168.216.10
+Host is up (0.00064s latency).
+Not shown: 994 closed ports
+PORT STATE SERVICE
+137/udp open netbios-ns
+138/udp open|filtered netbios-dgm
+500/udp open|filtered isakmp
+4500/udp open|filtered nat-t-ike
+5353/udp open|filtered zeroconf
+5355/udp open|filtered llmnr
+MAC Address: 00:0C:29:38:B3:A9 (VMware)
+
+Nmap done: 1 IP address (1 host up) scanned in 319.56 seconds
+```
+
+##### Port scanning—the db_nmap way
+
+Using the db_nmap command, we can run Nmap against our targets and store our scan results automatically in our database, without the need to use the db_import command.
+
+```
+msf > db_nmap -Pn -sTV -T4 --open --min-parallelism 64 --version-all 192.168.216.10 -p -
+[*] Nmap: Starting Nmap 7.60 ( https://nmap.org ) at 2017-10-20 06:33 EDT
+[*] Nmap: Nmap scan report for 192.168.216.10
+[*] Nmap: Host is up (0.00044s latency).
+[*] Nmap: Not shown: 54809 closed ports, 10678 filtered ports
+[*] Nmap: Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+...
+
+[*] Nmap: 50560/tcp open unknown
+[*] Nmap: 50561/tcp open unknown
+[*] Nmap: Service Info: OSs: Windows, Windows Server 2008 R2 - 2012; Device: remote management; CPE: cpe:/o:microsoft:windows
+[*] Nmap: Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+[*] Nmap: Nmap done: 1 IP address (1 host up) scanned in 522.38 seconds
+```
+
+We use db_nmap with the -Pn option to treat all hosts as online and skip host discovery, -sTV to perform a TCP connect scan, the V flag to carry out a version scan of the open ports discovered, and -T4 to set the timing template higher so the scan runs faster. The --open option will only show open ports, --min-parallelism is used to specify the minimum amount of parallel processes at one time, and --version-all to try every single probe in order to identify a more specific version of the service running on an open port. To run the scan, we set the IP address of the target host and use -p - to specify that we want to scan all the 65535 ports.
+
+##### UDP Service Sweeper
+
+The UDP Service Sweeper auxiliary module allows us to detect interesting UDP services. Since UDP is a connectionless protocol, it is more difficult to probe than TCP. Using an auxiliary module like the UDP Service Sweeper can help you find some low-hanging fruit, in a timely manner.
+
+```
+msf > use auxiliary/scanner/discovery/udp_sweep 
+msf auxiliary(udp_sweep) > set RHOSTS 192.168.216.0/24
+RHOSTS => 192.168.216.0/24
+msf auxiliary(udp_sweep) > run
+
+[*] Sending 13 probes to 192.168.216.0->192.168.216.255 (256 hosts)
+[*] Discovered NetBIOS on 192.168.216.1:137 (MACBOOK-PRO:<00>:U :00:50:56:c0:00:08)
+...
+
+[*] Discovered Portmap on 192.168.216.129:111 (100000 v2 TCP(111), 100000 v2 UDP(111), 100024 v1 UDP(52986), 100024 v1 TCP(53621), 100003 v2 UDP(2049), 100003 v3 UDP(2049), 100003 v4 UDP(2049), 100021 v1 UDP(49681), 100021 v3 UDP(49681), 100021 v4 UDP(49681), 100003 v2 TCP(2049), 100003 v3 TCP(2049), 100003 v4 TCP(2049), 100021 v1 TCP(60203), 100021 v3 TCP(60203), 100021 v4 TCP(60203), 100005 v1 UDP(48062), 100005 v1 TCP(34047), 100005 v2 UDP(48062), 100005 v2 TCP(34047), 100005 v3 UDP(48062), 100005 v3 TCP(34047))
+[*] Discovered DNS on 192.168.216.129:53 (BIND 9.4.2)
+[*] Scanned 256 of 256 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
 
 
 
@@ -449,9 +721,186 @@ Read data files from: /usr/bin/../share/nmap
 Nmap done: 1 IP address (1 host up) scanned in 0.10 seconds
 ```
 
-
-
 #### Nbtscan
+
+There are other, more specialized tools for specifically identifying NetBIOS information, such as nbtscan, which is used in the following example. The -r option is used to specify the originating UDP port as 137, which is used to query the NetBIOS name service for valid NetBIOS names:
+
+```
+kali@kali:~$ sudo nbtscan -r 192.168.0.0/24  
+[sudo] password for kali: 
+Doing NBT name scan for addresses from 192.168.0.0/24
+
+IP address       NetBIOS Name     Server    User             MAC address      
+------------------------------------------------------------------------------
+192.168.0.0	Sendto failed: Permission denied
+192.168.0.1      <unknown>                  <unknown>        
+192.168.0.223    <unknown>                  <unknown>        
+192.168.0.255	Sendto failed: Permission denied
+192.168.0.196    DESKTOP-H5AKSBG  <server>  <unknown>        00:0c:29:95:9d:b8
+....
+```
+
+#### Nmap SMB NSE Scripts
+
+Nmap contains many useful NSE scripts that can be used to discover and enumerate SMB services. These scripts can be found in the /usr/share/nmap/scripts directory:
+
+```
+kali@kali:~$ ls -l /usr/share/nmap/scripts/smb*
+-rw-r--r-- 1 root root  3355 Oct 12 09:29 /usr/share/nmap/scripts/smb2-capabilities.nse
+-rw-r--r-- 1 root root  3075 Oct 12 09:29 /usr/share/nmap/scripts/smb2-security-mode.nse
+-rw-r--r-- 1 root root  1447 Oct 12 09:29 /usr/share/nmap/scripts/smb2-time.nse
+-rw-r--r-- 1 root root  5238 Oct 12 09:29 /usr/share/nmap/scripts/smb2-vuln-uptime.nse
+-rw-r--r-- 1 root root 45138 Oct 12 09:29 /usr/share/nmap/scripts/smb-brute.nse
+-rw-r--r-- 1 root root  5289 Oct 12 09:29 /usr/share/nmap/scripts/smb-double-pulsar-backdoor.nse
+-rw-r--r-- 1 root root  4840 Oct 12 09:29 /usr/share/nmap/scripts/smb-enum-domains.nse
+-rw-r--r-- 1 root root  5971 Oct 12 09:29 /usr/share/nmap/scripts/smb-enum-groups.nse
+-rw-r--r-- 1 root root  8043 Oct 12 09:29 /usr/share/nmap/scripts/smb-enum-processes.nse
+-rw-r--r-- 1 root root 27274 Oct 12 09:29 /usr/share/nmap/scripts/smb-enum-services.nse
+-rw-r--r-- 1 root root 12097 Oct 12 09:29 /usr/share/nmap/scripts/smb-enum-sessions.nse
+-rw-r--r-- 1 root root  6923 Oct 12 09:29 /usr/share/nmap/scripts/smb-enum-shares.nse
+-rw-r--r-- 1 root root 12527 Oct 12 09:29 /usr/share/nmap/scripts/smb-enum-users.nse
+-rw-r--r-- 1 root root  1706 Oct 12 09:29 /usr/share/nmap/scripts/smb-flood.nse
+-rw-r--r-- 1 root root  7471 Oct 12 09:29 /usr/share/nmap/scripts/smb-ls.nse
+-rw-r--r-- 1 root root  8758 Oct 12 09:29 /usr/share/nmap/scripts/smb-mbenum.nse
+-rw-r--r-- 1 root root  8220 Oct 12 09:29 /usr/share/nmap/scripts/smb-os-discovery.nse
+-rw-r--r-- 1 root root  4982 Oct 12 09:29 /usr/share/nmap/scripts/smb-print-text.nse
+-rw-r--r-- 1 root root  1831 Oct 12 09:29 /usr/share/nmap/scripts/smb-protocols.nse
+-rw-r--r-- 1 root root 63596 Oct 12 09:29 /usr/share/nmap/scripts/smb-psexec.nse
+-rw-r--r-- 1 root root  5190 Oct 12 09:29 /usr/share/nmap/scripts/smb-security-mode.nse
+-rw-r--r-- 1 root root  2424 Oct 12 09:29 /usr/share/nmap/scripts/smb-server-stats.nse
+-rw-r--r-- 1 root root 14159 Oct 12 09:29 /usr/share/nmap/scripts/smb-system-info.nse
+-rw-r--r-- 1 root root  7524 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-conficker.nse
+-rw-r--r-- 1 root root  6402 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-cve2009-3103.nse
+-rw-r--r-- 1 root root 23154 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-cve-2017-7494.nse
+-rw-r--r-- 1 root root  6545 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-ms06-025.nse
+-rw-r--r-- 1 root root  5386 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-ms07-029.nse
+-rw-r--r-- 1 root root  5688 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-ms08-067.nse
+-rw-r--r-- 1 root root  5647 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-ms10-054.nse
+-rw-r--r-- 1 root root  7214 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-ms10-061.nse
+-rw-r--r-- 1 root root  7344 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-ms17-010.nse
+-rw-r--r-- 1 root root  4400 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-regsvc-dos.nse
+-rw-r--r-- 1 root root  6586 Oct 12 09:29 /usr/share/nmap/scripts/smb-vuln-webexec.nse
+-rw-r--r-- 1 root root  5084 Oct 12 09:29 /usr/share/nmap/scripts/smb-webexec-exploit.nse
+```
+
+Here we find several interesting Nmap SMB NSE scripts that perform various tasks such as OS discovery and enumeration via SMB.
+
+Let's try the smb-os-discovery module:
+
+```
+kali@kali:~$ nmap -v -p 139, 445 --script=smb-os-discovery 10.11.1.227
+Nmap scan report for 10.11.1.227
+Host is up (0.57s l atency) .
+PORT    STATE SERVICE
+139/tcp open  netbios-ssn
+Host script results:
+| smb- os- discovery :
+| OS: Windows 2000 (Windows 2000 LAN Manager)
+| OS CPE: cpe:/o :mi c rosoft:windows_2000 :: -
+| Computer name: s rv2
+| NetBIOS computer name: SRV2
+| Workgroup: WORKGROUP
+...
+```
+
+#### Metasploit 
+
+##### SMB scanning and enumeration
+
+```
+msf > use auxiliary/scanner/smb/smb_enumshares 
+msf auxiliary(smb_enumshares) > set RHOSTS 192.168.216.10,129
+RHOSTS => 192.168.216.10,129
+msf auxiliary(smb_enumshares) > run
+
+...
+[+] 192.168.216.129:139 - IPC$ - (I) IPC Service (metasploitable server (Samba 3.0.20-Debian))
+[+] 192.168.216.129:139 - ADMIN$ - (I) IPC Service (metasploitable server (Samba 3.0.20-Debian))
+[*] Scanned 2 of 2 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(smb_enumshares) >
+```
+
+##### SMB Version Detection
+
+```
+msf6 > use auxiliary/scanner/smb/smb_version 
+
+msf6 auxiliary(scanner/smb/smb_version) > set RHOSTS 192.168.101.113
+RHOSTS => 192.168.101.113
+
+msf6 auxiliary(scanner/smb/smb_version) > run
+[*] 192.168.101.113:445   - SMB Detected (versions:1, 2, 3) (preferred dialect:SMB 3.1.1) (compression capabilities:LZNT1) (encryption capabilities:AES-128-CCM) (signatures:optional) (guid:{f7dcca70-4d06-44ea-adac-67308aed3560}) (authentication domain:DESKTOP-H5AKSBG)
+[+] 192.168.101.113:445   -   Host is running Windows 10 Pro (build:18363) (name:DESKTOP-H5AKSBG) (workgroup:WORKGROUP)
+[*] 192.168.101.113:      - Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+##### SMB User Enumeration
+
+```
+msf > use auxiliary/scanner/smb/smb_enumusers
+msf auxiliary(smb_enumusers) > set SMBPASS vagrant
+SMBPASS => vagrant
+msf auxiliary(smb_enumusers) > set SMBUSER vagrant
+SMBUSER => vagrant
+msf auxiliary(smb_enumusers) > set RHOSTS 192.168.216.10
+RHOSTS => 192.168.216.10
+msf auxiliary(smb_enumusers) > run
+
+[+] 192.168.216.10:445 - VAGRANT-2008R2 [ Administrator, anakin_skywalker, artoo_detoo, ben_kenobi, boba_fett, chewbacca, c_three_pio, darth_vader, greedo, Guest, han_solo, jabba_hutt, jarjar_binks, kylo_ren, lando_calrissian, leia_organa, luke_skywalker, sshd, sshd_server, vagrant ] ( LockoutTries=0 PasswordMin=0 )
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(smb_enumusers) > 
+```
+
+##### SMB Login Check Scanner
+
+```
+msf > use auxiliary/scanner/smb/smb_login 
+msf auxiliary(smb_login) > set RHOSTS 192.168.216.10
+RHOSTS => 192.168.216.10
+msf auxiliary(smb_login) > set SMBUSER vagrant
+SMBUSER => vagrant
+msf auxiliary(smb_login) > set PASS_FILE /root/password.lst
+PASS_FILE => /root/password.lst
+msf auxiliary(smb_login) > run
+...
+
+[*] 192.168.216.10:445 - 192.168.216.10:445 - Domain is ignored for user vagrant
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+#####  MS17-010 SMB RCE Detection
+
+To determine if MS17-010 has been patched or not. Specifically, it connects to the IPC$ tree and attempts a transaction on FID 0. If the status returned is STATUS_INSUFF_SERVER_RESOURCES, the machine does not have the MS17-010 patch. If the machine is missing the MS17-010 patch, the module will check for an existing **DoublePulsar** (ring 0 shellcode/malware) infection. This module does not require valid SMB credentials in default server configurations. It can log on as the user \ and connect to IPC$:
+
+```
+msf > use auxiliary/scanner/smb/smb_ms17_010 
+msf auxiliary(smb_ms17_010) > set RHOSTS 192.168.216.10
+RHOSTS => 192.168.216.10
+msf auxiliary(smb_ms17_010) > run
+
+[+] 192.168.216.10:445 - Host is likely VULNERABLE to MS17-010! (Windows Server 2008 R2 Standard 7601 Service Pack 1)
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(smb_ms17_010) > 
+```
+
+To list all the available SMB modules, you can hit Tab button to display all the available modules under auxiliary/scanner/smb/:
+
+```
+msf6 > use auxiliary/scanner/smb/
+use auxiliary/scanner/smb/impacket/dcomexec      use auxiliary/scanner/smb/smb_enumusers
+use auxiliary/scanner/smb/impacket/secretsdump   use auxiliary/scanner/smb/smb_enumusers_domain
+use auxiliary/scanner/smb/impacket/wmiexec       use auxiliary/scanner/smb/smb_login
+use auxiliary/scanner/smb/pipe_auditor           use auxiliary/scanner/smb/smb_lookupsid
+use auxiliary/scanner/smb/pipe_dcerpc_auditor    use auxiliary/scanner/smb/smb_ms17_010
+use auxiliary/scanner/smb/psexec_loggedin_users  use auxiliary/scanner/smb/smb_uninit_cred
+use auxiliary/scanner/smb/smb_enum_gpp           use auxiliary/scanner/smb/smb_version
+use auxiliary/scanner/smb/smb_enumshares         
+```
 
 
 
@@ -578,6 +1027,8 @@ Not what you are looking for, try harder!!! :0)
 
 ### SMTP Enumeration
 
+#### Netcat
+
 We can also gather information about a host or network from vulnerable mail servers. The Simple Mail Transport Protocol (SMTP)  supports several interesting commands, such as VRFY and EXPN. A VRFY request asks the server to verify an email address, w hile EXPN asks the server for the membership of a mailing list. These can often be abused to verify existing users on a mail server, w hich is useful informatfon during a penetration test. Consider this example:
 
 ```
@@ -624,7 +1075,22 @@ print result
 s.close()
 ```
 
+#### Metasploit
 
+The SMTP User Enumeration Utility auxiliary module, by default, will use the unix_users.txt file located at /usr/share/metasploit-framework/data/wordlists/, but you can specify your own. To run the module, set the target address range, the number of concurrent threads, and type run:
+
+```
+msf > use auxiliary/scanner/smtp/smtp_enum 
+msf auxiliary(smtp_enum) > set RHOSTS 192.168.216.129
+msf auxiliary(smtp_enum) > set THREADS 256
+THREADS => 256
+msf auxiliary(smtp_enum) > run
+
+[*] 192.168.216.129:25 - 192.168.216.129:25 Banner: 220 metasploitable.localdomain ESMTP Postfix (Ubuntu)
+[+] 192.168.216.129:25 - 192.168.216.129:25 Users found: , backup, bin, daemon, distccd, ftp, games, gnats, irc, libuuid, list, lp, mail, man, news, nobody, postgres, postmaster, proxy, service, sshd, sync, sys, syslog, user, uucp, www-data
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
 
 ### SNMP Enumeration
 
@@ -750,15 +1216,964 @@ iso.3.6.1.2.1.25.6.3.1.2.5 = STRING: "Microsoft Visual C++ 2012 Redistributable 
 - 11.0.61030"
 ```
 
+#### Metasploit
 
+1. The SNMP Community Login Scanner auxiliary module logs into SNMP devices using common community names:
 
+```
+msf > use auxiliary/scanner/snmp/
+msf > use auxiliary/scanner/snmp/snmp_login 
+msf auxiliary(snmp_login) > set RHOSTS 192.168.216.10.129
+RHOSTS => 192.168.216.10.129
+msf auxiliary(snmp_login) > run
 
+[+] 192.168.216.10:161 - Login Successful: public (Access level: read-only); Proof (sysDescr.0): Hardware: Intel64 Family 6 Model 70 Stepping 1 AT/AT COMPATIBLE - Software: Windows Version 6.1 (Build 7601 Multiprocessor Free)
+[*] Scanned 1 of 2 hosts (50% complete)
+[*] Scanned 2 of 2 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(snmp_login) >
+```
+
+2. We can gather loads of information using SNMP scanning modules, such as open ports, services, hostnames, processes, and uptime. To achieve this, we'll run the auxiliary/scanner/snmp/snmp_enum auxiliary module and see what information it provides us with:
+
+```
+msf > use auxiliary/scanner/snmp/snmp_enum
+msf auxiliary(snmp_enum) > set RHOSTS 192.168.216.10
+RHOSTS => 192.168.216.10
+msf auxiliary(snmp_enum) > run
+
+[+] 192.168.216.10, Connected.
+
+[*] System information:
+...
+
+Contact : -
+Location : -
+Uptime snmp : 14:52:25.92
+Uptime system : 00:01:55.31
+System date : 2017-10-21 03:36:31.2
+
+[*] User accounts:
+...
+
+["Administrator"] 
+["luke_skywalker"] 
+["anakin_skywalker"]
+["lando_calrissian"]
+...
+```
+
+### SSH Enumeration
+
+#### Metasploit
+
+##### Detecting SSH Version
+
+```
+msf > use auxiliary/scanner/ssh/ssh_version 
+msf auxiliary(ssh_version) > set RHOSTS 192.168.216.0/24
+RHOSTS => 192.168.216.0/24
+msf auxiliary(ssh_version) > set THREADS 256
+THREADS => 256
+msf auxiliary(ssh_version) > run
+
+...
+[*] Scanned 133 of 256 hosts (51% complete)
+[*] Scanned 232 of 256 hosts (90% complete)
+[*] Scanned 250 of 256 hosts (97% complete)
+[*] Scanned 255 of 256 hosts (99% complete)
+[*] Scanned 256 of 256 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+##### SSH Login Check Scanner
+
+```
+msf > use auxiliary/scanner/ssh/ssh_login
+msf auxiliary(ssh_login) > set USERNAME user
+USERNAME => user
+msf auxiliary(ssh_login) > set PASS_FILE /root/password.lst
+PASS_FILE => /root/password.lst
+msf auxiliary(ssh_login) > set RHOSTS 192.168.216.10,129
+RHOSTS => 192.168.216.10,129
+msf auxiliary(ssh_login) > set STOP_ON_SUCCESS true 
+STOP_ON_SUCCESS => true
+msf auxiliary(ssh_login) > set THREADS 256
+THREADS => 256
+msf auxiliary(ssh_login) > run
+
+[*] Scanned 1 of 2 hosts (50% complete)
+[+] 192.168.216.129:22 - Success: 'user:user' 'uid=1001(user) gid=1001(user) groups=1001(user) Linux metasploitable 2.6.24-16-server #1 SMP Thu Apr 10 13:58:00 UTC 2008 i686 GNU/Linux '
+[*] Command shell session 1 opened (192.168.216.5:39227 -> 192.168.216.129:22) at 2017-10-21 06:11:14 -0400
+[*] Scanned 2 of 2 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+To interact with the new session, use the sessions command with the -i option to interact with the session and supply the session ID, in this case 1:
+
+```
+msf auxiliary(ssh_login) > sessions -i 1
+[*] Starting interaction with 1...
+
+hostname
+metasploitable
+id
+uid=1001(user) gid=1001(user) groups=1001(user)
+```
+
+### FTP scanning
+
+#### Metasploit
+
+1. To scan for FTP servers on the network, use the auxiliary/scanner/ftp/ftp_version auxiliary module, set the target address range in RHOSTS, and the number of concurrent threads to 256:
+
+```
+msf > use auxiliary/scanner/ftp/ftp_version 
+msf auxiliary(ftp_version) > set RHOSTS 192.168.216.10,129
+RHOSTS => 192.168.216.10,129
+msf auxiliary(ftp_version) > set THREADS 256
+THREADS => 256
+msf auxiliary(ftp_version) > run
+
+[+] 192.168.216.129:21 - FTP Banner: '220 (vsFTPd 2.3.4)\x0d\x0a'
+[*] Scanned 1 of 2 hosts (50% complete)
+[*] Scanned 2 of 2 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+2. The scan results, as with the previous auxiliary modules, will get stored in the Metasploit database and can be accessed using the services command:
+
+```
+msf auxiliary(ftp_version) > services 
+
+Services
+========
+
+host port proto name state info
+---- ---- ----- ---- ----- ----
+192.168.216.129 21 tcp ftp open 220 (vsFTPd 2.3.4)\x0d\x0a
+```
+
+### HTTP Scanning
+
+#### Metaploit
+
+1. To run the HTTP SSL Certificate Checker auxiliary module, we need to specify the target host and the target port: in this example, 192.168.216.10 and port 8383:
+
+```
+msf > use auxiliary/scanner/http/cert
+msf auxiliary(cert) > set RHOSTS 192.168.216.10
+RHOSTS => 192.168.216.10
+msf auxiliary(cert) > set RPORT 8383
+RPORT => 8383
+msf auxiliary(cert) > run
+
+[*] 192.168.216.10:8383 - 192.168.216.10 - 'Desktop Central' : /C=US/ST=CA/L=Pleasanton/O=Zoho Corporation/OU=ManageEngine/CN=Desktop Central/emailAddress=support@desktopcentral.com
+[*] 192.168.216.10:8383 - 192.168.216.10 - 'Desktop Central' : '2010-09-08 12:24:44 UTC' - '2020-09-05 12:24:44 UTC'
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(cert) > 
+```
+
+2. To run the HTTP Robots.txt Content Scanner auxiliary module, we will specify the test path to find the robots.txt file and the target IP address:
+
+```
+msf > use auxiliary/scanner/http/robots_txt
+msf auxiliary(robots_txt) > set PATH /mutillidae
+PATH => /mutillidae
+msf auxiliary(robots_txt) > set RHOSTS 192.168.216.129
+RHOSTS => 192.168.216.129
+msf auxiliary(robots_txt) > run
+
+...
+Disallow: ./owasp-esapi-php/
+Disallow: ./documentation/
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(robots_txt) >
+```
+
+3. The HTTP Writable Path PUT/DELETE File Access auxiliary module can abuse misconfigured web servers to upload and delete web content via PUT and DELETE HTTP requests. The set action to either PUT or DELETE. PUT is the default. If a filename isn't specified, the module will generate a random string for you as a .txt file:
+
+```
+msf > use auxiliary/scanner/http/http_put 
+msf auxiliary(http_put) > set PATH /uploads
+PATH => /uploads
+msf auxiliary(http_put) > set RHOSTS 192.168.216.10
+RHOSTS => 192.168.216.10
+msf auxiliary(http_put) > set RPORT 8585
+RPORT => 8585
+msf auxiliary(http_put) > run
+
+[+] File uploaded: http://192.168.216.10:8585/uploads/msf_http_put_test.txt
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(http_put) >
+```
+
+4. To run the auxiliary module, we need to specify the target address, or range, the target port, and the path to the Jenkins-CI application:
+
+```
+msf > use auxiliary/scanner/http/jenkins_enum
+msf auxiliary(jenkins_enum) > set RHOSTS 192.168.216.10
+RHOSTS => 192.168.216.10
+msf auxiliary(jenkins_enum) > set RPORT 8484
+RPORT => 8484
+msf auxiliary(jenkins_enum) > set TARGETURI /
+TARGETURI => /
+msf auxiliary(jenkins_enum) > run
+
+...
+[+] http://192.168.216.10:8484/ - /systemInfo does not require authentication (200)
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(jenkins_enum) >
+```
+
+### WinRM scanning
+
+**Windows Remote Management** (**WinRM**) is the Microsoft implementation of the WS-Management Protocol, a standard **Simple Object Access Protocol** (**SOAP**)-based, firewall-friendly protocol that allows hardware and operating systems, from different vendors, to interoperate.
+
+1. To use the WinRM Authentication Method Detection auxiliary module, set the target address range in RHOSTS and type run:
+
+```
+msf > use auxiliary/scanner/winrm/winrm_auth_methods
+msf auxiliary(winrm_auth_methods) > set RHOSTS 192.168.216.10
+RHOSTS => 192.168.216.10
+msf auxiliary(winrm_auth_methods) > run
+
+[+] 192.168.216.10:5985: Negotiate protocol supported
+[+] 192.168.216.10:5985: Basic protocol supported
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(winrm_auth_methods) >
+```
+
+2. To run the WinRM Command Runner auxiliary module, we need to set the targets IP address, the Windows command to run, the username Administrator, and password vagrant:
+
+```
+msf > use auxiliary/scanner/winrm/winrm_cmd 
+msf auxiliary(winrm_cmd) > set CMD hostname
+CMD => hostname
+msf auxiliary(winrm_cmd) > set RHOSTS 192.168.216.10
+RHOSTS => 192.168.216.10
+msf auxiliary(winrm_cmd) > set USERNAME Administrator
+USERNAME => Administrator
+msf auxiliary(winrm_cmd) > set PASSWORD vagrant
+PASSWORD => vagrant
+msf auxiliary(winrm_cmd) > run
+
+[+] vagrant-2008R2
+
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(winrm_cmd) > 
+```
 
 
 
 # 2. Vulnerability Assessment
 
-## Scanning Vulnerabilities
+## SMB Vulnerability 
+
+### NMAP SMB NSE script
+
+```
+kali@kali:~$ nmap -v -p 139, 445 --script=smb-vuln-ms08-067 --script-args=unsafe=l 10.11.1.5
+Starting Nmap 7.70 ( https: / /nmap.org ) at 2019- 03- 04 11:27 EST
+NSE: Loaded l scripts for scanning.
+NSE: Script Pre- scanni ng .
+Scanning 10.11.1.s [2 port s]
+Completed NSE at 00 : 04 , 17.39s elapsed
+Nmap scan r eport fo r 10.11.1.5
+Host is up (0 . 17s latency).
+PORT    STATE SERVICE
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-ds
+MAC Address: 00 : 50:56:AF:02 :91 (VMware)
+Host script results:
+| smb-vul n-ms08-067:
+| 	VULNERABLE:
+| 	Microsoft Windows system vulnerable to remote code execution (MS08-067)
+| 	State: VULNERABLE
+| 	IDs: CVE:CVE-2008-4250
+|		The Server service in Microsoft Windows 2000 SP4, XP SP2 and SP3, Server 2
+|		Vista Gold and SPl, Server 2008, and 7 Pre-Beta allows remote attackers to
+|		code via a crafted RPC request that triggers the overflow during path cano
+|	Disclosure date: 2008-10-23
+|	References:
+|		https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-4250
+|		https://technet.microsoft.com/en-us/library/security/ms08-067.aspx
+...
+```
+
+
+
+## Website Application Scanners
+
+### Metasploit’s WMAP
+
+1. Set Up Metasploit Database
+
+   We can initialize the database with the **msfdb init** command in the [terminal](https://null-byte.wonderhowto.com/how-to/linux-basics/). This will create a default database and user for Metasploit to interact with.
+
+   ```
+   msfdb init
+   [+] Starting database
+   [+] Creating database user 'msf'
+   [+] Creating databases 'msf'
+   [+] Creating databases 'msf_test'
+   [+] Creating configuration file '/usr/share/metasploit-framework/config/database.yml'
+   [+] Creating initial database schema
+   ```
+
+   Next, start the PostgreSQL service with **service postgresql start**.
+
+   ```unknown
+   service postgresql start
+   ```
+
+   Now we can fire up Metasploit by typing **msfconsole**.
+
+   ```unknown
+   msfconsole
+   ```
+
+   Finally, we can check that database is loaded and working properly by using the **db_status** command:
+
+   ```unknown
+   msf > db_status
+   [*] postgresql connected to msf
+   ```
+
+2. Load WMAP
+
+   ```unknown
+   msf > load wmap
+   
+   .-.-.-..-.-.-..---..---.
+   | | | || | | || | || |-'
+   `-----'`-'-'-'`-^-'`-'
+   [WMAP 1.5.1] ===  et [  ] metasploit.com 2012
+   [*] Successfully loaded plugin: wmap
+   ```
+
+   From here, if we type **?** to display Metasploit's help menu, we should see the commands for WMAP and their descriptions at the top of the menu.
+
+   ```
+   msf > ?
+   
+   wmap Commands
+   =============
+   
+       Command       Description
+       -------       -----------
+       wmap_modules  Manage wmap modules
+       wmap_nodes    Manage nodes
+       wmap_run      Test targets
+       wmap_sites    Manage sites
+       wmap_targets  Manage targets
+       wmap_vulns    Display web vulns
+   ```
+
+3. Add Site to Scan
+
+   Type any of the commands to display their available options; Let's start by managing sites we wish to scan using **wmap_sites**.
+
+   ```unknown
+   msf > wmap_sites
+   [*] Usage: wmap_sites [options]
+   	-h        Display this help text
+   	-a [url]  Add site (vhost,url)
+   	-d [ids]  Delete sites (separate ids with space)
+   	-l        List all available sites
+   	-s [id]   Display site structure (vhost,url|ids) (level) (unicode output true/false)
+   ```
+
+   To add a site, use **wmap_sites** with the **-a** flag followed by the site address.
+
+   ```unknown
+   msf > wmap_sites -a http://172.16.1.102
+   [*] Site created.
+   ```
+
+   Now we can list the available sites using **wmap_sites** with the **-l** flag.
+
+   ```unknown
+   msf > wmap_sites -l
+   [*] Available sites
+   ===============
+   
+        Id  Host          Vhost         Port  Proto  # Pages  # Forms
+        --  ----          -----         ----  -----  -------  -------
+        0   172.16.1.102  172.16.1.102  80    http   0        0
+   ```
+
+4. Specify Target URL
+
+   Next, we need to set the specific target URL we want to scan using **wmap_targets**.
+
+   ```unknown
+   msf > wmap_targets
+   [*] Usage: wmap_targets [options]
+   	-h 		Display this help text
+   	-t [urls]	Define target sites (vhost1,url[space]vhost2,url)
+   	-d [ids]	Define target sites (id1, id2, id3 ...)
+   	-c 		Clean target sites list
+   	-l  		List all target sites
+   ```
+
+   We can define the target using **wmap_targets** with the **-t** flag, followed by the URL.
+
+   ```unknown
+   msf > wmap_targets -t http://172.16.1.102/dvwa/index.php
+   ```
+
+   And use **wmap_targets** with the **-l** flag to list the defined targets.
+
+   ```unknown
+   msf > wmap_targets -l
+   [*] Defined targets
+   ===============
+   
+        Id  Vhost         Host          Port  SSL    Path
+        --  -----         ----          ----  ---    ----
+        0   172.16.1.102  172.16.1.102  80    false  	/dvwa/index.php
+   ```
+
+5. Run Scanner
+
+   Type **wmap_run** at the prompt to view the options for this command.
+
+   ```unknown
+   msf > wmap_run
+   [*] Usage: wmap_run [options]
+   	-h                        Display this help text
+   	-t                        Show all enabled modules
+   	-m [regex]                Launch only modules that name match provided regex.
+   	-p [regex]                Only test path defined by regex.
+   	-e [/path/to/profile]     Launch profile modules against all matched targets.
+   	                          (No profile file runs all enabled modules.)
+   ```
+
+   We can use **wmap_run** with the **-t** flag to list all the enabled modules before we scan the target.
+
+   ```unknown
+   msf > wmap_run -t
+   [*] Testing target:
+   [*] 	Site: 172.16.1.102 (172.16.1.102)
+   [*] 	Port: 80 SSL: false
+   ============================================================
+   [*] Testing started. 2018-09-20 10:23:26 -0500
+   [*] Loading wmap modules...
+   [*] 39 wmap enabled modules loaded.
+   [*]
+   =[ SSL testing ]=
+   ============================================================
+   [*] Target is not SSL. SSL modules disabled.
+   [*]
+   =[ Web Server testing ]=
+   ============================================================
+   [*] Module auxiliary/scanner/http/http_version
+   [*] Module auxiliary/scanner/http/open_proxy
+   [*] Module auxiliary/admin/http/tomcat_administration
+   [*] Module auxiliary/admin/http/tomcat_utf8_traversal
+   [*] Module auxiliary/scanner/http/drupal_views_user_enum
+   [*] Module auxiliary/scanner/http/frontpage_login
+   [*] Module auxiliary/scanner/http/host_header_injection
+   [*] Module auxiliary/scanner/http/options
+   [*] Module auxiliary/scanner/http/robots_txt
+   [*] Module auxiliary/scanner/http/scraper
+   [*] Module auxiliary/scanner/http/svn_scanner
+   [*] Module auxiliary/scanner/http/trace
+   [*] Module auxiliary/scanner/http/vhost_scanner
+   [*] Module auxiliary/scanner/http/webdav_internal_ip
+   [*] Module auxiliary/scanner/http/webdav_scanner
+   [*] Module auxiliary/scanner/http/webdav_website_content
+   [*]
+   =[ File/Dir testing ]=
+   ============================================================
+   [*] Module auxiliary/scanner/http/backup_file
+   [*] Module auxiliary/scanner/http/brute_dirs
+   [*] Module auxiliary/scanner/http/copy_of_file
+   [*] Module auxiliary/scanner/http/dir_listing
+   [*] Module auxiliary/scanner/http/dir_scanner
+   [*] Module auxiliary/scanner/http/dir_webdav_unicode_bypass
+   [*] Module auxiliary/scanner/http/file_same_name_dir
+   [*] Module auxiliary/scanner/http/files_dir
+   [*] Module auxiliary/scanner/http/http_put
+   [*] Module auxiliary/scanner/http/ms09_020_webdav_unicode_bypass
+   [*] Module auxiliary/scanner/http/prev_dir_same_name_file
+   [*] Module auxiliary/scanner/http/replace_ext
+   [*] Module auxiliary/scanner/http/soap_xml
+   [*] Module auxiliary/scanner/http/trace_axd
+   [*] Module auxiliary/scanner/http/verb_auth_bypass
+   [*]
+   =[ Unique Query testing ]=
+   ============================================================
+   [*] Module auxiliary/scanner/http/blind_sql_query
+   [*] Module auxiliary/scanner/http/error_sql_injection
+   [*] Module auxiliary/scanner/http/http_traversal
+   [*] Module auxiliary/scanner/http/rails_mass_assignment
+   [*] Module exploit/multi/http/lcms_php_exec
+   [*]
+   =[ Query testing ]=
+   ============================================================
+   [*]
+   =[ General testing ]=
+   ============================================================
+   [*] Done.
+   ```
+
+   There are a few different categories of modules including ones for  directory testing, query testing, web server testing, and SSL testing,  although we can see that our target doesn't employ SSL, so these modules are disabled. To get a detailed description of any given module, use  the **info** command followed by the full path of the module that's listed. For example:
+
+   ```
+   msf > info auxiliary/scanner/http/http_version
+   
+          Name: HTTP Version Detection
+        Module: auxiliary/scanner/http/http_version
+       License: Metasploit Framework License (BSD)
+          Rank: Normal
+   
+   Provided by:
+     hdm <x@hdm.io>
+   
+   Basic options:
+     Name     Current Setting  Required  Description
+     ----     ---------------  --------  -----------
+     Proxies                   no        A proxy chain of format type:host:port[,type:host:port][...]
+     RHOSTS                    yes       The target address range or CIDR identifier
+     RPORT    80               yes       The target port (TCP)
+     SSL      false            no        Negotiate SSL/TLS for outgoing connections
+     THREADS  1                yes       The number of concurrent threads
+     VHOST                     no        HTTP server virtual host
+   
+   Description:
+     Display version information about each system.
+   ```
+
+   Back to scanning. Let's begin the scan by using **wmap_run** with the **-e** flag, which will run all of the modules instead of just a specified  one. Depending on the target site and the number of enabled modules, the scan can take quite some time to finish. Once it's done, the scan will  show how long it took to complete.
+
+   ```unknown
+   msf > wmap_run -e
+   [*] Using ALL wmap enabled modules.
+   [-] NO WMAP NODES DEFINED. Executing local modules
+   [*] Testing target:
+   [*] 	Site: 172.16.1.102 (172.16.1.102)
+   [*] 	Port: 80 SSL: false
+   ============================================================
+   [*] Testing started. 2018-09-20 10:24:33 -0500
+   [*]
+   =[ SSL testing ]=
+   ============================================================
+   [*] Target is not SSL. SSL modules disabled.
+   [*]
+   =[ Web Server testing ]=
+   ============================================================
+   [*] Module auxiliary/scanner/http/http_version
+   
+   [+] 172.16.1.102:80 Apache/2.2.8 (Ubuntu) DAV/2 ( Powered by PHP/5.2.4-2ubuntu5.24 )
+   [*] Module auxiliary/scanner/http/open_proxy
+   [*] Module auxiliary/admin/http/tomcat_administration
+   [*] Module auxiliary/admin/http/tomcat_utf8_traversal
+   
+   ...
+   
+   =[ Unique Query testing ]=
+   ============================================================
+   [*] Module auxiliary/scanner/http/blind_sql_query
+   [*] Module auxiliary/scanner/http/error_sql_injection
+   [*] Module auxiliary/scanner/http/http_traversal
+   [*] Module auxiliary/scanner/http/rails_mass_assignment
+   [*] Module exploit/multi/http/lcms_php_exec
+   [*]
+   =[ Query testing ]=
+   ============================================================
+   [*]
+   =[ General testing ]=
+   ============================================================
+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   Launch completed in 337.37769508361816 seconds.
+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   [*] Done.
+   ```
+
+6. Interpret Results
+
+   Finally, we can type the **wmap_vulns -l** command to display the results of the scan.
+
+   ```unknown
+   msf > wmap_vulns -l
+   [*] + [172.16.1.102] (172.16.1.102): scraper /
+   [*] 	scraper Scraper
+   [*] 	GET Metasploitable2 - Linux
+   [*] + [172.16.1.102] (172.16.1.102): directory /dav/
+   [*] 	directory Directory found.
+   [*] 	GET Res code: 200
+   [*] + [172.16.1.102] (172.16.1.102): directory /cgi-bin/
+   [*] 	directory Directoy found.
+   [*] 	GET Res code: 403
+   [*] + [172.16.1.102] (172.16.1.102): directory /doc/
+   [*] 	directory Directoy found.
+   [*] 	GET Res code: 200
+   [*] + [172.16.1.102] (172.16.1.102): directory /icons/
+   [*] 	directory Directoy found.
+   [*] 	GET Res code: 200
+   [*] + [172.16.1.102] (172.16.1.102): directory /index/
+   [*] 	directory Directoy found.
+   [*] 	GET Res code: 200
+   [*] + [172.16.1.102] (172.16.1.102): directory /phpMyAdmin/
+   [*] 	directory Directoy found.
+   [*] 	GET Res code: 200
+   
+   ...
+   ```
+
+   We can see it found some potentially interesting directories that could be worth investigating further:
+
+   
+
+   - The /cgi-bin/ directory allows scripts to be executed and perform console-like functions directly on the server.
+   - The /phpMyAdmin/ directory is an open-source administration tool for MySQL database systems.
+   - The /dav/ directory allows users to collaborate and perform web authoring activities remotely.
+
+   WMAP might not return as detailed results as other web application  vulnerability scanners, but this information can be a useful jumping off point to explore different avenues of attack. The fact that this  scanner can be easily loaded and utilized from within the Metasploit  Framework makes it a useful tool to know how to use.
+
+### Nikto
+
+Nikto is a highly configurable Open Source web server scanner that tests for thousands of dangerous files and programs, vulnerable server versions and various server configuration issues. It performs well, but is not designed for stealth as it will send many requests and embed information about itself in the User-Agent header.
+
+We'll specify the host we want to scan (-host=http://www.megacorpone.com) and for the sake of this demonstration, we'll use -maxtime=30s to limit t he scan duration to 30 seconds:
+
+```
+kali@kali:~$ nikto -host http://www.megacorpone.com 
+- Nikto v2.1.6
+---------------------------------------------------------------------------
++ Target IP:          3.220.87.155
++ Target Hostname:    www.megacorpone.com
++ Target Port:        80
++ Start Time:         2020-12-20 23:11:03 (GMT-5)
+---------------------------------------------------------------------------
++ Server: Apache/2.2.22 (Ubuntu)
++ Server may leak inodes via ETags, header found with file /, inode: 152243, size: 14603, mtime: Wed Nov  6 10:04:14 2019
++ The anti-clickjacking X-Frame-Options header is not present.
++ The X-XSS-Protection header is not defined. This header can hint to the user agent to protect against some forms of XSS
++ The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type
++ ERROR: Host maximum execution time of 30 seconds reached
++ Scan terminated:  0 error(s) and 4 item(s) reported on remote host
++ End Time:           2020-12-20 23:11:34 (GMT-5) (31 seconds)
+---------------------------------------------------------------------------
++ 1 host(s) tested
+```
+
+### CMS Scanners
+
+#### WPScan
+
+```
+# wpscan --url https://target.tld
+```
+
+**Update database**
+
+```
+# wpscan --update
+```
+
+**Enumerating usernames**
+
+```
+wpscan --url https://target.tld/ --enumerate u
+```
+
+**Enumerating a range of usernames**
+
+```
+wpscan --url https://target.tld/ --enumerate u1-100
+```
+
+Note: replace u1-100 with a range of your choice.
+
+**WPScan Vulnerability Database**
+The WPScan Vulnerability Database is a database of WordPress Core, Plugin and Theme vulnerabilities. This database has been compiled by the WPScan Team and various other contributors since WPScan's release.
+Link: https://wpvulndb.com/
+
+#### Droopescan
+
+A plugin-based scanner that aids security researchers in identifying issues with several CMS.
+
+Link: https://github.com/droope/droopescan
+
+Supported CMS are:
+
+- SilverStripe
+- Wordpress
+- Drupal
+- Joomla
+
+Sample Command:
+
+You can specify a particular host to scan by passing the `-u` or `--url` parameter:
+
+```
+# droopescan scan drupal -u example.org
+```
+
+You can also omit the `drupal` argument. This will trigger “CMS identification”, like so:
+
+```
+# droopescan scan -u example.org
+```
+
+Multiple URLs may be scanned utilising the `-U` or `--url-file` parameter. This parameter should be set to the path of a file which contains a list of URLs.
+
+```
+# droopescan scan drupal -U list_of_urls.txt
+```
+
+The `drupal` parameter may also be ommited in this example. For each site, it will make several GET requests in order to perform CMS identification, and if the site is deemed to be a supported CMS, it is scanned and added to the output list. This can be useful, for example, to run `droopescan` across all your organisation's sites.
+
+```
+# droopescan scan -U list_of_urls.txt
+```
+
+#### Joomscan
+
+Joomscan is an open source project, developed with the aim of automating the task of vulnerability detection and reliability assurance in Joomla CMS deployments.
+
+Link: https://github.com/OWASP/joomscan
+
+Sample Command:
+
+```
+# perl joomscan.pl -u example.com
+```
+
+#### Magescan
+Magescan is an open source project that evaluates the quality and security of Magento website.
+
+Download:
+https://github.com/steverobbins/magescan/releases/download/v1.12.9/magescan.phar
+
+https://github.com/steverobbins/magescan
+
+Sample Command:
+
+```
+# php magescan.phar scan:all www.example.com
+```
+
+#### CMSeek
+A content management system (CMS) manages the creation and modification of digital content. It typically supports multiple users in a collaborative environment. Some notable examples are: WordPress, Joomla, Drupal etc.
+
+Link: https://github.com/Tuhinshubhra/CMSeeK
+
+**Installation:**
+
+```
+# git clone https://github.com/Tuhinshubhra/CMSeeK.git
+# cd CMSeeK
+# pip3 install -r requirements.txt
+
+For guided scanning:
+# python3 cmseek.py
+
+Else:
+# python3 cmseek.py -u <target_url> [...]# python3 cmseek.py
+```
+
+#### Red Hawk
+All in one tool for Information Gathering, Vulnerability Scanning and Crawling.
+
+Link: https://github.com/Tuhinshubhra/RED_HAWK
+
+**List of CMS Supported**
+
+- WordPress
+- Joomla
+- Drupal
+- Magento
+
+**Installation**
+
+```
+# git clone https://github.com/Tuhinshubhra/RED_HAWK.git
+# cd RED_HAWK
+```
+
+```
+# php rhawk.php
+All In One Tool For Information Gathering And Vulnerability Scanning
+                                                              .  .  .  .
+                                                              .  |  |  .
+                                                           .  |        |  .
+                                                           .              .
+                                              @@@@@      . |  (\.|\/|./)  | .   ___   ____
+  ██████╗ ███████╗██████╗    ###     ###    @@@@ @@@@    .   (\ |||||| /)   .  |   | /   /
+  ██╔══██╗██╔════╝██╔══██╗   ###     ###   @@@@   @@@@   |  (\  |/  \|  /)  |  |   |/   /
+  ██████╔╝█████╗  ██║  ██║   ###########   @@@@@@@@@@@     (\             )    |       /
+  ██╔══██╗██╔══╝  ██║  ██║   ###########   @@@@@@@@@@@    (\  Ver  2.0.0  /)   |       \
+  ██║  ██║███████╗██████╔╝   ###     ###   @@@     @@@     \      \/      /    |   |\   \
+  ╚═╝  ╚═╝╚══════╝╚═════╝    ###     ###   @@@     @@@      \____/\/\____/     |___| \___\
+                                                                |0\/0|
+         {C} Coded By - R3D#@X0R_2H1N A.K.A Tuhinshubhra         \/\/
+                                                                  \/  [$] Shout Out - You ;)
+
+  
+
+[!] cURL Module Is Missing! Try 'fix' command OR Install php-curl
+[!] DOM Module Is Missing! Try 'fix' command OR Install php-xml
+
+[#] Enter The Website You Want To Scan : 
+
+```
+
+#### Acunetix WVS
+
+Acunetix is an end-to-end web security scanner that offers a 360 view of an organization’s security. Allowing you to take control of the security of all you web applications, web services, and APIs to ensure long-term protection. Acunetix’s scanning engine is globally known and trusted for its unbeatable speed and precision.
+
+Free Trial (14 Days) - https://www.acunetix.com/vulnerability-scanner/online-scanner/
+Note: Verification Needed
+
+
+
+### BurpSuite
+Burp Suite is an integrated platform for performing security testing of web applications. Its various tools work seamlessly together to support the entire testing process, from initial mapping and analysis of an application’s attack surface, through to finding and exploiting security vulnerabilities.
+
+Burp gives you full control, letting you combine advanced manual techniques with state-of-the-art automation, to make your work faster, more effective, and more fun.
+
+Free Community Edition: https://portswigger.net/burp/communitydownload
+
+Let's start Burp Suite. We can find it in **Kali under Applications > 03 Web Application Analysis > burpsuite**
+
+```
+kali@kali:~$ burpsuite
+```
+
+#### Setting up Burp
+Kali is running on Java 11 and we need to downgrade it to Java 10. To do that, please follow the steps below:
+
+-  Type “sudo update-alternatives –config java”
+-  Then, choose “2”
+-  Then you may now set up burp.
+
+
+
+1. In Firefox ESR browser, go to the Firefox Menu. Then click “Preferences”
+
+   ![image-20210218164812223](images/image-20210218164812223.png) 
+
+   
+
+2. Select the “General” tab and scroll to the “Network Proxy” settings. Click on the "Settings" button.
+
+   ![image-20210218165132092](images/image-20210218165132092.png)
+
+3. Select the "Manual proxy configuration" option. Enter your Burp Proxy listener address in the "HTTP Proxy" field (by default this is set to 127.0.0.1).
+
+   Next enter your Burp Proxy listener port in the "Port" field (by default, 8080).
+
+   Make sure the "Use this proxy server for all protocols" box is checked.
+
+   ![image-20210218165224497](images/image-20210218165224497.png)
+
+4. Delete anything that appears in the "No proxy for" field.
+
+   Now click "OK" to close all of the options dialogs.
+
+   ![image-20210218165252475](images/image-20210218165252475.png)
+
+
+
+#### Installing Burp’s CA Certificate
+
+1. With Burp running, visit http://burp in your browser and click the "CA Certificate" link to download and save your Burp CA certificate.
+
+   Take note of where you save the Burp CA certificate.
+
+   ![image-20210218165343831](images/image-20210218165343831.png)
+
+2. In Firefox ESR browser, open the Firefox Menu. Click on "Preferences”
+
+   ![image-20210218165417436](images/image-20210218165417436.png)
+
+3. Go to the "Privacy and Security" settings. Find “Certificates” section and Click "View Certificates".
+
+   ![image-20210218165447600](images/image-20210218165447600.png)
+
+4. Select the "Authorities" tab and Click "Import", then select the Burp CA certificate file that you previously saved and click “Open”.
+
+   In the dialog box that pops up, check the box "Trust this CA to identify web sites", and click "OK".
+
+   Close all dialogs and restart Firefox ESR.
+
+   ![image-20210218165540643](images/image-20210218165540643.png)
+
+
+
+#### Burp’s Target Module
+
+The Burp Target tool contains detailed information about your target applications, and lets you drive the
+process of testing for vulnerabilities.
+
+![image-20210218183043440](images/image-20210218183043440.png)
+
+
+
+#### Burp’s Proxy Module
+
+Burp Proxy is an intercepting web proxy that operates as a man-in-the-middle between the end browser and the target web application. It lets you intercept, inspect and modify the raw traffic passing in both directions.
+
+![image-20210218183201171](images/image-20210218183201171.png)
+
+#### Burp’s Intruder Module
+
+Burp Intruder is a powerful tool for carrying out automated customized attacks against web applications. It
+is highly configurable and can be used to perform a wide range of tasks to make your testing faster and more effective.
+
+![image-20210218183319449](images/image-20210218183319449.png)
+
+
+
+#### Burp’s Intruder Payloads
+
+- **Sniper** – sends a single payload to each of the selected parameters; i.e. each parameter
+  is sequentially tested with the same set of variables.
+- **Battering ram** – sends a single payload to all of the selected parameters at once; i.e. all parameters will be passed the first variable, followed by all Parameters being passed the second variable, and so on until the payload is completed.
+- **Pitchfork** – sends a specific payload to each of the selected parameters; i.e. all parameters need to be passed its own payload, and the variables of each payload are passed to its designated parameter in sequence.
+- **Cluster bomb** – starts with a specific payload to each parameter, and when all variables have been tested, will start testing with the payload from the next variable, such that all parameters get tested with all variables
+
+#### Burp’s Repeater Module
+
+Burp Repeater is a simple tool for manually manipulating and reissuing individual HTTP requests, and analyzing the application's responses.
+
+![image-20210218183703338](images/image-20210218183703338.png)
+
+#### Burp’s Decoder Module
+
+Burp Decoder is a useful tool for performing manual or intelligent decoding and encoding of application data.
+
+![image-20210218183837159](images/image-20210218183837159.png)
+
+#### Burp’s Comparer Module
+
+The Burp Comparer is a handy utility for performing a visual "diff" between any two items of data, such as pairs of similar HTTP messages.
+
+![image-20210219094702808](images/image-20210219094702808.png)
+
+#### Burp’s Extender Module
+
+Burp Extender allows you to load Burp extensions, to extend Burp's functionality using your own or third-party code.
+
+![image-20210219094935743](images/image-20210219094935743.png)
+
+#### Collection of Awesome Burp Extensions
+
+https://github.com/snoopysecurity/awesome-burp-extensions
+
+
+
+## Vulnerability Scanners
 
 ### NMAP
 ### NESSUS 
@@ -786,11 +2201,13 @@ Unpacking Nessus Scanner Core Components ...
 - Then go to https://kali:8834/ to configure your scanner
 ```
 
+#### Metasploit - Integrating with Nessus
+
 
 
 ### OPENVAS 
 
-### Installing Openvas
+#### Installing Openvas
 
 ```
 kali@kali:~$ apt-get install gvm*
@@ -803,6 +2220,68 @@ kali@kali:~$ gvm-start
 Browse
 
 https://localhost:9392
+
+### w3af (Web Application Attack and Audit Framework)
+
+[W3AF](http://w3af.org/) is a free and open-source tool known as Web Application Attack and  Framework. This tool is an open-source vulnerability scanning tool for  web applications. It creates a framework which helps to secure the web  application by finding and exploiting the vulnerabilities. This tool is  known for user-friendliness. Along with vulnerability scanning options,  W3AF has exploitation facilities used for penetration testing work as  well.
+ Moreover, W3AF covers a high-broaden collection of vulnerabilities.  Domains that are attacked frequently, especially with newly identified  vulnerabilities, can select this tool.
+
+http://w3af.org
+
+https://github.com/andresriancho/w3af/
+
+```
+$ git clone https://github.com/andresriancho/w3af.git
+$ cd w3af/extras/docker/scripts/
+$ sudo ./w3af_console_docker
+w3af>>>
+```
+
+
+
+### OpenScap
+
+[OpenSCAP](https://www.open-scap.org/) is a framework of tools that assist in vulnerability scanning,  vulnerability assessment, vulnerability measurement, creating security  measures. OpenSCAP is a free and open-source tool developed by  communities. OpenSCAP only supports Linux platforms.
+
+ OpenSCAP framework supports vulnerability scanning on web applications,  web servers, databases, operating systems, networks, and virtual  machines. Moreover, they provide a facility for risk assessment and  support to counteract threats.
+
+
+
+### Metasploit (Nmap Scripting Engine)
+
+The **Nmap Scripting Engine** (**NSE**) is one of Nmap's most powerful and flexible features, effectively turning Nmap into a vulnerability scanner. The NSE has almost 600 scripts, divided into categories and ranging from safer discovery scripts to more intrusive scripts such as brute force, exploitation, and denial of service. You can find the NSE scripts in the /usr/share/nmap/scripts directory in Kali Linux, or simply by searching for the wildcard *.nse with the locate command.
+
+The basic syntax for running the NSE scripts is as follows:
+
+```
+nmap --script <scriptname> <host ip>
+```
+
+The same applies to the db_nmap command, so let's use the NSE to try to find some HTTP/HTTPS vulnerabilities:
+
+```
+msf > db_nmap --open -sTV -Pn -p 80,443,8000,8080,8585 --script=http-vhosts,http-userdir-enum,http-apache-negotiation,http-backup-finder,http-config-backup,http-default-accounts,http-methods,http-method-tamper,http-passwd,http-robots.txt,ssl-poodle,ssl-heartbleed,http-webdav-scan,http-iis-webdav-vuln 192.168.216.10 
+[*] Nmap: Starting Nmap 7.60 ( https://nmap.org ) at 2017-10-20 10:26 EDT
+[*] Nmap: Nmap scan report for 192.168.216.10
+[*] Nmap: Host is up (0.00068s latency).
+[*] Nmap: Not shown: 3 closed ports
+[*] Nmap: PORT STATE SERVICE VERSION
+[*] Nmap: 8080/tcp open http Oracle GlassFish 4.0 (Servlet 3.1; JSP 2.3; Java 1.8)
+[*] Nmap: | http-backup-finder:
+
+...
+
+[*] Nmap: |_127 names had status 200
+[*] Nmap: Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+[*] Nmap: Nmap done: 1 IP address (1 host up) scanned in 293.24 seconds
+msf >
+```
+
+Looking at the output, we can see some potentially risky HTTP methods, such as PUT, DELETE, and TRACE.
+
+
+
+
 
 
 
@@ -862,33 +2341,6 @@ DOWNLOADED: 4612 - FOUND: 9
 ```
 
 
-
-#### Nikto
-
-- Nikto is a highly configurable Open Source web server scanner that tests for thousands of dangerous files and programs, vulnerable server versions and various server configuration issues. It performs well, but is not designed for stealth as it will send many requests and embed information about itself in the User-Agent header.
-
-We'll specify the host we want to scan (-host=http://www.megacorpone.com) and for the sake of this demonstration, we'll use -maxtime=30s to limit t he scan duration to 30 seconds:
-
-```
-kali@kali:~$ nikto -host=http://www.megacorpone.com -maxtime=30s
-- Nikto v2.1.6
----------------------------------------------------------------------------
-+ Target IP:          3.220.87.155
-+ Target Hostname:    www.megacorpone.com
-+ Target Port:        80
-+ Start Time:         2020-12-20 23:11:03 (GMT-5)
----------------------------------------------------------------------------
-+ Server: Apache/2.2.22 (Ubuntu)
-+ Server may leak inodes via ETags, header found with file /, inode: 152243, size: 14603, mtime: Wed Nov  6 10:04:14 2019
-+ The anti-clickjacking X-Frame-Options header is not present.
-+ The X-XSS-Protection header is not defined. This header can hint to the user agent to protect against some forms of XSS
-+ The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type
-+ ERROR: Host maximum execution time of 30 seconds reached
-+ Scan terminated:  0 error(s) and 4 item(s) reported on remote host
-+ End Time:           2020-12-20 23:11:34 (GMT-5) (31 seconds)
----------------------------------------------------------------------------
-+ 1 host(s) tested
-```
 
 
 
@@ -1788,6 +3240,8 @@ msf5 exploit(windows/http/syncbreeze_bof) > exploit
 ##### Experimenting with Meterpreter
 
 We can retrieve a list of all modules and commands built-in to Meterpreter with the help command:
+
+### DNS Record Scanner and Enumerator
 
 
 
