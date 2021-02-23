@@ -169,7 +169,7 @@ kali@kali:-$ dnsrecon -d megacorpone.com -t axfr
 #### DNSenum
 
 ```
-kali@kali:-#dnsenum zonetransfer.me      
+kali@kali:-# dnsenum zonetransfe.me      
 ```
 
 #### NMAP NSE script (dns-zone-transfer)
