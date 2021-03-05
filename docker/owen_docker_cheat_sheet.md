@@ -1,15 +1,10 @@
-# Docker
 
-## Table of Contents
-* [Docker Meaning](#docker-meaning)
-* [Docker Advantages](#docker-advantages)
-* [Docker Architecture](#docker-architecture)
-* [Manage Images](#manage-images)
-* [Manage Containers](#manage-containers)
-* [Networks](#networks)
-* [Volumes](#volumes)
-* [Dokerfile](#dockerfile)
-* [Docker Compose](docker-compose)
+
+[TOC]
+
+
+
+# Docker
 
 ## Docker Meaning
 
