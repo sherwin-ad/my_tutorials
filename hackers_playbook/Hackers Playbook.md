@@ -2272,6 +2272,16 @@ Unpacking Nessus Scanner Core Components ...
 - Then go to https://kali:8834/ to configure your scanner
 ```
 
+Start Nessus service 
+
+```
+# systemctl start nessusd
+```
+
+Browse https://kali:8834
+
+
+
 #### Metasploit - Integrating with Nessus
 
 
@@ -2281,7 +2291,7 @@ Unpacking Nessus Scanner Core Components ...
 #### Installing Openvas
 
 ```
-kali@kali:~$ apt-get install gvm*
+kali@kali:~$ apt install gvm*
 
 kali@kali:~$ gvm-setup
 
