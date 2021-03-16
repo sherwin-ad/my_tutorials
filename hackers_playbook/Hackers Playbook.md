@@ -514,6 +514,8 @@ Nmap done: 1 IP address (1 host up) scanned in 19.33 seconds
 
 - NSE scripts are located in the /usr/share/nmap/scripts directory.
 
+- use --script-trace to Show all data sent and received
+
 ```
 kali@kali:~$ nmap 192.168.0.196 --script=smb-os-discovery
 Starting Nmap 7.91 ( https://nmap.org ) at 2020-12-15 04:42 EST
@@ -539,6 +541,8 @@ Host script results:
 
 Nmap done: 1 IP address (1 host up) scanned in 2.02 seconds
 ```
+
+
 
 #### Metasploit
 
