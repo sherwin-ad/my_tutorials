@@ -152,17 +152,17 @@ $ mysql -u [user] -p [database_name] < [filename].sql
 
 ```
 Linux
-mv moodle moodle.backup
-tar xvzf moodle-latest-3.9.tgz
+# mv moodle moodle.backup
+# tar xvzf moodle-latest-3.9.tgz
 Next, copy across your config.php, any custom plugins, and your .htaccess file if you created one (check that custom plugins are the correct version for your new Moodle first):
 
-cp moodle.backup/config.php moodle
-cp -pr moodle.backup/theme/mytheme moodle/theme/mytheme
-cp -pr moodle.backup/mod/mymod moodle/mod/mymod
+# cp moodle.backup/config.php moodle
+# cp -pr moodle.backup/theme/mytheme moodle/theme/mytheme
+# cp -pr moodle.backup/mod/mymod moodle/mod/mymod
 Don't forget to make moodle/config.php (and the rest of the source code) readable by your www server. For maximum security the files should not be writeable by your server. This is especially important on a 'production' server open to the public internet.
 
-chown -R root:root moodle (Linux debian - or even create a user especially for moodle. Don't use the web server user, e.g. www-data)
-chmod -R 755 moodle
+# chown -R root:root moodle (Linux debian - or even create a user especially for moodle. Don't use the web server user, e.g. www-data)
+# chmod -R 755 moodle
 ```
 
 

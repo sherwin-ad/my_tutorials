@@ -1,12 +1,15 @@
+[TOC]
 
 
 
-
-## Laravel
+# Laravel
 
 * Laravel is a PHP web framework who uses the MVC architecture
 
-### MVC
+
+
+
+## MVC
 
 Model
 
@@ -52,6 +55,20 @@ sudo apt install php libapache2-mod-php php-mysql
 # Check php version
 php -version
 
+# You can confirm installed version of PHP extension using apt policy command:
+apt policy php7.4-gd
+php7.4-gd:
+  Installed: 7.4.3-4ubuntu2.4
+  Candidate: 7.4.3-4ubuntu2.4
+  Version table:
+ *** 7.4.3-4ubuntu2.4 500
+        500 http://archive.ubuntu.com/ubuntu focal-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu focal-security/main amd64 Packages
+        100 /var/lib/dpkg/status
+     7.4.3-4ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu focal/main amd64 Packages
+
+
 # Test PHP for Apache
 sudo nano /var/www/html/info.php
 
@@ -88,9 +105,7 @@ sudo apt install php7.4-pdo
 sudo apt install php7.4-xml
 ```
 
-
-
-### Download Composer
+### Install Composer
 
 ```
 # Download composer-setup.php
