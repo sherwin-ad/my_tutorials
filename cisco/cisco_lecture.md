@@ -580,3 +580,13 @@ hosttel
 
 htvg30dett
 
+
+
+show ip int brief
+
+show run int Fa0/1
+
+show vlan
+
+write mem
+
