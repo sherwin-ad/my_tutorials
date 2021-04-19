@@ -40,11 +40,163 @@
 
 ## Install Asterisk
 
+### Package Manager
+
 ```
 # sudo apt install asterisk
 ```
 
-## Check the asterisk is working
+### Install from source code
+
+#### Install dependencies
+
+astrisk-13.xx/contrib/scripts/install_prereq
+
+**Run in test mode to print the dependencies for version**
+
+```
+# sudo ./install_prereq test
+```
+
+**Run install mode to reach out to your repos to install the dependencies for version** 
+
+```
+# sudo ./install_prereq install
+```
+
+#### Configure
+
+```
+# tar -xzvf asterisk-18-current.tar.gz
+# cd asterisk-18.3.0 
+# ./configure
+```
+
+#### Make
+
+``` 
+# Select modules to be installed
+make menuselect
+
+make && make install
+
+# Copy sample config/files to /etc/asterisk
+make samples
+
+# asterisk will run in startup
+make config
+
+# systemctl start asterisk
+```
+
+
+
+#### Run linux command in Asterisk CLI
+
+```
+> !ifconfig
+```
+
+#### Run asterisk cli command in linux terminal
+
+```
+# sudo asterisk -rx 'core show version'
+```
+
+
+
+## Dialplan
+
+- is the heart of any Asterisk system
+- it defines the behavior of the system
+- it consist of a list of instructions
+
+​	
+
+### Context
+
+- Contexts are containers that separate extensions
+- [context-name]
+
+### Extensions
+
+- it is the mapping between a dialplan address and a named set of actions
+
+  - Instead of an endpoint
+  - Think of it more like a script
+  - Each action is executed by an "application"
+
+  extension@context
+
+  ```
+  [context]
+  extension
+  - application
+  - application
+  - application
+  ```
+
+Extension Syntax
+
+  - Alpha-numeric names acceptable
+
+    "1000" and "Tom" are both valid
+
+- Syntax
+
+  exten => name,priority,application
+
+  exten => 1000,1,Dial (PJSIP/digium-phone)
+
+  exten => Tom,1,Dial (PJSIP/digium-phone)
+
+  exten => 1234,1,NoOp (Hello World!)
+
+#### List of applications
+
+```
+asterisk*CLI> core show applications
+    -= Registered Asterisk Applications =-
+        AddQueueMember: Dynamically adds queue members. 
+              ADSIProg: Load Asterisk ADSI Scripts into phone 
+                AELSub: Launch subroutine built with AEL 
+            AgentLogin: Login an agent. 
+          AgentRequest: Request an agent to connect with the channel. 
+                   AGI: Executes an AGI compliant application. 
+         AlarmReceiver: Provide support for receiving alarm reports from a burglar or fire 
+....
+```
+
+#### Info about specific application
+
+```
+asterisk*CLI> core show application Playback 
+
+  -= Info about application 'Playback' =- 
+
+[Synopsis]
+Play a file. 
+
+[Description]
+Plays back given filenames (do not put extension of wav/alaw etc). The playback
+command answer the channel if no options are specified. If the file is
+non-existant it will fail
+This application sets the following channel variable upon completion:
+${PLAYBACKSTATUS}: The status of the playback attempt as a text string.
+    SUCCESS
+    FAILED
+See Also: Background (application) -- for playing sound files that are
+interruptible
+WaitExten (application) -- wait for digits from caller, optionally play music
+on hold
+
+[Syntax]
+Playback(filename[&filename2[&...]][,options])
+```
+
+
+
+##  Check the asterisk is working
 
 ```
 # sudo asterisk -r

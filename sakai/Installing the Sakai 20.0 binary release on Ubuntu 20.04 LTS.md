@@ -64,7 +64,7 @@ https://tomcat.apache.org/download-90.cgi
 
 ```
 cd /tmp
-curl -O https://apache.osuosl.org/tomcat/tomcat-9/v9.0.34/bin/apache-tomcat-9.0.34.tar.gz
+curl -O https://apache.osuosl.org/tomcat/tomcat-9/v9.0.45/bin/apache-tomcat-9.0.45.tar.gzls
 cd /opt
 sudo tar xzvf /tmp/apache-tomcat-9.0.34.tar.gz
 sudo ln -nsf apache-tomcat-9.0.34 tomcat
