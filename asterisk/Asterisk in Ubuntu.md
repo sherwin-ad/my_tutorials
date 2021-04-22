@@ -194,6 +194,64 @@ on hold
 Playback(filename[&filename2[&...]][,options])
 ```
 
+**Multi-line Extensions**
+
+```
+exten => 6000,1,Playback(hello-world)
+exten => 6000,2,Playback(goodbye)
+exten => 6000,3,Hangup()
+```
+
+OR
+
+```
+exten => 6000,1,Playback(hello-world)
+ same =>      2,Playback(goodbye)
+ same =>      3,Hangup()
+```
+
+OR
+
+```
+exten => 6000,1,Playback(hello-world)
+ same => n,Playback(goodbye)
+ same => n,Hangup()
+```
+
+## Priority labels
+
+![image-20210419084227866](images\image-20210419084227866.png)
+
+
+
+## What else can Goto do?
+
+![image-20210419084918338](images\image-20210419084918338.png)
+
+### Goto syntax
+
+![image-20210419085837177](images\image-20210419085837177.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ##  Check the asterisk is working
@@ -383,3 +441,6 @@ comment
 comment---;
 ```
 
+
+
+sip show peers | grep 
