@@ -72,6 +72,9 @@ mysql>create user 'moodle_dbuser'@'172.16.31.%' IDENTIFIED BY 'passwordformoodle
 # Grant user privilege 
 mysql>GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,CREATE TEMPORARY TABLES,DROP,INDEX,ALTER ON 
 moodle.* TO 'moodledude'@'localhost';
+
+mysql> GRANT ALL PRIVILEGES ON database_name.* TO 'username'@'localhost';
+
 FLUSH PRIVILEGES;
 
 mysql>quit;
