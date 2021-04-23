@@ -4,8 +4,59 @@
 
 # Asterisk Lecture
 
-- open source communications toolkit.
+## What is Asterisk
+
+- open source communications platform
 - communication server 
+
+**Open Source Communications Platform**
+
+- Telephony
+  - Traditional
+  - VoIP
+- Calendering
+- Email
+- Instanst Messaging
+- Web Apps
+- Video Chat
+
+## Asterisk Use Cases
+
+- Analog PBX
+- VOIP PBX
+- Hybrid PBX
+- VOIP Gateway
+- Feature Server
+- Call Center
+- Carrier Platform
+
+### Analog PBX
+
+![image-20210423091141500](images/image-20210423091141500.png)
+
+### VOIP PBX
+
+![image-20210423091329811](images/image-20210423091329811.png)
+
+### VoIP & TDM Hybrid PBX
+
+![image-20210423091522635](images/image-20210423091522635.png)
+
+
+
+### Toll Bypass - Asterisk as a VOIP Gateway
+
+![image-20210423091859208](images/image-20210423091859208.png)
+
+### Feature Server
+
+![image-20210423092118857](images/image-20210423092118857.png)
+
+
+
+
+
+
 
 **PSTN** - Public Switched Telephone Network
 
@@ -50,11 +101,17 @@
 
 #### Install dependencies
 
-astrisk-13.xx/contrib/scripts/install_prereq
+```
+# tar -xzvf asterisk-18-current.tar.gz
+# cd asterisk-18.3.0 
+```
+
+asterisk-18.3.0/contrib/scripts/install_prereq
 
 **Run in test mode to print the dependencies for version**
 
 ```
+# cd asterisk-18.3.0/contrib/scripts
 # sudo ./install_prereq test
 ```
 
@@ -91,6 +148,14 @@ make config
 
 
 
+## Asterisk CLI Command
+
+``` 
+sudo asterisk -rvvvvvv
+```
+
+
+
 #### Run linux command in Asterisk CLI
 
 ```
@@ -102,6 +167,56 @@ make config
 ```
 # sudo asterisk -rx 'core show version'
 ```
+
+### Module command
+
+```
+# Show modules
+asterisk*CLI>modole show like [keywork]  
+
+# Load module
+asterisk*CLI>modole load [module name]  
+
+# Unload module
+asterisk*CLI>modole unload [module name]
+
+# reload module
+asterisk*CLI>modole reload [module name]  
+```
+
+
+
+## Channels
+
+A channel is a pathway in and out of the Asterisk
+
+- SIP (Session Initiation Protocol)
+
+  - Session Initiation Protocol, the most common VOIP protocol
+  - are used to interface with SIP capable VOIP devices, such as phones, channel banks, other PBXs or Internet Telephony Service Providers.
+
+  - channel driver chan_sip
+
+- PJSIP
+
+  - channel driver chan_pjsip
+
+- IAX (Inter-Asterisk Exchange protocol)
+
+  **[IAX](https://www.voip-info.org/asterisk-iax-channels)** and **[IAX2](https://www.voip-info.org/asterisk-iax-channels)**: Inter-Asterisk Exchange protocol, Asterisk’s own VOIP protocol
+
+- DAHDI (Digium Asterisk Hardware Device Interface)
+
+  - are used to interface with DAHDI drivers and PRI libraries. In this case chan_dahdi allows you to use any DAHDI capable devices, such as Digium's line of T1/E1/J1 interface cards.
+  - channels driver chan_dahdi
+
+![image-20210423100357860](images/image-20210423100357860.png)
+
+
+
+### Channel driver configuration
+
+![image-20210423101921679](images/image-20210423101921679.png)
 
 
 
@@ -236,24 +351,6 @@ exten => 6000,1,Playback(hello-world)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ##  Check the asterisk is working
 
 ```
@@ -297,6 +394,8 @@ cel_custom.conf          http.conf                res_corosync.conf
 ```
 
 ## Modules
+
+/usr/lib/asterisk/modules
 
 ```
 sherwinowen@ubuntu:/usr/lib/asterisk/modules$ ls
@@ -360,57 +459,7 @@ res_resolver_unbound.so        Unbound DNS Resolver Support             1       
 
 ```
 
-### Load and unload modules in asterisk cli
 
-```
-# Unload a module
-ubuntu*CLI> module unload
-
-# Load a module
-ubuntu*CLI> module load
-```
-
-
-
-## Channel
-
-A channel is a pathway in and out of Asterisk
-
-- **SIP (Session Initiation Protocol)**
-
-  - is a signaling protocol used for initiating, maintaining, modifying and terminating real-time sessions that involve video, voice, messaging and other communications applications and services between two or more  endpoints on IP networks.
-
-- **IAX (Inter-Asterisk eXchange)**
-
-  - is a [communications protocol](https://en.wikipedia.org/wiki/Communications_protocol) native to the [Asterisk](https://en.wikipedia.org/wiki/Asterisk_(PBX)) [private branch exchange](https://en.wikipedia.org/wiki/Private_branch_exchange) (PBX) software, and is supported by a few other [softswitches](https://en.wikipedia.org/wiki/Softswitch), PBX systems, and softphones.  It is used for transporting [VoIP](https://en.wikipedia.org/wiki/VoIP) telephony sessions [between servers](https://en.wikipedia.org/wiki/Inter-server) and to terminal devices.
-  - IAX is a [VoIP](https://en.wikipedia.org/wiki/VoIP) protocol that can be used for any type of streaming media including video, but is mainly designed for IP voice calls.
-  - IAX uses a single [User Datagram Protocol](https://en.wikipedia.org/wiki/User_Datagram_Protocol) (UDP) data stream between endpoints for both the session [signaling](https://en.wikipedia.org/wiki/Signal_(information_theory)) and the media payloads. Thus it uses only a single UDP [port number](https://en.wikipedia.org/wiki/Port_number), typically **4569**. 
-
-- **DAHDI (Digium Asterisk Hardware Device Interface)**
-
-  
-
-```
-ubuntu*CLI> core show channels
-Channel              Location             State   Application(Data)
-0 active channels
-0 active calls
-1 call processed
-```
-
-### Configure channel driver software
-
-- chan_sip.so
-- chan_pjsip.so
-- chan_dahdi.so
-- chan_iax2.so
-
-Edit in plain test files in /etc/asterisk/
-
-- sip.conf
-- pjsip.conf
-- chan_dahdi.conf
-- iax2.conf
 
 ## Interfaces
 
@@ -428,7 +477,11 @@ Edit in plain test files in /etc/asterisk/
 
 - Asterisk RESTful Interface (ARI)
 
+
+
 ## Config File Basics
+
+/etc/asterisk/
 
 ```
 [section-heading]
@@ -443,4 +496,168 @@ comment---;
 
 
 
+## Configuring Endpoints
+
+### 1. Configure an account on Asterisk
+
+#### SIP Configuration
+
+/et/asterisk/sip.conf
+
+```
+[acccount-name]
+type=friend
+host=dynamic
+context=inside
+secret=password
+```
+
+**Account Settings Breakdown**
+
+![image-20210423110310214](images/image-20210423110310214.png)
+
+![image-20210423110500077](images/image-20210423110500077.png)
+
+
+
+#### PJSIP Configuration
+
+/etc/asterisk/pjsip.conf
+
+```
+[transport-udp]
+type=transport
+protocol=udp
+bind=0.0.0.0
+```
+
+![image-20210423112224902](images/image-20210423112224902.png)
+
 sip show peers | grep 
+
+### 2.Create an extension to dial the account
+
+/etc/asterisk/extensions.conf
+
+```
+[inside]
+exten => 7001,1,Dial(SIP/7001,20)
+```
+
+#### SIP Call Flow
+
+![image-20210423171731532](images/image-20210423171731532.png)
+
+
+
+### 3. Configure the endpoint to match
+
+![image-20210423173112337](images/Asterisk in Ubuntu.md)
+
+**DPMA Configuration**
+
+![image-20210423174013397](images/image-20210423174013397.png)
+
+
+
+## Interactive Dial Plan
+
+### Build a voice menu
+
+- IVR (Interactive Voice Response)
+  - Takes input from acaller
+    - DTMF (Dual Tone Multi Frequency)
+    - Voice
+  - Return a result
+    - Often connecting to an external database to retrieve that information for the caller
+- Auto-attendant
+  - Plays a message
+  - Transfers to extension of voicemail
+  - Goes to a sub menu
+  - Repeat choices
+
+**IVR Menu**
+
+![image-20210423180132656](images/image-20210423180132656.png)
+
+
+
+### Setup Voice Mail
+
+
+
+# Asterisk in Ubuntu 20.04
+
+
+
+```
+sudo apt install asterisk
+```
+
+voicemail.conf
+
+```
+[main]
+7001 => 7001
+
+7002 => 7002
+```
+
+extensions.conf
+
+```
+[internal]
+exten => 7001,1,Answer()
+exten => 7001,2,Dial(SIP/7001,60)
+exten => 7001,3,Playback(vm-nobodyavail)
+exten => 7001,4,VoiceMail(7001@main)
+exten => 7001,5,Hangup()
+
+exten => 7002,1,Answer()
+exten => 7002,2,Dial(SIP/7002,60)
+exten => 7002,3,Playback(vm-nobodyavail)
+exten => 7002,4,VoiceMail(7001@main)
+exten => 7002,5,Hangup()
+
+exten => 8001,1,VoicemailMain(7001@main)
+exten => 8001,2,Hangup()
+
+exten => 8002,1,VoicemailMain(7002@main)
+exten => 8002,2,Hangup()
+```
+
+sip.conf
+
+```
+[general]
+context=internal
+allowguest=no
+allowoverlap=no
+bindport=5060
+bindaddr=0.0.0.0
+srvlookup=no
+disallow=all
+allow=ulaw
+alwaysauthreject=yes
+canreinvite=no
+nat=yes
+session-timers=refuse
+localnet=192.168.0.0/255.255.255.0
+
+[7001]
+type=friend
+host=dynamic
+secret=7001
+context=internal
+
+[7002]
+type=friend
+host=dynamic
+secret=7002
+context=internal
+```
+
+
+
+# 
+
