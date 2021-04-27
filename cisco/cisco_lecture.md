@@ -559,7 +559,7 @@ The following table describes the above commands.
 To verify that the DHCP server is working properly and to see the IP  addresses that are provided by the DHCP server, run the following  command in **privileged-exec mode**.
 
 ```
-# ip dhcp binding
+# show ip dhcp binding
 ```
 
 ![ip dhcp binding command](https://www.computernetworkingnotes.org/images/cisco/ccna-study-guide/csg72-07-show-ip-dhcp-binding.png)
@@ -572,7 +572,29 @@ To view detailed information about a specific DHCP pool, use the following comma
 
 ![show ip dhcp pool](https://www.computernetworkingnotes.org/images/cisco/ccna-study-guide/csg72-08-dhcp-pool-detail.png)
 
+### DHCP Reservation
 
+```
+Router#conf t
+Router(config)#ip dhcp pool client_1
+Router(dhcp-config)#host 192.168.100.33 255.255.255.0
+Router(dhcp-config)#client-identifier 011c.697a.a367.b0
+```
+
+### Clear DHCP binding
+
+```
+Router#clear ip dhcp binding {address ip dhcp binding 10.0.88.166
+```
+
+
+
+## Port Forward
+
+```1
+Router#conf t
+Router(config)#ip nat inside source static tcp 192.168.100.33 3389 interface Dialer0 62666
+```
 
 
 
