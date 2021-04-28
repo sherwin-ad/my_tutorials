@@ -2,9 +2,185 @@
 
 
 
-# Cisco 
+# Cisco Configuration
+
+## Setup Hostname
+
+```
+Switch(config)# hostname access-switch1
+```
+
+## Assign a Password to the Switch
+
+```
+access-switch1(config)# enable secret somestrongpass
+```
+
+## **Configure a password for Telnet and Console access**
+
+```
+access-switch1(config)# line vty 0 15
+access-switch1(config-line)# password strongtelnetpass
+access-switch1(config-line)# login
+access-switch1(config-line)# exit
+access-switch1(config)#
+
+access-switch1(config)# line console 0
+access-switch1(config-line)# password strongconsolepass
+access-switch1(config-line)# login
+access-switch1(config-line)# exit
+access-switch1(config)#
+```
+
+## **Define which IP addresses are allowed to access the switch via Telnet**
+
+````
+access-switch1(config)# ip access-list standard TELNET-ACCESS
+access-switch1(config-std-nacl)# permit 10.1.1.100
+access-switch1(config-std-nacl)# permit 10.1.1.101
+access-switch1(config-std-nacl)# exit
+
+!Apply the access list to Telnet VTY Lines
+access-switch1(config)# line vty 0 15
+access-switch1(config-line)# access-class TELNET-ACCESS in
+access-switch1(config-line)# exit
+access-switch1(config)#
+````
 
 
+
+## **Assign IP address to the switch for management**
+
+```
+!Management IP is assigned to Vlan 1 by default
+access-switch1(config)# interface vlan 1
+access-switch1(config-if)# ip address 10.1.1.200 255.255.255.0
+access-switch1(config-if)# exit
+access-switch1(config)#
+```
+
+
+
+## **Assign default gateway to the switch**
+
+**access-switch1(config)#** **ip default-gateway 10.1.1.254**
+
+
+
+## **Disable ports on the switch**
+
+```
+! This step is optional but enhances security
+! Assume that we have a 48-port switch and we don’t need ports 25 to 48
+
+access-switch1(config)# interface range fa 0/25-48
+access-switch1(config-if-range)# shutdown
+access-switch1(config-if-range)# exit
+access-switch1(config)#
+```
+
+
+
+## Access List
+
+### Standard IP Access List
+
+- Standard IP lists (1-99, 1300-1999) only check source addresses of all IP packets.
+- Standard ACL should be placed near the destination devices
+
+![Standard_ACL_Example1.jpg](images\Standard_ACL_Example1.jpg)
+
+**Configuration:**
+
+In this example we will define a standard access list that will only allow network 10.0.0.0/8 to access the server (located on the Fa0/1 interface)
+
+**Define which source is allowed to pass:**
+
+``` 
+Router(config)#access-list 1 permit 10.0.0.0 0.255.255.255
+
+**Apply ACL to an interface**
+
+```
+Router(config)#interface Fa0/1
+Router(config-if)#ip access-group 1 out
+```
+
+
+
+### Extended IP Access List
+
+- Extended IP lists (100-199, 2000-2699) check both source and destination addresses, specific UDP/TCP/IP protocols, and destination ports.
+- Extended ACL should be placed near the source devices
+
+![Extended_ACL_Example1.jpg](images\Extended_ACL_Example1.jpg)
+
+In this example we will create an extended ACL that will deny FTP traffic from network 10.0.0.0/8 but allow other traffic to go through.
+
+Note: FTP uses TCP on port 20 & 21.
+
+**Define which protocol, source, destination and port are denied:**
+
+```
+Router(config)#access-list 101 deny tcp 10.0.0.0 0.255.255.255 187.100.1.6 0.0.0.0 eq 21
+
+Router(config)#access-list 101 deny tcp 10.0.0.0 0.255.255.255 187.100.1.6 0.0.0.0 eq 20
+
+Router(config)#access-list 101 permit ip any any
+```
+
+**Apply this ACL to an interface:**
+
+```
+Router(config)#interface Fa0/1
+Router(config-if)#ip access-group 101 out
+```
+
+
+
+### Named IP Access List
+
+- This allows standard and extended ACLs to be given names instead of numbers
+
+Example of Named IP Access List
+
+This is an example of the use of a named ACL in order to block all traffic except the Telnet connection from host 10.0.0.1/8 to host 187.100.1.6.
+
+![Named_ACL_Example1.jpg](images\Named_ACL_Example1.jpg)
+
+**Define the ACL:**
+
+```
+Router(config)#ip access-list extended in_to_out permit tcp host 10.0.0.1 host 187.100.1.6 eq telnet
+```
+
+(notice that we can use ‘telnet’ instead of port 23)
+
+**Apply this ACL to an interface:**
+
+```
+Router(config)#interface Fa0/0
+
+Router(config-if)#ip access-group in_to_out in
+```
+
+**How to use the wildcard mask?**
+
+Wildcard masks are used with access lists to specify a host, network or part of a network.
+
+The zeros and ones in a wildcard determine whether the corresponding bits in the IP address should be checked or ignored for ACL purposes. For example, we want to create a standard ACL which will only allow network 172.23.16.0/20 to pass through. We need to write an ACL, something like this:
+
+**access-list 1 permit 172.23.16.0 255.255.240.0**
+
+Of course we can’t write subnet mask in an ACL, we must convert it into wildcard mask by converting all bits 0 to 1 & all bits 1 to 0.
+
+255 = 1111 1111 -> convert into 0000 0000
+
+240 = 1111 0000 -> convert into 0000 1111
+
+0 = 0000 0000 -> convert into 1111 1111
+
+Therefore 255.255.240.0 can be written in wildcard mask as 00000000.00000000.00001111.11111111 = 0.0.15.255
 
 ## Understanding Access and Trunk Interfaces
 
@@ -56,6 +232,168 @@ switch(config-if)# switchport trunk allow vlan 15-20
 | switch#  **show interface**            | Displays the interface configuration                         |
 | switch#  **show interface switchport** | Displays information for all Ethernet interfaces, including access and trunk interfaces. |
 | switch#  **show interface brief**      | Displays interface configuration information.                |
+
+
+
+## Configuring DHCP server on the cisco
+
+```
+Router>enable
+Router#configure terminal
+Enter configuration commands, one per line. End with CNTL/Z.
+Router(config)#ip dhcp excluded-address 192.168.1.0 192.168.1.10
+Router(config)#ip dhcp pool Left_Network
+Router(dhcp-config)#default-router 192.168.1.1
+Router(dhcp-config)#dns-server 192.168.1.2
+Router(dhcp-config)#option 150 ip 192.168.1.3
+Router(dhcp-config)#network 192.168.1.0 255.255.255.0
+Router(dhcp-config)#exit
+```
+
+The following table describes the above commands.
+
+| **Command**                                         | **Description**                                              |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| ip dhcp excluded-address *192.168.1.0 192.168.1.10* | This command tells the DHCP server not to assign the addresses from **192.168.1.0** to **192.168.1.10** to DHCP clients. |
+| ip dhcp pool *Left_Network*                         | This command creates a DHCP pool named, **Left_Network** and changes command mode to DHCP pool configuration mode. |
+| default-router *192.168.1.1*                        | This command assigns the default gateway to clients of this DHCP pool. |
+| dns-server *192.168.1.2*                            | This command sets a primary DNS server for the clients.      |
+| option *150* ip  *192.168.1.3*                      | This command provides the IP address of the TFTP server to the clients. |
+| network *192.168.1.0 255.255.255.0*                 | This command specifies the range of IP addresses for the pool. |
+| exit                                                | This command exits DHCP pool configuration mode.             |
+
+### Verifying the DHCP Server
+
+To verify that the DHCP server is working properly and to see the IP  addresses that are provided by the DHCP server, run the following  command in **privileged-exec mode**.
+
+```
+# show ip dhcp binding
+```
+
+![ip dhcp binding command](https://www.computernetworkingnotes.org/images/cisco/ccna-study-guide/csg72-07-show-ip-dhcp-binding.png)
+
+To view detailed information about a specific DHCP pool, use the following command.
+
+```
+# show ip dhcp pool Left_Network
+```
+
+![show ip dhcp pool](https://www.computernetworkingnotes.org/images/cisco/ccna-study-guide/csg72-08-dhcp-pool-detail.png)
+
+### DHCP Reservation
+
+```
+Router#conf t
+Router(config)#ip dhcp pool client_1
+Router(dhcp-config)#host 192.168.100.33 255.255.255.0
+Router(dhcp-config)#client-identifier 011c.697a.a367.b0
+```
+
+### Clear DHCP binding
+
+```
+Router#clear ip dhcp binding {address ip dhcp binding 10.0.88.166
+```
+
+
+
+## Port Forward
+
+```1
+Router#conf t
+Router(config)#ip nat inside source static tcp 192.168.100.33 3389 interface Dialer0 62666
+```
+
+
+
+# Cisco Security
+
+
+
+## Configuring Dhcp Snooping and Arp Inspection on Cisco
+
+- Dhcp snooping is a feature that protects against rogue DHCP agents.
+
+**Steps to to configure dhcp**
+
+1. **characterize uplink interfaces as trusted**
+
+I assume your dhcp server is on the distribution or core layer.  Otherwise, you will have to identify also this link, and characterize it as trusted. in the following example, we assume that int gi1/0/48 is  the uplink interface. If you have multiple uplinks, you have to specify  them all as trusted. if there is a port channel, you have to put the  command in the port-channel
+
+```sh
+int gi1/0/48
+ ip dhcp snooping trust
+ ip arp inspection trust
+```
+
+2. **enable dhcp snooping on certain vlans.**
+
+if you don’t use the information option, you have to disable it, otherwise, upstream switches will drop the packets
+
+```
+ip dhcp snooping vlan X,Y,Z
+no ip dhcp snooping information option
+ip dhcp snooping
+```
+
+3. **Enable arp inspection**
+
+- Arp inspection uses the dhcp binding database to protect against mac spoofing - man in the middle - attacks **Before you enable arp detection you have to let dhcp snooping run for at least a lease period**
+
+```
+ip arp inspection vlan X,Y,Z
+ip arp inspection log-buffer entries 512
+ip arp inspection log-buffer logs 64 interval 3600
+```
+
+**3.1 if you have hosts with static IPs you have to declare them in an arp access-list**
+
+```
+ip arp inspection filter static-hosts vlan  X,Y,Z
+arp access-list static-hosts
+ permit ip host X.X.X.X mac host xxxx.xxxx.xxxx
+```
+
+4. **confirm dhcp snooping is enabled**
+
+```
+sh ip dhcp snooping    
+Load for five secs: 3%/0%; one minute: 3%; five minutes: 3%
+Time source is NTP, 09:13:55.261 EET Fri Jan 11 2019
+
+Switch DHCP snooping is enabled
+Switch DHCP gleaning is disabled
+DHCP snooping is configured on following VLANs:
+X,Y,X
+DHCP snooping is operational on following VLANs:
+X,Y,X
+DHCP snooping is configured on the following L3 Interfaces:
+
+Insertion of option 82 is disabled
+   circuit-id default format: vlan-mod-port
+   remote-id: 6c6c.d382.3580 (MAC)
+Option 82 on untrusted port is not allowed
+Verification of hwaddr field is enabled
+Verification of giaddr field is enabled
+DHCP snooping trust/rate is configured on the following Interfaces:
+
+Interface                  Trusted    Allow option    Rate limit (pps)
+-----------------------    -------    ------------    ----------------   
+Interface                  Trusted    Allow option    Rate limit (pps)
+-----------------------    -------    ------------    ----------------   
+TenGigabitEthernet1/1/1          yes        yes             unlimited
+  Custom circuit-ids:
+TenGigabitEthernet3/1/1          yes        yes             unlimited
+  Custom circuit-ids:
+Port-channel1                    yes        yes             unlimited
+  Custom circuit-ids:
+```
+
+
+
+
+
+
 
 ## Dynamic Trunking Protocol (DTP)
 
@@ -444,156 +782,6 @@ To disable
 ```
 # no vstack
 # no vstack config
-```
-
-## Configuring Dhcp Snooping and Arp Inspection on Cisco
-
-- Dhcp snooping is a feature that protects against rogue DHCP agents.
-
-**Steps to to configure dhcp**
-
-1. **characterize uplink interfaces as trusted**
-
-I assume your dhcp server is on the distribution or core layer.  Otherwise, you will have to identify also this link, and characterize it as trusted. in the following example, we assume that int gi1/0/48 is  the uplink interface. If you have multiple uplinks, you have to specify  them all as trusted. if there is a port channel, you have to put the  command in the port-channel
-
-```sh
-int gi1/0/48
- ip dhcp snooping trust
- ip arp inspection trust
-```
-
-2. **enable dhcp snooping on certain vlans.**
-
-if you don’t use the information option, you have to disable it, otherwise, upstream switches will drop the packets
-
-```
-ip dhcp snooping vlan X,Y,Z
-no ip dhcp snooping information option
-ip dhcp snooping
-```
-
-3. **Enable arp inspection**
-
-- Arp inspection uses the dhcp binding database to protect against mac spoofing - man in the middle - attacks **Before you enable arp detection you have to let dhcp snooping run for at least a lease period**
-
-```
-ip arp inspection vlan X,Y,Z
-ip arp inspection log-buffer entries 512
-ip arp inspection log-buffer logs 64 interval 3600
-```
-
-**3.1 if you have hosts with static IPs you have to declare them in an arp access-list**
-
-```
-ip arp inspection filter static-hosts vlan  X,Y,Z
-arp access-list static-hosts
- permit ip host X.X.X.X mac host xxxx.xxxx.xxxx
-```
-
-4. **confirm dhcp snooping is enabled**
-
-```
-sh ip dhcp snooping    
-Load for five secs: 3%/0%; one minute: 3%; five minutes: 3%
-Time source is NTP, 09:13:55.261 EET Fri Jan 11 2019
-
-Switch DHCP snooping is enabled
-Switch DHCP gleaning is disabled
-DHCP snooping is configured on following VLANs:
-X,Y,X
-DHCP snooping is operational on following VLANs:
-X,Y,X
-DHCP snooping is configured on the following L3 Interfaces:
-
-Insertion of option 82 is disabled
-   circuit-id default format: vlan-mod-port
-   remote-id: 6c6c.d382.3580 (MAC)
-Option 82 on untrusted port is not allowed
-Verification of hwaddr field is enabled
-Verification of giaddr field is enabled
-DHCP snooping trust/rate is configured on the following Interfaces:
-
-Interface                  Trusted    Allow option    Rate limit (pps)
------------------------    -------    ------------    ----------------   
-Interface                  Trusted    Allow option    Rate limit (pps)
------------------------    -------    ------------    ----------------   
-TenGigabitEthernet1/1/1          yes        yes             unlimited
-  Custom circuit-ids:
-TenGigabitEthernet3/1/1          yes        yes             unlimited
-  Custom circuit-ids:
-Port-channel1                    yes        yes             unlimited
-  Custom circuit-ids:
-```
-
-
-
-## Configuring DHCP server on the cisco
-
-```
-Router>enable
-Router#configure terminal
-Enter configuration commands, one per line. End with CNTL/Z.
-Router(config)#ip dhcp excluded-address 192.168.1.0 192.168.1.10
-Router(config)#ip dhcp pool Left_Network
-Router(dhcp-config)#default-router 192.168.1.1
-Router(dhcp-config)#dns-server 192.168.1.2
-Router(dhcp-config)#option 150 ip 192.168.1.3
-Router(dhcp-config)#network 192.168.1.0 255.255.255.0
-Router(dhcp-config)#exit
-```
-
-The following table describes the above commands.
-
-| **Command**                                         | **Description**                                              |
-| --------------------------------------------------- | ------------------------------------------------------------ |
-| ip dhcp excluded-address *192.168.1.0 192.168.1.10* | This command tells the DHCP server not to assign the addresses from **192.168.1.0** to **192.168.1.10** to DHCP clients. |
-| ip dhcp pool *Left_Network*                         | This command creates a DHCP pool named, **Left_Network** and changes command mode to DHCP pool configuration mode. |
-| default-router *192.168.1.1*                        | This command assigns the default gateway to clients of this DHCP pool. |
-| dns-server *192.168.1.2*                            | This command sets a primary DNS server for the clients.      |
-| option *150* ip  *192.168.1.3*                      | This command provides the IP address of the TFTP server to the clients. |
-| network *192.168.1.0 255.255.255.0*                 | This command specifies the range of IP addresses for the pool. |
-| exit                                                | This command exits DHCP pool configuration mode.             |
-
-### Verifying the DHCP Server
-
-To verify that the DHCP server is working properly and to see the IP  addresses that are provided by the DHCP server, run the following  command in **privileged-exec mode**.
-
-```
-# show ip dhcp binding
-```
-
-![ip dhcp binding command](https://www.computernetworkingnotes.org/images/cisco/ccna-study-guide/csg72-07-show-ip-dhcp-binding.png)
-
-To view detailed information about a specific DHCP pool, use the following command.
-
-```
-# show ip dhcp pool Left_Network
-```
-
-![show ip dhcp pool](https://www.computernetworkingnotes.org/images/cisco/ccna-study-guide/csg72-08-dhcp-pool-detail.png)
-
-### DHCP Reservation
-
-```
-Router#conf t
-Router(config)#ip dhcp pool client_1
-Router(dhcp-config)#host 192.168.100.33 255.255.255.0
-Router(dhcp-config)#client-identifier 011c.697a.a367.b0
-```
-
-### Clear DHCP binding
-
-```
-Router#clear ip dhcp binding {address ip dhcp binding 10.0.88.166
-```
-
-
-
-## Port Forward
-
-```1
-Router#conf t
-Router(config)#ip nat inside source static tcp 192.168.100.33 3389 interface Dialer0 62666
 ```
 
 

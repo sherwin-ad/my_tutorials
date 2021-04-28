@@ -1,5 +1,42 @@
 [TOC]
 
+# Asterisk Troubleshooting
+
+```
+sip show peer 164000
+
+sip show peers | grep 164000
+
+
+tail -f /var/log/astersik/full | grep 164000
+
+sngrep host 
+
+```
+
+```
+alias edit="until isanyonethere-stevens; do sleep 1; done; vim /etc/asterisk/wa2.conf"
+astpeer() {
+  asterisk -rvx "sip show peer $1"
+}
+astfind() {
+  tail -f /var/log/asterisk/full | grep $1
+}
+astreload() {
+  asterisk -rx "dialplan reload"
+}
+dundilookup() {
+  asterisk -rx "dundi lookup $1@hosttel"
+}
+dndoff() {
+  asterisk -rx "sip donotdisturb off $1"
+}
+sipstatus() {
+  asterisk -rx "sip show peers like ^$1" | awk '{print $1}' | awk -F'/' '{print $1}' | grep $1 --color=never | while read p; do astpeer $p; done | egrep '(Name|DND|Status)' | grep -v Named | egrep '
+```
+
+
+
 
 
 # Asterisk Lecture
