@@ -15,6 +15,7 @@ sngrep host
 ```
 
 ```
+
 alias edit="until isanyonethere-stevens; do sleep 1; done; vim /etc/asterisk/wa2.conf"
 astpeer() {
   asterisk -rvx "sip show peer $1"
@@ -32,7 +33,9 @@ dndoff() {
   asterisk -rx "sip donotdisturb off $1"
 }
 sipstatus() {
-  asterisk -rx "sip show peers like ^$1" | awk '{print $1}' | awk -F'/' '{print $1}' | grep $1 --color=never | while read p; do astpeer $p; done | egrep '(Name|DND|Status)' | grep -v Named | egrep '
+  asterisk -rx "sip show peers like ^$1" | awk '{print $1}' | awk -F'/' '{print $1}' | grep $1 --color=never | while read p; do astpeer $p; done | egrep '(Name|DND|Status)' | grep -v Named | egrep '\* Name.+$|Yes|$'
+}
+
 ```
 
 
