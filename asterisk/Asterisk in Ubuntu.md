@@ -2,6 +2,54 @@
 
 # Asterisk Troubleshooting
 
+## SIP requests
+
+- **INVITE** = Establishes a session.
+
+- **ACK** = Confirms an INVITE request.
+
+- **BYE** = Ends a session.
+
+- **CANCEL** = Cancels establishing of a session.
+
+- **REGISTER** = Communicates user location (host name, IP).
+
+- **OPTIONS** = Communicates information about the capabilities of the calling and receiving SIP phones.
+
+- **PRACK** = Provisional Acknowledgement.
+
+- **SUBSCRIBE** = Subscribes for Notification from the notifier.
+
+- **NOTIFY** = Notifies the subscriber of a new event.
+
+- **PUBLISH** = Publishes an event to the Server.
+
+- **INFO** = Sends mid session information.
+
+- **REFER** = Asks the recipient to issue call transfer.
+
+- **MESSAGE** = Transports Instant Messages.
+
+- **UPDATE** = Modifies the state of a session.
+
+## SIP responses
+
+SIP Requests are answered with SIP responses, of which there are six classes:
+
+- 1xx = Informational responses, such as 180 (ringing).
+
+- 2xx = Success responses.
+
+- 3xx = Redirection responses.
+
+- 4XX = Request failures.
+
+- 5xx = Server errors.
+
+- 6xx = Global failures.
+
+
+
 ```
 sip show peer 164000
 
@@ -37,6 +85,86 @@ sipstatus() {
 }
 
 ```
+
+## Sngrep
+
+### Methods
+
+**Options**
+
+- query sip device another sip device or pbx server about his capabilities
+
+**Subscribe**
+
+- is used to create a subscription between a sip device that desire a specific piece of information and a server that can provide that information
+
+**Notify**
+
+- notifies subscriber of a new event
+
+**Register**
+
+- associates extension to an IP address
+- to ensure your sip trunk provider knows where to sent your incoming phone calls
+
+**Invite**
+
+- someone attempting to call
+
+### Command line options
+
+**Captures packets in specific interface**
+
+```
+sngrep -d [interface]
+```
+
+**Capture only invite conversations**
+
+```
+sngrep -d 
+```
+
+**Limit capture conversation**
+
+```
+sngrep -l 5
+```
+
+**Rotate calls when capture limit have been reached**
+
+```
+sngrep -l 5 -R
+```
+
+**Write captured data to pcap file**
+
+```
+sngrep -O output-file.pcap
+```
+
+**Capture RTP packets**
+
+```
+sngrep -O output-file.pcap -r
+```
+
+ **Don't display sngrep interface**
+
+```
+sngrep -N -q -O output-file.pcap -r&
+```
+
+**Read captured data from pcap file with search string**
+
+- i option for case insensitive
+- v Invert <match expression>
+
+```
+sngrep -I output-file.pcap -i [search string]
+```
+
+ 
 
 
 
