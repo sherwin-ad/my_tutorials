@@ -65,14 +65,19 @@ sudo chown -R odoo:odoo /opt/odoo/.local/share/Odoo/filestore
 
 ubuntu@openeduc-enterprise:/opt/odoo$ sudo mkdir openeducat
 
-$ sudo mv community-13 /opt/odoo/openeducat/.
+sudo mv community-13 /opt/odoo/openeducat/.
 
 sudo mv enterprise-13 /opt/odoo/openeducat/.
 
-chwon odoo:odoo /opt/odoo/openeducat -R
+sudo mv openeducat_account_budget /opt/odoo/openeducat/community-13/.
 
 sudo mv openeducat_digital_library /opt/odoo/openeducat/enterprise-13/
 
+sudo mv openeducat_account_asset /opt/odoo/openeducat/community-13/.
+
+sudo mv openeducat_account_accountant /opt/odoo/openeducat/community-13/.
+
+chwon odoo:odoo /opt/odoo/openeducat -R
 ```
 
 /etc/odoo/odoo.conf
