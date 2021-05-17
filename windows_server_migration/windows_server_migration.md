@@ -241,6 +241,28 @@ netdiag /fix
 
 
 
+### Transfer FSMO roles using the NTDSUtil tool
+
+First, open the command prompt with administrative privileges.
+
+Type **ntdsutil** and press Enter.
+Type **roles** and press Enter.
+Type **connections** and press Enter.
+Type **connect to server DC01** and press Enter, where DC01 is the server computer name that will transfer the FSMO roles to.
+Type **quit** and press Enter.
+
+Next, we will transfer FSMO roles one by one with the corresponding command, as the case may be. After each Enter appears a confirmation window. Just click **Yes** to continue.
+
+For **Schema Master**, type **transfer schema master** and press Enter.
+For **RID Master**, type **transfer rid master** and press Enter.
+For **Domain Naming Master**, type **transfer naming master** and press Enter.
+For **PDC Emulator**, type **transfer pdc** and press Enter.
+For **Infrastructure Master**, type **transfer infrastructure master** and press Enter.
+
+
+
+![Transfer FSMO roles to another Domain Controller](images/windows_server_migration.md)
+
 ### The 5 FSMO roles are:
 
 1. **Schema Master** – one per forest
@@ -266,6 +288,28 @@ netdiag /fix
 
 
 ## Migrating AD
+
+### Transfer FSMO roles using the NTDSUtil tool
+
+First, open the command prompt with administrative privileges.
+
+Type **ntdsutil** and press Enter.
+Type **roles** and press Enter.
+Type **connections** and press Enter.
+Type **connect to server DC01** and press Enter, where DC01 is the server computer name that will transfer the FSMO roles to.
+Type **quit** and press Enter.
+
+Next, we will transfer FSMO roles one by one with the corresponding command, as the case may be. After each Enter appears a confirmation window. Just click **Yes** to continue.
+
+For **Schema Master**, type **transfer schema master** and press Enter.
+For **RID Master**, type **transfer rid master** and press Enter.
+For **Domain Naming Master**, type **transfer naming master** and press Enter.
+For **PDC Emulator**, type **transfer pdc** and press Enter.
+For **Infrastructure Master**, type **transfer infrastructure master** and press Enter.
+
+
+
+
 
 ### Migrate FSMO Roles to windows server 2016 AD
 

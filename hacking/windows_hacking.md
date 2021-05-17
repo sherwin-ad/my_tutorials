@@ -7,7 +7,7 @@
 > netsh wlan show profile
 
 # Export all wifi profile with passwords
-> netsh wlan export profole folder=c:\ key=clear
+> netsh wlan export profile folder=c:\ key=clear
 ```
 
 

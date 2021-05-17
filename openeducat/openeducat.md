@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 # Install Odoo 13 on Ubuntu 20.04
 
 https://gist.github.com/parthivgls/70569370528876524abb4f6e7a0cf53f
@@ -159,4 +163,40 @@ class ResUsers(models.Model):
 ~                                                                                                                            
 ~                                                          
 ```
+
+
+
+# Backup openeducat
+
+## Backup database
+
+Browse http://172.16.10.200:8069/web/database/manager
+
+## Database Selector
+
+
+Browse http://35.206.208.113:8069/web/database/selector
+
+## Restore database
+
+```
+! Switch User odoo
+$ sudo su odoo
+
+! Create database
+odoo@openeduc-enterprise:$ createdb db_mybusybee 
+
+! Import database
+odoo@openeduc-enterprise:$ psql -d db_mybusybee < mybusybee_postgres.sql
+
+! Copy filestore
+sudo mv filestore /opt/odoo/.local/share/Odoo/.
+
+! Change owner 
+sudo chown -R odoo:odoo /opt/odoo/.local/share/Odoo/filestore
+```
+
+
+
+
 
