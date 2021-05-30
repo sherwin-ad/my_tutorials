@@ -166,6 +166,12 @@ sngrep -I output-file.pcap -i [search string]
 
  
 
+## Find and replace in VI
+
+```
+:%s/current value/new value/g
+```
+
 
 
 

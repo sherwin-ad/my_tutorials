@@ -100,20 +100,17 @@ In this example we will define a standard access list that will only allow netwo
 Router(config)#access-list 1 permit 10.0.0.0 0.255.255.255
 
 **Apply ACL to an interface**
-
-```
 Router(config)#interface Fa0/1
 Router(config-if)#ip access-group 1 out
 ```
-
-
-
 ### Extended IP Access List
 
 - Extended IP lists (100-199, 2000-2699) check both source and destination addresses, specific UDP/TCP/IP protocols, and destination ports.
 - Extended ACL should be placed near the source devices
 
-![Extended_ACL_Example1.jpg](images\Extended_ACL_Example1.jpg)
+![Extended_ACL_Example1.jpg](C:\Users\sherwinowen\Documents\GitHub\my_tutorials\hack_the_box\images\Extended_ACL_Example1-1620958387862.jpg)
+
+
 
 In this example we will create an extended ACL that will deny FTP traffic from network 10.0.0.0/8 but allow other traffic to go through.
 
@@ -122,22 +119,15 @@ Note: FTP uses TCP on port 20 & 21.
 **Define which protocol, source, destination and port are denied:**
 
 ```
+
 Router(config)#access-list 101 deny tcp 10.0.0.0 0.255.255.255 187.100.1.6 0.0.0.0 eq 21
-
 Router(config)#access-list 101 deny tcp 10.0.0.0 0.255.255.255 187.100.1.6 0.0.0.0 eq 20
-
 Router(config)#access-list 101 permit ip any any
-```
 
 **Apply this ACL to an interface:**
-
-```
 Router(config)#interface Fa0/1
 Router(config-if)#ip access-group 101 out
 ```
-
-
-
 ### Named IP Access List
 
 - This allows standard and extended ACLs to be given names instead of numbers
@@ -146,23 +136,32 @@ Example of Named IP Access List
 
 This is an example of the use of a named ACL in order to block all traffic except the Telnet connection from host 10.0.0.1/8 to host 187.100.1.6.
 
-![Named_ACL_Example1.jpg](images\Named_ACL_Example1.jpg)
+![Named_ACL_Example1.jpg](C:\Users\sherwinowen\Documents\GitHub\my_tutorials\hack_the_box\images\Named_ACL_Example1-1620959821111.jpg)
 
 **Define the ACL:**
 
 ```
 Router(config)#ip access-list extended in_to_out permit tcp host 10.0.0.1 host 187.100.1.6 eq telnet
-```
-
 (notice that we can use ‘telnet’ instead of port 23)
-
+```
 **Apply this ACL to an interface:**
 
 ```
 Router(config)#interface Fa0/0
-
 Router(config-if)#ip access-group in_to_out in
 ```
+
+
+
+
+
+```
+show ip access-lists
+```
+
+
+
+
 
 **How to use the wildcard mask?**
 
@@ -182,12 +181,16 @@ Of course we can’t write subnet mask in an ACL, we must convert it into wildca
 
 Therefore 255.255.240.0 can be written in wildcard mask as 00000000.00000000.00001111.11111111 = 0.0.15.255
 
+
+
 ## Understanding Access and Trunk Interfaces
 
- Ethernet interfaces can be configured either as access ports or a trunk ports, as follows:
+Ethernet interfaces can be configured either as access ports or a trunk ports, as follows:
 
 -  An **access port** can have only one VLAN configured on the interface; it can carry traffic for only one VLAN.
 -  A **trunk port** can have two or more VLANs configured on the interface; it can carry traffic for several VLANs simultaneously.
+
+
 
 ### Configuring a LAN Interface as an Ethernet Access Port
 
@@ -197,7 +200,6 @@ switch(config)# interface ethernet 1/10
 switch(config-if)# switchport mode access
 switch(config-if)# switchport access vlan 5 
 ```
-
 ### Configuring Access Host Ports
 
 - **Note**![blank.gif](https://www.cisco.com/c/dam/en/us/td/i/templates/blank.gif) You should apply the **switchport host** command only to interfaces connected to an end station.
@@ -207,16 +209,13 @@ switch# configure terminal
 switch(config)# interface ethernet 1/10
 switch(config-if)# switchport host 
 ```
-
 ### Configuring Trunk Ports
-
 ```
 switch# configure terminal
 switch(config)# interface ethernet 3/1
 switch(config-if)# switchport mode trunk 
 switch(config-if)# trunk encapsulation dot1q
 ```
-
 ### Configuring the Allowed VLANs for Trunking Ports
 
 ```
@@ -224,7 +223,6 @@ switch# configure terminal
 switch(config)# interface ethernet 3/1
 switch(config-if)# switchport trunk allow vlan 15-20 
 ```
-
 ### Verifying Interface Configuration
 
 | Command                                | Purpose                                                      |
@@ -232,9 +230,6 @@ switch(config-if)# switchport trunk allow vlan 15-20
 | switch#  **show interface**            | Displays the interface configuration                         |
 | switch#  **show interface switchport** | Displays information for all Ethernet interfaces, including access and trunk interfaces. |
 | switch#  **show interface brief**      | Displays interface configuration information.                |
-
-
-
 ## Configuring DHCP server on the cisco
 
 ```
@@ -249,7 +244,6 @@ Router(dhcp-config)#option 150 ip 192.168.1.3
 Router(dhcp-config)#network 192.168.1.0 255.255.255.0
 Router(dhcp-config)#exit
 ```
-
 The following table describes the above commands.
 
 | **Command**                                         | **Description**                                              |
@@ -267,17 +261,17 @@ The following table describes the above commands.
 To verify that the DHCP server is working properly and to see the IP  addresses that are provided by the DHCP server, run the following  command in **privileged-exec mode**.
 
 ```
-# show ip dhcp binding
+show ip dhcp binding
 ```
+
 
 ![ip dhcp binding command](https://www.computernetworkingnotes.org/images/cisco/ccna-study-guide/csg72-07-show-ip-dhcp-binding.png)
 
 To view detailed information about a specific DHCP pool, use the following command.
 
 ```
-# show ip dhcp pool Left_Network
+show ip dhcp pool Left_Network
 ```
-
 ![show ip dhcp pool](https://www.computernetworkingnotes.org/images/cisco/ccna-study-guide/csg72-08-dhcp-pool-detail.png)
 
 ### DHCP Reservation
@@ -288,18 +282,20 @@ Router(config)#ip dhcp pool client_1
 Router(dhcp-config)#host 192.168.100.33 255.255.255.0
 Router(dhcp-config)#client-identifier 011c.697a.a367.b0
 ```
-
 ### Clear DHCP binding
 
 ```
-Router#clear ip dhcp binding {address ip dhcp binding 10.0.88.166
+Router#clear ip dhcp binding {address ip dhcp binding 10.0.88.166]
+```
+## Port Forward
+
 ```
 
 
 
-## Port Forward
 
-```1
+
+​```1
 Router#conf t
 Router(config)#ip nat inside source static tcp 192.168.100.33 3389 interface Dialer0 62666
 ```
