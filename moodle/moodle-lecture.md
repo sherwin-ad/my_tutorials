@@ -18,7 +18,8 @@ $ sudo apt install apache2 mysql-client mysql-server php libapache2-mod-php
 # Install Additional Software
 $ sudo apt install graphviz aspell ghostscript clamav php7.4-pspell php7.4-curl php7.4-gd php7.4-intl php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-ldap php7.4-zip php7.4-soap php7.4-mbstring
 
-# Restart apachebasesudo service apache2 restart
+# Restart apachebase
+sudo service apache2 restart
 
 $ Install Git
 $ sudo apt install git
@@ -335,3 +336,48 @@ Press Ctrl and X
 Type sudo apachectl restart
 ```
 
+
+
+### Running Moodle on a dedicated server
+
+Assuming you are running Moodle on a sealed server (i.e. no user logins allowed on the machine) and that root takes care of the modifications to both moodle code and moodle config (config.php), then this are the most tight permissions I can think of:
+
+1. moodledata directory and all of its contents (and subdirectories, includes sessions):
+
+```
+owner: apache user (apache, httpd, www-data, whatever; see above)
+group: apache group (apache, httpd, www-data, whatever; see above)
+permissions: 700 on directories, 600 on files
+```
+
+**Change directories and files permission**
+
+First, apply file system permissions to files and folder by running chmod in recursive mode:
+
+```
+chmod -R 600 /var/moodledata
+```
+
+Next, execute the command for directories only:
+
+```
+find /var/moodledata -type d -print0 | xargs -0 chmod 700
+```
+
+
+
+2. moodle directory and all of its contents and subdirectories (including config.php):
+
+```
+owner: root
+group: root
+permissions: 755 on directories, 644 on files.
+```
+
+If you allow local logins for regular users, then 2. should be:
+
+```
+owner: root
+group: apache group (apache, httpd, www-data, whatever; see above)
+permissions: 750 on directories, 640 on files.
+```
