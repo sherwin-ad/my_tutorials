@@ -1955,3 +1955,151 @@ Source: https://www.idappcom.com
 - IDS rules though which evasion has been possible
 - Configuration mistakes found in router and switches
 
+
+
+## Lab 1
+
+--reject-with type
+
+Type can be:
+
+-icmp-net-unreachable
+-icmp-host-unreachable
+-icmp-port-unreachable
+-icmp-proto-unreachable
+-icmp-net-prohibited
+-icmp-host-prohibited
+-icmp-admin-prohibited
+
+```
+iptables -P INPUT DROP
+
+iptable -A INPUT -j REJECT --reject-with icmp-host-prohibited
+```
+
+## Lab 2
+
+Bypass windows firewall
+
+**Nmap**
+
+```
+nmap --script=firewalk --traceroute [ip address]
+```
+
+**Hping**
+
+```
+hping3 -S [ip address]-c 100 -p ++1
+```
+
+
+
+## Lab 3
+
+**HTTP Tunneling**
+
+HTTPort and HTTHost
+
+
+
+## Lab 4
+
+**Proxychains**
+
+
+
+**Metasploit**
+
+```
+msf6 > search socks
+
+Matching Modules
+================
+
+   #  Name                                     Disclosure Date  Rank    Check  Description
+   -  ----                                     ---------------  ----    -----  -----------
+   0  auxiliary/scanner/http/sockso_traversal  2012-03-14       normal  No     Sockso Music Host Server 1.5 Directory Traversal
+   1  auxiliary/server/socks4a                                  normal  No     Socks4a Proxy Server
+   2  auxiliary/server/socks5                                   normal  No     Socks5 Proxy Server
+   3  auxiliary/server/socks_proxy                              normal  No     SOCKS Proxy Server
+   4  auxiliary/server/socks_unc                                normal  No     SOCKS Proxy UNC Path Redirection
+
+
+Interact with a module by name or index. For example info 4, use 4 or use auxiliary/server/socks_unc
+
+msf6 > use auxiliary/server/socks4a
+
+[!] *                   The module auxiliary/server/socks4a is deprecated!                   *
+[!] *                   This module will be removed on or about 2020-12-29                   *
+[!] *                 Use auxiliary/server/socks_proxy and set VERSION to 4a                 *
+msf6 auxiliary(server/socks4a) > info
+
+       Name: Socks4a Proxy Server
+     Module: auxiliary/server/socks4a
+    License: Metasploit Framework License (BSD)
+       Rank: Normal
+
+Provided by:
+  sf <stephen_fewer@harmonysecurity.com>
+
+Available actions:
+  Name   Description
+  ----   -----------
+  Proxy  Run SOCKS4a proxy
+
+Check supported:
+  No
+
+Basic options:
+  Name     Current Setting  Required  Description
+  ----     ---------------  --------  -----------
+  SRVHOST  0.0.0.0          yes       The address to listen on
+  SRVPORT  1080             yes       The port to listen on.
+
+Description:
+  This module provides a socks4a proxy server that uses the builtin 
+  Metasploit routing to relay connections.
+
+msf6 auxiliary(server/socks4a) > set SRVPORT 9050
+SRVPORT => 9050
+msf6 auxiliary(server/socks4a) > run
+[*] Auxiliary module running as background job 0.
+
+[*] Starting the socks4a proxy server
+```
+
+**Check port 9050 is listening**
+
+```
+#netstat -ant
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 127.0.0.1:5432          0.0.0.0:*               LISTEN     
+tcp        0      0 127.0.0.1:5433          0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:9050            0.0.0.0:*               LISTEN     
+tcp        0    172 192.168.101.118:22      192.168.101.122:46378   ESTABLISHED
+tcp6       0      0 :::22                   :::*                    LISTEN     
+tcp6       0      0 ::1:5432                :::*                    LISTEN     
+tcp6       0      0 ::1:5433                :::*                    LISTEN     
+tcp6       0      0 ::1:5432                ::1:36400               ESTABLISHED
+tcp6       0      0 ::1:36396               ::1:5432                ESTABLISHED
+tcp6       0      0 ::1:36398               ::1:5432                ESTABLISHED
+tcp6       0      0 ::1:5432                ::1:36398               ESTABLISHED
+tcp6       0      0 ::1:36400               ::1:5432                ESTABLISHED
+tcp6       0      0 ::1:5432                ::1:36396               ESTABLISHED
+```
+
+**Proxychains**
+
+```
+proxychains nmap -sT 192.168.101.108
+```
+
+
+
+## Lab 5
+
+**Pivoting**
+
