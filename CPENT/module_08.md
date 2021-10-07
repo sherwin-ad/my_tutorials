@@ -61,9 +61,9 @@ Various categories of the web application security frame include:
 
 - **Session management**: Session refers to a sequence of request and response transactions between a user and a web application. Web applications must maintain integrity of sessions so that only the valid user can obtain information requested. Improper session management results in session-based attacks wherein the attackers can pose as genuine users to hijack the session to extract passwords and other sensitive data.
 
-- Cryptography: It is the process of keeping the user information secured by using proper encryption techniques. The web application should use cryptographic algorithms to secure the user data over the network.
+- **Cryptography**: It is the process of keeping the user information secured by using proper encryption techniques. The web application should use cryptographic algorithms to secure the user data over the network.
 
-- Exception management: Exceptions are events that require special processing or additional resources to execute the inputs. The web applications may encounter various exceptions, such as abnormal input, errors in output, inability to read or write a file, etc. The web application should inform the user about the error with minimal information and manage these exceptions without crashing or revealing any of the sensitive information about the servers, database, and other technologies used.
+- **Exception management**: Exceptions are events that require special processing or additional resources to execute the inputs. The web applications may encounter various exceptions, such as abnormal input, errors in output, inability to read or write a file, etc. The web application should inform the user about the error with minimal information and manage these exceptions without crashing or revealing any of the sensitive information about the servers, database, and other technologies used.
 
 As a penetration tester, you should focus and try to exploit vulnerabilities in all the mentioned areas of web security to confirm that these are secure, robust, and inevasible.
 
@@ -597,6 +597,18 @@ Some websites hide their content from users that even the web spiders or crawler
 As testers, you need to check if the website has any hidden content that attackers can extract using techniques, such as Brute force and directory traversal attacks. You can use the Perl script-
 based information gathering tool Weebr00t.pl to find the hidden content. Use the following syntax for the command line interface of the tool in Parrot terminal to launch this tool:
 
+**Download Webr00t**
+
+```
+wget https://dl.packetstormsecurity.net/UNIX/cgi-scanners/Webr00t.pl
+```
+
+**Launch tool**
+
+```
+perl Webr00t.pl -h 172.31.2.24 -v | grep -v "404 Not Found"
+```
+
 ```
 $ perl Webr00t.pl -h http://www.targetsite.com
 ```
@@ -683,7 +695,7 @@ WAS scans an organization’s websites, identifies, and reports infections, incl
 2. We do this by adding the site
 
    ````
-   wmap_sites -a http: //<IP>
+   wmap_sites -a <IP>
    ````
 
 3. Add the target (URL)
@@ -1016,7 +1028,7 @@ To identify the version, you must request the database to identify itself by inj
 
 In the above process, the type mismatch technique helps to obtain the version. The above given error message reveals that the OS of the database is Microsoft SQL server 2000 version. As a pen tester, you must attempt all the techniques to test for any information leakage.
 
-### Example: Identify Databases using SOQLMAP
+### Example: Identify Databases using SQLMAP
 Penetrations testers must find all the databases associated with the target web application. You can use the following command to identify the database names associated with the target website:
 
 ```
@@ -1688,7 +1700,7 @@ Cross-site scripting (XSS) is a vulnerability in dynamically generated webpages 
 
 You can use tools such as Burp Suite to test the web application for XSS vulnerabilities.
 
-![image-20210913101720103](/home/sherwinowen/Documents/my_tutorials/CPENT/images/image-20210913101720103.png)
+![image-20210913101720103](images/image-20210913101720103.png)
 
 The following sections discuss about various methods to test the target for XSS vulnerabilities.
 
