@@ -395,7 +395,7 @@ FROM ubuntu:16.04
 - (deprecated - use LABEL instead) Set the Author field of the generated images.
 
 Usage:
-AINTAINER <name>
+MAINTAINER <name>
 
 or
 

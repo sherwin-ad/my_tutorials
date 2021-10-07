@@ -290,14 +290,32 @@ Router#clear ip dhcp binding {address ip dhcp binding 10.0.88.166]
 ## Port Forward
 
 ```
+R2(config)#ip nat inside source static tcp 192.168.11.100 80 202.128.54.1 8080
+R2(config)interface g0/0
+R2(config-if)ip nat inside
+R2(config-if)exit
+R2(config)interface s0/0/0.101
+R2(config-if)ip nat outside
+```
+
+**Port forwarding verification**
+
+``` 
+R2# show ip nat translations
+```
 
 
 
-
-
-​```1
+```
 Router#conf t
 Router(config)#ip nat inside source static tcp 192.168.100.33 3389 interface Dialer0 62666
+```
+
+
+
+```
+Router#conf t
+Router(config)# ip nat inside source static tcp 192.168.38.251 443 49.255.220.146 443 extendable
 ```
 
 
