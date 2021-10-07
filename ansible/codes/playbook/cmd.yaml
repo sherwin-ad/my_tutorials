@@ -1,0 +1,6 @@
+- hosts: web
+  remote_user: root
+  become: yes
+  tasks:
+    - name: executing sample command 
+      shell: echo "Hello, World!" 

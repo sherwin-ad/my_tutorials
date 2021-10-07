@@ -4,4 +4,4 @@
   tasks:
   - name: Display Value
     debug:
-      msg: "{{ basic_var }}"
+      msg: "{{ basic_var }}

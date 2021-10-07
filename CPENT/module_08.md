@@ -61,9 +61,9 @@ Various categories of the web application security frame include:
 
 - **Session management**: Session refers to a sequence of request and response transactions between a user and a web application. Web applications must maintain integrity of sessions so that only the valid user can obtain information requested. Improper session management results in session-based attacks wherein the attackers can pose as genuine users to hijack the session to extract passwords and other sensitive data.
 
-- Cryptography: It is the process of keeping the user information secured by using proper encryption techniques. The web application should use cryptographic algorithms to secure the user data over the network.
+- **Cryptography**: It is the process of keeping the user information secured by using proper encryption techniques. The web application should use cryptographic algorithms to secure the user data over the network.
 
-- Exception management: Exceptions are events that require special processing or additional resources to execute the inputs. The web applications may encounter various exceptions, such as abnormal input, errors in output, inability to read or write a file, etc. The web application should inform the user about the error with minimal information and manage these exceptions without crashing or revealing any of the sensitive information about the servers, database, and other technologies used.
+- **Exception management**: Exceptions are events that require special processing or additional resources to execute the inputs. The web applications may encounter various exceptions, such as abnormal input, errors in output, inability to read or write a file, etc. The web application should inform the user about the error with minimal information and manage these exceptions without crashing or revealing any of the sensitive information about the servers, database, and other technologies used.
 
 As a penetration tester, you should focus and try to exploit vulnerabilities in all the mentioned areas of web security to confirm that these are secure, robust, and inevasible.
 
@@ -146,7 +146,7 @@ Broken authentication and authorization vulnerabilities
 - Session hijacking and Session replay attacks
 - MITM Attack
 
-### Crytography
+### Cryptography
 
 **Vulnerabilities**
 

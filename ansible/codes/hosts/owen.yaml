@@ -1,7 +1,7 @@
 all:
   hosts:
     web:
-      ansible_host: 192.168.101.103
+      ansible_host: 192.168.101.118
       ansible_port: 22
       ansble_user: sherwinowen
       

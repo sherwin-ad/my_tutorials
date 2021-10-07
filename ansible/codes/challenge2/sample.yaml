@@ -1,0 +1,5 @@
+- hosts: web
+  tasks:
+  - name: Show host's ip
+    debug:
+      msg: "{{ ansible_ssh_host }}"

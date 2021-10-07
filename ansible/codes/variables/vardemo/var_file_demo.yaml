@@ -1,6 +1,6 @@
 - hosts: localhost
-#  vars_files:
-#    - vars.yaml
+  vars_files:
+    - vars.yaml
   tasks:
   - name: Display 1st Value
     debug:
