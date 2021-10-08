@@ -33,6 +33,25 @@ Content-Type: text/html; charset=iso-8859-1
 </body></html>
 ```
 
+To remove bad request
+
+```
+# echo -ne "HEAD / HTTP/1.1\r\nHost: mutillidae.local\r\n\r\n" > tmp/request 
+```
+
+```
+nc mutillidae.local 80 < tmp/request                                      
+HTTP/1.1 200 OK
+Date: Thu, 07 Oct 2021 06:59:05 GMT
+Server: Apache/2.4.18 (Ubuntu)
+Last-Modified: Thu, 07 Oct 2021 01:30:06 GMT
+ETag: "2c39-5cdb933e27ced"
+Accept-Ranges: bytes
+Content-Length: 11321
+Vary: Accept-Encoding
+Content-Type: text/html
+```
+
 #### Telnet
 
 ```
@@ -61,6 +80,18 @@ Content-Type: text/html; charset=iso-8859-1
  Connection closed by foreign host.
  
 ```
+
+#### Curl
+
+```
+# curl -I http://192.168.101.119/mutiilidae                                       
+HTTP/1.1 404 Not Found
+Date: Thu, 07 Oct 2021 06:39:40 GMT
+Server: Apache/2.4.18 (Ubuntu)
+Content-Type: text/html; charset=iso-8859-1
+```
+
+
 
 #### ID serve 
 
@@ -306,9 +337,31 @@ https://www.megacorpone.com [200 OK] Apache[2.4.38], Bootstrap, Country[UNITED S
          Content-Type: text/html
  ```
 
+#### ChecK HTTP Headers from browser
+
+##### HTTP Headers Live
+
+Add HTTP Header Live in Firefox add-ons
+
+![image-20211007142545686](images/WEB VAPT Playbook.md)
+
+##### Wappalyzer
+
+Add Wappalyzer in Firefox add-ons
+
+![image-20211007143204273](images/image-20211007143204273.png)
+
+#### Check HTTP Headers with curl
+
+```
+# curl -I http://192.168.101.119/mutiilidae                                       
+HTTP/1.1 404 Not Found
+Date: Thu, 07 Oct 2021 06:39:40 GMT
+Server: Apache/2.4.18 (Ubuntu)
+Content-Type: text/html; charset=iso-8859-1
+```
 
 
- 
 
 ## 2. Vulnerability Scanning
 
@@ -374,3 +427,51 @@ As a first step, we should gather information about the application.
  As with many penetration testing disciplines, the goal of each attempted attack or exploit is to increase our permissions within the application or pivot to another application or target. Each successful exploit along the way may grant access to new functionality or components within the application. We may need to successfully execute several exploits to advance from an unauthenticated user account access to any kind of shell on the system.
 
  Enumeration of new functionality is important each step of the way especially since attacks that previously failed may succeed in a new context. As penetration testers, we must continue to enumerate and adapt until we've exhausted all attack avenues or compromised the system.
+
+
+
+
+
+## Introduction to Packet Analysis
+
+### Capturing Network Traffic with TCPDump
+
+```
+# tcpdump -i eth0 -nn -A -vvv -w tmp/packets.pcap
+```
+
+**Read pcap file**
+
+```
+# tcpdump -nn -A -vvv -r tmp/packets.pcap
+```
+
+**Read pcap file in Wireshark**
+
+```
+# wireshark tmp/packets.pcap &
+```
+
+
+
+-i Interface
+
+-nn Do not resolve names
+
+-A Also show ASCII and Hex captured
+
+-v Be verbose
+
+-w Write captured packets to PCAP file
+
+-ccount — Exit after receiving count packets
+-q Quick (quiet?) output. Print less protocol information
+
+-r file Read packets from file created with the -w option or other tool
+
+-X Also print (in hex) the data of each packet
+
+-XX Also print (in hex) the data of each packet including link level header
+
+### Packet Analysis with Wireshark
+
