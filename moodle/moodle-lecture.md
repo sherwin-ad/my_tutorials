@@ -60,15 +60,15 @@ $ mysql -h cdm-lms-db.cpuur4cknf6y.ap-southeast-1.rds.amazonaws.com -u admin -p
 
 # Create DB
 FLUSH PRIVILEGES;
-mysql> CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+mysql> CREATE DATABASE moodleDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 
 # Create user
-mysql>create user 'moodle_dbuser'@'localhost' IDENTIFIED BY 'passwordformoodledude';
+mysql>create user 'moodleUser'@'localhost' IDENTIFIED BY 'Cn48tk9uGnhsaf5';
 
 OR 
 
-mysql>create user 'moodle_dbuser'@'172.16.31.%' IDENTIFIED BY 'passwordformoodledude';
+mysql>create user 'moodleUser'@'172.16.31.%' IDENTIFIED BY 'passwordformoodledude';
 
 # Grant user privilege 
 mysql>GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,CREATE TEMPORARY TABLES,DROP,INDEX,ALTER ON 
