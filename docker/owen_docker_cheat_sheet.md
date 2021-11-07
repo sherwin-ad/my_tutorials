@@ -148,12 +148,51 @@ $ docker tag     # tags an image to a name (local or registry).
 
 ### Run an interactive container
 ```
-$ docker run -t -i ubuntu /bin/bash
+$ docker run -it ubuntu bash
 root@94b64d3ca5b4:/#
 
 # Note:
 [ctrl]+[p][q] # to quit and can attched to the container again
 ```
+
+### Start container with volumes
+
+```
+$ docker run -d --name devtest --mount source=myvol,target=/usr/share/nginx/html
+nginx:latest
+```
+
+### Backup  and Restore image
+
+```
+$ docker save -o nginx-custom.tar nginx-custom
+
+$ docker load -i nginx-custom.tar 
+bebd85308c10: Loading layer [==================================================>]  6.144kB/6.144kB
+Loaded image: nginx-custom:latest
+sherwinowen@owenbox:~$ docker images
+REPOSITORY                    TAG                 IMAGE ID       CREATED         SIZE
+nginx-custom                  latest              c6f13c48b373   9 minutes ago   133MB
+
+```
+
+### Remove all unused volumes
+```sh
+$ docker volume prune
+```
+
+
+
+
+
+### 
+
+```
+```
+
+
+
+
 
 ### Lifecycle
 
@@ -251,6 +290,11 @@ docker run -dit --name ubuntu3 --network ubuntu-net ubuntu
 
 # Check the IPAddress of the container
 docker inspect --format='{{.NetworkSettings.IPAddress}}' redis
+
+or
+
+docker network inspect mynetwork | grep -i -A5 a99ede298ebb
+
 ```
 
 ### Info
@@ -320,7 +364,7 @@ $ docker network inspect bridge
 ### Connection
 ```
 # Connect a container to a network
-$ docker network connect [network name] [contaiuner name]
+$ docker network connect [network name] [container name]
 
 # Disconnect a container to a network
 $ docker network disconnect [network name] [container name]
@@ -354,7 +398,10 @@ $ docker run -d --name webApp2 --mount source=owen_volume,destination=/usr/share
 
 ## Dockerfile
 
+### Creating our own images
+
 ### Creating a Dockerfile
+
 ```
 $ mkdir images
 $ cd images
@@ -660,7 +707,94 @@ Information:
 
 ```
 
+### Create a mysql container
+
+1. create two sql scripts create-table.sql & insert-data.sql
+
+   create-table.sql
+
+   ```sql
+   CREATE TABLE employees (
+       EID INT,
+       LastName VARCHAR(255),
+       FirstName VARCHAR(255),
+       Department VARCHAR(255),
+       Email VARCHAR(255)
+   );
+   ```
+
+   nsert-data.sql
+
+   ```sql
+   INSERT INTO employees (EID, Lastname, Firstname, Department, Email)
+   VALUES ('001', 'Adriano', 'Sherwin', 'IT', 'sherwin.adriano@gmail.com');
+   ```
+
+2. Create Dockerfile
+
+   ```sh
+   FROM mysql
+   ENV MYSQL_DATABASE learn-docker
+   COPY ./sql-scripts/ /docker-entrypoint-initdb.d/ 
+   ```
+
+3. Create docker image from the docker file
+
+   ```sh
+   docker build . -t my-mysql
+   ```
+
+4. Start a container from the image
+
+   ```sh
+   $ docker run -d -p 3306:3306 --name my-mysql -e MYSQL_ROOT_PASSWORD=supersecret my-mysql
+   ```
+
+5. Verify our customer mysql
+
+   ```sh
+   $ docker exec -it my-mysql bash
+   ```
+
+### Push image to docker hub
+
+1. Create docker image from the docker file
+
+   ```sh
+   $ docker build . -t sherwinowen/my-mysql:v1
+   ```
+
+2. Login to the docker hub via command line
+
+   ```sh
+   $ docker login
+   ```
+
+3. Push the image in the Docker Hub
+
+   ```sh
+   $ docker push sherwinowen/my-mysql:v1
+   The push refers to repository [docker.io/sherwinowen/my-mysql]
+   a21d30f0896c: Pushed 
+   da89a9a78c2d: Mounted from library/mysql 
+   471fa3dcb220: Mounted from library/mysql 
+   75dbcfc48320: Mounted from library/mysql 
+   373557f47aa4: Mounted from library/mysql 
+   a22d260e6692: Mounted from library/mysql 
+   f8389e4e632e: Mounted from library/mysql 
+   b58f3b77172b: Mounted from library/mysql 
+   17e5430d2956: Mounted from library/mysql 
+   e050d4242497: Mounted from library/mysql 
+   8b73ecde66c0: Mounted from library/mysql 
+   90e0289c2b06: Mounted from library/mysql 
+   e81bff2725db: Mounted from library/mysql 
+   v1: digest: sha256:7fbdc8ffbef4fee6a422cfd93dbaeac6a17074aa4687ecd3ee3187f45ce1f388 size: 3035
+   ```
+
+   
+
 ### Running a Dockerfile
+
 ```
 $ docker build -t my_ubuntu .
 ```
@@ -886,3 +1020,269 @@ $ docker-compose stop
 # To remove them from localhost
 $ docker-compose rm
 ```
+
+## How to Create a Docker Image From a Container
+
+1. Create a Base Container
+
+   ```
+   docker run -d --name myweb -p 80:80 nginx
+   ```
+
+2. Modify the Running Container
+
+   index.html
+
+   ```
+   <! DOCTYPE html>
+   <html>
+       <head>
+   	    <title>Example</title>
+       </head>
+       <body>
+   	    <p>Hello World!</p>
+       </body>	    
+   </html>
+   
+   ```
+
+   ```
+   docker cp index.html myweb:/usr/share/nginx/html/index.html
+   ```
+
+3. Create an Image From a Container
+
+   ```
+   $ docker commit myweb
+   $ docker images
+   REPOSITORY                    TAG                 IMAGE ID       CREATED         SIZE
+   <none>                        <none>              94bd8c1c38f3   1 second ago    133MB
+   ```
+
+4. Tag the Image
+
+   ```
+   $ docker tag 94bd8c1c38f3 myweb-custom
+   $ docker images
+   REPOSITORY                    TAG                 IMAGE ID       CREATED         SIZE
+   myweb-custom                 latest              94bd8c1c38f3   2 minutes ago   133MB
+   
+   ```
+
+   
+
+## Docker image scanning
+
+**Install anchore-engine**
+
+https://github.com/anchore/anchore-engine
+
+1. To quickly bring up an installation of Anchore Engine on a system with docker
+
+   ```shell
+   $ mkdir anchore
+   
+   $ cd anchore
+   
+   $ curl https://engine.anchore.io/docs/quickstart/docker-compose.yaml > docker-compose.yaml
+   
+   $ docker-compose up -d
+   
+   ```
+
+2. Installing Anchore CLI on Debian and Ubuntu
+
+   To install Python pip. For to the Anchore home directory and run
+
+   ```
+   apt-get update
+   apt-get install python-pip
+   pip install anchorecli
+   Note make sure ~/.local/bin is part of your PATH or just export it directly: export PATH="$HOME/.local/bin/:$PATH"
+   ```
+
+   Install the **AnchoreCLI** using python-pip
+
+   ```
+   pip install anchorecli
+   ```
+
+   This command will download and install the files for the AnchoreCLI. After installation, we now need to source our .profile file to using the command
+
+   ```
+   source ~/.profile
+   ```
+
+   To verify if the installation is successful and version of the `Anchorecli`, use the command
+
+   ```sh
+   anchore-cli --version
+   ```
+
+   To check anchore-CLI system status, use the command
+
+   ```sh
+   anchore-cli --url http://localhost:8228/v1 --u admin --p foobar system status
+   Service simplequeue (anchore-quickstart, http://queue:8228): up
+   Service analyzer (anchore-quickstart, http://analyzer:8228): up
+   Service policy_engine (anchore-quickstart, http://policy-engine:8228): up
+   Service catalog (anchore-quickstart, http://catalog:8228): up
+   Service apiext (anchore-quickstart, http://api:8228): up
+   
+   Engine DB Version: 0.0.15
+   Engine Code Version: 1.0.0
+   ```
+
+3. Define Anchore Engine parameters
+
+   ```sh
+   $ ANCHORE_CLI_URL=http://localhost:8228/v1
+   $ ANCHORE_CLI_USER=admin
+   $ ANCHORE_CLI_PASS=foobar
+   ```
+
+   The above sets the parameters only for the current shell. To set the current shell and other processes that start from it, we use the export command
+
+   ```sh
+   $ export ANCHORE_CLI_URL
+   
+   $ export ANCHORE_CLI_USER
+   
+   $ export ANCHORE_CLI_PASS
+   ```
+
+4. Command line examples
+
+   Add an image to the Anchore Engine
+
+   ```
+   anchore-cli image add docker.io/library/debian:latest
+   ```
+
+   Wait for an image to transition to `analyzed`
+
+   ```
+   anchore-cli image wait docker.io/library/debian:latest
+   ```
+
+   List images analyzed by the Anchore Engine
+
+   ```
+   anchore-cli image list
+   ```
+
+   Get summary information for a specified image
+
+   ```
+   anchore-cli image get docker.io/library/debian:latest
+   ```
+
+   Perform a vulnerability scan on an image
+
+   ```
+   anchore-cli image vuln docker.io/library/debian:latest os
+   ```
+
+   Perform a policy evaluation on an image
+
+   ```
+   anchore-cli evaluate check docker.io/library/debian:latest --detail
+   ```
+
+   List operating system packages present in an image
+
+   ```
+   anchore-cli image content docker.io/library/debian:latest os
+   ```
+
+   Subscribe to receive webhook notifications when new CVEs are added to an update
+
+   ```
+   anchore-cli subscription activate vuln_update docker.io/library/debian:latest
+   ```
+
+## Docker Container Linking
+
+Container linking allows multiple containers to link with each other. It’s the better option than exposing ports
+
+1. Donwload Jenkins image
+
+   ```sh
+   $ docker pull jenkins/jenkins
+   Using default tag: latest
+   latest: Pulling from jenkins/jenkins
+   bb7d5a84853b: Pull complete 
+   02850768abbf: Pull complete 
+   58af81139dd7: Pull complete 
+   bc03f8ec113a: Pull complete 
+   83dfcca17b11: Pull complete 
+   b0ddf932cd44: Pull complete 
+   5aeb70fbb53c: Pull complete 
+   d2db9f6674bc: Pull complete 
+   121eb53a0f8e: Pull complete 
+   f9cb844c40b8: Pull complete 
+   0210a1b74738: Pull complete 
+   ec63285050c8: Pull complete 
+   573294a5eca2: Pull complete 
+   553604f1c054: Pull complete 
+   71f550d81e2e: Pull complete 
+   a00a3937ff25: Pull complete 
+   6bcf1e5eaa65: Pull complete 
+   Digest: sha256:d7a4e14434f949afce4b87af91ea18691e995b54b1c29a1639cd14f0e1b43213
+   Status: Downloaded newer image for jenkins/jenkins:latest
+   docker.io/jenkins/jenkins:latest
+   ```
+
+2. Run Jenkine container
+
+   ```sh
+   $ docker run -d --name myjenkins jenkins/jenkins
+   abeff0d789b1b9aac101c92f10ed45b7ed709c90216f5575f32bef96e8eedb4d
+   
+   $ docker ps 
+   CONTAINER ID   IMAGE                    COMMAND                  CREATED         STATUS         PORTS                                                                                  NAMES
+   abeff0d789b1   jenkins/jenkins          "/sbin/tini -- /usr/…"   3 minutes ago   Up 3 minutes   8080/tcp, 50000/tcp                                                                    myjenkins
+   1b31abe4762b   portainer/portainer-ce   "/portainer"             10 months ago   Up 2 days      0.0.0.0:8000->8000/tcp, :::8000->8000/tcp, 0.0.0.0:9000->9000/tcp, :::9000->9000/tcp   portainer
+   
+   
+   
+   ```
+
+3. Create and link to an ubutu container and Run printenv, notice new variables for linking with source container
+
+   ```sh
+   $ docker run -it --link myjenkins:alias-src --name myubuntu ubuntu:latest /bin/bash
+   root@7fad5a90a68f:/# printenv 
+   HOSTNAME=7fad5a90a68f
+   ALIAS_SRC_ENV_JAVA_HOME=/opt/java/openjdk
+   ALIAS_SRC_ENV_JENKINS_UC=https://updates.jenkins.io
+   ALIAS_SRC_PORT_50000_TCP=tcp://172.17.0.3:50000
+   PWD=/
+   ALIAS_SRC_PORT_8080_TCP_PORT=8080
+   ALIAS_SRC_ENV_COPY_REFERENCE_FILE_LOG=/var/jenkins_home/copy_reference_file.log
+   HOME=/root
+   LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+   ALIAS_SRC_ENV_JENKINS_VERSION=2.317
+   ALIAS_SRC_ENV_JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
+   ALIAS_SRC_ENV_LANG=C.UTF-8
+   TERM=xterm
+   ALIAS_SRC_ENV_JENKINS_HOME=/var/jenkins_home
+   SHLVL=1
+   ALIAS_SRC_PORT_8080_TCP_PROTO=tcp
+   ALIAS_SRC_PORT_50000_TCP_PORT=50000
+   ALIAS_SRC_NAME=/myubuntu/alias-src
+   ALIAS_SRC_PORT_8080_TCP=tcp://172.17.0.3:8080
+   ALIAS_SRC_PORT_50000_TCP_PROTO=tcp
+   ALIAS_SRC_PORT=tcp://172.17.0.3:8080
+   ALIAS_SRC_ENV_JENKINS_INCREMENTALS_REPO_MIRROR=https://repo.jenkins-ci.org/incrementals
+   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+   ALIAS_SRC_PORT_8080_TCP_ADDR=172.17.0.3
+   ALIAS_SRC_ENV_JENKINS_SLAVE_AGENT_PORT=50000
+   ALIAS_SRC_ENV_REF=/usr/share/jenkins/ref
+   ALIAS_SRC_PORT_50000_TCP_ADDR=172.17.0.3
+   _=/usr/bin/printenv
+   
+   ```
+
+   
+

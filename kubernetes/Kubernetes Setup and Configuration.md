@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 ## Kubernetes Setup and Configuration
 
 ### Install in all nodes

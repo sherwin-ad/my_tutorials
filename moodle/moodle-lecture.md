@@ -8,7 +8,7 @@
 
 
 
-### Setup web server
+### Setup web server with mysql
 
 ```
 # Install Apache/MySQL server and client/PHP
@@ -50,9 +50,120 @@ $ sudo chmod -R 0755 /var/www/html/moodle
 
 ```
 
+## Setup web server with psql
+
+```sh
+$ sudo apt install apache2
+
+$ sudo apt-get install postgresql 
+
+$ sudo apt install php7.4 libapache2-mod-php7.4 openssl php-imagick php7.4-common php7.4-curl php7.4-gd php7.4-imap php7.4-intl php7.4-json php7.4-ldap php7.4-mbstring php7.4-pgsql php-ssh2 php7.4-xml php7.4-zip unzip php7.4-xmlrpc php7.4-soap
+```
 
 
-###  Setup MySQL Server
+
+## Setup Postgresql
+
+```
+$ sudo apt install postgresql
+```
+
+### Connection To PostgreSQL
+
+Now, establish a connection with the newly installed Postgres database server. First switch to the system’s postgres user account:
+
+```
+sudo su - postgres 
+```
+
+then type “psql” to get the postgress prompt:
+
+```
+psql 
+
+psql (13.2 (Ubuntu 13.2-1.pgdg20.04+1))
+Type "help" for help.
+
+postgres=#
+```
+
+
+
+### Secure PostgreSQL
+
+PostgreSQL installer creates a user “postgres” on your system. Default this user is not protected.
+
+First, create a password for “postgres” user account by running the following command.
+
+```
+$ sudo passwd postgres 
+```
+
+Next, switch to the “postgres” account Then switch to the Postgres system account and create a secure and strong password for PostgreSQL administrative database user/role as follows.
+
+```
+$  su - postgres 
+psql -c "ALTER USER postgres WITH PASSWORD 'secure_password_here';" 
+exit 
+```
+
+Restart the service to apply security changes.
+
+```
+sudo systemctl restart postgresql 
+```
+
+### Creating Moodle Database
+
+These instructions assume that the database server and web server are on the same machine. If that is not the case you have some more work to do. See the PostgreSQL documentation for further details.
+
+- Log into the PostgreSQL command line client. The exact form depends on how your PostgreSQL is configured but will be something like
+
+```sh
+$ psql -U postgres
+Password for user postgres:
+```
+
+Enter the password for your 'postgres' user set during installation. After some preamble you should see the prompt *postgres=#*.
+
+- Create the user for the Moodle database and assign a password:
+
+```sh
+$ postgres=# CREATE USER moodleuser WITH PASSWORD 'yourpassword';
+```
+
+Provide a suitably strong password. Please note that the actual authentication method depends on your PostgreSQL server's pg_hba.conf file. Some authentication methods (like ident) do not require the password. See the 'Client Authentication' section below for further details.
+
+- Create the database:
+
+```sh
+$ postgres=# CREATE DATABASE moodle WITH OWNER moodleuser;
+```
+
+- Drop database
+```
+$ postgres=# DROP DATABASE moodle;
+```
+
+  
+
+### Backup postgres db
+
+```sh
+$ pg_dump rtudblms | gzip > rtu-db-11052021.gz
+```
+
+### Restore postgres db
+
+```sh
+$gunzip -c mydb.sql.gz | psql -h localhost -U postgres -W -d mydb 
+```
+
+
+
+
+
+##  Setup MySQL Server
 
 ```
 # Connect to mysql server
@@ -79,6 +190,21 @@ mysql> GRANT ALL PRIVILEGES ON database_name.* TO 'username'@'localhost';
 FLUSH PRIVILEGES;
 
 mysql>quit;
+```
+
+To make sure the database was created correctly, use the \l at the psql console or execute psql -l shell command. You should get something like
+
+```
+ postgres=# \l
+                                      List of databases
+      Name    |  Owner     | Encoding |  Collation  |    Ctype    |   Access privileges   
+   -----------+------------+----------+-------------+-------------+-----------------------
+    moodle    | moodleuser | UTF8     | cs_CZ.utf8  | cs_CZ.utf8  | 
+    postgres  | postgres   | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+    template0 | postgres   | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres
+                                                                  : postgres=CTc/postgres
+    template1 | postgres   | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres
+                                                                  : postgres=CTc/postgres
 ```
 
 
@@ -381,3 +507,74 @@ owner: root
 group: apache group (apache, httpd, www-data, whatever; see above)
 permissions: 750 on directories, 640 on files.
 ```
+
+## Get Public IP automatically
+
+```
+$CFG->wwwroot   = 'https://'.$_SERVER['HTTP_HOST'].'';
+```
+
+ 
+
+## Reset Admin password
+
+1. Login to your moodle database and find the user table mdl_user (moodle ver. 3.3)
+
+![moodle user table](images/moodle_user.JPG)
+
+2. which admin password is stored using php function 'password_hash' so run the following code with your desired password (I have used 'test' as password).
+
+```php
+<?php
+$pass=password_hash("test", PASSWORD_BCRYPT);
+echo "password: " . $pass;
+?>
+```
+
+
+
+output:
+
+![user password](images/user_password.JPG)
+
+3. copy the password and update the table with copied password.
+
+![update password](images/update_password.JPG)
+
+ that's all now login with the password you used in php encryption.
+
+## Maintenace Mode
+
+1. Go to Site administration > Server > Maintenance mode in the Settings navigation.
+
+## Setup SSL
+
+1. Create a certificate signing request to send to a certificate authority
+
+```
+openssl req -new -newkey rsa:2048 -nodes -keyout server.key -out server.csr
+```
+
+ ```
+ CountryName = PH
+ StateOrProvinceName = Metro Manila
+ localityName = Quezon City
+ 0.organizationName  = Rizal Technological University
+ organizationalUnitName  = IT Department
+ commonName   = rtu
+ emailAddress = franz@mybusybee.net
+ ```
+
+2. Send the CSR to a certificate authority to obtain an SSL certificate
+
+3. Install SSL certificate
+
+   default-ssl.conf
+
+```
+SSLCertificateFile      /etc/ssl/certs/6a124f857c92bc2e.crt
+SSLCertificateKeyFile   /etc/ssl/certs/server.key
+SSLCertificateChainFile /etc/ssl/certs/gd_bundle-g2-g1.crt
+
+```
+

