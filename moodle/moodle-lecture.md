@@ -21,21 +21,21 @@ $ sudo apt install graphviz aspell ghostscript clamav php7.4-pspell php7.4-curl 
 # Restart apachebase
 sudo service apache2 restart
 
-$ Install Git
+# Install Git
 $ sudo apt install git
 
 # Download moodle
-$ cd /opt
-$ sudo git clone git://git.moodle.org/moodle.git
+cd /opt
+git clone git://git.moodle.org/moodle.git
 
 # Change directory into the downloaded Moodle folder
-$ cd moodle
+cd moodle
 
 # Retrieve a list of each branch available
-sudo git branch -a
+git branch -a
 
 # Tell git which branch to track or use
-sudo git branch --track MOODLE_39_STABLE origin/MOODLE_39_STABLE
+git branch --track MOODLE_311_STABLE origin/MOODLE_31_STABLE
 
 # Finally, Check out the Moodle version specified
 sudo git checkout MOODLE_39_STABLE
@@ -49,6 +49,25 @@ $ sudo chmod -R 777 /var/moodledata
 $ sudo chmod -R 0755 /var/www/html/moodle
 
 ```
+
+
+
+## Hide Apache server info
+
+```
+vi /etc/apache2/apache2.conf 
+```
+
+add the following
+
+```
+ServerTokens Prod
+ServerSignature Off 
+```
+
+
+
+
 
 ## Setup web server with psql
 
@@ -278,7 +297,28 @@ $ mysql -u [user] -p [database_name] < [filename].sql
 
 
 
-### Upgrade
+## Moodle Upgrade
+
+1. Before you upgrade your site for real
+
+- You are strongly advised to make a copy of your entire Moodle site onto another computer (see [Moodle migration](https://docs.moodle.org/20/en/Moodle_migration)) and run the upgrade there to verify it will work.
+
+2. Check the version
+
+- Administration > Server > Environment
+
+3. Put your Site into Maintenance Mode
+
+4. Backup important data
+
+- There are three areas that should be backed up before any upgrade:
+  - Moodle software (For example, everything in server/htdocs/moodle)
+  - Moodle uploaded files (For example, server/moodledata)
+  - Moodle database (For example, the SQL or Postgres database)
+
+
+
+
 
 ```
 Linux
@@ -294,6 +334,35 @@ Don't forget to make moodle/config.php (and the rest of the source code) readabl
 # chown -R root:root moodle (Linux debian - or even create a user especially for moodle. Don't use the web server user, e.g. www-data)
 # chmod -R 755 moodle
 ```
+
+```
+# Download moodle
+
+$ git clone git://git.moodle.org/moodle.git
+
+# Change directory into the downloaded Moodle folder
+$ cd moodle
+
+# Retrieve a list of each branch available
+git branch -a
+
+# Tell git which branch to track or use
+git branch --track MOODLE_311_STABLE origin/MOODLE_311_STABLE
+
+# Finally, Check out the Moodle version specified
+git checkout MOODLE_311_STABLE
+
+```
+
+## Debug mode
+
+```
+$CFG->debug = 38911;
+
+$CFG->debugdisplay = 1;
+```
+
+
 
 
 
@@ -311,6 +380,30 @@ sudo cp -R /var/moodledata/* /var/moodledata1/
 sudo chown -R www-data /var/moodledata1
 
 sudo chmod -R 777 /var/moodledata1
+```
+
+
+
+### CLI Upgrade
+
+```
+cd /var/www/html/moodle
+
+# Retrieve a list of each branch available
+sudo git branch -a
+
+# Tell git which branch to track or use
+sudo git branch --track MOODLE_310_STABLE origin/MOODLE_310_STABLE
+
+# Finally, Check out the Moodle version specified
+sudo git checkout MOODLE_39_STABLE
+
+```
+
+```
+# sudo -u www-data php admin/cli/maintenance.php --enable
+== Maintenance mode (https://104.199.170.168) ==
+Your site is currently in CLI maintenance mode, no web access is allowed.
 ```
 
 
@@ -462,9 +555,9 @@ Press Ctrl and X
 Type sudo apachectl restart
 ```
 
+Moodle site -> Site adminsitration -> Security -> Site security settings -> Maximum upload file size
 
-
-### Running Moodle on a dedicated server
+## Running Moodle on a dedicated server
 
 Assuming you are running Moodle on a sealed server (i.e. no user logins allowed on the machine) and that root takes care of the modifications to both moodle code and moodle config (config.php), then this are the most tight permissions I can think of:
 
@@ -555,6 +648,16 @@ output:
 openssl req -new -newkey rsa:2048 -nodes -keyout server.key -out server.csr
 ```
 
+
+
+```
+# openssl req -new -nodes -newkey rsa:<key size in bytes> -config <custom config file> -keyout <FQDN>.key -out <FQDN>.csr -<hashing algorithm>   
+Example:
+openssl req -new -nodes -newkey rsa:1024 -config /var/tmp/mySSL/myssl.cnf -keyout /var/tmp/mySSL/www.example.com.key -out /var/tmp/mySSL/www.example.com.csr -md5
+```
+
+
+
  ```
  CountryName = PH
  StateOrProvinceName = Metro Manila
@@ -576,5 +679,211 @@ SSLCertificateFile      /etc/ssl/certs/6a124f857c92bc2e.crt
 SSLCertificateKeyFile   /etc/ssl/certs/server.key
 SSLCertificateChainFile /etc/ssl/certs/gd_bundle-g2-g1.crt
 
+```
+
+## How to change your URL in Moodle
+
+1. [Login to the Moodle Dashboard](https://www.inmotionhosting.com/support/edu/moodle/moodle-login-administrator/).
+
+2. Add /admin/tool/replace/index.php to the end of the URL, and hit Enter on your keyboard. The address will look like this:
+
+   https://example.com/admin/tool/replace/index.php
+
+   (Be sure to replace example.com with your Moodle site. With older versions of Moodle add /admin/replace.php to the end of the URL.)
+
+   You will then be on the *DB search and replace* page. It will look like this:
+   [![Find and replace in Moodle](images/moodle_change-url_moodle-db-search-replace.png)](https://www.inmotionhosting.com/support/wp-content/uploads/2014/06/moodle_change-url_moodle-db-search-replace.png)
+
+    
+
+   You will also see a message stating “*This script is not supported, always make complete backup before proceeding! This operation can not be reverted! Several tables are not updated as part of the text replacement. This include configuration, log, events, and session tables.*“
+
+3. In the Search whole database for field, enter your existing URL. in my test I entered:
+
+   ```
+   https://example.com
+   ```
+
+4. In the Replace with this string field, enter the new URL. In my test I entered:
+
+   ```
+   https://newdomain.example.com
+   ```
+
+5. Check the box for Shorten result if necessary . Confirm the change, by checking the box for I understand the risks of this operation , then click the Yes, do it! button.
+
+   ![Changing URL in Moodle](images/moodle_change-url_search-replace-moodle-url.png)
+
+    
+
+6. It is finished when you see a message stating “ …finished ” at the bottom. Click the Continue button to return to the Moodle dashboard.
+
+   ![URL changed in Moodle with replace.php script](images/moodle_change-url_url-change-finished.png)
+
+    
+
+7. Using FTP or File Manager, navigate to where Moodle is installed. Open the **config.php** file, and locate the line starting with:
+   **$CFG->wwwroot**
+
+8. Update the line to your new address, in my test I changed from this:
+
+   ```
+   $CFG->wwwroot = 'https://example.com';
+   ```
+
+   To this:
+
+   Copy
+
+   ```
+   $CFG->wwwroot = 'https://newdomain.example.com';
+   ```
+
+   Here is a screenshot of the updated line:
+   [![Updating URL in config.php file in Moodle](images/moodle_change-url_updated-wwwroot-moodle.png)](https://www.inmotionhosting.com/support/wp-content/uploads/2014/06/moodle_change-url_updated-wwwroot-moodle.png)
+
+    
+
+9. **Save** your changes and you are done. Now you can move your site (if necessary) to the new folder location.
+
+## Count the number of courses
+
+```sql
+select count(*) from mdl_course;
+```
+
+
+
+## Apache Performance recommendations
+
+/etc/apache2/mods-enabled/mpm_prefork.conf
+
+- Set the **MaxRequestWorkers** directive correctly (**MaxClients** before Apache 2.4). Use this formula to help (which uses 80% of available memory to leave room for spare):
+
+```
+MaxRequestWorkers = Total available memory * 80% / Max memory usage of apache process
+```
+
+Memory usage of apache process is usually 10MB but Moodle can easily use up to 100MB per process, so a general rule of thumb is to divide your available memory in megabytes by 100 to get a conservative setting for MaxClients. You are quite likely to find yourself lowering the MaxRequestWorkers from its default of 150 on a Moodle server. To get a more accurate estimate read the value from the shell command:
+
+```
+# ps -ylC apache2 --sort:rss
+
+# ps -ylC apache2 --sort:rss | wc -l
+```
+
+## Php Performance recommendations
+
+- *memory_limit* needs to be at least 96M (although some functions may not work if this low). Moodle will refuse to install if lower. 128M is recommended. Large systems may need an even higher setting.
+- *session.save_handler* needs to be set to FILES.
+- *magic_quotes_runtime* needs to be OFF. (DEPRECATED in PHP 5.3.0, and REMOVED as of PHP 7.0.0.)
+- *file_uploads* needs to be ON.
+- *session.auto_start* needs to be OFF.
+- The temp folder must be defined and writeable by your webserver user
+- Check the error display/logging section. Make sure the settings are appropriate for your server use.
+- *post_max_size* and *upload_max_filesize* restrict the maximum file size that can be uploaded.
+- Check the *[mail function]* and database section (for your chosen database) to make sure they match your server configuration.
+
+### Finding the correct php.ini
+
+```
+php -i | grep php.ini
+```
+
+## Cron
+
+The CLI (command line interpreter) script. This will be at the path
+
+```
+/path/to/moodle/admin/cli/cron.php
+```
+
+If in doubt, this is the correct script to use. This needs to be run by a 'PHP CLI' program on your computer. So the final command may look something like
+
+```
+/usr/bin/php /path/to/moodle/admin/cli/cron.php
+```
+
+```
+$ crontab -u www-data -e
+```
+
+*This will open an editor window. To run the cli cron script every 1 minute, add the line:*
+
+```
+* * * * * /usr/bin/php  /path/to/moodle/admin/cli/cron.php >/dev/null
+```
+
+## Generate SSH key pair using puttygen
+
+```sh
+# Install Puttygen
+$ sudo apt install putty-tools
+
+# Generate Key Pair for Authentication in Linux
+$ puttygen -t rsa -b 2048 -C "user@host" -o keyfile.ppk
+
+# Out public key
+$ puttygen -L reine.ppk 
+
+# Changing the Passphrase of a Key
+$ puttygen keyfile.ppk -P
+
+# Convert .ppk to .pem
+$ puttygen privatekey.ppk -O private-openssh -o privatekey.pem
+
+# Converting .pem to .ppk
+$ puttygen pemKey.pem -o ppkKey.ppk -O private
+```
+
+## Generate SSH key pair using ssh-keygen
+
+```
+ssh-keygen -t rsa -b 4096 -C "your_email@domain.com"
+```
+
+
+
+## Finding large backup files 
+
+
+
+```sql
+SELECT contenthash, contextid, filearea, filepath, filename, filesize FROM mdl_files ORDER BY filesize DESC LIMIT 10;
+               contenthash                | contextid |     filearea      | filepath |                                    filename                                    |  filesize  
+------------------------------------------+-----------+-------------------+----------+--------------------------------------------------------------------------------+------------
+ 5ae141a5a1a03b9faf8b76fc7e8f0b4e74891de5 |      4060 | course            | /        | backup-moodle2-course-221-computer_1_basic_computer_concepts-20210912-2031.mbz | 3760227875
+ 3d1d939b7e9f033904a8afbc1eeaf22aa3a2ee8a |      8198 | course            | /        | backup-moodle2-course-494-comp3-20210908-1848.mbz                              | 3284946028
+ 736ade65c2d7145cee0c0948aa4afd58b1c83067 |    247604 | course            | /        | backup-moodle2-course-3016-ict-ss-20210922-1210.mbz                            |  725733580
+ 3bfbb91fe10686cbf542ea5dcaefbe2d947ec5cc |    167694 | course            | /        | backup-moodle2-course-1330-ict-vg8l-20210912-2335.mbz                          |  685473345
+ 57427e536996c80ef8a459835fcbcec5ec2c48bd |     83453 | course            | /        | backup-moodle2-course-1113-profed11-20210920-1658.mbz                          |  649615370
+ 152559eb1192f63ac7f88bbb0f1c0927b482c4f1 |     15956 | course            | /        | Dr. Diaz- PROGRAMMING LANGUAGES-Backup File.mbz                                |  386337845
+ d620e75b82ee6b0a1dbb19f7f1a43924e28ae792 |      5589 | recyclebin_course | /        | backup.mbz                                                                     |  361862046
+ 5c7c50714656c4f3c087bc55508ca53c2d98f950 |      8621 | course            | /        | backup-moodle2-course-516-e-tech-20210201-0903.mbz                             |  345812878
+ 590f8d5b67339d4afd57fe8619c472ac47cce0d2 |    231986 | combined          | /        | combined.pdf                                                                   |  277471599
+ ca6b6cdfcdaf5629b98456abb73e43b12bd4b8ec |    114968 | course            | /        | backup-moodle2-course-1216-entrep-shs-20210315-1821.mbz                        |  268911240
+(10 rows)
+```
+
+
+
+```
+SELECT contenthash, contextid, filearea, filepath, filename, filesize FROM mdl_files WHERE contenthash = '5ae141a5a1a03b9faf8b76fc7e8f0b4e74891de5';
+```
+
+
+
+```sh
+$ find . -xdev -type f -size +100M -print | xargs ls -lh | sort -k5,5 -h -r | head
+-rwxrwxrwx 1 www-data ubuntu 3.6G Nov  9 04:11 ./filedir/5a/e1/5ae141a5a1a03b9faf8b76fc7e8f0b4e74891de5
+-rwxrwxrwx 1 www-data ubuntu 3.1G Nov  9 12:55 ./filedir/3d/1d/3d1d939b7e9f033904a8afbc1eeaf22aa3a2ee8a
+-rwxrwxrwx 1 www-data ubuntu 696M Nov  9 09:31 ./filedir/6d/f1/6df1c4506a8857685002c1a3586ed36de850d753
+-rwxrwxrwx 1 www-data ubuntu 696M Nov  8 14:51 ./trashdir/6d/f1/6df1c4506a8857685002c1a3586ed36de850d753
+-rwxrwxrwx 1 www-data ubuntu 693M Nov  9 02:47 ./filedir/73/6a/736ade65c2d7145cee0c0948aa4afd58b1c83067
+-rwxrwxrwx 1 www-data ubuntu 654M Nov  8 23:36 ./filedir/3b/fb/3bfbb91fe10686cbf542ea5dcaefbe2d947ec5cc
+-rwxrwxrwx 1 www-data ubuntu 620M Nov  9 04:29 ./filedir/57/42/57427e536996c80ef8a459835fcbcec5ec2c48bd
+-rwxrwxrwx 1 www-data ubuntu 369M Nov  9 12:38 ./filedir/15/25/152559eb1192f63ac7f88bbb0f1c0927b482c4f1
+-rwxrwxrwx 1 www-data ubuntu 346M Nov  9 12:16 ./filedir/d6/20/d620e75b82ee6b0a1dbb19f7f1a43924e28ae792
+-rwxrwxrwx 1 www-data ubuntu 330M Nov  9 01:42 ./filedir/5c/7c/5c7c50714656c4f3c087bc55508ca53c2d98f950
 ```
 
