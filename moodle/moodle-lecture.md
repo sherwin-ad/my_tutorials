@@ -887,3 +887,9 @@ $ find . -xdev -type f -size +100M -print | xargs ls -lh | sort -k5,5 -h -r | he
 -rwxrwxrwx 1 www-data ubuntu 330M Nov  9 01:42 ./filedir/5c/7c/5c7c50714656c4f3c087bc55508ca53c2d98f950
 ```
 
+
+
+```
+SELECT sum(filesize) as filesize FROM `mdl_files` f INNER JOIN mdl_context cn ON cn.id = f.contextid INNER JOIN mdl_course c ON c.id = cn.instanceid AND cn.contextlevel = 50 where c.id = "4060"
+```
+
