@@ -636,6 +636,18 @@ output:
 
  that's all now login with the password you used in php encryption.
 
+
+
+OR
+
+```sql
+UPDATE mdl_user SET password=MD5('NEW_PASSWORD') WHERE username='admin';
+```
+
+
+
+
+
 ## Maintenace Mode
 
 1. Go to Site administration > Server > Maintenance mode in the Settings navigation.
