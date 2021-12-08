@@ -4,7 +4,7 @@
 
 # Network VAPT Playbook
 
-## 1. Information Gathering
+## 1. 
 
 ### Host Discovery
 
@@ -125,7 +125,7 @@
 
 ### Enumeration
 
-- to collect additional information
+- to collect additional information about the open port and services
 
 ## Vulnerability Assesment
 
