@@ -396,7 +396,7 @@ $ docker volume inspect
 $ docker run -d --name webApp2 --mount source=owen_volume,destination=/usr/share/nginx/html -p 80:80 nginx
 ```
 
-## Dockerfilel
+## Dockerfile
 
 ### Creating our own images
 
@@ -723,7 +723,7 @@ Information:
    );
    ```
 
-   nsert-data.sql
+   insert-data.sql
 
    ```sql
    INSERT INTO employees (EID, Lastname, Firstname, Department, Email)
