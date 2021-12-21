@@ -83,3 +83,23 @@ Thread Group > Add > Config Element > Http Cookie Manager
 
 
 
+## Assertions
+
+- Response Assertion
+- Size Assertion
+- Duration Assertion
+- Assertion Results
+
+
+
+## Web applications to test with Jmeter
+
+- https://blazedemo.com/
+- https://the-internet.herokuapp.com/
+- offline web app
+  https://marketplace.microfocus.com/appdelivery/content/web-tours-sample-application
+
+
+
+## Transaction Controllers
+
