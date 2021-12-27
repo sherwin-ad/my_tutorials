@@ -101,5 +101,27 @@ Thread Group > Add > Config Element > Http Cookie Manager
 
 
 
-## Transaction Controllers
+## Controllers
 
+- Recording Controller
+
+- Transaction Controller
+
+- Module Controller
+
+- Simple Controller
+
+- Interleave controller
+
+  One sampler per iteration is executed in top to bottom order
+
+- Runtime Controller
+
+  Controls the execution of its samplers/requests for the given time
+
+- Randon Controller
+
+  Plays only one of its children samples picking it randomly 
+
+- IF Controller
+- Loop Controller

@@ -117,6 +117,12 @@
   - Wireless Access Points
   - Media Converters
 
+### PDU (Protocol Data Unit)
+
+- Bit or Symbol
+
+  
+
 ## Layer 2 (Data Link)
 ### Data Link Layer (Layer 2)
 - Packages data into frames and transmitting those frames on the network, performing error detection/correction, and uniquely identifying network devices with an address (MAC), and flow control
@@ -127,7 +133,7 @@
   - Link Layer Control (LLC)
     - Connection services
     - Synchronizing transmissions
-### Media Access Control (MAC)
+### Media Access Control (MAC) 802.3
 - Physical addressing
   - Uses 48-bit address assigned to a network interface card (NIC) by manufacturer
   - First 24-bits is the vendor code
@@ -138,7 +144,7 @@
 - Method of transmission
   - Many devices are interconnected
   - Determines whose turn it is to transmit to prevent interference with other devices
-### Logical Link Control (LLC)
+### Logical Link Control (LLC) 802.2
 - Provides connection services
 - Acknowledgement of receipt of a message
 - Flow control
@@ -276,6 +282,8 @@
 - WAN Accelerators
 - Load Balancers
 - Firewalls
+- Multilayer switch
+- IDS
 
 ## Layer 5 (Session)
 ### Session Layer (Layer 5)
@@ -329,7 +337,13 @@
 - Ensures data is readable by receiving system
 - Provides proper data structures
 - Negotiates data transfer syntax for the Application Layer (Layer 7)
+
+### Compression
+
+
+
 ### Encryption
+
 - Used to scramble the data in transit to keep it secure from prying eyes
 - Provides confidentiality of data
 - Example:
