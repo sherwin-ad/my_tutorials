@@ -177,7 +177,7 @@ console.log(reference);
 
      example:
 
-     ```
+     ```javascript
      let Myvalue;
      
      Myvalue = null;
@@ -405,7 +405,7 @@ console.log(str2)
 
 ## If and Else Statement
 
-```
+```javascript
 <script>
 let time = 15
 
@@ -417,7 +417,7 @@ else
 </script>    
 ```
 
-```
+```javascript
 <script>
 let time = 9
 
@@ -434,7 +434,7 @@ else{
 </script>    
 ```
 
-```
+```javascript
 <script>
 let time = 13;
 

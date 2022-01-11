@@ -29,9 +29,11 @@
 
 
 
+![image-20211223101625817](images\image-20211223101625817.png)
 
 
-## Node
+
+## Node or Minions
 
 * The node serves as a worker machine in a K8s cluster
 * Node can be physical computer or a virtual machine
@@ -42,6 +44,207 @@
 2. Container tooling like Docker
 3. A kube-proxy process running
 4. Supervisord
+
+## Cluster
+
+- A cluster is a set of nodes grouped together. This way even if one node fails you have your application still accessible from the other nodes. Moreover having multiple nodes helps in sharing load as well.
+
+## Master Node
+
+- The master is another node with Kubernetes installed in it, and is configured as a Master. 
+- The master watches over the nodes in the cluster and is responsible for the actual orchestration of
+  containers on the worker nodes.
+
+## Components
+
+### API server
+
+- The API server acts as the front-end for kubernetes. The users, management devices, Command line interfaces all talk to the API server to interact with the kubernetes cluster.
+
+### Etcd
+
+- ETCD key store. 
+- ETCD is a distributed reliable key-value store used by kubernetes to store all data used to manage the cluster. Think of it this way, when you have multiple nodes and multiple masters in your cluster, etcd stores all that information on all the nodes in the cluster in a distributed manner. 
+- ETCD is responsible for implementing locks within the cluster to ensure there are no conflicts
+  between the Masters.
+
+### Sheduler
+
+- The scheduler is responsible for distributing work or containers across multiple nodes. 
+- It looks for newly created containers and assigns them to Nodes.
+
+### Controllers
+
+- The controllers are the brain behind orchestration. 
+- They are responsible for noticing and responding when nodes, containers or endpoints goes down. 
+- The controllers makes decisions to bring up new containers in such cases.
+
+### Container Runtime
+
+- The container runtime is the underlying software that is used to run containers. In our case it happens to be Docker.
+
+### Kubelet
+
+- Kubelet is the agent that runs on each node in the cluster. The agent is responsible for making sure that the containers are running on the nodes as expected.
+
+## Master vs Worker Nodes
+
+![image-20211223152512626](images\image-20211223152512626.png)
+
+
+
+### Kubectl command
+
+- kube command line tool or kubectl or kube control as it is also called.
+- The kube control tool is used to deploy and manage applications on a kubernetes cluster, to get cluster information, get the status of nodes in the cluster and many other things.
+
+$ kubectl run 
+
+- is used to deploy an application on the cluster. 
+
+$ kubectl cluster-info 
+
+- is used to view information about the cluster and the 
+
+$ kubectl get pod 
+
+- is used to list all the nodes part of the cluster.
+
+
+
+## Setup Kubernetes
+
+
+
+### 1. Minikube
+
+- Minikube bundles all of these different components into a single image providing us a pre-configured single node kubernetes cluster so we can get started in a matter of minutes.
+- The whole bundle is packaged into an ISO image and is available online for download.
+
+![image-20211223195125878](images\image-20211223195125878.png)
+
+**Steps**
+
+- You need 3 things to get this working, you must have a hypervisor installed, kubectl installed and
+  minikube executable installed on your system
+- With the minikube utility you could only setup a single node kubernetes cluster.
+
+![image-20211223195238959](images\image-20211223195238959.png)
+
+
+
+### 2. Kubeadm
+
+- The kubeadmin tool helps us setup a multi node cluster with master and workers on separate machines.
+
+**Steps**
+
+![image-20211223195654259](images\image-20211223195654259.png)
+
+1. Set hostnames
+
+   ```
+   $ sudo hostnamectl set-hostname kubernetes-master
+   $ sudo hostnamectl set-hostname kubernetes-worker
+   ```
+
+2. Install Docker
+
+```
+$ sudo apt update
+$ sudo apt install docker.io
+$ sudo systemctl start docker
+$ sudo systemctl enable dockerInstall Kubernetes
+```
+
+3. Install Kubernetes
+
+```
+$ sudo apt install apt-transport-https curl
+$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+$ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+$ sudo apt install kubeadm kubelet kubectl kubernetes-cni
+```
+
+4. 
+
+**Before you begin**
+
+- A compatible Linux host. The Kubernetes project provides generic instructions for Linux distributions based on Debian and Red Hat, and those distributions without a package manager.
+
+- 2 GB or more of RAM per machine (any less will leave little room for your apps).
+
+- 2 CPUs or more.
+
+- Full network connectivity between all machines in the cluster (public or private network is fine).
+
+  Edit /etc/hosts 
+
+  ```
+  127.0.0.1 localhost
+  127.0.1.1 kubemaster
+  
+  # The following lines are desirable for IPv6 capable hosts
+  ::1     ip6-localhost ip6-loopback
+  fe00::0 ip6-localnet
+  ff00::0 ip6-mcastprefix
+  ff02::1 ip6-allnodes
+  ff02::2 ip6-allrouters
+  ```
+
+  edit /etc/hostname
+
+  ```
+  kubemaster
+  ```
+
+  
+
+- Certain ports are open on your machines. See [here](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#check-required-ports) for more details.
+
+- Swap disabled. You **MUST** disable swap in order for the kubelet to work properly.
+
+  Run command 
+
+  ```
+  Set hostnames
+  $ sudo hostnamectl set-hostname kubernetes-master
+  $ sudo hostnamectl set-hostname kubernetes-worker
+  ```
+
+  OR
+
+  ```
+  # swapoff -a
+  ```
+
+  Comment out swap in /etc/fstab
+
+  ```
+  # /etc/fstab: static file system information.
+  #
+  # Use 'blkid' to print the universally unique identifier for a
+  # device; this may be used with UUID= as a more robust way to name devices
+  # that works even if disks are added and removed. See fstab(5).
+  #
+  # <file system> <mount point>   <type>  <options>       <dump>  <pass>
+  # / was on /dev/ubuntu-vg/ubuntu-lv during curtin installation
+  /dev/disk/by-id/dm-uuid-LVM-i6LmaQCusf1JanX2ys5uoX1LTwyL4her2uI22Rx0EDUYNORi4R37KEs8xzV1bsUg / ext4 defaults 0 1
+  # /boot was on /dev/sda2 during curtin installation
+  /dev/disk/by-uuid/0ca723bc-047f-4f91-a351-c3c90fee3c72 /boot ext4 defaults 0 1
+  # /swap.img     none    swap    sw      0       0
+  ```
+
+  
+
+1. First, you must have multiple systems or virtual machines created for configuring a cluster. We will see how to setup up your laptop to do just that if you are not familiar with it. Once the systems are created, designate one as master and others as worker nodes.
+2. The next step is to install a container runtime on the hosts. We will be using Docker, so we must install Docker on all the nodes.
+3. The next step is to install kubeadmin tool on all the nodes. The kubeadmin tool helps us bootstrap the kubernetes solution by installing and configuring all the required components in the right nodes.
+4. The next step is to initialize the Master server. During this process all the required components are installed and configured on the master server. That way we can start the cluster level configurations from the master server. Once the master is initialized and before joining the worker nodes to the master, we must ensure that the network pre-requisites are met. A normal network connectivity
+   between the systems is not SUFFICIENT for this. Kubernetes requires a special network between the master and worker nodes which is called as a **POD network**. We will learn more about this network in the networking section later in this course. For now we will simply follow the instructions available to get this installed and setup in our environment.
+5. The last step is to join the worker nodes to the master node. We are then all set to launch our application in the kubernetes environment. 
+
+
 
 ## Pod
 
@@ -73,10 +276,10 @@
 * Load balancing
 
 ### Kinds of Controllers
-1. ReplicaSets <br>
+1. ReplicaSets 
 - Ensures that a specified number of replicas for a pod are running at all times
 
-2. Deployments <br>
+2. Deployments 
 - provides declarative updates for pods and ReplicaSets
 
    * Deployment Controller Use Cases
@@ -1122,7 +1325,7 @@ minikube start
    ```
    $ kubectl get services
    NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
-hw           NodePort    10.107.112.170   <none>        80:30150/TCP   2m13s
+   hw           NodePort    10.107.112.170   <none>        80:30150/TCP   2m13s
    kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP        11h$ kubectl get deployments
    NAME   READY   UP-TO-DATE   AVAILABLE   AGE
    hw     1/1     1            1           3m33s
