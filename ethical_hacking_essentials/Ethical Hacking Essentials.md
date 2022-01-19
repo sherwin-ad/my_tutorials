@@ -119,6 +119,91 @@
 - Occur when attackers tamper with hardware or software prior to installation
 - Attackers tamper with the hardware or software at its source or in transit
 
+### Information Security Attack Vectors
+
+**Cloud Computing Threats**
+
+- Cloud computing is an on-demand delivery of IT capabilities where sensitive data of organizations, and their clients is stored. Flaw in one client’s application cloud allow attackers to access other client’s data
+
+**Advanced Persistent Threats (APT)**
+
+- An attack that is focused on stealing information from the victim machine without the user
+  being aware of it
+
+**Viruses and Worms**
+
+- The most prevalent networking threat that are capable of infecting a network within seconds
+
+
+
+## Module 02 Ethical Hacking Fundamentals
+
+### Cyber Kill Chain Methodology
+
+**Reconnaissance**
+
+- Gather data on the target to probe for weak points
+
+- Activities of the adversary include the following:
+  - Gathering information about the target organization by searching the Internet or through social engineering
+  - Performing analysis of various online activities and publicly available information
+  - Gathering information from social networking sites and web services
+  - Obtaining information about websites visited
+  - Monitoring and analyzing the target organization’s website
+  - Performing Whois, DNS, and network footprinting
+  - Performing scanning to identify open ports and services
+
+**Weaponization**
+
+- Create a deliverable malicious payload using an exploit and a backdoor
+- The following are the activities of the adversary:
+  - Identifying appropriate malware payload based on the analysis
+  - Creating a new malware payload or selecting, reusing, modifying the available malware payloads based on the identified vulnerability
+  - Creating a phishing email campaign
+  - Leveraging exploit kits and botnets
+
+**Delivery**
+
+- Send weaponized bundle to the victim using email, USB, etc.
+
+- The following are the activities of the adversary:
+  - Sending phishing emails to employees of the target organization
+  - Distributing USB drives containing malicious payload to employees of the target organization
+  - Performing attacks such as watering hole on the compromised website
+  - Implementing various hacking tools against the operating systems, applications, and servers of the target organization
+
+**Exploitation**
+
+- Exploit a vulnerability by executing code on the victim’s system
+
+- Activities of the adversary include the following:
+  - Exploiting software or hardware vulnerabilities to gain remote access to the target system
+
+**Installation**
+
+- Install malware on the target system
+- The following are the activities of the adversary:
+  - Downloading and installing malicious software such as backdoors
+  - Gaining remote access to the target system
+  - Leveraging various methods to keep backdoor hidden and running
+  - Maintaining access to the target system
+
+**Command and Control**
+
+- Create a command and control channel to communicate and pass data back and forth
+
+- The following are the activities of the adversary:
+  - Establishing a two-way communication channel between the victim’s system and the adversary-controlled server
+  - Leveraging channels such as web traffic, email communication, and DNS messages
+  - Applying privilege escalation techniques
+  - Hiding any evidence of compromise using techniques such as encryption
+
+**Actions on Objectives**
+
+- Perform actions to achieve intended objectives/goals
+
+  
+
 ## Module 08 Wireless Attack and Countermeasures
 
 ### Wireless Terminology
