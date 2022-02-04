@@ -79,6 +79,51 @@
 
    
 
+## Bulk Loading of Data
+
+### Bulk API
+
+- /_bulk
+- new-line JSON
+- Index, Create, Delete, Update
+- --data-binary
+
+**Create File with Requests (make sure to include new line at end of file)**
+
+```
+vi reqs
+{ "index" : { "_index" : "my-test", "_type" : "my-type", "_id" : "1" } }
+{ "col1" : "val1"}
+{ "index" : { "_index" : "my-test", "_type" : "my-type", "_id" : "2" } }
+{ "col1" : "val2"}
+{ "index" : { "_index" : "my-test", "_type" : "my-type", "_id" : "1" } }
+{ "col1" : "val3" }
+```
+
+**Load from CURL**
+
+``` 
+curl -s -H "Content-Type: application/x-ndjson" -XPOST localhost:9200/_bulk --data-binary "@reqs"; echo
+```
+
+
+
+**Load from Console (Devtools)**
+
+```
+POST _bulk
+{ "index" : { "_index" : "my-test-console", "_type" : "my-type", "_id" : "1" } }
+{ "col1" : "val1" }
+{ "index" : { "_index" : "my-test-console", "_type" : "my-type", "_id" : "2" } }
+{ "col1" : "val2"}
+{ "index" : { "_index" : "my-test-console", "_type" : "my-type", "_id" : "3" } }
+{ "col1" : "val3" }
+```
+
+
+
+
+
 ## Indexing, Retrieving and Deleting Documents
 
 | Relational DB | Elasticsearch |
@@ -2828,5 +2873,231 @@ $ bin/logstash -f ~/Documents/elk/data/filebeat.conf
 $./filebeat
 ```
 
+## Snapshot Repository
+
+### Create snapshot
+
+1. Stop the ElasticSearch service.
+
+```
+systemctl stop elasticsearch
+```
+
+2. Create a local directory to store the Snapshot.
+
+```
+mkdir /backup
+chown -R elasticsearch:elasticsearch /backup
+```
+
+3. Edit the ElasticSearch configuration file named: elasticsearch.yml
+
+```
+vi /etc/elasticsearch/elasticsearch.yml
+```
+
+Add the following line at the end of the file.
+
+```
+path.repo: ["/home/sherwinowen/my_lab/elk/es_backup"]
+```
+
+4. Register a new Snapshot repository
+
+Open Kibana goto Management > Stack Management > Snapshot and Restore > Repositories > Register repository
+
+List all Snapshot repositories.
+
+```
+$ curl -X GET "http://localhost:9200/_snapshot/_all?pretty"{
+  "es_backup" : {
+    "type" : "fs",
+    "settings" : {
+      "location" : "/home/sherwinowen/my_lab/elk/es_backup"
+    }
+  }
+}
+```
 
 
+
+5. Create a Snapshot of the ElasticSearch database.
+
+**Using Devtools**
+
+Open Kibana goto management > devtools
+
+```
+PUT /_snapshot/es_backup/esdata
+```
+
+List all the snapshot
+
+```
+GET /_snapshot/es_backup/_all
+```
+
+**Using Curl**
+
+Create a Snapshot of the ElasticSearch database.
+
+```
+curl -X PUT "http://localhost:9200/_snapshot/es_backup/snapshot_001?wait_for_completion=true&pretty"
+```
+
+- In our example, we created a snapshot named SNAPSHOT_001.
+- In our example, we stored this snapshot inside the repository named: BACKUP.This 
+- Snapshot stores all the Elasticsearch information.
+
+Here is the command output:
+
+Copy to Clipboard
+
+```
+{
+  "snapshot" : {
+    "snapshot" : "snapshot_001",
+    "uuid" : "mJWX4FD9SVqFvzKpG7y3_w",
+    "version_id" : 7060299,
+    "version" : "7.6.2",
+    "indices" : [ ],
+    "include_global_state" : true,
+    "state" : "SUCCESS",
+    "start_time" : "2020-05-01T16:33:21.959Z",
+    "start_time_in_millis" : 1588350801959,
+    "end_time" : "2020-05-01T16:33:21.959Z",
+    "end_time_in_millis" : 1588350801959,
+    "duration_in_millis" : 0,
+    "failures" : [ ],
+    "shards" : {
+      "total" : 0,
+      "failed" : 0,
+      "successful" : 0
+    }
+  }
+}
+```
+
+
+
+To create a Snapshot of a specific ElasticSearch index, use the following command.
+
+```
+curl -X PUT "http://localhost:9200/_snapshot/backup/snapshot_index_account_001?wait_for_completion=true&pretty" -H 'Content-Type: application/json' -d'
+{
+  "indices": "accounts",
+  "ignore_unavailable": true,
+  "include_global_state": false,
+  "metadata": {
+    "taken_by": "Bruno",
+    "taken_because": "Backup of the index named ACCOUNTS"
+  }
+}
+'
+```
+
+Here is the command output:
+
+```
+{
+  "snapshot" : {
+    "snapshot" : "snapshot_index_account_001",
+    "uuid" : "Zfv3LmIoTbu9amZImqo15Q",
+    "version_id" : 7060299,
+    "version" : "7.6.2",
+    "indices" : [
+      "accounts"
+    ],
+    "include_global_state" : false,
+    "metadata" : {
+      "taken_by" : "Bruno",
+      "taken_because" : "Backup of the index named ACCOUNTS"
+    },
+    "state" : "SUCCESS",
+    "start_time" : "2020-05-01T18:10:21.027Z",
+    "start_time_in_millis" : 1588356621027,
+    "end_time" : "2020-05-01T18:10:21.227Z",
+    "end_time_in_millis" : 1588356621227,
+    "duration_in_millis" : 200,
+    "failures" : [ ],
+    "shards" : {
+      "total" : 1,
+      "failed" : 0,
+      "successful" : 1
+    }
+  }
+}
+```
+
+List all Snapshots available on the repository named BACKUP.
+
+```
+curl -X GET "http://192.168.100.7:9200/_cat/snapshots/backup?v&s=id&pretty"
+```
+
+Here is the command output:
+
+```
+id                          status start_epoch start_time end_epoch  end_time duration indices successful_shards failed_shards total_shards
+snapshot_001               SUCCESS 1588350801  16:33:21   1588350801 16:33:21       0s       0                 0             0            0
+snapshot_index_account_001 SUCCESS 1588356621  18:10:21   1588356621 18:10:21    200ms       1                 1             0            1
+```
+
+Use this command to list information from a specific Snapshot.
+
+```
+curl -X GET "http://192.168.100.7:9200/_snapshot/backup/snapshot_001?pretty"
+```
+
+Here is the command output:
+
+```
+{
+  "snapshots" : [
+    {
+      "snapshot" : "snapshot_001",
+      "uuid" : "mJWX4FD9SVqFvzKpG7y3_w",
+      "version_id" : 7060299,
+      "version" : "7.6.2",
+      "indices" : [ ],
+      "include_global_state" : true,
+      "state" : "SUCCESS",
+      "start_time" : "2020-05-01T16:33:21.959Z",
+      "start_time_in_millis" : 1588350801959,
+      "end_time" : "2020-05-01T16:33:21.959Z",
+      "end_time_in_millis" : 1588350801959,
+      "duration_in_millis" : 0,
+      "failures" : [ ],
+      "shards" : {
+        "total" : 0,
+        "failed" : 0,
+        "successful" : 0
+      }
+    }
+  ]
+}
+```
+
+In our example, we listed the information from a Snapshot named SNAPSHOT_001 that was stored on the repository named BACKUP.
+
+### Restore Snaphot
+
+
+
+
+
+Using Curl
+
+Restore the ElasticSearch Snapshot named: SNAPSHOT_INDEX_ACCOUNT_001
+
+```
+curl -X POST "http://localhost:9200/_snapshot/backup/snapshot_index_account_001/_restore?pretty"
+```
+
+Here is the command output:
+
+```
+{
+  "accepted" : true
+}
+```

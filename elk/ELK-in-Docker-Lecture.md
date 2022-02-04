@@ -1,51 +1,43 @@
 ## ELK in Docker
 
-### Elasticsearch
+### Run Kibana on Docker for development
 
-#### Starting a single node cluster with Docker
+To start an Elasticsearch container for development or testing, run:
 
-```
-docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.7.1
-```
-
-#### Starting a multi-node cluster with Docker Compose
-
-```
-version: "3"
-
-services: 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
-    container_name: elasticsearch
-    environment: 
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-    volumes:
-      - $PWD/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - $PWD/elasticsearch/data:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
-    networks: 
-      - logging-network
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.7.1
-    container_name: kibana
-    volumes:
-      - $PWD/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
-    ports: 
-      - 5601:5601
-    networks:  
-      - logging-network
-
-networks: 
-  logging-network:
-    driver: bridge
+```sh
+docker network create elastic
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+docker run --name es01-test --net elastic -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.16.3
 ```
 
-### Kibana
 
-```
-docker run --link elasticsearch -p 5601:5601 --name kibana docker.elastic.co/kibana/kibana:7.7.1
+
+To start Kibana and connect it to your Elasticsearch container, run the following commands in a new terminal session:
+
+```sh
+docker pull docker.elastic.co/kibana/kibana:7.16.3
+docker run --name kib01-test --net elastic -p 127.0.0.1:5601:5601 -e "ELASTICSEARCH_HOSTS=http://es01-test:9200" docker.elastic.co/kibana/kibana:7.16.3
 ```
 
+
+
+To access Kibana, go to [http://localhost:5601](http://localhost:5601/).
+
+### Stop Docker containers
+
+To stop your containers, run:
+
+```sh
+docker stop es01-test
+docker stop kib01-test
+```
+
+
+
+To remove the containers and their network, run:
+
+```sh
+docker network rm elastic
+docker rm es01-test
+docker rm kib01-test
+```
