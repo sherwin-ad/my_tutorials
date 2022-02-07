@@ -183,14 +183,33 @@ $ docker volume prune
 
 
 
-
-
-### 
+## Copy a file from the local file system to a container
 
 ```
+docker cp <src-path> <container>:<dest-path> 
+kubectl cp <src-path> <your-pod-name>:<dest-path> 
 ```
 
+For example:
 
+```
+docker cp -a es_backup/. elastic_elasticsearch_1:/usr/share/elasticsearch/es_backup/
+kubectl cp "C:\ProcDump\procdump64.exe" k8s-xm-cm-pod:procdump64.exe
+```
+
+## Copy a file from the container to the local file system
+
+```
+docker cp <container>:<src-path> <local-dest-path> 
+kubectl cp <your-pod-name>:<src-path> <local-dest-path> 
+```
+
+For example:
+
+```
+docker cp sitecore-xm1_cm_1:"C:\inetpub\wwwroot\App_Data\logs" "C:\" 
+kubectl cp k8s-xm-cm-pod:some-file.txt "C:\"
+```
 
 
 
@@ -238,7 +257,7 @@ $ docker exec [options] CONTAINER COMMAND
 
 Example :
 $ docker exec app_web_1 tail logs/development.log
-$ docker exec -t -i app_web_1 rails c
+$ docker exec -it app_web_1 /bin/bash
 ```
 
 ### Starting/Stoping container

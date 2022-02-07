@@ -122,6 +122,27 @@ POST _bulk
 
 
 
+**Load via curl, notice the endpoint and type**
+
+```
+curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/bank/account/_bulk?pretty' --data-binary @accounts.json
+```
+
+
+
+**check inside ES**
+
+```
+GET /_cat/indices
+GET /bank
+```
+
+
+
+**set index pattern in Kibana**
+
+- Management > Uncheck time-based events > bank
+
 
 
 ## Indexing, Retrieving and Deleting Documents
@@ -267,6 +288,16 @@ GET /vehicles/car/123
 
 ```
 DELETE /vehicles
+
+{
+  "acknowledged" : true
+}
+```
+
+### Delete all Index
+
+```
+DELETE /_all
 
 {
   "acknowledged" : true
@@ -1056,6 +1087,195 @@ GET /courses/_search
 }
 ```
 
+
+
+## Analysis and Tokenization
+
+### Standard
+
+```
+GET bank/_analyze
+{
+  "tokenizer": "standard",
+  "text": "The Moon is Made of Cheese Some Say"
+}
+```
+
+Output
+
+```
+
+  "tokens" : [
+    {
+      "token" : "The",
+      "start_offset" : 0,
+      "end_offset" : 3,
+      "type" : "<ALPHANUM>",
+      "position" : 0
+    },
+    {
+      "token" : "Moon",
+      "start_offset" : 4,
+      "end_offset" : 8,
+      "type" : "<ALPHANUM>",
+      "position" : 1
+    },
+    {
+      "token" : "is",
+      "start_offset" : 9,
+      "end_offset" : 11,
+      "type" : "<ALPHANUM>",
+      "position" : 2
+    },
+    {
+      "token" : "Made",
+      "start_offset" : 12,
+      "end_offset" : 16,
+      "type" : "<ALPHANUM>",
+      "position" : 3
+    },
+    {
+      "token" : "of",
+      "start_offset" : 17,
+      "end_offset" : 19,
+      "type" : "<ALPHANUM>",
+      "position" : 4
+    },
+    {
+      "token" : "Cheese",
+      "start_offset" : 20,
+      "end_offset" : 26,
+      "type" : "<ALPHANUM>",
+      "position" : 5
+    },
+    {
+      "token" : "Some",
+      "start_offset" : 27,
+      "end_offset" : 31,
+      "type" : "<ALPHANUM>",
+      "position" : 6
+    },
+    {
+      "token" : "Say",
+      "start_offset" : 32,
+      "end_offset" : 35,
+      "type" : "<ALPHANUM>",
+      "position" : 7
+    }
+  ]
+}
+```
+
+### Letter
+
+```
+GET bank/_analyze
+{
+  "tokenizer": "letter",
+  "text": "The Moon-is-Made of Cheese Some Say$"
+}
+```
+
+Output
+
+```
+{
+  "tokens" : [
+    {
+      "token" : "you@example.com",
+      "start_offset" : 0,
+      "end_offset" : 15,
+      "type" : "<EMAIL>",
+      "position" : 0
+    },
+    {
+      "token" : "login",
+      "start_offset" : 16,
+      "end_offset" : 21,
+      "type" : "<ALPHANUM>",
+      "position" : 1
+    },
+    {
+      "token" : "at",
+      "start_offset" : 22,
+      "end_offset" : 24,
+      "type" : "<ALPHANUM>",
+      "position" : 2
+    },
+    {
+      "token" : "https://bensullins.com",
+      "start_offset" : 25,
+      "end_offset" : 47,
+      "type" : "<URL>",
+      "position" : 3
+    },
+    {
+      "token" : "attempt",
+      "start_offset" : 48,
+      "end_offset" : 55,
+      "type" : "<ALPHANUM>",
+      "position" : 4
+    }
+  ]
+}
+```
+
+### uax_url_email
+
+```
+GET bank/_analyze
+{
+  "tokenizer": "uax_url_email",
+  "text": "you@example.com login at https://bensullins.com attempt"
+}
+```
+
+Output
+
+```
+{
+  "tokens" : [
+    {
+      "token" : "you@example.com",
+      "start_offset" : 0,
+      "end_offset" : 15,
+      "type" : "<EMAIL>",
+      "position" : 0
+    },
+    {
+      "token" : "login",
+      "start_offset" : 16,
+      "end_offset" : 21,
+      "type" : "<ALPHANUM>",
+      "position" : 1
+    },
+    {
+      "token" : "at",
+      "start_offset" : 22,
+      "end_offset" : 24,
+      "type" : "<ALPHANUM>",
+      "position" : 2
+    },
+    {
+      "token" : "https://bensullins.com",
+      "start_offset" : 25,
+      "end_offset" : 47,
+      "type" : "<URL>",
+      "position" : 3
+    },
+    {
+      "token" : "attempt",
+      "start_offset" : 48,
+      "end_offset" : 55,
+      "type" : "<ALPHANUM>",
+      "position" : 4
+    }
+  ]
+}
+```
+
+
+
 ## Aggregations
 
 ### Indexing bulk document vehicles
@@ -1139,7 +1359,7 @@ GET /vehicles/cars/_search
 }
 ```
 
-### Count vehicles document manufactured by Dodge**
+### Count vehicles document manufactured by Dodge
 
 ```
 GET /vehicles/cars/_count
@@ -2931,6 +3151,23 @@ Open Kibana goto management > devtools
 PUT /_snapshot/es_backup/esdata
 ```
 
+
+
+```
+PUT /_snapshot/es_backup/elk02srv01-2022.02.04-snapshot
+{
+  "indices": "elk02srv01-2022.02.04",
+  "ignore_unavailable": "true",
+  "include_global_state": false
+} 
+```
+
+```
+GET /_snapshot/es_backup/snapshot_sample
+```
+
+
+
 List all the snapshot
 
 ```
@@ -3082,11 +3319,60 @@ In our example, we listed the information from a Snapshot named SNAPSHOT_001 tha
 
 ### Restore Snaphot
 
+**Using Devtools**
+
+Show the snapshot info
+
+```
+GET /_snapshot/es_backup/_all
+```
+
+
+To restore the whole snapshot:
+
+```
+POST /_snapshot/es_backup/esdata/_restore
+```
 
 
 
+To restore an individual index:
 
-Using Curl
+```
+POST /_snapshot/es_backup/esdata/_restore
+{
+  "indices": "logstash-2015.05.18"
+}
+```
+
+To restore and rename the index:
+
+```
+POST /_snapshot/es_backup/esdata/_restore
+{
+  "indices": "logstash-2015.05.18",
+  "rename_pattern": "logstash-2015.05.18",
+  "rename_replacement": "logstash-new"
+}
+```
+
+
+
+Close all index
+
+```
+POST _all/_close
+```
+
+Close index
+
+```
+POST .kibana-event-log-7.16.3-000001/_close
+```
+
+
+
+**Using Curl**
 
 Restore the ElasticSearch Snapshot named: SNAPSHOT_INDEX_ACCOUNT_001
 
@@ -3101,3 +3387,135 @@ Here is the command output:
   "accepted" : true
 }
 ```
+
+
+
+```
+curl 'localhost:9200/_cat/indices?v'
+```
+
+## docker-compose.yml
+
+Add the following:
+
+```
+volumes:
+  elasticsearch-data:
+  es_backup:    
+```
+
+```
+ volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - es_backup:/usr/share/elasticsearch/es_backup
+```
+
+```
+version: '3.5'
+
+# To Join any other app setup using another network, change name and set external = true
+networks:
+  default:
+    name: elastic
+    external: false
+
+# will contain all elasticsearch data.
+volumes:
+  elasticsearch-data:
+  es_backup:        
+
+secrets:
+  elasticsearch.keystore:
+    file: ./secrets/keystore/elasticsearch.keystore
+  elastic.ca:
+    file: ./secrets/certs/ca/ca.crt
+  elasticsearch.certificate:
+    file: ./secrets/certs/elasticsearch/elasticsearch.crt
+  elasticsearch.key:
+    file: ./secrets/certs/elasticsearch/elasticsearch.key
+  kibana.certificate:
+    file: ./secrets/certs/kibana/kibana.crt
+  kibana.key:
+    file: ./secrets/certs/kibana/kibana.key
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    restart: unless-stopped
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTIC_CLUSTER_NAME: ${ELASTIC_CLUSTER_NAME}
+      ELASTIC_NODE_NAME: ${ELASTIC_NODE_NAME}
+      ELASTIC_INIT_MASTER_NODE: ${ELASTIC_INIT_MASTER_NODE}
+      ELASTIC_DISCOVERY_SEEDS: ${ELASTIC_DISCOVERY_SEEDS}
+      ES_JAVA_OPTS: "-Xmx${ELASTICSEARCH_HEAP} -Xms${ELASTICSEARCH_HEAP} -Des.enforce.bootstrap.checks=true -Dlog4j2.formatMsgNoLookups=true"
+      bootstrap.memory_lock: "true"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - es_backup:/usr/share/elasticsearch/es_backup  
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elasticsearch/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+    secrets:
+      - source: elasticsearch.keystore
+        target: /usr/share/elasticsearch/config/elasticsearch.keystore
+      - source: elastic.ca
+        target: /usr/share/elasticsearch/config/certs/ca.crt
+      - source: elasticsearch.certificate
+        target: /usr/share/elasticsearch/config/certs/elasticsearch.crt
+      - source: elasticsearch.key
+        target: /usr/share/elasticsearch/config/certs/elasticsearch.key
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 200000
+        hard: 200000
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -sf --insecure https://$ELASTIC_USERNAME:$ELASTIC_PASSWORD@localhost:9200/_cat/health | grep -ioE 'green|yellow' || echo 'not green/yellow cluster status'"]
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:${ELK_VERSION}
+    restart: unless-stopped
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    secrets:
+      - source: elastic.ca
+        target: /certs/ca.crt
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTICSEARCH_HOST_PORT: https://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
+      LS_JAVA_OPTS: "-Xmx${LOGSTASH_HEAP} -Xms${LOGSTASH_HEAP} -Dlog4j2.formatMsgNoLookups=true"
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    healthcheck:
+      test: ["CMD", "curl", "-s" ,"-XGET", "http://127.0.0.1:9600"]
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+    restart: unless-stopped
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config:ro
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTICSEARCH_HOST_PORT: https://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
+    secrets:
+      - source: elastic.ca
+        target: /certs/ca.crt
+      - source: kibana.certificate
+        target: /certs/kibana.crt
+      - source: kibana.key
+        target: /certs/kibana.key
+    ports:
+      - "5601:5601"
+```
+

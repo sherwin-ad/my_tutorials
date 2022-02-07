@@ -262,7 +262,7 @@ mysql> SHOW GRANTS FOR 'moodle_dbuser'@'172.16.31.%';
 
 
 
-### Backup and restore moodle contents
+## Backup and restore moodle contents
 
 ```
 # Create tar file
@@ -283,7 +283,7 @@ $ tar tvf dar-lms-moodledata.tar.gz
 
 
 
-### Backup and restore moodle database
+## Backup and restore moodle database
 
 
 
@@ -651,6 +651,20 @@ UPDATE mdl_user SET password=MD5('NEW_PASSWORD') WHERE username='admin';
 ## Maintenace Mode
 
 1. Go to Site administration > Server > Maintenance mode in the Settings navigation.
+
+
+
+```
+ $ sudo -u apache /usr/bin/php admin/cli/maintenance.php --enable
+```
+
+
+
+```
+ $ sudo -u apache /usr/bin/php admin/cli/maintenance.php --disable
+```
+
+
 
 ## Setup SSL
 
