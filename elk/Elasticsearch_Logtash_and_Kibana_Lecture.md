@@ -3097,6 +3097,137 @@ $./filebeat
 
 ### Create snapshot
 
+
+
+## docker-compose.yml
+
+Add the following:
+
+```
+volumes:
+  elasticsearch-data:
+  es_backup:    
+```
+
+```
+ volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - es_backup:/usr/share/elasticsearch/es_backup
+```
+
+```
+version: '3.5'
+
+# To Join any other app setup using another network, change name and set external = true
+networks:
+  default:
+    name: elastic
+    external: false
+
+# will contain all elasticsearch data.
+volumes:
+  elasticsearch-data:
+  es_backup:        
+
+secrets:
+  elasticsearch.keystore:
+    file: ./secrets/keystore/elasticsearch.keystore
+  elastic.ca:
+    file: ./secrets/certs/ca/ca.crt
+  elasticsearch.certificate:
+    file: ./secrets/certs/elasticsearch/elasticsearch.crt
+  elasticsearch.key:
+    file: ./secrets/certs/elasticsearch/elasticsearch.key
+  kibana.certificate:
+    file: ./secrets/certs/kibana/kibana.crt
+  kibana.key:
+    file: ./secrets/certs/kibana/kibana.key
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    restart: unless-stopped
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTIC_CLUSTER_NAME: ${ELASTIC_CLUSTER_NAME}
+      ELASTIC_NODE_NAME: ${ELASTIC_NODE_NAME}
+      ELASTIC_INIT_MASTER_NODE: ${ELASTIC_INIT_MASTER_NODE}
+      ELASTIC_DISCOVERY_SEEDS: ${ELASTIC_DISCOVERY_SEEDS}
+      ES_JAVA_OPTS: "-Xmx${ELASTICSEARCH_HEAP} -Xms${ELASTICSEARCH_HEAP} -Des.enforce.bootstrap.checks=true -Dlog4j2.formatMsgNoLookups=true"
+      bootstrap.memory_lock: "true"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - es_backup:/usr/share/elasticsearch/es_backup  
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elasticsearch/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+    secrets:
+      - source: elasticsearch.keystore
+        target: /usr/share/elasticsearch/config/elasticsearch.keystore
+      - source: elastic.ca
+        target: /usr/share/elasticsearch/config/certs/ca.crt
+      - source: elasticsearch.certificate
+        target: /usr/share/elasticsearch/config/certs/elasticsearch.crt
+      - source: elasticsearch.key
+        target: /usr/share/elasticsearch/config/certs/elasticsearch.key
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 200000
+        hard: 200000
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -sf --insecure https://$ELASTIC_USERNAME:$ELASTIC_PASSWORD@localhost:9200/_cat/health | grep -ioE 'green|yellow' || echo 'not green/yellow cluster status'"]
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:${ELK_VERSION}
+    restart: unless-stopped
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    secrets:
+      - source: elastic.ca
+        target: /certs/ca.crt
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTICSEARCH_HOST_PORT: https://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
+      LS_JAVA_OPTS: "-Xmx${LOGSTASH_HEAP} -Xms${LOGSTASH_HEAP} -Dlog4j2.formatMsgNoLookups=true"
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    healthcheck:
+      test: ["CMD", "curl", "-s" ,"-XGET", "http://127.0.0.1:9600"]
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+    restart: unless-stopped
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config:ro
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTICSEARCH_HOST_PORT: https://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
+    secrets:
+      - source: elastic.ca
+        target: /certs/ca.crt
+      - source: kibana.certificate
+        target: /certs/kibana.crt
+      - source: kibana.key
+        target: /certs/kibana.key
+    ports:
+      - "5601:5601"
+```
+
+
+
+
+
 1. Stop the ElasticSearch service.
 
 ```
@@ -3120,6 +3251,8 @@ Add the following line at the end of the file.
 
 ```
 path.repo: ["/home/sherwinowen/my_lab/elk/es_backup"]
+
+path.repo: ["/usr/share/elasticsearch/es_backup"]
 ```
 
 4. Register a new Snapshot repository
@@ -3147,11 +3280,15 @@ $ curl -X GET "http://localhost:9200/_snapshot/_all?pretty"{
 
 Open Kibana goto management > devtools
 
+Create snapshot of all indices
+
 ```
 PUT /_snapshot/es_backup/esdata
 ```
 
 
+
+**Specific index**
 
 ```
 PUT /_snapshot/es_backup/elk02srv01-2022.02.04-snapshot
@@ -3162,13 +3299,28 @@ PUT /_snapshot/es_backup/elk02srv01-2022.02.04-snapshot
 } 
 ```
 
+
+
+**Multiple indices**
+
+```
+PUT _snapshot/anurag_backup/snapshot_some_indices
+{
+ "indices": "index1, index2"
+}
+```
+
+
+
+**List specific snapshot**
+
 ```
 GET /_snapshot/es_backup/snapshot_sample
 ```
 
 
 
-List all the snapshot
+**List all the snapshot**
 
 ```
 GET /_snapshot/es_backup/_all
@@ -3319,6 +3471,14 @@ In our example, we listed the information from a Snapshot named SNAPSHOT_001 tha
 
 ### Restore Snaphot
 
+Copy repository folder in elastic_elasticsearch_1 container
+
+```
+docker cp -a es_backup/. elastic_elasticsearch_1:/usr/share/elasticsearch/es_backup/
+```
+
+
+
 **Using Devtools**
 
 Show the snapshot info
@@ -3392,130 +3552,5 @@ Here is the command output:
 
 ```
 curl 'localhost:9200/_cat/indices?v'
-```
-
-## docker-compose.yml
-
-Add the following:
-
-```
-volumes:
-  elasticsearch-data:
-  es_backup:    
-```
-
-```
- volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-      - es_backup:/usr/share/elasticsearch/es_backup
-```
-
-```
-version: '3.5'
-
-# To Join any other app setup using another network, change name and set external = true
-networks:
-  default:
-    name: elastic
-    external: false
-
-# will contain all elasticsearch data.
-volumes:
-  elasticsearch-data:
-  es_backup:        
-
-secrets:
-  elasticsearch.keystore:
-    file: ./secrets/keystore/elasticsearch.keystore
-  elastic.ca:
-    file: ./secrets/certs/ca/ca.crt
-  elasticsearch.certificate:
-    file: ./secrets/certs/elasticsearch/elasticsearch.crt
-  elasticsearch.key:
-    file: ./secrets/certs/elasticsearch/elasticsearch.key
-  kibana.certificate:
-    file: ./secrets/certs/kibana/kibana.crt
-  kibana.key:
-    file: ./secrets/certs/kibana/kibana.key
-
-services:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
-    restart: unless-stopped
-    environment:
-      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
-      ELASTIC_CLUSTER_NAME: ${ELASTIC_CLUSTER_NAME}
-      ELASTIC_NODE_NAME: ${ELASTIC_NODE_NAME}
-      ELASTIC_INIT_MASTER_NODE: ${ELASTIC_INIT_MASTER_NODE}
-      ELASTIC_DISCOVERY_SEEDS: ${ELASTIC_DISCOVERY_SEEDS}
-      ES_JAVA_OPTS: "-Xmx${ELASTICSEARCH_HEAP} -Xms${ELASTICSEARCH_HEAP} -Des.enforce.bootstrap.checks=true -Dlog4j2.formatMsgNoLookups=true"
-      bootstrap.memory_lock: "true"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-      - es_backup:/usr/share/elasticsearch/es_backup  
-      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ./elasticsearch/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
-    secrets:
-      - source: elasticsearch.keystore
-        target: /usr/share/elasticsearch/config/elasticsearch.keystore
-      - source: elastic.ca
-        target: /usr/share/elasticsearch/config/certs/ca.crt
-      - source: elasticsearch.certificate
-        target: /usr/share/elasticsearch/config/certs/elasticsearch.crt
-      - source: elasticsearch.key
-        target: /usr/share/elasticsearch/config/certs/elasticsearch.key
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 200000
-        hard: 200000
-    healthcheck:
-      test: ["CMD", "sh", "-c", "curl -sf --insecure https://$ELASTIC_USERNAME:$ELASTIC_PASSWORD@localhost:9200/_cat/health | grep -ioE 'green|yellow' || echo 'not green/yellow cluster status'"]
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:${ELK_VERSION}
-    restart: unless-stopped
-    volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
-      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-    secrets:
-      - source: elastic.ca
-        target: /certs/ca.crt
-    environment:
-      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
-      ELASTICSEARCH_HOST_PORT: https://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
-      LS_JAVA_OPTS: "-Xmx${LOGSTASH_HEAP} -Xms${LOGSTASH_HEAP} -Dlog4j2.formatMsgNoLookups=true"
-    ports:
-      - "5044:5044"
-      - "9600:9600"
-    healthcheck:
-      test: ["CMD", "curl", "-s" ,"-XGET", "http://127.0.0.1:9600"]
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
-    restart: unless-stopped
-    volumes:
-      - ./kibana/config/:/usr/share/kibana/config:ro
-    environment:
-      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
-      ELASTICSEARCH_HOST_PORT: https://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
-    secrets:
-      - source: elastic.ca
-        target: /certs/ca.crt
-      - source: kibana.certificate
-        target: /certs/kibana.crt
-      - source: kibana.key
-        target: /certs/kibana.key
-    ports:
-      - "5601:5601"
 ```
 
