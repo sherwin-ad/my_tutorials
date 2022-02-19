@@ -324,6 +324,16 @@ You can access the Grafana Dashboard using the URL **[http://your-server-ip:3000
 
 ## Install Telegraf, Influxdb and Grafana on Docker
 
+
+
+**Telegraf inputs:**
+https://github.com/influxdata/telegraf/tree/master/plugins/inputs
+
+**Influxdb authentication:**
+https://docs.influxdata.com/influxdb/v1.5/query_language/authentication_and_authorization/#authenticate-telegraf-requests-to-influxdb
+
+
+
 Using docker
 
 ```
@@ -381,3 +391,11 @@ To install using the Grafana CLI, run the following command in the terminal:
 ```bash
 grafana-cli plugins install grafana-singlestat-panel
 ```
+
+
+
+## Export Dashboard
+
+1. Go to Current Grafana Dashboard.
+2. Select the Share button on the top.
+3. Select the Export Button and Copy the JSON or save it as JSON.
