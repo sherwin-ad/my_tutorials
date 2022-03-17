@@ -266,7 +266,7 @@ mysql> SHOW GRANTS FOR 'moodle_dbuser'@'172.16.31.%';
 
 ```
 # Create tar file
-$ cd /var/moodledata
+$ cd /var/moodledata		
 $ tar -cpzvf dar-lms-moodledata.tar.gz *
 
 # Without directory structure
@@ -656,12 +656,20 @@ UPDATE mdl_user SET password=MD5('NEW_PASSWORD') WHERE username='admin';
 
 ```
  $ sudo -u apache /usr/bin/php admin/cli/maintenance.php --enable
+ 
+ OR
+ 
+ # php admin/cli/maintenance.php --enable
 ```
 
 
 
 ```
  $ sudo -u apache /usr/bin/php admin/cli/maintenance.php --disable
+ 
+ OR
+ 
+ # php admin/cli/maintenance.php --disable
 ```
 
 
@@ -917,5 +925,25 @@ $ find . -xdev -type f -size +100M -print | xargs ls -lh | sort -k5,5 -h -r | he
 
 ```
 SELECT sum(filesize) as filesize FROM `mdl_files` f INNER JOIN mdl_context cn ON cn.id = f.contextid INNER JOIN mdl_course c ON c.id = cn.instanceid AND cn.contextlevel = 50 where c.id = "4060"
+```
+
+
+
+## Enable HTTPS in Apache2
+
+Enable Apache module named: Mod_ssl.
+Enable Apache module named: Mod_rewrite.
+
+```
+# a2enmod ssl
+# a2enmod rewrite
+```
+
+
+
+## Resume a large SCP file transfer on Linux
+
+```
+# rsync -P --rsh=ssh ubuntu@35.206.247.54:/home/ubuntu/ndcp-lms-moodledata-03052022.tar.gz .
 ```
 

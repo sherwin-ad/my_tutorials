@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 ## Nginx
 
 NGINX  can do a lot of things other than web server functionality like:
@@ -877,7 +881,5 @@ server {
     }
 
 }
-
 ```
-
 

@@ -4,6 +4,37 @@
 
 # Fortigate Firewall
 
+## Fortigate Intial Setup
+
+### Default Management IP
+
+- 192.168.1.99 (Port 1)
+
+1. Set hostname
+
+   ```
+   # config system global
+   (global) # set hostname FGT
+   (global) # end 
+   ```
+
+2. Configure IP address in port 1
+
+   ```
+   # configure system interface
+   # edit port1
+   (port1) # set mode static
+   (port1) # set ip 192.168.1.99/24
+   (port1) # set allowaccess ping http ssh 
+   (port1) # set role lan
+   (port1) # set alias LAN1
+   (port1) # end
+   ```
+
+3. 
+
+
+
 ## CLI
 
 ### Set hostname
@@ -220,6 +251,12 @@ Virus caught: 0 total in 1 minute
 IPS attacks blocked: 0 total in 1 minute
 Uptime: 0 days,  0 hours,  27 minutes
 ```
+
+
+
+
+
+
 
 
 
@@ -694,3 +731,577 @@ Go to Network > Interfaces > select port no. and click edit
        
 
      ![image-20220219150421477](images/image-20220219150421477.png)
+
+
+
+## VLAN Configuration
+
+![image-20220305105426358](images/image-20220305105426358.png)
+
+
+
+1. Configure switch
+
+   **Create VLAN**
+
+   ```
+   Switch#conf t
+   Switch(config)#vlan10
+   Switch(config-vlan)#vlan 20
+   Switch(config-vlan)#vlan 30
+   ```
+
+   **Assign ip address in vlan**
+
+   ```
+   Switch(config)#int vlan 10
+   Switch(config-if)#no shutdown
+   Switch(config-if)#ip address 192.168.10.100 255.255.255.0
+   Switch(config-if)#exit
+   
+   Switch(config)#int vlan 20
+   Switch(config-if)#no shutdown
+   Switch(config-if)#ip address 192.168.20.100 255.255.255.0
+   Switch(config-if)#exit
+   
+   Switch(config)#int vlan 30
+   Switch(config-if)#no shutdown
+   Switch(config-if)#ip address 192.168.30.100 255.255.255.0
+   Switch(config-if)#exit
+   ```
+
+    **Show IP configration**
+
+   ```
+   Switch#show ip interface brief
+   ```
+
+   **Assign port to designated vlan**
+
+   ```
+   Switch(config)#interface range g0/0-1
+   Switch(config-if-range)#switchport access vlan 10
+   
+   Switch(config)#interface g0/2
+   Switch(config-if)#switchport access vlan 20
+   
+   Switch(config)#interface g0/3
+   Switch(config-if)#switchport access vlan 30
+   ```
+
+   **Show vlan configuration**
+
+   ```
+   Switch#show vlan brief
+   ```
+
+2. Configure PC 1 and 2
+
+   **Configure IP**
+
+   ```
+   PC-1> ip 192.168.20.10/24 192.168.20.100
+   
+   PC-2> ip 192.168.30.10/24 192.168.30.100
+   ```
+
+   **Show IP**
+
+   ```
+   PC-1> show ip
+   
+   PC-2> show ip 
+   ```
+
+3. Add static route to Fortigate FW
+
+   ![image-20220305140138440](images/image-20220305140138440.png)
+
+4. Create VLAN in Fortigate FW
+
+   **Terminal**
+
+   ```
+   GT # config system interface
+   
+   FGT (interface) # edit VLAN10
+   
+   FGT (VLAN10) # set vdom root 
+   
+   FGT (VLAN10) # set type vlan 
+   
+   FGT (VLAN10) # set vlanid 10
+   
+   FGT (VLAN10) # set interface port1
+   
+   FGT (VLAN10) # set ip 192.168.10.1/24
+   
+   FGT (VLAN10) # set allowaccess http ping ssh
+   
+   FGT (VLAN10) # end
+   ```
+
+   **GUI**
+
+   ![image-20220305145354868](images/image-20220305145354868.png)
+
+   ![image-20220305145828065](images/image-20220305145828065.png)
+
+5. Configure the switch port to trunk
+
+   ```
+   Switch(config)#interface g0/2
+   Switch(config-if)#switchport trunk encapsulation dot1q
+   Switch(config-if)#switchport mode trunk
+   ```
+
+
+
+## InterVLAN Routing
+
+### Method 1 - via Creating a policy
+
+1. Enable Multiple Interface Policies
+
+   Got to System > Feature Visibility > Multiple Interface Policies and click Apply
+
+   ![image-20220305151121402](images/image-20220305151121402.png)
+
+2. Create policy
+
+   Go to Policy & Objects > Firewall Policy > click Create New
+
+   ![image-20220305151616182](images/image-20220305151616182.png)
+
+
+
+3. Configure the gateway of the PC to the VLAN IP address
+
+   ```
+   PC-1> ip 192.168.20.10/24 192.168.20.1
+   
+   PC-2> ip 192.168.30.10/24 192.168.30.1
+   ```
+
+
+
+### Method 2 - via Zone
+
+- We cannot see the traffic passing through our Fortigate FW
+
+1. Go to Network > Interfaces > click Create New > Zone
+
+   - Disable intra-zone traffic
+
+   ![image-20220305153518541](/home/sherwinowen/Documents/my_tutorials/fortigate_firewall/images/image-20220305153518541.png)
+
+
+
+## Redundant Interface
+
+![image-20220305154255783](images/image-20220305154255783.png)
+
+
+
+**CLI**
+
+```
+FGT # config system interface 
+
+FGT (interface) # edit LAN3
+new entry 'LAN3' added
+
+FGT (LAN3) # set vdom root 
+
+FGT (LAN3) # set type redundant 
+
+FGT (LAN3) # set member port9 port10
+
+FGT (LAN3) # set ip 192.168.100.1/24
+
+FGT (LAN3) # set allowaccess http ping ssh
+
+FGT (LAN3) # set role lan 
+
+FGT (LAN3) # end
+```
+
+**GUI**
+
+Go to Network > Interfaces > click Create New > Interface
+
+![image-20220311140813888](images/image-20220311140813888.png)
+
+
+
+## Link Aggregation (LACP)
+
+- It will add the bandwidth of 2 interface
+
+**1. Configure Fortigate Firewall**
+
+**CLI**
+
+```
+FGT # config system interface 
+
+FGT (interface) # edit LACP
+new entry 'LACP' added
+
+FGT (LACP) # set vdom root
+
+FGT (LACP) # set type aggregate 
+
+FGT (LACP) # set member port5 port6
+
+FGT (LACP) # set lacp-mode active 
+
+FGT (LACP) # end 
+```
+
+**2. Configure Switch**
+
+**CLI**
+
+```
+SW1>enable
+SW1#configure terminal 
+Enter configuration commands, one per line.  End with CNTL/Z.
+SW1(config)#interface range gigabitEthernet 0/1 - 2
+SW1(config-if-range)#channel-group 1 mode active 
+SW1(config-if-range)#channel-protocol lacp 
+SW1(config-if-range)#exit
+SW1(config)#exit
+```
+
+
+
+```
+SW1(config)#interface port-channel 1
+SW1(config-if)#switchport trunk encapsulation dot1q
+SW1(config-if)#switchport mode trunk
+```
+
+
+
+**GUI**
+
+Go to Network > Interface > click Create New > Interface
+
+![image-20220312151502342](images/image-20220312151502342.png)
+
+
+
+## Fortigate Firewall Operation Mode (NAT and Transparent)
+
+**NAT** (default)
+
+- act as a router
+- we can assign IP address on the interfaces
+- we can do routing
+
+**TRANSPARENT**
+
+- act as a switch
+
+![image-20220312152723537](images/image-20220312152723537.png)
+
+
+
+## Dynamic Routing
+
+![image-20220315111831294](images/image-20220315111831294.png)
+
+### RIP
+
+**1. Configure Fortigate FW**
+
+Go to Network > RIP
+![image-20220315114726406](images/image-20220315114726406.png)
+
+
+
+**2. Configure Router**
+
+```
+R1#conf t
+R1(config)#router rip
+R1(config-router)#version 2
+R1(config-router)#network 41.141.1.0
+R1(config-router)#network 41.141.2.0
+R1(config-router)#end
+```
+
+
+
+**3. Check the Routing Monitor Dashboard**
+
+Go to Dashboard > Routing Monitor
+
+![image-20220315141825008](images/image-20220315141825008.png)
+
+
+
+**4. Ping 41.141.2.1**
+
+```
+FGT # execute ping 41.141.2.1
+PING 41.141.2.1 (41.141.2.1): 56 data bytes
+64 bytes from 41.141.2.1: icmp_seq=0 ttl=255 time=44.3 ms
+64 bytes from 41.141.2.1: icmp_seq=1 ttl=255 time=7.1 ms
+64 bytes from 41.141.2.1: icmp_seq=2 ttl=255 time=9.0 ms
+64 bytes from 41.141.2.1: icmp_seq=3 ttl=255 time=10.7 ms
+64 bytes from 41.141.2.1: icmp_seq=4 ttl=255 time=12.0 ms
+
+--- 41.141.2.1 ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 7.1/16.6/44.3 ms
+```
+
+
+
+### OSPF
+
+**1. Configure Fortigate Firewall**
+
+Go to Network > OSPF
+
+![image-20220315145504004](images/image-20220315145504004.png)
+
+**2. Configure Router**
+
+```
+R1#configure terminal
+R1(config)#router ospf 1
+R1(config-router)#router-id 2.2.2.2
+R1(config-router)#network 41.141.1.0 0.0.0.255 area 0
+R1(config-router)#network 41.141.2.0 0.0.0.255 area 0
+R1(config-router)#end
+```
+
+
+
+**3. Check the Routing Monitor Dashboard**
+
+Go to Dashboard > Routing Monitor
+
+![image-20220315150040037](images/image-20220315150040037.png)
+
+
+
+  **4. Ping 41.141.2.1**
+
+```
+FGT # execute ping 41.141.2.1
+PING 41.141.2.1 (41.141.2.1): 56 data bytes
+64 bytes from 41.141.2.1: icmp_seq=0 ttl=255 time=44.3 ms
+64 bytes from 41.141.2.1: icmp_seq=1 ttl=255 time=7.1 ms
+64 bytes from 41.141.2.1: icmp_seq=2 ttl=255 time=9.0 ms
+64 bytes from 41.141.2.1: icmp_seq=3 ttl=255 time=10.7 ms
+64 bytes from 41.141.2.1: icmp_seq=4 ttl=255 time=12.0 ms
+
+--- 41.141.2.1 ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 7.1/16.6/44.3 ms
+```
+
+
+
+### BGP
+
+Go to Network > BGP
+
+![image-20220315150531204](images/image-20220315150531204.png)
+
+
+
+**2. Configure Router**
+
+```
+R1#configure terminal
+R1(config)#router bgp 10
+R1(config-router)#bgp router-id 2.2.2.2
+R1(config-router)#neighbor 41.141.1.2 remote-as 10
+R1(config-router)#network 41.141.1.0 mask 255.255.255.0
+R1(config-router)#network 41.141.2.0 mask 255.255.255.0
+R1(config-router)#end
+```
+
+
+
+**3. Check the Routing Monitor Dashboard**
+
+Go to Dashboard > Routing Monitor
+
+![image-20220315152117226](images/image-20220315152117226.png)
+
+
+
+  **4. Ping 41.141.2.1**
+
+```
+FGT # execute ping 41.141.2.1
+PING 41.141.2.1 (41.141.2.1): 56 data bytes
+64 bytes from 41.141.2.1: icmp_seq=0 ttl=255 time=44.3 ms
+64 bytes from 41.141.2.1: icmp_seq=1 ttl=255 time=7.1 ms
+64 bytes from 41.141.2.1: icmp_seq=2 ttl=255 time=9.0 ms
+64 bytes from 41.141.2.1: icmp_seq=3 ttl=255 time=10.7 ms
+64 bytes from 41.141.2.1: icmp_seq=4 ttl=255 time=12.0 ms
+
+--- 41.141.2.1 ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 7.1/16.6/44.3 ms
+```
+
+
+
+## Static Routing
+
+**CLI**
+
+```
+FGT # config router static 
+
+FGT (static) # show 
+config router static
+    edit 1
+        set dst 192.168.20.0 255.255.255.0
+        set gateway 192.168.10.100
+        set device "port1"
+    next
+    edit 2
+        set dst 192.168.30.0 255.255.255.0
+        set gateway 192.168.10.100
+        set device "port1"
+    next
+end
+
+FGT (static) # edit 3
+new entry '3' added
+
+FGT (3) # set dst 41.141.2.0 255.255.255.0
+
+FGT (3) # set gateway 41.141.1.1
+
+FGT (3) # set device port3
+
+FGT (3) # end
+```
+
+**Try to ping the other network**
+
+```
+GT # execute ping 41.141.2.1
+PING 41.141.2.1 (41.141.2.1): 56 data bytes
+64 bytes from 41.141.2.1: icmp_seq=0 ttl=255 time=22.8 ms
+64 bytes from 41.141.2.1: icmp_seq=1 ttl=255 time=3.7 ms
+64 bytes from 41.141.2.1: icmp_seq=2 ttl=255 time=10.3 ms
+64 bytes from 41.141.2.1: icmp_seq=3 ttl=255 time=10.1 ms
+64 bytes from 41.141.2.1: icmp_seq=4 ttl=255 time=9.8 ms
+
+--- 41.141.2.1 ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 3.7/11.3/22.8 ms
+```
+
+
+
+## High Availability
+
+![image-20220315153828841](images/image-20220315153828841.png)
+
+**HA Mode**
+
+1. Active-Active
+   - primary unit that receives all communication sessions and load balances them among the primary unit and all of the subordinate units
+   - policy created in primary fw will be replicated to secondary fw and vice versa
+2. Active-Passive
+   - provides hot standby failover protection
+   - the configuration of the subordinate units is synchronized with the configuration of the primary unit and the subordinate units monitor the status of the primary unit
+
+
+
+1. Configure FGT1 
+
+   Go to System > HA
+
+   ![image-20220316144859477](images/image-20220316144859477.png)
+
+2. Connect 2 interfaces port 9 and 10 from FGT1 to FGT2
+
+3. Configure FGT2
+
+   Go to System > HA
+
+   ![image-20220316145328882](images/image-20220316145328882.png)
+
+4. Check status
+
+   ![image-20220316145520741](images/image-20220316145520741.png)
+
+   Click Refresh
+
+   ![image-20220316145639823](images/image-20220316145639823.png)
+
+5. Change the management IP of FGT2
+
+   ```
+   FGT1 # executeha manage
+   <id>	please input peer boxindex.
+   <1>		Subsidary unit FGVMEVN3ZTSYRLC1
+   
+   FGT1 # execute ha manage 1 admin
+   admin@169.254.0.2's password:
+   FGT2 # config system interface
+   
+   FGT2 (interface) # edit port3
+   
+   FGT2 (port3) # set management-ip 192.168.112.132/24
+   
+   FGT2 (port3) # end
+   
+   ```
+
+
+
+## Load Balancing
+
+![image-20220316155313918](images/image-20220316155313918.png)
+
+
+
+1. Enable the Load balancing feature
+
+   Go to System > Feature Select and enable Load Balance
+
+   ![image-20220316155510519](images/image-20220316155510519.png)
+
+2. Create Health Check
+
+   Go to Policy & Objects > Health Check  and Create New Health Check
+
+   ![image-20220316170705350](images/image-20220316170705350.png)
+
+3. Create Virtual Servers
+
+   Go to Policy & Objects > Virtual Servers  and Create New Virtual Servers
+
+   ![image-20220316170945914](images/image-20220316170945914.png)
+
+4. Create Real Servers
+
+   Go to Policy & Objects > Real Servers  and Create New Real Servers
+
+   **First Real Server**
+
+   ![image-20220316171158418](images/image-20220316171158418.png)
+
+   **Second Real Server**
+
+   ![image-20220316171338027](images/image-20220316171338027.png)
+
+5. Create IP4 Policy
+
+   Go to Policy & Objects > IPv4 Policy  and Create New Policy
+
+   ![image-20220316171655315](images/image-20220316171655315.png)

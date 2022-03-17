@@ -829,3 +829,606 @@ Number  Start   End    Size   Type     File system  Flags
 
 ## Resize partitions without losing data
 
+
+
+
+
+## Manage LVM volumes and Volume Groups
+
+### Create Physical Volume
+
+```
+# pvcreate /dev/sdb1
+  Physical volume "/dev/sdb1" successfully created.
+```
+
+
+
+### Display various attributes of physical volume
+
+```
+# pvdisplay 
+  --- Physical volume ---
+  PV Name               /dev/sdb1
+  VG Name               vgdata
+  PV Size               1022.98 MiB / not usable 2.98 MiB
+  Allocatable           yes 
+  PE Size               4.00 MiB
+  Total PE              255
+  Free PE               255
+  Allocated PE          0
+  PV UUID               OGrmim-rzWw-Hcha-DVte-IexI-G4SZ-ncnyjH
+   
+  --- Physical volume ---
+  PV Name               /dev/sda3
+  VG Name               ubuntu-vg
+  PV Size               <18.50 GiB / not usable 0   
+  Allocatable           yes 
+  PE Size               4.00 MiB
+  Total PE              4735
+  Free PE               2175
+  Allocated PE          2560
+  PV UUID               qyLTxi-Qpue-NtZv-bvA3-gOZL-sD6f-Oi1GBe
+
+```
+
+
+
+### Display physical volumes summary
+
+```
+# pvs
+  PV         VG        Fmt  Attr PSize    PFree   
+  /dev/sda3  ubuntu-vg lvm2 a--   <18.50g   <8.50g
+  /dev/sdb1            lvm2 ---  1022.98m 1022.98m
+```
+
+### Create Volume Group
+
+```
+# vgcreate vgdata /dev/sdb1 
+  Volume group "vgdata" successfully created
+```
+
+
+
+### Display various attributes of  volume group
+
+```
+# vgdisplay 
+  --- Volume group ---
+  VG Name               vgdata
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               1020.00 MiB
+  PE Size               4.00 MiB
+  Total PE              255
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       255 / 1020.00 MiB
+  VG UUID               tW9pGf-e1Dn-wPbw-AbTi-fZts-Idnq-ok3PfH
+   
+  --- Volume group ---
+  VG Name               ubuntu-vg
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  4
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                1
+  Open LV               1
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               <18.50 GiB
+  PE Size               4.00 MiB
+  Total PE              4735
+  Alloc PE / Size       2560 / 10.00 GiB
+  Free  PE / Size       2175 / <8.50 GiB
+  VG UUID               wj8jtg-X72X-B2fP-otgY-jNSr-Ee4o-FtmeP3
+```
+
+
+
+### Display volume group summary
+
+```
+# vgs
+  VG        #PV #LV #SN Attr   VSize    VFree   
+  ubuntu-vg   1   1   0 wz--n-  <18.50g   <8.50g
+  vgdata      1   0   0 wz--n- 1020.00m 1020.00mm
+```
+
+
+
+### Create logical volume
+
+```
+# lvcreate -L 500M -n lvdata vgdata
+  Logical volume "lvdata" created.
+```
+
+
+
+### Display logical volume summary
+
+```
+# lvs
+  LV        VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  ubuntu-lv ubuntu-vg -wi-ao----  10.00g                                                    
+  lvdata    vgdata    -wi-a----- 500.00m  
+```
+
+
+
+### Display various attributes of  logical volume
+
+```
+# lvdisplay 
+  --- Logical volume ---
+  LV Path                /dev/vgdata/lvdata
+  LV Name                lvdata
+  VG Name                vgdata
+  LV UUID                Injzvs-3phl-QqAN-yz0M-V8Oi-eVpl-bx6GH0
+  LV Write Access        read/write
+  LV Creation host, time ubuntu-server, 2022-02-25 06:47:43 +0000
+  LV Status              available
+  # open                 0
+  LV Size                500.00 MiB
+  Current LE             125
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:1
+   
+  --- Logical volume ---
+  LV Path                /dev/ubuntu-vg/ubuntu-lv
+  LV Name                ubuntu-lv
+  VG Name                ubuntu-vg
+  LV UUID                8Ge2rh-29oS-Y9u3-IxuT-tQA0-r1dB-CCVRS2
+  LV Write Access        read/write
+  LV Creation host, time ubuntu-server, 2022-02-25 02:10:20 +0000
+  LV Status              available
+  # open                 1
+  LV Size                10.00 GiB
+  Current LE             2560
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:0
+```
+
+### Format Logical Volume
+
+```
+# mkfs -t ext4 /dev/vgdata/lvdata 
+mke2fs 1.45.5 (07-Jan-2020)
+Creating filesystem with 128000 4k blocks and 128000 inodes
+Filesystem UUID: 2045a544-067d-42e3-9c26-cf42d9af48ec
+Superblock backups stored on blocks: 
+	32768, 98304
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+```
+
+
+
+### Verify if File System created
+
+```
+# blkid 
+/dev/fd0: SEC_TYPE="msdos" UUID="5459-5107" TYPE="vfat"
+/dev/sr0: UUID="2022-02-25-10-08-07-00" LABEL="CDROM" TYPE="iso9660"
+/dev/sr1: UUID="2022-02-23-09-27-00-00" LABEL="Ubuntu-Server 20.04.4 LTS amd64" TYPE="iso9660" PTUUID="492bdcc4" PTTYPE="dos"
+/dev/sda2: UUID="5ad1c3ca-0b9d-47b1-9d23-40d0592ad390" TYPE="ext4" PARTUUID="61e94aee-2ced-42a4-8ad7-9f95c01377aa"
+/dev/sda3: UUID="qyLTxi-Qpue-NtZv-bvA3-gOZL-sD6f-Oi1GBe" TYPE="LVM2_member" PARTUUID="39b90254-d4da-4d47-a513-945f26496902"
+/dev/mapper/ubuntu--vg-ubuntu--lv: UUID="65238bf3-8a36-4379-8276-298243687ce2" TYPE="ext4"
+/dev/loop0: TYPE="squashfs"
+/dev/loop1: TYPE="squashfs"
+/dev/loop2: TYPE="squashfs"
+/dev/sda1: PARTUUID="fbc83446-9f88-4d6a-ac2a-4814d123e721"
+/dev/sdb1: UUID="OGrmim-rzWw-Hcha-DVte-IexI-G4SZ-ncnyjH" TYPE="LVM2_member" PARTLABEL="Linux filesystem" PARTUUID="3841d75f-43f9-464c-9d93-45192a03cf04"
+/dev/mapper/vgdata-lvdata: UUID="2045a544-067d-42e3-9c26-cf42d9af48ec" TYPE="ext4"
+```
+
+
+
+### Mount the logical volume
+
+```
+# mkdir /media/lvdata
+
+# mount /dev/vgdata/lvdata /media/lvdata
+
+# df -h
+Filesystem                         Size  Used Avail Use% Mounted on
+udev                               933M     0  933M   0% /dev
+tmpfs                              196M  1.3M  194M   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv  9.8G  4.3G  5.1G  46% /
+tmpfs                              977M     0  977M   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                              977M     0  977M   0% /sys/fs/cgroup
+/dev/loop0                          62M   62M     0 100% /snap/core20/1328
+/dev/loop1                          44M   44M     0 100% /snap/snapd/14978
+/dev/loop2                          68M   68M     0 100% /snap/lxd/21835
+/dev/sda2                          1.5G  110M  1.3G   8% /boot
+tmpfs                              196M     0  196M   0% /run/user/1000
+/dev/mapper/vgdata-lvdata          469M  768K  433M   1% /media/lvdata
+
+# lsblk 
+NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+fd0                         2:0    1  1.4M  0 disk 
+loop0                       7:0    0 61.9M  1 loop /snap/core20/1328
+loop1                       7:1    0 43.6M  1 loop /snap/snapd/14978
+loop2                       7:2    0 67.2M  1 loop /snap/lxd/21835
+sda                         8:0    0   21G  0 disk 
+├─sda1                      8:1    0    1M  0 part 
+├─sda2                      8:2    0  1.5G  0 part /boot
+└─sda3                      8:3    0 18.5G  0 part 
+  └─ubuntu--vg-ubuntu--lv 253:0    0   10G  0 lvm  /
+sdb                         8:16   0    1G  0 disk 
+└─sdb1                      8:17   0 1023M  0 part 
+  └─vgdata-lvdata         253:1    0  500M  0 lvm  /media/lvdata
+sr0                        11:0    1 97.2M  0 rom  
+sr1                        11:1    1  1.2G  0 rom  
+```
+
+
+
+### Linux File System
+
+| FS    | Max FS Size | Max File Size | Notes                                                        |
+| ----- | ----------- | ------------- | ------------------------------------------------------------ |
+| ext2  | 16-32 TiB   | 2 TiB         | Not journalized                                              |
+| ext3  | 16-32 TiB   | 2 TiB         | ext2 with a journal                                          |
+| ext4  | 1 EiB       | 16 TiB        | Suppots solid-state disks. larger disks, robusts             |
+| XFS   | 8 EiB       | 8EiB          | Cannot be shrunk, supports snaphots                          |
+| Btrfs | 16 EiB      | 16 EiB        | Supports automatic defragmentation, copy-on-write, RAID, subvolumes, online data correction, snapshots |
+
+
+
+### Extend existing logical volumes
+
+1. Check volume group free space
+
+   **Using lsblk command**
+
+   ```
+   # lsblk 
+   NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   fd0                         2:0    1  1.4M  0 disk 
+   loop0                       7:0    0 67.2M  1 loop /snap/lxd/21835
+   loop1                       7:1    0 61.9M  1 loop /snap/core20/1328
+   loop2                       7:2    0 43.6M  1 loop /snap/snapd/14978
+   loop3                       7:3    0 61.9M  1 loop /snap/core20/1361
+   loop4                       7:4    0 67.9M  1 loop /snap/lxd/22526
+   sda                         8:0    0   21G  0 disk 
+   ├─sda1                      8:1    0    1M  0 part 
+   ├─sda2                      8:2    0  1.5G  0 part /boot
+   └─sda3                      8:3    0 18.5G  0 part 
+     └─ubuntu--vg-ubuntu--lv 253:1    0   10G  0 lvm  /
+   sdb                         8:16   0    1G  0 disk 
+   └─sdb1                      8:17   0 1023M  0 part 
+     └─vgdata-lvdata         253:0    0  500M  0 lvm  
+   sr0                        11:0    1 97.2M  0 rom  
+   sr1                        11:1    1  1.2G  0 rom  
+   ```
+
+   **Using vgdispaly commnd**
+
+   ```
+   # vgdisplay | grep Free
+     Free  PE / Size       130 / 520.00 MiB
+     Free  PE / Size       2175 / <8.50 GiB
+   ```
+
+2. Extend logical volume
+
+   ```
+   # lvextend -L +500M /dev/vgdata/lvdata 
+     Size of logical volume vgdata/lvdata changed from 500.00 MiB (125 extents) to 1000.00 MiB (250 extents).
+     Logical volume vgdata/lvdata successfully resized.
+   ```
+
+3. Check logical volume
+
+   **Using vgdispaly commnd**
+
+   ```
+   # lsblk 
+   NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   fd0                         2:0    1  1.4M  0 disk 
+   loop0                       7:0    0 67.2M  1 loop /snap/lxd/21835
+   loop1                       7:1    0 61.9M  1 loop /snap/core20/1328
+   loop2                       7:2    0 43.6M  1 loop /snap/snapd/14978
+   loop3                       7:3    0 61.9M  1 loop /snap/core20/1361
+   loop4                       7:4    0 67.9M  1 loop /snap/lxd/22526
+   sda                         8:0    0   21G  0 disk 
+   ├─sda1                      8:1    0    1M  0 part 
+   ├─sda2                      8:2    0  1.5G  0 part /boot
+   └─sda3                      8:3    0 18.5G  0 part 
+     └─ubuntu--vg-ubuntu--lv 253:1    0   10G  0 lvm  /
+   sdb                         8:16   0    1G  0 disk 
+   └─sdb1                      8:17   0 1023M  0 part 
+     └─vgdata-lvdata         253:0    0 1000M  0 lvm  
+   sr0                        11:0    1 97.2M  0 rom  
+   sr1                        11:1    1  1.2G  0 rom  
+   ```
+
+   **Using vgdispaly commnd**
+
+   ```
+   # vgdisplay | grep Free
+     Free  PE / Size       5 / 20.00 MiB
+     Free  PE / Size       2175 / <8.50 GiB
+   ```
+
+4. Resize file system
+
+   **For ext4** 
+
+   ```
+   # resize2fs /dev/vgdata/lvdata 
+   ```
+
+   **For xfs**
+
+   ```
+   # xfs_growfs /dev/vgdata/lvdata 
+   ```
+
+   
+
+### Automount File Systems on Linux 
+
+1. Get the Name, UUID and File System Type
+
+   ```
+   # blkid 
+   /dev/fd0: SEC_TYPE="msdos" UUID="5459-5107" TYPE="vfat"
+   /dev/sda2: UUID="5ad1c3ca-0b9d-47b1-9d23-40d0592ad390" TYPE="ext4" PARTUUID="61e94aee-2ced-42a4-8ad7-9f95c01377aa"
+   /dev/sda3: UUID="qyLTxi-Qpue-NtZv-bvA3-gOZL-sD6f-Oi1GBe" TYPE="LVM2_member" PARTUUID="39b90254-d4da-4d47-a513-945f26496902"
+   /dev/sr0: UUID="2022-02-25-10-08-07-00" LABEL="CDROM" TYPE="iso9660"
+   /dev/sdb1: UUID="OGrmim-rzWw-Hcha-DVte-IexI-G4SZ-ncnyjH" TYPE="LVM2_member" PARTLABEL="Linux filesystem" PARTUUID="3841d75f-43f9-464c-9d93-45192a03cf04"
+   /dev/mapper/ubuntu--vg-ubuntu--lv: UUID="65238bf3-8a36-4379-8276-298243687ce2" TYPE="ext4"
+   /dev/mapper/vgdata-lvdata: UUID="2045a544-067d-42e3-9c26-cf42d9af48ec" TYPE="ext4"
+   /dev/loop0: TYPE="squashfs"
+   /dev/loop1: TYPE="squashfs"
+   /dev/loop2: TYPE="squashfs"
+   /dev/loop3: TYPE="squashfs"
+   /dev/loop4: TYPE="squashfs"
+   /dev/sda1: PARTUUID="fbc83446-9f88-4d6a-ac2a-4814d123e721"
+   ```
+
+   
+
+2. Make a Mount Point For Your Drive
+
+   ```
+   # mkdir /mnt/sdb1
+   ```
+
+3. Edit /etc/fstab File
+
+   ```
+   sudo nano /etc/fstab
+   ```
+
+   We need to append one line of code at the end of the file. The format of this line of code is as follows:
+
+   ```
+   UUID=<uuid-of-your-drive>  <mount-point>  <file-system-type>  <mount-option>  <dump>  <pass>
+   ```
+
+   Note that you need to separate these items with Tab key. For example, I added the following line to the end of `/etc/fstab`.
+
+   ```
+   UUID=2045a544-067d-42e3-9c26-cf42d9af48ec /mnt/sdb1 ext4 defaults 0 1
+   ```
+
+   Save and close the file. Then run the following command to see if it works.
+
+   ```
+   sudo mount -a
+   ```
+
+
+
+### Reduce existing logical volumes
+
+#### Automated
+
+**Decrease logical volume size using lvresize**
+
+```
+# lvresize -r -L 300M /dev/vgdata/lvdata 
+Do you want to unmount "/mnt/sdb1" ? [Y|n] y
+fsck from util-linux 2.34
+/dev/mapper/vgdata-lvdata: 11/128000 files (0.0% non-contiguous), 8302/128000 blocks
+resize2fs 1.45.5 (07-Jan-2020)
+Resizing the filesystem on /dev/mapper/vgdata-lvdata to 76800 (4k) blocks.
+The filesystem on /dev/mapper/vgdata-lvdata is now 76800 (4k) blocks long.
+
+  Size of logical volume vgdata/lvdata changed from 500.00 MiB (125 extents) to 300.00 MiB (75 extents).
+  Logical volume vgdata/lvdata successfully resized.
+
+# df -h
+Filesystem                         Size  Used Avail Use% Mounted on
+udev                               933M     0  933M   0% /dev
+tmpfs                              196M  1.3M  194M   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv  9.8G  4.5G  4.9G  48% /
+tmpfs                              977M     0  977M   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                              977M     0  977M   0% /sys/fs/cgroup
+/dev/loop0                          62M   62M     0 100% /snap/core20/1328
+/dev/loop2                          68M   68M     0 100% /snap/lxd/22526
+/dev/loop1                          68M   68M     0 100% /snap/lxd/21835
+/dev/loop4                          62M   62M     0 100% /snap/core20/1361
+/dev/loop3                          44M   44M     0 100% /snap/snapd/14978
+/dev/sda2                          1.5G  110M  1.3G   8% /boot
+tmpfs                              196M     0  196M   0% /run/user/1000
+/dev/mapper/vgdata-lvdata          273M  520K  251M   1% /mnt/sdb1
+```
+
+**Increase logical volume size using lvresize**
+
+```
+# lvresize -r -L 700M /dev/vgdata/lvdata 
+  Size of logical volume vgdata/lvdata changed from 300.00 MiB (75 extents) to 700.00 MiB (175 extents).
+  Logical volume vgdata/lvdata successfully resized.
+resize2fs 1.45.5 (07-Jan-2020)
+Filesystem at /dev/mapper/vgdata-lvdata is mounted on /mnt/sdb1; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 1
+The filesystem on /dev/mapper/vgdata-lvdata is now 179200 (4k) blocks long.
+
+# df -h
+Filesystem                         Size  Used Avail Use% Mounted on
+udev                               933M     0  933M   0% /dev
+tmpfs                              196M  1.3M  194M   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv  9.8G  4.5G  4.9G  48% /
+tmpfs                              977M     0  977M   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                              977M     0  977M   0% /sys/fs/cgroup
+/dev/loop0                          62M   62M     0 100% /snap/core20/1328
+/dev/loop2                          68M   68M     0 100% /snap/lxd/22526
+/dev/loop1                          68M   68M     0 100% /snap/lxd/21835
+/dev/loop4                          62M   62M     0 100% /snap/core20/1361
+/dev/loop3                          44M   44M     0 100% /snap/snapd/14978
+/dev/sda2                          1.5G  110M  1.3G   8% /boot
+tmpfs                              196M     0  196M   0% /run/user/1000
+/dev/mapper/vgdata-lvdata          661M 1016K  630M   1% /mnt/sdb1
+```
+
+
+
+#### Manual
+
+1. Check the mount
+
+   ```
+   # df -h
+   Filesystem                         Size  Used Avail Use% Mounted on
+   udev                               933M     0  933M   0% /dev
+   tmpfs                              196M  1.3M  194M   1% /run
+   /dev/mapper/ubuntu--vg-ubuntu--lv  9.8G  4.5G  4.9G  48% /
+   tmpfs                              977M     0  977M   0% /dev/shm
+   tmpfs                              5.0M     0  5.0M   0% /run/lock
+   tmpfs                              977M     0  977M   0% /sys/fs/cgroup
+   /dev/loop0                          62M   62M     0 100% /snap/core20/1328
+   /dev/loop2                          68M   68M     0 100% /snap/lxd/22526
+   /dev/loop1                          68M   68M     0 100% /snap/lxd/21835
+   /dev/loop4                          62M   62M     0 100% /snap/core20/1361
+   /dev/loop3                          44M   44M     0 100% /snap/snapd/14978
+   /dev/sda2                          1.5G  110M  1.3G   8% /boot
+   /dev/mapper/vgdata-lvdata          953M  1.3M  886M   1% /mnt/sdb1
+   tmpfs                              196M     0  196M   0% /run/user/1000
+   ```
+
+2. Unmount logical volume and check if unmounted
+
+   Note: Always unmount logical volumes when reducing the size and leave it mounted when increasing it.
+
+   ```
+   # umount /mnt/sdb1 
+   
+   # df -h
+   Filesystem                         Size  Used Avail Use% Mounted on
+   udev                               933M     0  933M   0% /dev
+   tmpfs                              196M  1.3M  194M   1% /run
+   /dev/mapper/ubuntu--vg-ubuntu--lv  9.8G  4.5G  4.9G  48% /
+   tmpfs                              977M     0  977M   0% /dev/shm
+   tmpfs                              5.0M     0  5.0M   0% /run/lock
+   tmpfs                              977M     0  977M   0% /sys/fs/cgroup
+   /dev/loop0                          62M   62M     0 100% /snap/core20/1328
+   /dev/loop2                          68M   68M     0 100% /snap/lxd/22526
+   /dev/loop1                          68M   68M     0 100% /snap/lxd/21835
+   /dev/loop4                          62M   62M     0 100% /snap/core20/1361
+   /dev/loop3                          44M   44M     0 100% /snap/snapd/14978
+   /dev/sda2                          1.5G  110M  1.3G   8% /boot
+   tmpfs                              196M     0  196M   0% /run/user/1000
+   ```
+
+3. Run file system check
+
+   Note: If all 5 system file check is pass, proceed if not resolve the error first.
+
+   ```
+   # e2fsck -ff /dev/mapper/vgdata-lvdata 
+   e2fsck 1.45.5 (07-Jan-2020)
+   Pass 1: Checking inodes, blocks, and sizes
+   Pass 2: Checking directory structure
+   Pass 3: Checking directory connectivity
+   Pass 4: Checking reference counts
+   Pass 5: Checking group summary information
+   /dev/mapper/vgdata-lvdata: 11/256000 files (0.0% non-contiguous), 12438/256000 blocks
+   ```
+
+4.  Resize the file system
+
+   ```
+   # resize2fs /dev/mapper/vgdata-lvdata 500M
+   resize2fs 1.45.5 (07-Jan-2020)
+   Resizing the filesystem on /dev/mapper/vgdata-lvdata to 128000 (4k) blocks.
+   The filesystem on /dev/mapper/vgdata-lvdata is now 128000 (4k) blocks long.
+   ```
+
+5. Reduce the logical volume
+
+   ```
+   # lvresize -L 500M /dev/vgdata/lvdata 
+     WARNING: Reducing active logical volume to 500.00 MiB.
+     THIS MAY DESTROY YOUR DATA (filesystem etc.)
+   Do you really want to reduce vgdata/lvdata? [y/n]: y
+     Size of logical volume vgdata/lvdata changed from 1000.00 MiB (250 extents) to 500.00 MiB (125 extents).
+     Logical volume vgdata/lvdata successfully resized.
+   ```
+
+6. Verify the logical volume size
+
+   ```
+   # lvs
+     LV        VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+     ubuntu-lv ubuntu-vg -wi-ao----  10.00g                                                    
+     lvdata    vgdata    -wi-a----- 500.00m     
+   ```
+
+7. Mount the volume again and check the size
+
+   ```
+   # mount /dev/mapper/vgdata-lvdata /mnt/sdb1
+   
+   # df -h
+   Filesystem                         Size  Used Avail Use% Mounted on
+   udev                               933M     0  933M   0% /dev
+   tmpfs                              196M  1.3M  194M   1% /run
+   /dev/mapper/ubuntu--vg-ubuntu--lv  9.8G  4.5G  4.9G  48% /
+   tmpfs                              977M     0  977M   0% /dev/shm
+   tmpfs                              5.0M     0  5.0M   0% /run/lock
+   tmpfs                              977M     0  977M   0% /sys/fs/cgroup
+   /dev/loop0                          62M   62M     0 100% /snap/core20/1328
+   /dev/loop2                          68M   68M     0 100% /snap/lxd/22526
+   /dev/loop1                          68M   68M     0 100% /snap/lxd/21835
+   /dev/loop4                          62M   62M     0 100% /snap/core20/1361
+   /dev/loop3                          44M   44M     0 100% /snap/snapd/14978
+   /dev/sda2                          1.5G  110M  1.3G   8% /boot
+   tmpfs                              196M     0  196M   0% /run/user/1000
+   /dev/mapper/vgdata-lvdata          469M  768K  433M   1% /mnt/sdb1
+   ```
+
+   
