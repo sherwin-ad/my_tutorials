@@ -827,6 +827,59 @@ Number  Start   End    Size   Type     File system  Flags
  1      1049kB  500MB  499MB  primary
 ```
 
+
+
+### Create partion using fdisk
+
+```
+$ sudo fdisk /dev/sdc
+
+Welcome to fdisk (util-linux 2.34).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS disklabel with disk identifier 0x40857866.
+
+Command (m for help): p
+Disk /dev/sdc: 1 GiB, 1073741824 bytes, 2097152 sectors
+Disk model: VMware Virtual S
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x40857866
+
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (1-4, default 1): 1
+First sector (2048-2097151, default 2048): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-2097151, default 2097151): +500M
+Created a new partition 1 of type 'Linux' and of size 500 MiB.
+
+Command (m for help): p
+Disk /dev/sdc: 1 GiB, 1073741824 bytes, 2097152 sectors
+Disk model: VMware Virtual S
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x40857866
+
+Device     Boot Start     End Sectors  Size Id Type
+/dev/sdc1        2048 1026047 1024000  500M 83 Linux
+
+Command (m for help): w
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+```
+
+
+
 ## Resize partitions without losing data
 
 

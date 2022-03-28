@@ -11,9 +11,11 @@
 ### Setup web server with mysql
 
 ```
-# Install Apache/MySQL server and client/PHP
-$ sudo apt install apache2 mysql-client mysql-server php libapache2-mod-php
+# Install Apache server and client/PHP
+$ sudo apt install apache2 php libapache2-mod-php
 
+# Install Mariadb server
+$ sudo apt install mariadb-server mariadb-client
 
 # Install Additional Software
 $ sudo apt install graphviz aspell ghostscript clamav php7.4-pspell php7.4-curl php7.4-gd php7.4-intl php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-ldap php7.4-zip php7.4-soap php7.4-mbstring
@@ -35,10 +37,10 @@ cd moodle
 git branch -a
 
 # Tell git which branch to track or use
-git branch --track MOODLE_311_STABLE origin/MOODLE_31_STABLE
+git branch --track MOODLE_311_STABLE origin/MOODLE_311_STABLE
 
 # Finally, Check out the Moodle version specified
-sudo git checkout MOODLE_39_STABLE
+git checkout MOODLE_311_STABLE
 
 
 # Copy local repository to /var/www/html/
@@ -159,12 +161,53 @@ Provide a suitably strong password. Please note that the actual authentication m
 $ postgres=# CREATE DATABASE moodle WITH OWNER moodleuser;
 ```
 
+- Grant privileges on database
+
+```bash
+$ psql=# grant all privileges on database <dbname> to <username>;
+```
+
 - Drop database
+
 ```
 $ postgres=# DROP DATABASE moodle;
 ```
 
-  
+  ### Connecting to a Remote PostgreSQL Database
+
+1. Change the listening address in the postgresql.conf file.
+
+   ```
+   listen_addresses = '*'
+   ```
+
+   If you have multiple interfaces on the server, you can specify a specific interface to be listened.
+
+2. Add a client authentication entry to the pg_hba.conf file.
+
+   By default, PostgreSQL accepts connections only from the localhost. It refuses remote connections. This is controlled by applying an access control rule that allows a user to log in from an IP address after providing a valid password (the md5 keyword). To accept a remote connection, add the following entry to the C:\NetIQ\idm\postgres\data\pg_hba.conf file.
+
+   ```
+   host all all 0.0.0.0/0 md5
+   ```
+
+   For example, 192.168.104.24/26 trust
+
+   This works only for IPv4 addresses. For IPv6 addresses, add the following entry:
+
+   ```
+   host all all ::0/0 md5
+   ```
+
+3. Restart postgresql service
+
+4. Connect to postgresql remotely
+
+   ```
+   # psql -U postuser -h 35.206.201.238 -d final_nhcp2
+   ```
+
+   
 
 ### Backup postgres db
 
@@ -715,6 +758,24 @@ SSLCertificateChainFile /etc/ssl/certs/gd_bundle-g2-g1.crt
 
 ```
 
+
+
+## Disable directory listing in Apache
+
+**Edit /etc/apache2/apache2.conf** 
+
+```
+<Directory /var/www/html>
+        Options -Indexes
+        AllowOverride None
+        Require all granted
+</Directory>
+```
+
+
+
+
+
 ## How to change your URL in Moodle
 
 1. [Login to the Moodle Dashboard](https://www.inmotionhosting.com/support/edu/moodle/moodle-login-administrator/).
@@ -937,6 +998,7 @@ Enable Apache module named: Mod_rewrite.
 ```
 # a2enmod ssl
 # a2enmod rewrite
+# a2ensite /etc/apache2/sites-available/default-ssl.conf
 ```
 
 
@@ -946,4 +1008,191 @@ Enable Apache module named: Mod_rewrite.
 ```
 # rsync -P --rsh=ssh ubuntu@35.206.247.54:/home/ubuntu/ndcp-lms-moodledata-03052022.tar.gz .
 ```
+
+
+
+## How To Secure Apache with Let's Encrypt on Ubuntu 20.04
+
+1. Installing Certbot
+
+   ```
+   sudo apt install certbot python3-certbot-apache
+   ```
+
+2. Checking your Apache Virtual Host Configuration
+
+   ```
+   sudo nano /etc/apache2/sites-available/your_domain.conf
+   ```
+
+   ```
+   ServerName your_domain
+   ServerAlias www.your_domain
+   ```
+
+   ```bash
+   sudo apache2ctl configtest
+   ```
+
+3. Obtaining an SSL Certificate
+
+   Certbot provides a variety of ways to obtain SSL certificates through plugins. The Apache plugin will take care of reconfiguring Apache and reloading the configuration whenever necessary. To use this plugin, type the following:
+
+   ```bash
+   sudo certbot --apache
+   ```
+
+   Copy
+
+   This script will prompt you to answer a series of questions in order to configure your SSL certificate. First, it will ask you for a valid e-mail address. This email will be used for renewal notifications and security notices:
+
+   ```
+   OutputSaving debug log to /var/log/letsencrypt/letsencrypt.log
+   Plugins selected: Authenticator apache, Installer apache
+   Enter email address (used for urgent renewal and security notices) (Enter 'c' to
+   cancel): you@your_domain
+   ```
+
+   After providing a valid e-mail address, hit `ENTER` to proceed to the next step. You will then be prompted to confirm if you agree to Let’s Encrypt terms of service. You can confirm by pressing `A` and then `ENTER`:
+
+   ```
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   Please read the Terms of Service at
+   https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf. You must
+   agree in order to register with the ACME server at
+   https://acme-v02.api.letsencrypt.org/directory
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   (A)gree/(C)ancel: A
+   ```
+
+   Next, you’ll be asked if you would like to share your email with the Electronic Frontier Foundation to receive news and other information. If you do not want to subscribe to their content, type `N`. Otherwise, type `Y`. Then, hit `ENTER` to proceed to the next step.
+
+   ```
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   Would you be willing to share your email address with the Electronic Frontier
+   Foundation, a founding partner of the Let's Encrypt project and the non-profit
+   organization that develops Certbot? We'd like to send you email about our work
+   encrypting the web, EFF news, campaigns, and ways to support digital freedom.
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   (Y)es/(N)o: N
+   ```
+
+   The next step will prompt you to inform Certbot of which domains you’d like to activate HTTPS for. The listed domain names are automatically obtained from your Apache virtual host configuration, that’s why it’s important to make sure you have the correct `ServerName` and `ServerAlias` settings configured in your virtual host. If you’d like to enable HTTPS for all listed domain names (recommended), you can leave the prompt blank and hit `ENTER` to proceed. Otherwise, select the domains you want to enable HTTPS for by listing each appropriate number, separated by commas and/ or spaces, then hit `ENTER`.
+
+   ```
+   Which names would you like to activate HTTPS for?
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   1: your_domain
+   2: www.your_domain
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   Select the appropriate numbers separated by commas and/or spaces, or leave input
+   blank to select all options shown (Enter 'c' to cancel): 
+   ```
+
+   You’ll see output like this:
+
+   ```
+   Obtaining a new certificate
+   Performing the following challenges:
+   http-01 challenge for your_domain
+   http-01 challenge for www.your_domain
+   Enabled Apache rewrite module
+   Waiting for verification...
+   Cleaning up challenges
+   Created an SSL vhost at /etc/apache2/sites-available/your_domain-le-ssl.conf
+   Enabled Apache socache_shmcb module
+   Enabled Apache ssl module
+   Deploying Certificate to VirtualHost /etc/apache2/sites-available/your_domain-le-ssl.conf
+   Enabling available site: /etc/apache2/sites-available/your_domain-le-ssl.conf
+   Deploying Certificate to VirtualHost /etc/apache2/sites-available/your_domain-le-ssl.conf
+   ```
+
+   Next, you’ll be prompted to select whether or not you want HTTP traffic redirected to HTTPS. In practice, that means when someone visits your website through unencrypted channels (HTTP), they will be automatically redirected to the HTTPS address of your website. Choose `2` to enable the redirection, or `1` if you want to keep both HTTP and HTTPS as separate methods of accessing your website.
+
+   ```
+   Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   1: No redirect - Make no further changes to the webserver configuration.
+   2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for
+   new sites, or if you're confident your site works on HTTPS. You can undo this
+   change by editing your web server's configuration.
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+   ```
+
+   After this step, Certbot’s configuration is finished, and you will be presented with the final remarks about your new certificate, where to locate the generated files, and how to test your configuration using an external tool that analyzes your certificate’s authenticity:
+
+   ```
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   Congratulations! You have successfully enabled https://your_domain and
+   https://www.your_domain
+   
+   You should test your configuration at:
+   https://www.ssllabs.com/ssltest/analyze.html?d=your_domain
+   https://www.ssllabs.com/ssltest/analyze.html?d=www.your_domain
+   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   
+   IMPORTANT NOTES:
+    - Congratulations! Your certificate and chain have been saved at:
+      /etc/letsencrypt/live/your_domain/fullchain.pem
+      Your key file has been saved at:
+      /etc/letsencrypt/live/your_domain/privkey.pem
+      Your cert will expire on 2020-07-27. To obtain a new or tweaked
+      version of this certificate in the future, simply run certbot again
+      with the "certonly" option. To non-interactively renew *all* of
+      your certificates, run "certbot renew"
+    - Your account credentials have been saved in your Certbot
+      configuration directory at /etc/letsencrypt. You should make a
+      secure backup of this folder now. This configuration directory will
+      also contain certificates and private keys obtained by Certbot so
+      making regular backups of this folder is ideal.
+    - If you like Certbot, please consider supporting our work by:
+   
+      Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+      Donating to EFF:                    https://eff.org/donate-le
+   ```
+
+   Your certificate is now installed and loaded into Apache’s configuration. Try reloading your website using `https://` and notice your browser’s security indicator. It should point out that your site is properly secured, typically by including a lock icon in the address bar.
+
+   You can use the [SSL Labs Server Test](https://www.ssllabs.com/ssltest/) to verify your certificate’s grade and obtain detailed information about it, from the perspective of an external service.
+
+   In the next and final step, we’ll test the auto-renewal feature of Certbot, which guarantees that your certificate will be renewed automatically before the expiration date.
+
+4. Verifying Certbot Auto-Renewal
+
+   Let’s Encrypt’s certificates are only valid for ninety days. This is to encourage users to automate their certificate renewal process, as well as to ensure that misused certificates or stolen keys will expire sooner rather than later.
+
+   The `certbot` package we installed takes care of renewals by including a renew script to `/etc/cron.d`, which is managed by a `systemctl` service called `certbot.timer`. This script runs twice a day and will automatically renew any certificate that’s within thirty days of expiration.
+
+   To check the status of this service and make sure it’s active and running, you can use:
+
+   ```bash
+   sudo systemctl status certbot.timer
+   ```
+
+   You’ll get output similar to this:
+
+   ```
+   Output● certbot.timer - Run certbot twice daily
+        Loaded: loaded (/lib/systemd/system/certbot.timer; enabled; vendor preset: enabled)
+        Active: active (waiting) since Tue 2020-04-28 17:57:48 UTC; 17h ago
+       Trigger: Wed 2020-04-29 23:50:31 UTC; 12h left
+      Triggers: ● certbot.service
+   
+   Apr 28 17:57:48 fine-turtle systemd[1]: Started Run certbot twice daily.
+   ```
+   
+   To test the renewal process, you can do a dry run with `certbot`:
+
+   ```bash
+   sudo certbot renew --dry-run
+   ```
+   
+   If you see no errors, you’re all set. When necessary, Certbot will renew your certificates and reload Apache to pick up the changes. If the automated renewal process ever fails, Let’s Encrypt will send a message to the email you specified, warning you when your certificate is about to expire.
+
+**Conclusion**
+
+   In this tutorial, you’ve installed the Let’s Encrypt client `certbot`, configured and installed an SSL certificate for your domain, and confirmed that Certbot’s automatic renewal service is active within `systemctl`. If you have further questions about using Certbot, [their documentation](https://certbot.eff.org/docs/) is a good place to start.
+
+   
 
