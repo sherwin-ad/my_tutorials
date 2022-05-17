@@ -652,6 +652,33 @@ $CFG->wwwroot   = 'https://'.$_SERVER['HTTP_HOST'].'';
 
  
 
+## Change user permission in moodle via database
+
+
+
+```sql
+SELECT *
+FROM mdl_user
+```
+
+Then add the id to the `value` column here
+
+```sql
+SELECT *
+FROM mdl_config
+WHERE name = 'siteadmins'
+```
+
+For example
+
+```sql
+UPDATE mdl_config
+SET value = value || ',3'
+WHERE name = 'siteadmins'
+```
+
+
+
 ## Reset Admin password
 
 1. Login to your moodle database and find the user table mdl_user (moodle ver. 3.3)
@@ -774,7 +801,28 @@ SSLCertificateChainFile /etc/ssl/certs/gd_bundle-g2-g1.crt
 
 
 
+## Hide Apache Version Number and Other Sensitive Info
 
+To hide web server version number, server operating system details, installed Apache modules and more, open your Apache web server configuration file using your favorite editor:
+
+```
+$ sudo vi /etc/apache2/apache2.conf        #Debian/Ubuntu systems
+$ sudo vi /etc/httpd/conf/httpd.conf       #RHEL/CentOS systems 
+```
+
+And add/modify/append the lines below:
+
+```
+ServerTokens Prod
+ServerSignature Off 
+```
+
+Save the file, exit and restart your Apache web server like so:
+
+```
+$ sudo systemctl restart apache2  #SystemD
+$ sudo service apache2 restart     #SysVInit
+```
 
 ## How to change your URL in Moodle
 
