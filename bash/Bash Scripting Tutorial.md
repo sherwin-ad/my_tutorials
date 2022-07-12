@@ -1,8 +1,10 @@
+[TOC]
+
 # Bash Scripting Tutorial
 
 
 
-# File System Hierarchy
+## File System Hierarchy
 
 
 
@@ -27,4 +29,179 @@
 | `/tmp`    | [Directory for temporary files](https://en.wikipedia.org/wiki/Temporary_folder) (see also `/var/tmp`). Often not preserved between system reboots and may be severely size-restricted. |
 | `/usr`    | *Secondary hierarchy* for read-only user data; contains the majority of ([multi-](https://en.wikipedia.org/wiki/Multi-user))user utilities and applications. Should be shareable and read-only.[[9\]](https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard#cite_note-9)[[10\]](https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard#cite_note-10) |
 | `/var`    | Variable files: files whose content is expected to continually change during normal operation of the system, such as logs, spool files, and temporary e-mail files. |
+
+## Bash Scripting Basics
+
+**File extension**: script_name.sh
+
+```
+#!/bin/bash
+echo This is our first Bash Script
+```
+
+**Make bash script executable**
+
+```
+chmod +x test.sh
+
+chmod -R 777 test.sh	
+```
+
+**Execute script**
+
+```
+bash test.sh
+
+./test.sh
+
+sudo cp test.sh /bin/test_new.sh
+test_new.sh
+```
+
+
+
+## Variables
+
+| Variable                                  | Definition                            |
+| ----------------------------------------- | ------------------------------------- |
+| echo "Hello World"                        | Write a String                        |
+| echo 4                                    | Write an Integer                      |
+| a=3                                       | User Variables                        |
+| echo $a                                   | Create a variable and call it in echo |
+| echo $BASH; echo $BASH_VERSION; echo $PWD | System Variables                      |
+
+```bash
+#!/bin/bash
+x=5
+
+echo "Hello World!"
+
+echo $x 
+echo $BASH
+echo $BASH_VERSION
+echo $PWD
+```
+
+```
+#!/bin/bash 
+echo $1 $2 $3
+
+./test1.sh cat dog bird 
+cat dog bird
+
+./test1.sh cat dog bird frog
+cat dog bird
+```
+
+```
+echo $0
+$ test.sh cat dog bird
+output: /usr/bin/test.sh
+
+echo $2
+$ test.sh cat dog bird
+output: dog
+
+echo S@
+$ test.sh cat dog bird
+output: cat dog bird
+
+echo $#
+$ test.sh cat dog bird frog
+output: 4
+```
+
+## Shift
+
+```
+shift [n]
+```
+
+The **shift** command takes only one argument:
+
+| ***n*** | **The number of positions that parameters should be shifted to the left. This value can be any non-negative [integer](https://www.computerhope.com/jargon/i/integer.htm). If *n* is zero (0), no parameter shift will be performed. The default value of *n* is 1.** |
+| ------- | ------------------------------------------------------------ |
+
+```
+#!/bin/bash
+echo 1 - $1
+echo 2 - $2
+echo 3 - $3
+echo 4 - $4
+shift
+echo 1 - $1
+echo 2 - $2
+echo 3 - $3
+echo 4 - $4
+```
+
+**Output**
+
+```
+$ ./test2.sh cat dog bird frog
+1 - cat
+2 - dog
+3 - bird
+4 - frog
+1 - dog
+2 - bird
+3 - frog
+4 -
+```
+
+**test2.sh**
+
+```
+#!/bin/bash
+echo 1 - $1
+echo 2 - $2
+echo 3 - $3
+echo 4 - $4
+shift 0
+echo 1 - $1
+echo 2 - $2
+echo 3 - $3
+echo 4 - $4
+```
+
+**Output**
+
+```
+./test2.sh cat dog bird frog
+1 - cat
+2 - dog
+3 - bird
+4 - frog
+1 - cat
+2 - dog
+3 - bird
+4 - frog
+```
+
+```
+#!/bin/bash
+echo 1 - $1
+echo 2 - $2
+echo 3 - $3
+echo 4 - $4
+shift 2
+echo 1 - $1
+echo 2 - $2
+echo 3 - $3
+echo 4 - $4
+```
+
+**Output**
+
+```
+./test2.sh cat dog bird frog
+1 - cat
+2 - dog
+3 - bird
+4 - frog
+1 - bird
+2 - frog
+3 -
+4 -
+```
 

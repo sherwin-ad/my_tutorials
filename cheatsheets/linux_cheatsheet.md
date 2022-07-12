@@ -29,7 +29,7 @@ SourceURL:file://Document1
 | mkdir -v test                       | -v option shows details of the process                       |
 | rmdir test                          | Remove a directory, if directory has no content              |
 | rm -r test                          | Remove directories and their contents recursively            |
-| rm                                  | Remove only all files in current directory, directory is not removed |
+| rm *                                | Remove only all files in current directory, directory is not removed |
 |                                     |                                                              |
 | mv test.txt ..                      | Move file to upper directory                                 |
 | mv test.txt test2.txt               | Rename the file                                              |
