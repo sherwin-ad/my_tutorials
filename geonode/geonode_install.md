@@ -117,6 +117,10 @@ pip install pygdal=="`gdal-config --version`.*"
 Install and Configure the PostgreSQL Database System
 
 ```
+# Ubuntu 20.04 (focal)
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+sudo wget --no-check-certificate --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt update -y; sudo apt install -y postgresql-13 postgresql-13-postgis-3 postgresql-13-postgis-3-scripts postgresql-13 postgresql-client-13
 ```
 
 **Databases and Permissions**
