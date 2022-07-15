@@ -1,9 +1,24 @@
 #!/bin/bash
-x=5
 
-echo "Hello World!"
+echo -n "Enter a character: "
+read letter
 
-echo $x 
-echo $BASH
-echo $BASH_VERSION
-echo $PWD
+case $letter in
+
+  [a-z] )
+    echo '$letter is between a-z' ;;
+
+  [0-9] )
+    echo '$letter is between 0-9' ;;
+
+  ? )
+    echo '$letter is a special character' ;;
+
+  * )
+    echo '$letter is an unknown character' ;;
+
+esac
+         
+   
+
+ 
