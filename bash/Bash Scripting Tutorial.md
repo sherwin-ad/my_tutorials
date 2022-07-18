@@ -574,3 +574,30 @@ $letter is an unknown character
 | echo ${animals[2]}        | Show item-2 of the array                  |
 | unset animals[1]          | Delete an item in array                   |
 
+```
+#!/bin/bash
+
+declare -a animals
+animals=(1 2 "cat" "dog")
+echo ${animals[@]}
+echo ${animals[2]}
+echo ${!animals[@]}
+echo ${#animals[@]}
+
+animals[2]=bird
+animals[4]=frog
+unset animals[1]
+echo ${animals[@]}
+```
+
+**Output**
+
+```
+./test_array.sh 
+1 2 cat dog
+cat
+0 1 2 3
+4
+1 bird dog frog
+```
+
