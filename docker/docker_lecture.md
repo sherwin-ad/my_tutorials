@@ -547,3 +547,176 @@ Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skippin
 2022-07-19T04:51:35.895042Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.29'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
 ```
 
+## Create docker image
+
+### How to create own image
+
+1. OS - Ubuntu
+2. Update apt repo
+3. Install dependencies using apt
+4. Install Python dependencies using pip
+5. Copy source code to /opt folder
+6. Run the web server using “flask” command
+
+**Dockerfile**
+
+```
+FROM ubuntu:20.04
+
+RUN apt-get update
+RUN apt-get install -y python python3-pip
+RUN pip install flask
+
+COPY app.py /opt/app.py
+
+ENTRYPOINT FLASK_APP=/opt/app.py flask run --host=0.0.0.0
+```
+
+**app.py**
+
+```
+import os
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def main():
+    return "Welcome!"
+
+@app.route('/how are you')
+def hello():
+    return 'I am good, how about you?'
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
+```
+
+## build
+
+```
+docker build . -t my-custom-app:latest
+```
+
+## push
+
+```
+$ docker build . -t sherwinowen/my-custom-app:latest
+
+$ docker images
+REPOSITORY                                      TAG       IMAGE ID       CREATED         SIZE
+my-custom-app                                   latest    036ac37b63ec   6 minutes ago   459MB
+
+$ docker push sherwinowen/my-custom-app:latest
+```
+
+## Docker compose
+
+```
+$ git clone https://github.com/dockersamples/example-voting-app.git
+
+$ cd example-voting-app
+
+$ cd vote
+
+# Build voting-app image
+example-voting-app/vote$ docker build . -t voting-app
+
+$ docker run -d --name=redis redis
+
+$ docker run -p 5000:80 --link redis:redis voting-app
+[2022-07-19 13:17:20 +0000] [1] [INFO] Starting gunicorn 20.1.0
+[2022-07-19 13:17:20 +0000] [1] [INFO] Listening at: http://0.0.0.0:80 (1)
+[2022-07-19 13:17:20 +0000] [1] [INFO] Using worker: sync
+[2022-07-19 13:17:20 +0000] [6] [INFO] Booting worker with pid: 6
+[2022-07-19 13:17:20 +0000] [7] [INFO] Booting worker with pid: 7
+[2022-07-19 13:17:20 +0000] [8] [INFO] Booting worker with pid: 8
+[2022-07-19 13:17:20 +0000] [9] [INFO] Booting worker with pid: 9
+[2022-07-19 13:17:32,151] INFO in app: Received vote for a
+[2022-07-19 13:17:32 +0000] [7] [INFO] Received vote for a
+192.168.101.123 - - [19/Jul/2022:13:17:32 +0000] "POST / HTTP/1.1" 200 1688 "http://192.168.101.123:5000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+192.168.101.123 - - [19/Jul/2022:13:17:32 +0000] "GET /static/stylesheets/style.css HTTP/1.1" 304 0 "http://192.168.101.123:5000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+[2022-07-19 13:17:33,693] INFO in app: Received vote for b
+[2022-07-19 13:17:33 +0000] [6] [INFO] Received vote for b
+192.168.101.123 - - [19/Jul/2022:13:17:33 +0000] "POST / HTTP/1.1" 200 1688 "http://192.168.101.123:5000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+192.168.101.123 - - [19/Jul/2022:13:17:33 +0000] "GET /static/stylesheets/style.css HTTP/1.1" 304 0 "http://192.168.101.123:5000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+[2022-07-19 13:17:34,673] INFO in app: Received vote for a
+[2022-07-19 13:17:34 +0000] [6] [INFO] Received vote for a
+192.168.101.123 - - [19/Jul/2022:13:17:34 +0000] "POST / HTTP/1.1" 200 1688 "http://192.168.101.123:5000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+192.168.101.123 - - [19/Jul/2022:13:17:34 +0000] "GET /static/stylesheets/style.css HTTP/1.1" 304 0 "http://192.168.101.123:5000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+
+
+$ docker run --name=db -d -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres postgres:9.4
+0f016a317f9dba3b49eeb5def32a7ecf79a7113fd171a23ebcbc6e27aa825395
+
+
+# Build worker-app image
+~/my_lab/example-voting-app/worker$ docker build . -t worker-app
+
+$ docker run --link redis:redis --link db:db worker-app
+Connected to db
+Connecting to redis
+Found redis at 172.17.0.3
+Processing vote for 'a' by '87c285087f989c4'
+Processing vote for 'b' by '87c285087f989c4'
+Processing vote for 'a' by '87c285087f989c4'
+Processing vote for 'a' by '87c285087f989c4'
+Processing vote for 'b' by '87c285087f989c4'
+Processing vote for 'a' by '87c285087f989c4'
+
+# Build result-app image
+~/my_lab/example-voting-app/result$ docker build . -t result-app
+
+$ docker run -p 5001:80 --link db:db result-app
+Tue, 19 Jul 2022 13:38:06 GMT body-parser deprecated bodyParser: use individual json/urlencoded middlewares at server.js:73:9
+Tue, 19 Jul 2022 13:38:06 GMT body-parser deprecated undefined extended: provide extended option at ../node_modules/body-parser/index.js:105:29
+App running on port 80
+Connected to db
+```
+
+docker-compose.yml
+
+```
+version: '3'
+
+services:
+  redis:
+    image: redis
+
+  db:
+    image: postgres:9.4
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+
+  vote:
+    image: voting-app
+    ports: 
+      - 5000:80
+    links:
+      - redis   
+
+  worker:
+    image: worker-app
+    links:
+      - db
+      - redis
+
+  result:
+    image: result-app
+    ports:
+      - 5001:80
+    links:
+      - db  
+```
+
+```
+$ docker-compose up
+Creating network "my-voting-app_default" with the default driver
+Recreating my-voting-app_db_1    ... done
+Recreating my-voting-app_redis_1 ... done
+Recreating my-voting-app_result_1 ... done
+Recreating my-voting-app_vote_1   ... done
+Recreating my-voting-app_worker_1 ... done
+
+```
+
