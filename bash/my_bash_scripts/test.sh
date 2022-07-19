@@ -18,7 +18,3 @@ case $letter in
     echo '$letter is an unknown character' ;;
 
 esac
-         
-   
-
- 

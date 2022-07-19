@@ -601,3 +601,686 @@ cat
 1 bird dog frog
 ```
 
+## For Loops
+
+### Sample 1
+
+```
+for item in [list]
+do 
+  [ commands]
+done
+```
+
+```
+#!/bin/bash
+ 
+for i in pwd ls "ls -l"
+do
+  echo "---$i---"
+  $i
+  echo
+done
+```
+
+**Output**
+
+```
+./test_for.sh 
+---pwd---
+/home/sherwinowen/Documents/my_tutorials/bash/my_bash_scripts
+
+---ls---
+test1.sh  test2.sh  test_and_or.sh  test_array.sh  test_for.sh	test_if.sh  test_read.sh  test.sh
+
+---ls -l---
+total 96
+-rwxr-xr-x 1 sherwinowen sherwinowen 128 Jul 13 09:41 test1.sh
+-rwxr-xr-x 1 sherwinowen sherwinowen 116 Jul 12 20:42 test2.sh
+-rwxr-xr-x 1 sherwinowen sherwinowen 122 Jul 13 16:34 test_and_or.sh
+-rwxr-xr-x 1 sherwinowen sherwinowen 206 Jul 18 15:51 test_array.sh
+-rwxr-xr-x 1 sherwinowen sherwinowen  76 Jul 18 17:05 test_for.sh
+-rwxr-xr-x 1 sherwinowen sherwinowen 230 Jul 13 15:56 test_if.sh
+-rwxr-xr-x 1 sherwinowen sherwinowen 201 Jul 13 09:30 test_read.sh
+-rwxr-xr-x 1 sherwinowen sherwinowen 278 Jul 18 16:56 test.sh
+```
+
+### Sample 2
+
+```
+for (( Initialization; Test Step))
+do 
+  [ commands ]
+done
+```
+
+```
+#!/bin/bash
+
+for (( i=1; i<=10; i++ ))
+do
+  echo $i
+done
+
+echo
+
+for x in {11..20}
+do
+  echo $x
+done
+
+echo
+
+for y in {22..30..2}
+do
+  echo $y
+done
+```
+
+```
+./test_for_1.sh 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+
+22
+24
+26
+28
+30
+```
+
+## Select
+
+### Sample 1
+
+```
+select item in [ list ]
+do
+  [ commands ]
+done
+```
+
+```
+ #!/bin/bash
+
+select animal in cat dog bird frog turtle
+do
+  echo "Selected animal: $animal"
+  echo "Selected number: $REPLY"
+done
+```
+
+**Output**
+
+```
+./test_select.sh 
+1) cat
+2) dog
+3) bird
+4) frog
+5) turtle
+#? 3
+Selected animal: bird
+Selected number: 3
+```
+
+### Sample 2
+
+```
+ #!/bin/bash
+
+fruit_list=( apple banana grapes orange "pine apple"  )
+
+select fruit in "${fruit_list[@]}"
+do
+  echo "Selected fruit: $fruit"
+  echo "Selected number: $REPLY"
+done
+```
+
+**Output**
+
+```
+./test_select_1.sh 
+1) apple
+2) banana
+3) grapes
+4) orange
+5) pine apple
+#? 4
+Selected fruit: orange
+Selected number: 4
+```
+
+### Sample 3
+
+```
+ #!/bin/bash
+
+select cal in add subtract multiply divide quit;
+do 
+  case $cal in
+    add)
+      echo $cal
+      read -p "x= " x
+      read -p "y= " y
+      echo "$x + $y = $(($x+$y))" ;;
+    
+    subtract) 
+      echo $cal
+      read -p "x= " x
+      read -p "y= " y
+      echo "$x - $y = $(($x-$y))" ;;
+
+    multiply)  
+      read -p "x= " x
+      read -p "y= " y
+      echo "$x * $y = $(($x*$y))" ;;
+
+    divide)  
+      read -p "x= " x
+      read -p "y= " y
+      echo "$x / $y = $(($x/$y))" ;;
+
+    quit)
+      break ;;     #Finish the loop
+
+    *)
+      echo "Invalid option $REPLY" ;; 
+  esac
+done
+```
+
+**Output**
+
+```
+./test_select_2.sh 
+1) add
+2) subtract
+3) multiply
+4) divide
+5) quit
+#? 4
+x= 10
+y= 5
+10 / 5 = 2
+#? 3
+x= 5
+y= 5
+5 * 5 = 25
+```
+
+## While Loop
+
+```
+while [ condition ]
+do
+  [ commands ]
+done  
+```
+
+```
+#!/bin/bash
+x=1
+while (( $x <= 10 )) # OR [ $x -le 10 ]
+do
+  echo $x
+  ((x++))       # x = x + 1
+  sleep .2
+done  
+```
+
+**Output**
+
+```
+./test_while.sh 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+```
+
+## Until Loop
+
+```
+until [ condition ]
+do
+  [ commands ]
+done  
+```
+
+```
+#!/bin/bash
+
+x=20
+
+until (( $x <= 10))
+do
+  echo $x
+  ((x--))       # x = x - 1
+done  
+```
+
+**Output**
+
+```
+ ./test_until.sh 
+20
+19
+18
+17
+16
+15
+14
+13
+12
+11
+```
+
+## Break
+
+```
+#!/bin/bash
+
+for (( x=0; x<=10; x++ ))
+do
+  if [ $x -eq 5 ]
+  then
+  break
+  fi
+  echo "$x"
+done  
+```
+
+**Output**
+
+```
+./test_break.sh 
+0
+1
+2
+3
+4
+```
+
+## Continue
+
+```
+#!/bin/bash
+
+for (( x=0; x<=10; x++ ))
+do
+  if [ $x -eq 5 ]
+  then
+  continue
+  fi
+  echo "$x"
+done  
+```
+
+**Output**
+
+```
+$ ./test_continue.sh 
+0
+1
+2
+3
+4
+6
+7
+8
+9
+10
+```
+
+## Functions
+
+```
+function_name () {
+  commands
+}
+
+function_name
+
+OR
+
+function_name () { commands; }
+
+function_name
+```
+
+### Sample 1
+
+```
+#!/bin/bash
+
+function test_function () {
+    echo "This is s Bash Script Function"
+}
+
+test_function
+```
+
+**Output**
+
+```
+./test_function.sh 
+This is s Bash Script Function
+```
+
+### Sample 2
+
+```
+#!/bin/bash
+
+echo "Enter a number: "
+
+read x
+
+function square_of_number () {
+    echo "Square of x is: $((x*x))"
+}
+
+square_of_number
+```
+
+**Output**
+
+```
+./test_function_1.sh 
+Enter a number: 
+25
+Square of x is: 625
+```
+
+## Global and Local Variables
+
+### Sample 1 
+
+```
+#!/bin/bash
+
+myfunction () {
+  x=10
+  local y=20
+
+  echo "x = $x"
+  echo "y = $y"
+}
+
+myfunction
+```
+
+**Output**
+
+```
+./test_local.sh 
+x = 10
+y = 20
+```
+
+### Sample 2
+
+```
+#!/bin/bash
+
+myfunction () {
+  x=10
+  local y=20
+}
+
+myfunction
+
+echo "x = $x"
+echo "y = $y"
+```
+
+ **Output**
+
+```
+./test_local.sh 
+x = 10
+y = 
+```
+
+## Bash Scripts Debugging
+
+### Sample 1
+
+```
+#!/bin/bash
+
+x=1
+
+while (( x <= 10 ))
+do 
+  sleep 0.3
+  echo $x
+  ((x++))
+done
+```
+
+**Output**
+
+```
+$ bash -x test_debug.sh 
++ x=1
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 1
+1
++ (( x++ ))
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 2
+2
++ (( x++ ))
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 3
+3
++ (( x++ ))
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 4
+4
++ (( x++ ))
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 5
+5
++ (( x++ ))
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 6
+6
++ (( x++ ))
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 7
+7
++ (( x++ ))
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 8
+8
++ (( x++ ))
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 9
+9
++ (( x++ ))
++ ((  x <= 10  ))
++ sleep 0.3
++ echo 10
+10
++ (( x++ ))
++ ((  x <= 10  ))
+```
+
+### Sample 2
+
+```
+#!/bin/bash
+
+set -x
+x=1
+set +x
+
+while (( x <= 10 ))
+do 
+  sleep 0.3
+  echo $x
+  ((x++))
+done
+```
+
+**Output**
+
+```
+$ bash -x test_debug.sh 
++ set -x
++ x=1
++ set +x
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+```
+
+## Bash Script - Create directory
+
+```
+#!/bin/bash
+
+echo "Enter directory name:"
+read make_directory
+
+if [ -d "/home/sherwinowen/Documents/my_tutorials/bash/my_bash_scripts/$make_directory" ]
+then
+  echo "Directory is already exist"
+else
+  `mkdir /home/sherwinowen/Documents/my_tutorials/bash/my_bash_scripts/$make_directory`
+  echo "Directory is created"
+fi    
+```
+
+**Output**
+
+```
+$ ./create_dir.sh 
+Enter directory name:
+test
+Directory is created
+
+./create_dir.sh 
+Enter directory name:
+test
+Directory is already exist
+```
+
+## Bash Script - Check if file exist
+
+```
+#!/bin/bash
+
+filename=$1
+
+if [ -f "$filename" ];
+then
+  echo 'File exists'
+else
+ echo 'File does not exist'
+fi  
+```
+
+**Output**
+
+```
+./check_file.sh test.sh
+File exists
+
+./check_file.sh test20.sh
+File does not exist
+```
+
+## Bash Script - Find Device Information
+
+```
+#!/bin/bash
+
+login_name=`whoami`
+path=`pwd`
+device_name=`uname -n`
+os_version=`uname -v`
+
+echo "My login name is: $login_name"
+echo "My current directory is: $path"
+echo "Device name is: $device_name"
+echo "OS version: $os_version"
+```
+
+**Output**
+
+```
+./device_info.sh 
+My login name is: sherwinowen
+My current directory is: /home/sherwinowen/Documents/my_tutorials/bash/my_bash_scripts
+Device name is: owenbox
+OS version: #137-Ubuntu SMP Wed Jun 15 13:33:07 UTC 2022
+```
+
+## Bash Script - SSH Connection
+
+```
+#!/bin/bash
+
+host="10.10.10.10"
+username="sherwinowen"
+password="password"
+
+sshpass - p $password ssh $username@$host <<EOF
+
+ls
+touch new_file.txt
+ls
+
+EOF
+```
+
+
+
+
+
