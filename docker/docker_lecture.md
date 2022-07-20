@@ -110,6 +110,26 @@ docker run --name my-mysql -v /Users/sherwinowen/datadir:/var/lib/mysql -e MYSQL
 
 
 
+### cpu
+
+- limit cpu usage
+
+```
+docker run --cpu=.5 ubuntu
+```
+
+
+
+### memory
+
+- limit memory usage
+
+```
+docker run --memory=100m ubuntu
+```
+
+
+
 
 
  ## attach
@@ -718,5 +738,69 @@ Recreating my-voting-app_result_1 ... done
 Recreating my-voting-app_vote_1   ... done
 Recreating my-voting-app_worker_1 ... done
 
+```
+
+## Deploy Private Registry
+
+```
+docker run -d -p 5000:5000 -name registry registry:2
+
+docker image tag my-image localhost:5000/my-image
+
+docker push locahost:5000/my-image
+
+docker pull locahost:5000/my-image
+
+docker pull 192.168.101.123:5000/my-image
+```
+
+## Docker Storage
+
+### File system
+
+```
+$ sudo ls -l /var/lib/docker/
+total 84
+drwx--x--x   4 root root  4096 Jun 15 11:18 buildkit
+drwx--x---  58 root root 12288 Jul 20 08:41 containers
+drwx------   3 root root  4096 Jun 15 11:18 image
+drwxr-x---   3 root root  4096 Jun 15 11:18 network
+drwx--x--- 290 root root 32768 Jul 20 08:41 overlay2
+drwx------   4 root root  4096 Jun 15 11:18 plugins
+drwx------   2 root root  4096 Jul 20 06:21 runtimes
+drwx------   2 root root  4096 Jun 15 11:18 swarm
+drwx------   2 root root  4096 Jul 20 08:39 tmp
+drwx------   2 root root  4096 Jun 15 11:18 trust
+drwx-----x  20 root root  4096 Jul 20 07:41 volumes 
+```
+
+## volume
+
+- manage volumes
+
+```
+$ docker volume create mysql_data
+
+
+$ ls -l /var/lib/docker/volumes/mysql_data
+total 4
+drwxr-xr-x 2 root root 4096 Jul 20 09:02 _data
+```
+
+### Mounting of volume
+
+**Old way**
+
+```
+docker run --name my-mysql -v mysql_data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password -d mysql
+
+```
+
+
+
+**New way** 
+
+```
+docker run --mount type=bind,source=/data/mysql,target=/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password mysql
 ```
 
