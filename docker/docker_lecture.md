@@ -796,8 +796,6 @@ docker run --name my-mysql -v mysql_data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=p
 
 ```
 
-
-
 **New way** 
 
 ```
