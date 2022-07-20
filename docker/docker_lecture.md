@@ -793,10 +793,7 @@ drwxr-xr-x 2 root root 4096 Jul 20 09:02 _data
 
 ```
 docker run --name my-mysql -v mysql_data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password -d mysql
-
 ```
-
-
 
 **New way** 
 
