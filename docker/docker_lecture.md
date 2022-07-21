@@ -801,3 +801,296 @@ docker run --name my-mysql -v mysql_data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=p
 docker run --mount type=bind,source=/data/mysql,target=/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password mysql
 ```
 
+
+
+## info
+
+- Display system-wide information
+
+```
+$ docker info 
+Client:
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  app: Docker App (Docker Inc., v0.9.1-beta3)
+  buildx: Docker Buildx (Docker Inc., v0.8.2-docker)
+  compose: Docker Compose (Docker Inc., v2.6.0)
+  scan: Docker Scan (Docker Inc., v0.17.0)
+
+Server:
+ Containers: 57
+  Running: 3
+  Paused: 0
+  Stopped: 54
+ Images: 54
+ Server Version: 20.10.17
+ Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: true
+  Native Overlay Diff: true
+  userxattr: false
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 1
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local logentries splunk syslog
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 io.containerd.runtime.v1.linux runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 10c12954828e7c7c9b6e0ea9b0c02b01407d3ae1
+ runc version: v1.1.2-0-ga916309
+ init version: de40ad0
+ Security Options:
+  apparmor
+  seccomp
+   Profile: default
+ Kernel Version: 5.4.0-121-generic
+ Operating System: Linux Mint 20.3
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 8
+ Total Memory: 15.5GiB
+ Name: owenbox
+ ID: WMYZ:B2UF:EJ53:VBWW:I5UB:ZUBL:A25E:A5EQ:S6LK:34BX:7OWJ:LSFO
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ Registry: https://index.docker.io/v1/
+ Labels:
+ Experimental: false
+ Insecure Registries:
+  127.0.0.0/8
+ Live Restore Enabled: false
+
+WARNING: No swap limit support
+```
+
+## history
+
+- Show the history of an image
+
+```
+$ docker history result-app:latest 
+IMAGE          CREATED         CREATED BY                                      SIZE      COMMENT
+4b027fe3a80c   20 hours ago    /bin/sh -c #(nop)  CMD ["/tini" "--" "node" …   0B        
+ef45e807c564   20 hours ago    /bin/sh -c #(nop)  EXPOSE 80                    0B        
+8eb87af0eb25   20 hours ago    /bin/sh -c #(nop)  ENV PORT=80                  0B        
+a34c03873527   20 hours ago    /bin/sh -c #(nop) COPY dir:a8404560ef4b46fd1…   469kB     
+00902a2bedfd   20 hours ago    /bin/sh -c npm ci  && npm cache clean --forc…   5.49MB    
+10f638684b9c   20 hours ago    /bin/sh -c #(nop) COPY multi:94486ef69667ea7…   31.8kB    
+b73ab2601558   20 hours ago    /bin/sh -c npm install -g nodemon               2.44MB    
+97c1d41a2267   20 hours ago    /bin/sh -c #(nop) WORKDIR /app                  0B        
+de3dcc25fba2   20 hours ago    /bin/sh -c chmod +x /tini                       24.1kB    
+f390e676c728   20 hours ago    /bin/sh -c #(nop) ADD 84b50f1acc38c999c31383…   24.1kB    
+3f2440741e9f   20 hours ago    /bin/sh -c #(nop)  ENV TINI_VERSION=v0.19.0     0B        
+dec82fbda2a1   20 hours ago    /bin/sh -c apt-get update     && apt-get ins…   13.9MB    
+6fbcbbb5c603   15 months ago   /bin/sh -c #(nop)  CMD ["node"]                 0B        
+<missing>      15 months ago   /bin/sh -c #(nop)  ENTRYPOINT ["docker-entry…   0B        
+<missing>      15 months ago   /bin/sh -c #(nop) COPY file:238737301d473041…   116B      
+<missing>      15 months ago   /bin/sh -c set -ex   && savedAptMark="$(apt-…   10.3MB    
+<missing>      15 months ago   /bin/sh -c #(nop)  ENV YARN_VERSION=1.22.5      0B        
+<missing>      15 months ago   /bin/sh -c ARCH= && dpkgArch="$(dpkg --print…   68.4MB    
+<missing>      15 months ago   /bin/sh -c #(nop)  ENV NODE_VERSION=10.24.1     0B        
+<missing>      15 months ago   /bin/sh -c groupadd --gid 1000 node   && use…   333kB     
+<missing>      15 months ago   /bin/sh -c #(nop)  CMD ["bash"]                 0B        
+<missing>      15 months ago   /bin/sh -c #(nop) ADD file:70cd6967491943999…   55.3MB    
+```
+
+
+
+## system
+
+**Show docker disk usage**
+
+```
+$ docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          30        21        12.32GB   4.575GB (37%)
+Containers      55        3         491.2MB   491.2MB (99%)
+Local Volumes   19        9         493MB     74.1MB (15%)
+Build Cache     0         0         0B        0B
+```
+
+**Show detailed information on space usage**
+
+```
+$ docker system df -v
+Images space usage:
+
+REPOSITORY                                      TAG        IMAGE ID       CREATED         SIZE      SHARED SIZE   UNIQUE SIZE   CONTAINERS
+result-app                                      latest     4b027fe3a80c   20 hours ago    156.7MB   134.3MB       22.35MB       2
+worker-app                                      latest     c7e74ec987f2   20 hours ago    192.8MB   189.8MB       2.971MB       3
+<none>                                          <none>     0efd5c13d404   20 hours ago    753.2MB   714.1MB       39.13MB       0
+voting-app                                      latest     6921794b0da7   21 hours ago    144.6MB   124.7MB       19.98MB       5
+sherwinowen/my-custom-app                       latest     036ac37b63ec   23 hours ago    458.9MB   72.77MB       386.1MB       2
+registry                                        2          d1fe2eaf6101   34 hours ago    24.11MB   0B            24.11MB       1
+redis                                           latest     3edbb69f9a49   38 hours ago    116.8MB   80.39MB       36.42MB       2
+mysql                                           latest     33037edcac9b   7 days ago      444MB     0B            444MB         2
+mcr.microsoft.com/dotnet/core/sdk               3.1        494f43db3daa   7 days ago      714.1MB   714.1MB       0B            0
+mcr.microsoft.com/dotnet/core/runtime           3.1        6301c68b664c   7 days ago      189.8MB   189.8MB       0B            0
+python                                          3.9-slim   ae64b82339a8   7 days ago      124.7MB   124.7MB       0B            0
+parrotsec/security                              latest     248b22cee236   3 weeks ago     5.465GB   0B            5.465GB       1
+elastdocker/kibana                              7.16.2     46ab40412bce   5 weeks ago     1.295GB   1.295GB       0B            1
+elastdocker/logstash                            7.16.2     4d5c6d2e48dd   5 weeks ago     997.5MB   997.5MB       0B            1
+elastdocker/elasticsearch                       7.16.2     1d469a1c823d   5 weeks ago     646.4MB   646.3MB       446B          1
+localhost:5000/my-ubuntu                        latest     27941809078c   6 weeks ago     77.82MB   0B            77.82MB       3
+ubuntu                                          20.04      20fffa419e3a   6 weeks ago     72.77MB   72.77MB       0B            1
+docker.elastic.co/elasticsearch/elasticsearch   7.16.2     66c29cde15ce   7 months ago    646.3MB   646.3MB       0B            0
+docker.elastic.co/logstash/logstash             7.16.2     b2e5a301659d   7 months ago    997.5MB   997.5MB       0B            0
+docker.elastic.co/kibana/kibana                 7.16.2     8c46ec23123e   7 months ago    1.295GB   1.295GB       0B            0
+portainer/portainer-ce                          2.9.3      ad0ecf974589   8 months ago    251.8MB   0B            251.8MB       1
+centos                                          7          eeb6ee3f44bd   10 months ago   203.9MB   203.9MB       0B            2
+centos                                          latest     5d0da3dc9764   10 months ago   231.3MB   231.3MB       0B            9
+node                                            10-slim    6fbcbbb5c603   15 months ago   134.3MB   134.3MB       0B            0
+postgres                                        9.4        ed5a45034282   2 years ago     250.7MB   0B            250.7MB       2
+kodekloud/simple-prompt-docker                  latest     c0848fde57d1   2 years ago     4.413MB   4.413MB       95B           4
+kodekloud/simple-webapp                         latest     c6e3cd9aae36   3 years ago     84.85MB   4.413MB       80.44MB       3
+tomcat                                          8.0        ef6a7c98d192   3 years ago     356.2MB   0B            356.2MB       0
+kodekloud/webapp                                latest     1a45ba829f10   4 years ago     432.4MB   0B            432.4MB       4
+docker/whalesay                                 latest     6b362a9f73eb   7 years ago     247MB     0B            247MB         1
+
+Containers space usage:
+
+CONTAINER ID   IMAGE                              COMMAND                  LOCAL VOLUMES   SIZE      CREATED        STATUS                      NAMES
+1d6ac58c9f5c   mysql                              "docker-entrypoint.s…"   1               65B       8 hours ago    Up 8 hours                  my-mysql
+62d6945e2c95   mysql                              "docker-entrypoint.s…"   1               0B        8 hours ago    Exited (1) 8 hours ago      compassionate_nash
+f06143d3d403   registry:2                         "/entrypoint.sh /etc…"   1               0B        10 hours ago   Up 10 hours                 registry
+c2984a5f8959   worker-app                         "dotnet Worker.dll"      0               0B        19 hours ago   Exited (143) 17 hours ago   my-voting-app_worker_1
+cf1dfb688ac7   voting-app                         "gunicorn app:app -b…"   0               502kB     19 hours ago   Exited (0) 17 hours ago     my-voting-app_vote_1
+0e626cde171b   result-app                         "docker-entrypoint.s…"   0               0B        19 hours ago   Exited (143) 17 hours ago   my-voting-app_result_1
+dcb04d9ee056   redis                              "docker-entrypoint.s…"   1               0B        19 hours ago   Exited (0) 17 hours ago     my-voting-app_redis_1
+28fbb3129a8b   postgres:9.4                       "docker-entrypoint.s…"   1               0B        19 hours ago   Exited (0) 17 hours ago     my-voting-app_db_1
+e4983cc3f95a   result-app                         "docker-entrypoint.s…"   0               0B        20 hours ago   Exited (130) 20 hours ago   amazing_edison
+829b7d5d68fb   voting-app                         "gunicorn app:app -b…"   0               502kB     20 hours ago   Exited (0) 20 hours ago     quizzical_jemison
+dcb4040fd2db   worker-app                         "dotnet Worker.dll"      0               0B        20 hours ago   Exited (130) 20 hours ago   vigilant_vaughan
+0f016a317f9d   postgres:9.4                       "docker-entrypoint.s…"   1               0B        20 hours ago   Exited (0) 20 hours ago     db
+a0be6a92b063   worker-app                         "dotnet Worker.dll"      0               0B        20 hours ago   Exited (130) 20 hours ago   festive_jackson
+cf0d5182b2cf   voting-app                         "gunicorn app:app -b…"   0               502kB     20 hours ago   Exited (0) 20 hours ago     heuristic_sanderson
+56e29d5ef3af   voting-app                         "gunicorn app:app -b…"   0               502kB     21 hours ago   Exited (0) 20 hours ago     relaxed_hertz
+cc6f11725cff   redis                              "docker-entrypoint.s…"   1               0B        21 hours ago   Exited (0) 20 hours ago     redis
+1626f84a665c   voting-app                         "gunicorn app:app -b…"   0               502kB     21 hours ago   Exited (0) 21 hours ago     loving_shamir
+8ba4be89dee4   sherwinowen/my-custom-app          "/bin/sh -c 'FLASK_A…"   0               529B      22 hours ago   Exited (137) 22 hours ago   affectionate_hugle
+83f3fa2ad6c3   036ac37b63ec                       "/bin/sh -c 'FLASK_A…"   0               529B      23 hours ago   Exited (137) 23 hours ago   trusting_lumiere
+ab1a9c22ed00   ubuntu:20.04                       "bash"                   0               422MB     23 hours ago   Exited (0) 23 hours ago     laughing_hellman
+f964ce9de82b   27941809078c                       "bash"                   0               35.2MB    23 hours ago   Exited (130) 23 hours ago   compassionate_cartwright
+38922a0a127e   cd14cecfdb3a                       "/bin/tini -- /usr/l…"   0               0B        24 hours ago   Exited (130) 24 hours ago   my-jenkins
+f4ba52f8f03f   cd14cecfdb3a                       "/bin/tini -- /usr/l…"   1               0B        24 hours ago   Exited (130) 24 hours ago   strange_khorana
+01f840986b14   kodekloud/webapp                   "/bin/sh -c 'FLASK_A…"   0               570B      31 hours ago   Exited (137) 26 hours ago   interesting_beaver
+3f87f4815b24   kodekloud/webapp                   "/bin/sh -c 'FLASK_A…"   0               570B      31 hours ago   Exited (137) 26 hours ago   gallant_zhukovsky
+a942b48b1396   kodekloud/webapp                   "/bin/sh -c 'FLASK_A…"   0               570B      31 hours ago   Exited (137) 26 hours ago   practical_lamarr
+7cac1e956ba8   kodekloud/webapp                   "/bin/sh -c 'FLASK_A…"   0               570B      32 hours ago   Exited (137) 31 hours ago   zen_driscoll
+66e4af3a99d8   kodekloud/simple-prompt-docker     "sh /opt/app.sh"         0               0B        32 hours ago   Exited (137) 26 hours ago   frosty_pike
+dc8ded758211   kodekloud/simple-prompt-docker     "sh /opt/app.sh"         0               0B        32 hours ago   Exited (0) 32 hours ago     crazy_dirac
+35d30ad93e77   kodekloud/simple-prompt-docker     "sh /opt/app.sh"         0               0B        32 hours ago   Exited (0) 32 hours ago     stupefied_chatterjee
+c61eeca61f25   kodekloud/simple-prompt-docker     "sh /opt/app.sh"         0               0B        32 hours ago   Exited (0) 32 hours ago     epic_wescoff
+5be70b3f6432   centos:latest                      "cat /etc/lsb-releas…"   0               0B        32 hours ago   Exited (1) 32 hours ago     wizardly_montalcini
+03f57a91ba08   centos:7                           "cat /etc/lsb-releas…"   0               0B        32 hours ago   Exited (1) 32 hours ago     gifted_einstein
+6a05144c7de1   centos:7                           "cat /etc/issue"         0               0B        32 hours ago   Exited (0) 32 hours ago     keen_mcclintock
+26bd4d6a7896   27941809078c                       "cat /etc/lsb-releas…"   0               0B        33 hours ago   Exited (1) 33 hours ago     awesome_goldwasser
+3fa0ceab3657   27941809078c                       "sleep 1000"             0               0B        33 hours ago   Exited (0) 32 hours ago     boring_engelbart
+696e90dbda41   centos                             "sleep 2000"             0               0B        33 hours ago   Exited (137) 33 hours ago   dazzling_khayyam
+26cd96c1fd85   centos                             "sleep 10"               0               0B        33 hours ago   Exited (0) 33 hours ago     laughing_cerf
+7407437f92f8   centos                             "cat /etc/lsb-releas…"   0               0B        33 hours ago   Exited (1) 33 hours ago     nifty_stonebraker
+3767f090d188   centos                             "ls"                     0               0B        33 hours ago   Exited (0) 33 hours ago     heuristic_haslett
+86792eecaccd   centos                             "bash"                   0               27B       33 hours ago   Exited (0) 33 hours ago     cool_elbakyan
+e7cbd9e790c9   parrotsec/security                 "/bin/sh -c 'bash $@…"   0               97B       33 hours ago   Exited (0) 33 hours ago     objective_hawking
+5fe7b0c4d917   centos                             "bash"                   0               48B       33 hours ago   Exited (0) 33 hours ago     jolly_jang
+814442ac2422   centos                             "bash"                   0               8B        33 hours ago   Exited (0) 33 hours ago     dreamy_kapitsa
+91789b8c1847   centos                             "/bin/bash"              0               0B        33 hours ago   Exited (0) 33 hours ago     mystifying_leavitt
+14a9f9c30318   kodekloud/simple-webapp            "python app.py"          0               390kB     33 hours ago   Exited (0) 33 hours ago     trusting_galileo
+880056c767ab   kodekloud/simple-webapp            "python app.py"          0               390kB     33 hours ago   Exited (0) 33 hours ago     sleepy_kapitsa
+c9d02abe267c   kodekloud/simple-webapp            "python app.py"          0               390kB     33 hours ago   Exited (0) 33 hours ago     thirsty_montalcini
+4cdba6535787   41b0e86104ba                       "/docker-entrypoint.…"   0               1.09kB    34 hours ago   Exited (0) 34 hours ago     distracted_buck
+acecb984d1bb   41b0e86104ba                       "/docker-entrypoint.…"   0               1.09kB    34 hours ago   Exited (0) 34 hours ago     elated_rubin
+f928d8ebd583   docker/whalesay                    "cowsay Hello-World!"    0               0B        35 hours ago   Exited (0) 35 hours ago     pedantic_satoshi
+b758762095ea   elastdocker/elasticsearch:7.16.2   "/bin/tini -- /usr/l…"   1               768kB     5 weeks ago    Exited (127) 3 weeks ago    elastic_elasticsearch_1
+9091738ecd3c   elastdocker/kibana:7.16.2          "/bin/tini -- /usr/l…"   0               36B       5 weeks ago    Exited (127) 3 weeks ago    elastic_kibana_1
+f24e3779f315   elastdocker/logstash:7.16.2        "/usr/local/bin/dock…"   0               29.2MB    5 weeks ago    Exited (127) 3 weeks ago    elastic_logstash_1
+ce58945a2343   portainer/portainer-ce:2.9.3       "/portainer"             1               0B        5 weeks ago    Up 11 hours                 portainer
+
+Local Volumes space usage:
+
+VOLUME NAME                                                        LINKS     SIZE
+elastic_elasticsearch-data                                         1         26.83MB
+81032b2b3282fe937dd1e948b5c84f9bc29a3a11129dee03959bb8a185b4374a   1         30.43MB
+1503d5559a88000c1ca0276a309114be198a48a5ce3149db151aa0898725ff47   0         37.12MB
+3cddcfd4092fb26cb3af022d625a1c8cd96ffb535490b42324b69bc4e9d90f90   1         81.91MB
+portainer_data                                                     1         331.2kB
+6ac7eadd7a344efda1c19d626b5fc9c1e39ededad99385f2258ff92b95564e26   1         37.16MB
+2b9dc56340c4c8549fe67e9efb5c15ef9aec839685cd58829bd91a4d47626e9f   1         37.16MB
+dcf73decc854ad3461987a21efd3ed0f381b4473350730f0ead97f033f1293e6   0         36.99MB
+mysql_data                                                         2         205.1MB
+9defe0ebbf3e032653f928a6502bee7bddc60aadb3db07fe610a0b4bcbf9dec6   1         88B
+
+Build cache usage: 0B
+
+CACHE ID   CACHE TYPE   SIZE      CREATED   LAST USED   USAGE     SHARED
+```
+
+## Docker Networking
+
+## network
+
+- Manage networks
+
+```
+$ docker network create --driver bridge --subnet 172.25.0.0/16 owen-network
+41df799e487c8c065f9f4aa6cc513afe3990f398711dd92b116c8b0fb754b243
+
+$ docker network ls
+NETWORK ID     NAME                    DRIVER    SCOPE
+ef9b1d2115de   bridge                  bridge    local
+8c85b61b2229   elastic                 bridge    local
+2fb70d151e86   elastic_default         bridge    local
+e079e40df869   host                    host      local
+6c59fb5d7c35   my-voting-app_default   bridge    local
+8c6bb759d296   none                    null      local
+41df799e487c   owen-network            bridge    local
+
+$ docker network inspect owen-network 
+[
+    {
+        "Name": "owen-network",
+        "Id": "41df799e487c8c065f9f4aa6cc513afe3990f398711dd92b116c8b0fb754b243",
+        "Created": "2022-07-20T17:59:52.60650112+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.25.0.0/16"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+```
+
+## Container Orchestration
+
+- Docker Swarm (Docker)
+- Kubernetes (Google)
+- Mesos (Apache)
+
+### Docker Swarm
+
+![](images/Screenshot from 2022-07-20 18-16-26.png)
+
+
+

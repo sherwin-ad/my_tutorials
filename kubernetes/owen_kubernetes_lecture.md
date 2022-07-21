@@ -57,33 +57,32 @@
 
 ## Components
 
-### API server
+### 1. API server
 
 - The API server acts as the front-end for kubernetes. The users, management devices, Command line interfaces all talk to the API server to interact with the kubernetes cluster.
 
-### Etcd
+### 2. Etcd
 
-- ETCD key store. 
-- ETCD is a distributed reliable key-value store used by kubernetes to store all data used to manage the cluster. Think of it this way, when you have multiple nodes and multiple masters in your cluster, etcd stores all that information on all the nodes in the cluster in a distributed manner. 
-- ETCD is responsible for implementing locks within the cluster to ensure there are no conflicts
-  between the Masters.
+- key-value store. 
+- is a distributed reliable key-value store used by kubernetes to store all data used to manage the cluster. Think of it this way, when you have multiple nodes and multiple masters in your cluster, etcd stores all that information on all the nodes in the cluster in a distributed manner. 
+- is responsible for implementing locks within the cluster to ensure there are no conflicts between the Masters.
 
-### Sheduler
+### 3. Sheduler
 
-- The scheduler is responsible for distributing work or containers across multiple nodes. 
+- is responsible for distributing work or containers across multiple nodes. 
 - It looks for newly created containers and assigns them to Nodes.
 
-### Controllers
+### 4. Controllers
 
 - The controllers are the brain behind orchestration. 
 - They are responsible for noticing and responding when nodes, containers or endpoints goes down. 
 - The controllers makes decisions to bring up new containers in such cases.
 
-### Container Runtime
+### 5. Container Runtime
 
 - The container runtime is the underlying software that is used to run containers. In our case it happens to be Docker.
 
-### Kubelet
+### 6. Kubelet
 
 - Kubelet is the agent that runs on each node in the cluster. The agent is responsible for making sure that the containers are running on the nodes as expected.
 
@@ -98,15 +97,21 @@
 - kube command line tool or kubectl or kube control as it is also called.
 - The kube control tool is used to deploy and manage applications on a kubernetes cluster, to get cluster information, get the status of nodes in the cluster and many other things.
 
+```
 $ kubectl run 
+```
 
 - is used to deploy an application on the cluster. 
 
+```
 $ kubectl cluster-info 
+```
 
 - is used to view information about the cluster and the 
 
+```
 $ kubectl get pod 
+```
 
 - is used to list all the nodes part of the cluster.
 
@@ -125,11 +130,159 @@ $ kubectl get pod
 
 **Steps**
 
-- You need 3 things to get this working, you must have a hypervisor installed, kubectl installed and
-  minikube executable installed on your system
-- With the minikube utility you could only setup a single node kubernetes cluster.
+You need 3 things to get this working, you must have a 
+
+- hypervisor installed, 
+- kubectl installed and 
+- minikube executable installed on your system
+
+**Note**
+
+With the minikube utility you could only setup a single node kubernetes cluster.
 
 ![image-20211223195238959](images\image-20211223195238959.png)
+
+
+
+#### Install Minikube
+
+1. Install Docker
+
+   https://docs.docker.com/engine/install/ubuntu/
+
+2. Install kubectl
+
+   https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+
+   kubect alias and autocomplete
+
+   ```
+   sudo apt-get install bash-completion
+   
+   source /usr/share/bash-completion/bash_completion
+   
+   echo 'source <(kubectl completion bash)' >>~/.bashrc
+   
+   # If you have an alias for kubectl, you can extend shell completion to work with that alias:
+   echo 'alias k=kubectl' >>~/.bashrc
+   echo 'complete -o default -F __start_kubectl k' >>~/.bashrc
+   ```
+
+   
+
+3. Install minikube
+
+   https://minikube.sigs.k8s.io/docs/start/
+
+   1. **Installation**
+
+      To install the latest minikube **stable** release on **x86-64** **Linux** using **binary download**:
+
+   ```
+   curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+   
+   sudo install minikube-linux-amd64 /usr/local/bin/minikube
+   ```
+
+   2. **Start your cluster**
+
+   ```
+   minikube start
+   ```
+
+   3. **Interact with your cluster**
+
+   ```
+   $ kubectl get pods -A
+   NAMESPACE     NAME                               READY   STATUS    RESTARTS      AGE
+   kube-system   coredns-6d4b75cb6d-ck9hm           1/1     Running   0             27m
+   kube-system   etcd-minikube                      1/1     Running   0             27m
+   kube-system   kube-apiserver-minikube            1/1     Running   0             27m
+   kube-system   kube-controller-manager-minikube   1/1     Running   0             27m
+   kube-system   kube-proxy-2wsz7                   1/1     Running   0             27m
+   kube-system   kube-scheduler-minikube            1/1     Running   0             27m
+   kube-system   storage-provisioner                1/1     Running   1 (26m ago)   27m
+   ```
+
+   ```
+   $ kubectl get nodes 
+   NAME       STATUS   ROLES           AGE   VERSION
+   minikube   Ready    control-plane   30m   v1.24.1
+   ```
+
+   4. **Deploy applications**
+
+   Create a sample deployment and expose it on port 8080:
+
+   ```shell
+   $ kubectl create deployment hello-minikube --image=k8s.gcr.io/echoserver:1.4
+   deployment.apps/hello-minikube created
+   
+   ~$ kubectl expose deployment hello-minikube --type=NodePort --port=8080
+   service/hello-minikube exposed
+   ```
+
+   It may take a moment, but your deployment will soon show up when you run:
+
+   ```shell
+   $ kubectl get services hello-minikube
+   NAME             TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+   hello-minikube   NodePort   10.109.175.78   <none>        8080:31620/TCP   37s
+   ```
+
+   The easiest way to access this service is to let minikube launch a web browser for you:
+
+   ```shell
+   $ minikube service hello-minikube
+   |-----------|----------------|-------------|---------------------------|
+   | NAMESPACE |      NAME      | TARGET PORT |            URL            |
+   |-----------|----------------|-------------|---------------------------|
+   | default   | hello-minikube |        8080 | http://192.168.49.2:31620 |
+   |-----------|----------------|-------------|---------------------------|
+   🎉  Opening service default/hello-minikube in default browser...
+   sherwinowen@ubuntu:~$ Error: no DISPLAY environment variable specified
+   ```
+
+   Alternatively, use kubectl to forward the port:
+
+   ```shell
+   kubectl port-forward service/hello-minikube 7080:8080
+   ```
+
+   Copy
+
+   Tada! Your application is now available at http://localhost:7080/.
+
+   
+
+   **LoadBalancer deployments**
+
+   To access a LoadBalancer deployment, use the “minikube tunnel” command. Here is an example deployment:
+   
+   ```shell
+   $ kubectl create deployment balanced --image=k8s.gcr.io/echoserver:1.4  
+   deployment.apps/balanced created
+   
+
+$ kubectl expose deployment balanced --type=LoadBalancer --port=8080
+   service/balanced exposed
+```
+   
+   In another window, start the tunnel to create a routable IP for the ‘balanced’ deployment:
+   
+```shell
+   minikube tunnel
+```
+
+To find the routable IP, run this command and examine the `EXTERNAL-IP` column:
+
+   ```shell
+   kubectl get services balanced
+   ```
+
+Your deployment is now available at <EXTERNAL-IP>:8080
+
+
 
 
 
@@ -141,33 +294,6 @@ $ kubectl get pod
 
 ![image-20211223195654259](images\image-20211223195654259.png)
 
-1. Set hostnames
-
-   ```
-   $ sudo hostnamectl set-hostname kubernetes-master
-   $ sudo hostnamectl set-hostname kubernetes-worker
-   ```
-
-2. Install Docker
-
-```
-$ sudo apt update
-$ sudo apt install docker.io
-$ sudo systemctl start docker
-$ sudo systemctl enable dockerInstall Kubernetes
-```
-
-3. Install Kubernetes
-
-```
-$ sudo apt install apt-transport-https curl
-$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-$ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-$ sudo apt install kubeadm kubelet kubectl kubernetes-cni
-```
-
-4. 
-
 **Before you begin**
 
 - A compatible Linux host. The Kubernetes project provides generic instructions for Linux distributions based on Debian and Red Hat, and those distributions without a package manager.
@@ -178,11 +304,15 @@ $ sudo apt install kubeadm kubelet kubectl kubernetes-cni
 
 - Full network connectivity between all machines in the cluster (public or private network is fine).
 
+
+
+1. Set hostnames
+
   Edit /etc/hosts 
 
   ```
   127.0.0.1 localhost
-  127.0.1.1 kubemaster
+  127.0.1.1 kube-master
   
   # The following lines are desirable for IPv6 capable hosts
   ::1     ip6-localhost ip6-loopback
@@ -195,7 +325,7 @@ $ sudo apt install kubeadm kubelet kubectl kubernetes-cni
   edit /etc/hostname
 
   ```
-  kubemaster
+  kube-master
   ```
 
   
@@ -208,8 +338,8 @@ $ sudo apt install kubeadm kubelet kubectl kubernetes-cni
 
   ```
   Set hostnames
-  $ sudo hostnamectl set-hostname kubernetes-master
-  $ sudo hostnamectl set-hostname kubernetes-worker
+  $ sudo hostnamectl set-hostname kube-master
+  $ sudo hostnamectl set-hostname kube-worker
   ```
 
   OR
@@ -235,7 +365,40 @@ $ sudo apt install kubeadm kubelet kubectl kubernetes-cni
   # /swap.img     none    swap    sw      0       0
   ```
 
-  
+2. Install Docker
+
+3.  Installing kubeadm, kubelet and kubectl
+
+   1. Update the `apt` package index and install packages needed to use the Kubernetes `apt` repository:
+
+      ```shell
+      sudo apt-get update
+      sudo apt-get install -y apt-transport-https ca-certificates curl
+      ```
+
+   2. Download the Google Cloud public signing key:
+
+      ```shell
+      sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      ```
+
+   3. Add the Kubernetes `apt` repository:
+
+      ```shell
+      echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+      ```
+
+   4. Update `apt` package index, install kubelet, kubeadm and kubectl, and pin their version:
+
+      ```shell
+      sudo apt-get update
+      sudo apt-get install -y kubelet kubeadm kubectl
+      sudo apt-mark hold kubelet kubeadm kubectl
+      ```
+
+​    4. Initialize Master    
+
+
 
 1. First, you must have multiple systems or virtual machines created for configuring a cluster. We will see how to setup up your laptop to do just that if you are not familiar with it. Once the systems are created, designate one as master and others as worker nodes.
 2. The next step is to install a container runtime on the hosts. We will be using Docker, so we must install Docker on all the nodes.
@@ -267,6 +430,87 @@ $ sudo apt install kubeadm kubelet kubectl kubernetes-cni
 * Failed
 * CrashLoopBackOff
 
+## Create pod
+
+```
+$ kubectl run nginx --image=nginx
+pod/nginx created
+
+$ kubectl get pods
+NAME    READY   STATUS              RESTARTS   AGE
+nginx   0/1     ContainerCreating   0          16s
+
+kubectl get pods -o wide
+NAME    READY   STATUS    RESTARTS   AGE     IP           NODE       NOMINATED NODE   READINESS GATES
+nginx   1/1     Running   0          6m34s   172.17.0.3   minikube   <none>           <none>
+```
+
+**To know more about the pod**
+
+```
+$ kubectl describe pod nginx
+Name:         nginx
+Namespace:    default
+Priority:     0
+Node:         minikube/192.168.49.2
+Start Time:   Thu, 21 Jul 2022 15:30:43 -0700
+Labels:       run=nginx
+Annotations:  <none>
+Status:       Running
+IP:           172.17.0.3
+IPs:
+  IP:  172.17.0.3
+Containers:
+  nginx:
+    Container ID:   docker://5ea5de986d42a6e939847ae407e8d1292e2caa050ae0f3e1ab81f50d6cb2b99f
+    Image:          nginx
+    Image ID:       docker-pullable://nginx@sha256:1761fb5661e4d77e107427d8012ad3a5955007d997e0f4a3d41acc9ff20467c7
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Thu, 21 Jul 2022 15:31:01 -0700
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-26scq (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-26scq:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  2m10s  default-scheduler  Successfully assigned default/nginx to minikube
+  Normal  Pulling    2m9s   kubelet            Pulling image "nginx"
+  Normal  Pulled     112s   kubelet            Successfully pulled image "nginx" in 16.128772528s
+  Normal  Created    112s   kubelet            Created container nginx
+  Normal  Started    112s   kubelet            Started container nginx
+```
+
+
+
+## YAML
+
+
+
+
+
+
+
 
 ## Controller
 
@@ -291,15 +535,15 @@ $ sudo apt install kubeadm kubelet kubectl kubernetes-cni
       * Status
           * Easy way to check the health of pods, and identify issues
 
-3. DaemonSets <br>
+3. DaemonSets
 - ensure that all nodes run a copy of a specific pod <br>
 - As nodes are added or removed from the cluster, a DaemonSet will add or remove the required pods
 
-4. Jobs <br>
+4. Jobs 
 - Supervisor process for pods carrying out batch jobs <br>
 - Run individual processes that run once and complete successfully
 
-5. Services <br>
+5. Services 
 - Allow the communication between one set of deployments eith another <br>
 - Use a service to get pods in two deployments to talk to each other.
 
