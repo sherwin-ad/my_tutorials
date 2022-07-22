@@ -503,16 +503,38 @@ Events:
 
 
 
-## YAML
+## Pod using Yaml
+
+pod-definition.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    name: myapp-pod
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-image
+      image: nginx
+```
+
+```
+$ kubectl create -f pod-definition.yml 
+pod/myapp-pod created
+
+$ kubectl get pods
+NAME        READY   STATUS    RESTARTS   AGE
+myapp-pod   1/1     Running   0          6s
+```
 
 
 
 
-
-
-
-
-## Controller
+## Controllers
 
 ### Benefits of Controllers
 * Application reliability
@@ -520,10 +542,140 @@ Events:
 * Load balancing
 
 ### Kinds of Controllers
-1. ReplicaSets 
+#### 1. ReplicaSets 
 - Ensures that a specified number of replicas for a pod are running at all times
 
-2. Deployments 
+##### ReplicationController
+
+**rc-definition.yml**
+
+```
+apiVersion: v1
+kind: ReplicationController
+metadata: 
+  name: myapp-rc
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+     metadata:
+       name: myapp-pod
+       labels:
+         app: myapp
+         type: front-end
+     spec:
+       containers:
+       - name: nginx-image
+         image: nginx
+  replicas: 3
+```
+
+```
+$ kubectl create -f rc-definition.yml 
+replicationcontroller/myapp-rc created
+
+$ kubectl get pods
+NAME             READY   STATUS    RESTARTS   AGE
+myapp-rc-9g9fp   1/1     Running   0          17s
+myapp-rc-jmhjv   1/1     Running   0          17s
+myapp-rc-nwq89   1/1     Running   0          17s
+```
+
+##### ReplicaSet
+
+**replicaset-definition.yml**
+
+```
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-replicaset
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+```
+
+```
+$ kubectl create -f replicaset-definition.yml 
+replicaset.apps/myapp-replicaset created
+
+$ kubectl get pods
+NAME                     READY   STATUS    RESTARTS   AGE
+myapp-replicaset-2hzvk   1/1     Running   0          17s
+myapp-replicaset-d6f7f   1/1     Running   0          17s
+myapp-replicaset-v5rrf   1/1     Running   0          17s
+```
+
+##### Scale Replicasets
+
+###### replace
+
+Note: 
+
+Edit the Yaml file replace replicas number.
+
+```
+$ kubectl replace -f replicaset-definition.yml 
+replicaset.apps/myapp-replicaset replaced
+
+$ kubectl get replicasets.apps 
+NAME               DESIRED   CURRENT   READY   AGE
+myapp-replicaset   6         6         3       24m
+
+$ kubectl get pods
+NAME                     READY   STATUS    RESTARTS   AGE
+myapp-replicaset-2hzvk   1/1     Running   0          24m
+myapp-replicaset-86xxw   1/1     Running   0          15s
+myapp-replicaset-d6f7f   1/1     Running   0          24m
+myapp-replicaset-jcd59   1/1     Running   0          15s
+myapp-replicaset-v5rrf   1/1     Running   0          24m
+myapp-replicaset-z64f8   1/1     Running   0          15s
+
+```
+
+##### scale
+
+```
+$ kubectl scale --replicas=6 -f replicaset-definition.yml 
+replicaset.apps/myapp-replicaset scaled
+
+$ kubectl get pods
+NAME                     READY   STATUS              RESTARTS   AGE
+myapp-replicaset-2hzvk   1/1     Running             0          28m
+myapp-replicaset-79nlf   1/1     Running             0          12s
+myapp-replicaset-d6f7f   1/1     Running             0          28m
+myapp-replicaset-rvfnc   0/1     ContainerCreating   0          12s
+myapp-replicaset-snpc2   1/1     Running             0          12s
+myapp-replicaset-v5rrf   1/1     Running             0          28m
+
+```
+
+##### delete
+
+```
+$ kubectl delete replicasets.apps myapp-replicaset 
+replicaset.apps "myapp-replicaset" deleted
+```
+
+
+
+#### 2. Deployments 
 - provides declarative updates for pods and ReplicaSets
 
    * Deployment Controller Use Cases
@@ -535,7 +687,7 @@ Events:
       * Status
           * Easy way to check the health of pods, and identify issues
 
-3. DaemonSets
+#### 3. DaemonSets
 - ensure that all nodes run a copy of a specific pod <br>
 - As nodes are added or removed from the cluster, a DaemonSet will add or remove the required pods
 
