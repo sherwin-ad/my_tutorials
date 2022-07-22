@@ -292,7 +292,7 @@ Your deployment is now available at <EXTERNAL-IP>:8080
 
 **Steps**
 
-![image-20211223195654259](images\image-20211223195654259.png)
+![image](images/image-20211223195654259.png)
 
 **Before you begin**
 
