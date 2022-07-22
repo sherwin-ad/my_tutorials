@@ -626,9 +626,7 @@ myapp-replicaset-v5rrf   1/1     Running   0          17s
 
 ###### replace
 
-Note: 
-
-Edit the Yaml file replace replicas number.
+Note: Edit the Yaml file replace replicas number.
 
 ```
 $ kubectl replace -f replicaset-definition.yml 
@@ -649,7 +647,7 @@ myapp-replicaset-z64f8   1/1     Running   0          15s
 
 ```
 
-##### scale
+###### scale
 
 ```
 $ kubectl scale --replicas=6 -f replicaset-definition.yml 
@@ -666,7 +664,33 @@ myapp-replicaset-v5rrf   1/1     Running             0          28m
 
 ```
 
-##### delete
+###### describe
+
+```
+$ kubectl describe replicationcontrollers myapp-rc 
+Name:         myapp-rc
+Namespace:    default
+Selector:     app=myapp,type=front-end
+Labels:       app=myapp
+              type=front-end
+Annotations:  <none>
+Replicas:     3 current / 3 desired
+Pods Status:  3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=myapp
+           type=front-end
+  Containers:
+   nginx-image:
+    Image:        nginx
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Events:           <none>
+```
+
+###### delete
 
 ```
 $ kubectl delete replicasets.apps myapp-replicaset 
@@ -686,6 +710,106 @@ replicaset.apps "myapp-replicaset" deleted
           * Pause deployment, make changes, resume deployment
       * Status
           * Easy way to check the health of pods, and identify issues
+
+deployment-definition.yml
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+```
+
+```
+$ kubectl create -f deployment/deployment-definition.yml 
+deployment.apps/myapp-deployment created
+
+$ kubectl get deployments.apps 
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+myapp-deployment   3/3     3            3           12s
+
+$ kubectl get replicasets.apps 
+NAME                        DESIRED   CURRENT   READY   AGE
+myapp-deployment-689f9d59   3         3         3       24s
+
+$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+myapp-deployment-689f9d59-7ltvp   1/1     Running   0          36s
+myapp-deployment-689f9d59-rw548   1/1     Running   0          36s
+myapp-deployment-689f9d59-s26d4   1/1     Running   0          36s
+
+$ kubectl get all
+NAME                                  READY   STATUS    RESTARTS   AGE
+pod/myapp-deployment-689f9d59-7ltvp   1/1     Running   0          3m25s
+pod/myapp-deployment-689f9d59-rw548   1/1     Running   0          3m25s
+pod/myapp-deployment-689f9d59-s26d4   1/1     Running   0          3m25s
+
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   111m
+
+NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/myapp-deployment   3/3     3            3           3m25s
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/myapp-deployment-689f9d59   3         3         3       3m25s
+```
+
+```
+$ kubectl describe deployments.apps myapp-deployment 
+Name:                   myapp-deployment
+Namespace:              default
+CreationTimestamp:      Fri, 22 Jul 2022 11:06:20 +0800
+Labels:                 app=myapp
+                        type=front-end
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               type=front-end
+Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=myapp
+           type=front-end
+  Containers:
+   nginx-container:
+    Image:        nginx
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   myapp-deployment-689f9d59 (3/3 replicas created)
+Events:
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  9m34s  deployment-controller  Scaled up replica set myapp-deployment-689f9d59 to 3
+```
+
+
 
 #### 3. DaemonSets
 - ensure that all nodes run a copy of a specific pod <br>
