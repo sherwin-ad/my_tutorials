@@ -809,6 +809,172 @@ Events:
   Normal  ScalingReplicaSet  9m34s  deployment-controller  Scaled up replica set myapp-deployment-689f9d59 to 3
 ```
 
+##### Updates and Rollback
+
+**Rollout Command**
+
+```
+$ kubectl rollout status deployment/myapp-deployment
+deployment "myapp-deployment" successfully rolled out
+
+$ kubectl rollout history deployment/myapp-deployment
+deployment.apps/myapp-deployment
+REVISION  CHANGE-CAUSE
+1         <none>
+```
+
+**Deployment Strategy**
+
+1. Recreate
+   - terminate the old version and release the new one (there is application downtime)
+
+2. Rolling Update (default strategy)
+   - release a new version on a rolling update fashion, one after the other
+
+**Update**
+
+- update the image version
+
+``` 
+$ kubectl apply -f deployment-definition.yml
+```
+
+OR
+
+```
+$ kubectl set image deployment/myapp-deployment nginx-container=nginx:1.22
+deployment.apps/myapp-deployment image updated
+
+$ kubectl rollout status deployment/myapp-deployment
+Waiting for deployment "myapp-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "myapp-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "myapp-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "myapp-deployment" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "myapp-deployment" rollout to finish: 1 old replicas are pending termination...
+deployment "myapp-deployment" successfully rolled out
+
+$ kubectl rollout history deployment/myapp-deployment
+deployment.apps/myapp-deployment
+REVISION  CHANGE-CAUSE
+1         kubectl create --filename=deployment/deployment-definition.yml --record=true
+2         kubectl create --filename=deployment/deployment-definition.yml --record=true
+3         kubectl create --filename=deployment/deployment-definition.yml --record=true
+
+kubectl describe deployments.apps myapp-deployment
+Name:                   myapp-deployment
+Namespace:              default
+CreationTimestamp:      Fri, 22 Jul 2022 21:29:40 +0800
+Labels:                 app=myapp
+                        type=front-end
+Annotations:            deployment.kubernetes.io/revision: 3
+                        kubernetes.io/change-cause: kubectl create --filename=deployment/deployment-definition.yml --record=true
+Selector:               type=front-end
+Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=myapp
+           type=front-end
+  Containers:
+   nginx-container:
+    Image:        nginx:1.22
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   myapp-deployment-84445d4566 (3/3 replicas created)
+Events:
+  Type    Reason             Age                  From                   Message
+  ----    ------             ----                 ----                   -------
+  Normal  ScalingReplicaSet  17m                  deployment-controller  Scaled up replica set myapp-deployment-689f9d59 to 3
+  Normal  ScalingReplicaSet  10m                  deployment-controller  Scaled up replica set myapp-deployment-57c6cb89d9 to 1
+  Normal  ScalingReplicaSet  10m                  deployment-controller  Scaled down replica set myapp-deployment-689f9d59 to 2
+  Normal  ScalingReplicaSet  10m                  deployment-controller  Scaled up replica set myapp-deployment-57c6cb89d9 to 2
+  Normal  ScalingReplicaSet  10m                  deployment-controller  Scaled down replica set myapp-deployment-689f9d59 to 1
+  Normal  ScalingReplicaSet  10m                  deployment-controller  Scaled up replica set myapp-deployment-57c6cb89d9 to 3
+  Normal  ScalingReplicaSet  9m59s                deployment-controller  Scaled down replica set myapp-deployment-689f9d59 to 0
+  Normal  ScalingReplicaSet  2m20s                deployment-controller  Scaled up replica set myapp-deployment-84445d4566 to 1
+  Normal  ScalingReplicaSet  2m2s                 deployment-controller  Scaled down replica set myapp-deployment-57c6cb89d9 to 2
+  Normal  ScalingReplicaSet  110s (x4 over 2m2s)  deployment-controller  (combined from similar events): Scaled down replica set myapp-deployment-57c6cb89d9 to 0
+```
+
+**Rollback**
+
+```
+$ kubectl rollout undo deployment myapp-deployment
+deployment.apps/myapp-deployment rolled back
+
+$ kubectl rollout status deployment/myapp-deployment
+Waiting for deployment "myapp-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "myapp-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "myapp-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "myapp-deployment" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "myapp-deployment" rollout to finish: 1 old replicas are pending termination...
+deployment "myapp-deployment" successfully rolled out
+
+$ kubectl rollout history deployment/myapp-deployment
+deployment.apps/myapp-deployment
+REVISION  CHANGE-CAUSE
+1         kubectl create --filename=deployment/deployment-definition.yml --record=true
+3         kubectl create --filename=deployment/deployment-definition.yml --record=true
+4         kubectl create --filename=deployment/deployment-definition.yml --record=true
+
+kubectl describe deployments.apps myapp-deployment
+Name:                   myapp-deployment
+Namespace:              default
+CreationTimestamp:      Fri, 22 Jul 2022 21:29:40 +0800
+Labels:                 app=myapp
+                        type=front-end
+Annotations:            deployment.kubernetes.io/revision: 4
+                        kubernetes.io/change-cause: kubectl create --filename=deployment/deployment-definition.yml --record=true
+Selector:               type=front-end
+Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=myapp
+           type=front-end
+  Containers:
+   nginx-container:
+    Image:        nginx:1.12
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   myapp-deployment-57c6cb89d9 (3/3 replicas created)
+Events:
+  Type    Reason             Age                  From                   Message
+  ----    ------             ----                 ----                   -------
+  Normal  ScalingReplicaSet  22m                  deployment-controller  Scaled up replica set myapp-deployment-689f9d59 to 3
+  Normal  ScalingReplicaSet  14m                  deployment-controller  Scaled up replica set myapp-deployment-57c6cb89d9 to 1
+  Normal  ScalingReplicaSet  14m                  deployment-controller  Scaled down replica set myapp-deployment-689f9d59 to 2
+  Normal  ScalingReplicaSet  14m                  deployment-controller  Scaled up replica set myapp-deployment-57c6cb89d9 to 2
+  Normal  ScalingReplicaSet  14m                  deployment-controller  Scaled down replica set myapp-deployment-689f9d59 to 1
+  Normal  ScalingReplicaSet  14m                  deployment-controller  Scaled down replica set myapp-deployment-689f9d59 to 0
+  Normal  ScalingReplicaSet  6m49s                deployment-controller  Scaled up replica set myapp-deployment-84445d4566 to 1
+  Normal  ScalingReplicaSet  6m31s                deployment-controller  Scaled down replica set myapp-deployment-57c6cb89d9 to 2
+  Normal  ScalingReplicaSet  61s (x2 over 14m)    deployment-controller  Scaled up replica set myapp-deployment-57c6cb89d9 to 3
+  Normal  ScalingReplicaSet  55s (x9 over 6m31s)  deployment-controller  (combined from similar events): Scaled down replica set myapp-deployment-84445d4566 to 0
+```
+
+
+
 
 
 #### 3. DaemonSets
