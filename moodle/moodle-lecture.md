@@ -586,7 +586,7 @@ php admin/cli/mysql_collation.php --collation=utf8mb4_unicode_ci
 ## Increase upload size 
 
 ```
-# nano /etc/php5/apache2/php.ini
+# nano /etc/php/7.4/apache2/php.ini
 Press Ctrl and W and type "post_max_size"
 Change the value to the number of Mb you want your site to accept as uploads
 Press Ctrl and W and type "upload_max_filesize"
