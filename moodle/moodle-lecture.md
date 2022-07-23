@@ -12,7 +12,7 @@
 
 ```
 # Install Apache server and client/PHP
-$ sudo apt install apache2 php libapache2-mod-php
+$ sudo apt install apache2 php7.4 libapache2-mod-php7.4 php7.4-cli
 
 # Install Mariadb server
 $ sudo apt install mariadb-server mariadb-client
