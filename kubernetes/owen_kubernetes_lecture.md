@@ -994,7 +994,133 @@ Events:
         * External: endpoint available through node ip: port (called Nodeport)
         * Load balancer: Exposes application to the internet with a load balancer (available with a cloud provider)
 
+## Networking
+
+```
+kubectl get pods -o wide
+NAME                                READY   STATUS    RESTARTS        AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+myapp-deployment-57c6cb89d9-brb8k   1/1     Running   1 (5m55s ago)   19h   172.17.0.2   minikube   <none>           <none>
+myapp-deployment-57c6cb89d9-ct2rw   1/1     Running   1 (5m55s ago)   19h   172.17.0.3   minikube   <none>           <none>
+myapp-deployment-57c6cb89d9-sdfzq   1/1     Running   1 (5m55s ago)   19h   172.17.0.4   minikube   <none>           <none
+```
+
+
+
+## Services
+
+### Services Type
+
+![service_type](images/service_type.png)
+
+1. **NodePort**
+
+   ![image-20220723183558278](images/image-20220723183558278.png)
+
+   service-definition.yml
+
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name:  myapp-service
+   spec:
+     type:  NodePort
+     ports:
+     - targetPort: 80
+       port:  80
+       nodePort: 30008
+     selector:
+       name: myapp-pod
+       app: myapp
+       type: pod
+   ```
+
+   ```
+   $ kubectl create -f service/service-definition.yml
+   service/myapp-service created
+   
+   $ kubectl get services
+   NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+   kubernetes      ClusterIP   10.96.0.1       <none>        443/TCP        44h
+   myapp-service   NodePort    10.102.90.169   <none>        80:30008/TCP   14m
+   ```
+
+   
+
+   - NodePort service is an extension of ClusterIP service. A ClusterIP Service, to which the NodePort Service routes, is automatically created.
+   - It exposes the service outside of the cluster by adding a cluster-wide port on top of ClusterIP.
+   - NodePort exposes the service on each Node’s IP at a static port (the NodePort). Each node proxies that port into your Service. So, external traffic has access to fixed port on each Node. It means any request to your cluster on that port gets forwarded to the service.
+   - You can contact the NodePort Service, from outside the cluster, by requesting <NodeIP>:<NodePort>.
+   - Node port must be in the range of 30000–32767. Manually allocating a port to the service is optional. If it is undefined, Kubernetes will automatically assign one.
+   - If you are going to choose node port explicitly, ensure that the port was not already used by another service.
+
+   **Use Cases**
+
+   - When you want to enable external connectivity to your service.
+   - Using a NodePort gives you the freedom to set up your own load balancing solution, to configure environments that are not fully supported by Kubernetes, or even to expose one or more nodes’ IPs directly.
+   - Prefer to place a load balancer above your nodes to avoid node failure.
+
+2. **ClusterIP**
+
+   ![image-20220724192905911](images/image-20220724192905911.png)
+
+   - ClusterIP is the default and most common service type.
+   - Kubernetes will assign a cluster-internal IP address to ClusterIP service. This makes the service only reachable within the cluster.
+   - You cannot make requests to service (pods) from outside the cluster.
+   - You can optionally set cluster IP in the service definition file.
+
+    **Use Cases**
+
+   - Inter service communication within the cluster. For example, communication between the front-end and back-end components of your app.
+
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: back-end
+   spec:
+     type: ClusterIP
+     ports:
+       - targetPort: 80
+         port: 80
+   
+     selector:
+       app: myapp
+       type: back-end
+   
+   ```
+
+   
+
+3. **Load Balancer**
+
+   - LoadBalancer service is an extension of NodePort service. NodePort and ClusterIP Services, to which the external load balancer routes, are automatically created.
+   - It integrates NodePort with cloud-based load balancers.
+   - It exposes the Service externally using a cloud provider’s load balancer.
+   - Each cloud provider (AWS, Azure, GCP, etc) has its own native load balancer implementation. The cloud provider will create a load balancer, which then automatically routes requests to your Kubernetes Service.
+   - Traffic from the external load balancer is directed at the backend Pods. The cloud provider decides how it is load balanced.
+   - The actual creation of the load balancer happens asynchronously.
+   - Every time you want to expose a service to the outside world, you have to create a new LoadBalancer and get an IP address.
+
+    **Use Cases**
+
+   - When you are using a cloud provider to host your Kubernetes cluster.
+
+4. ExternalName
+
+   - Services of type ExternalName map a Service to a DNS name, not to a typical selector such as my-service.
+   - You specify these Services with the `spec.externalName` parameter.
+   - It maps the Service to the contents of the externalName field (e.g. foo.bar.example.com), by returning a CNAME record with its value.
+   - No proxying of any kind is established.
+
+    **Use Cases**
+
+   - This is commonly used to create a service within Kubernetes to represent an external datastore like a database that runs externally to Kubernetes.
+   - You can use that ExternalName service (as a local service) when Pods from one namespace to talk to a service in another namespace.
+
+
 ## Labels
+
 * Labels are key/value pairs that are attached to the objects like pods, services and deployments. Labels are for users of Kubernetes to identify attributes for objects
 
 ### Example of Labels
