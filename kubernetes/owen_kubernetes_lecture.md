@@ -1087,11 +1087,10 @@ myapp-deployment-57c6cb89d9-sdfzq   1/1     Running   1 (5m55s ago)   19h   172.
      selector:
        app: myapp
        type: back-end
-   
    ```
-
    
-
+   
+   
 3. **Load Balancer**
 
    - LoadBalancer service is an extension of NodePort service. NodePort and ClusterIP Services, to which the external load balancer routes, are automatically created.
@@ -1117,6 +1116,25 @@ myapp-deployment-57c6cb89d9-sdfzq   1/1     Running   1 (5m55s ago)   19h   172.
 
    - This is commonly used to create a service within Kubernetes to represent an external datastore like a database that runs externally to Kubernetes.
    - You can use that ExternalName service (as a local service) when Pods from one namespace to talk to a service in another namespace.
+
+## Deploying microservices in GCP
+
+![image-20220725063909209](images/image-20220725063909209.png)
+
+1. Setup a Google Container Engine Environment
+
+2. Create Kubernetes PODs
+
+   
+
+   ```
+   ```
+
+   
+
+3. Create Services — ClusterIP - Internal
+
+4. Create Services — LoadBalancer - External
 
 
 ## Labels
