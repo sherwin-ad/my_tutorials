@@ -1121,20 +1121,32 @@ myapp-deployment-57c6cb89d9-sdfzq   1/1     Running   1 (5m55s ago)   19h   172.
 
 ![image-20220725063909209](images/image-20220725063909209.png)
 
-1. Setup a Google Container Engine Environment
+### 1. Setup a Google Container Engine Environment
 
-2. Create Kubernetes PODs
 
-   
 
-   ```
-   ```
+### 2. Create Kubernetes Pods
 
-   
 
-3. Create Services — ClusterIP - Internal
 
-4. Create Services — LoadBalancer - External
+
+
+
+
+### 3. Create Services — ClusterIP - Internal
+
+
+
+### 4.  Create Services — LoadBalancer - External
+
+```
+```
+
+
+
+1. 
+
+2. Create Services — LoadBalancer - External
 
 
 ## Labels
