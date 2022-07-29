@@ -1117,7 +1117,9 @@ myapp-deployment-57c6cb89d9-sdfzq   1/1     Running   1 (5m55s ago)   19h   172.
    - This is commonly used to create a service within Kubernetes to represent an external datastore like a database that runs externally to Kubernetes.
    - You can use that ExternalName service (as a local service) when Pods from one namespace to talk to a service in another namespace.
 
-## Deploying microservices in GCP
+## Deploying microservices in GCP-GKE
+
+https://github.com/sherwin-ad/kubernetes-example-voting-app.git
 
 ![image-20220725063909209](images/image-20220725063909209.png)
 
@@ -1127,26 +1129,434 @@ myapp-deployment-57c6cb89d9-sdfzq   1/1     Running   1 (5m55s ago)   19h   172.
 
 ### 2. Create Kubernetes Pods
 
+**voting-app-pod.yml**
 
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: voting-app-pod
+  labels:
+    name: voting-app-pod
+    app: demo-voting-app  
+spec:
+  containers:
+  - name: voting-app
+    image: dockersamples/examplevotingapp_vote
+    ports:
+      - containerPort: 80
+```
 
+**worker-app-pod.yml**
 
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: worker-app-pod
+  labels:
+    name: worker-app-pod
+    app: demo-voting-app  
+spec:
+  containers:
+  - name: worker-app
+    image: dockersamples/examplevotingapp_worker
+```
+
+**result-app-pod.yml**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: result-app-pod
+  labels:
+    name: result-app-pod
+    app: demo-voting-app  
+spec:
+  containers:
+  - name: result-app
+    image: dockersamples/examplevotingapp_result 
+    ports:
+      - containerPort: 80
+```
+
+**redis-pod.yml**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-pod
+  labels:
+    name: redis-pod
+    app: demo-voting-app  
+spec:
+  containers:
+  - name: redis
+    image: redis
+    ports:
+      - containerPort: 6379 
+```
+
+**postgres-pod.yml**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: postgres-pod
+  labels:
+    name: postgres-pod
+    app: demo-voting-app   
+spec:
+  containers:
+  - name: postgres
+    image: postgres:9.4
+    ports:
+      - containerPort: 5432
+```
 
 
 
 ### 3. Create Services — ClusterIP - Internal
 
+**redis-service.yml**
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    name: redis-service
+    app: demo-voting-app  
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+    selector:
+      name: redis-pod
+      app: demo-voting-app 
+```
+
+**postgres-service.yml**
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: db 
+  labels:
+    name: db-service
+    app: demo-voting-app  
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+    selector:
+      name: postgres-pod
+      app: demo-voting-app 
+```
+
 
 
 ### 4.  Create Services — LoadBalancer - External
 
+**voting-app-service.yml**
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: voting-service
+  labels:
+    name: voting-service
+    app: demo-voting-app  
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    name: voting-app-pod
+    app: demo-voting-app 
 ```
+
+**result-app-service.yml**
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: result-service
+  labels:
+    name: result-service
+    app: demo-voting-app  
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 80
+    selector:
+       name: result-app-pod
+       app: demo-voting-app  
 ```
 
 
 
-1. 
+### 5. Create pods and services in GKE
 
-2. Create Services — LoadBalancer - External
+```
+$ kubectl create -f voting-app-pod.yml
+
+$ kubectl create -f voting-app-service.yml
+
+$ kubectl create -f redis-pod.yml
+
+$ kubectl create -f redis-service.yml
+
+$ kubectl create -f posgres-pod.yml
+
+$ kubectl create -f posgres-service.yml
+
+$ kubectl create -f worker-app-pod.yml
+
+$ kubectl create -f result-app-pod.yml
+
+$ kubectl create -f result-app-service.yml
+```
+
+
+
+## Example Voting Application Improvised - v2
+
+![image-20220727095753555](images/image-20220727095753555.png)
+
+https://github.com/sherwin-ad/kubernetes-example-voting-app-v2.git
+
+### 1. Create Kubernetes Deployments
+
+**redis-deplyment.yml**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: redis-pod
+      app: demo-voting-app  
+  template:
+    metadata:
+      name: redis-pod
+      labels:
+        name: redis-pod
+        app: demo-voting-app  
+    spec:
+      containers:
+      - name: redis
+        image: redis
+        ports:
+          - containerPort: 6379 
+```
+
+**postgres-deplyment.yml**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: postgres-pod
+      app: demo-voting-app
+  template:
+    metadata:
+      name: postgres-pod
+      labels:
+        name: postgres-pod
+        app: demo-voting-app   
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:9.4
+        ports:
+          - containerPort: 5432
+        env:
+          - name: POSTGRES_HOST_AUTH_METHOD
+            value: trust  
+```
+
+**result-app-deployment.yml**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: result-app-deployment
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: result-app-pod
+      app: demo-voting-app  
+  template:
+    metadata:
+      name: result-app-pod
+      labels:
+        name: result-app-pod
+        app: demo-voting-app  
+    spec:
+      containers:
+      - name: result-app
+        image: dockersamples/examplevotingapp_result 
+        ports:
+          - containerPort: 80
+```
+
+**voting-app-deployment.yml**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voting-app-deployment
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: voting-app-pod
+      app: demo-voting-app  
+  template:
+    metadata:
+      name: voting-app-pod
+      labels:
+        name: voting-app-pod
+        app: demo-voting-app  
+    spec:
+      containers:
+      - name: voting-app
+        image: dockersamples/examplevotingapp_vote
+        ports:
+          - containerPort: 80
+```
+
+**worker-app-deployment.yml**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-app-deployment
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: worker-app-pod
+      app: demo-voting-app  
+  template:
+    metadata:
+      name: worker-app-pod
+      labels:
+        name: worker-app-pod
+        app: demo-voting-app  
+    spec:
+      containers:
+      - name: worker-app
+        image: dockersamples/examplevotingapp_worker
+```
+
+
+
+```
+$ kubectl create -f .
+deployment.apps/postgres-deployment created
+service/db created
+deployment.apps/redis-deployment created
+service/redis created
+deployment.apps/result-app-deployment created
+service/result-service created
+deployment.apps/voting-app-deployment created
+service/voting-service created
+deployment.apps/worker-app-deployment created
+```
+
+
+
+```
+$ kubectl get all
+NAME                                         READY   STATUS    RESTARTS   AGE
+pod/postgres-deployment-659847dcf7-5l9xn     1/1     Running   0          3m52s
+pod/redis-deployment-7f878dfd46-vpbw7        1/1     Running   0          3m52s
+pod/result-app-deployment-548bf77bc8-8hkmz   1/1     Running   0          3m52s
+pod/result-app-deployment-548bf77bc8-n7hkd   1/1     Running   0          3m52s
+pod/result-app-deployment-548bf77bc8-thcnl   1/1     Running   0          3m52s
+pod/voting-app-deployment-868c67b6f7-2q895   1/1     Running   0          3m52s
+pod/voting-app-deployment-868c67b6f7-7lkv7   1/1     Running   0          3m52s
+pod/voting-app-deployment-868c67b6f7-q2gk5   1/1     Running   0          3m52s
+pod/worker-app-deployment-868b6b6567-snpvp   1/1     Running   0          3m52s
+
+NAME                     TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/db               ClusterIP      10.108.81.37    <none>        5432/TCP       3m52s
+service/kubernetes       ClusterIP      10.96.0.1       <none>        443/TCP        49m
+service/redis            ClusterIP      10.111.11.4     <none>        6379/TCP       3m52s
+service/result-service   LoadBalancer   10.110.79.103   <pending>     80:31991/TCP   3m52s
+service/voting-service   LoadBalancer   10.110.185.97   <pending>     80:31340/TCP   3m52s
+
+NAME                                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/postgres-deployment     1/1     1            1           3m52s
+deployment.apps/redis-deployment        1/1     1            1           3m52s
+deployment.apps/result-app-deployment   3/3     3            3           3m52s
+deployment.apps/voting-app-deployment   3/3     3            3           3m52s
+deployment.apps/worker-app-deployment   1/1     1            1           3m52s
+
+NAME                                               DESIRED   CURRENT   READY   AGE
+replicaset.apps/postgres-deployment-659847dcf7     1         1         1       3m52s
+replicaset.apps/redis-deployment-7f878dfd46        1         1         1       3m52s
+replicaset.apps/result-app-deployment-548bf77bc8   3         3         3       3m52s
+replicaset.apps/voting-app-deployment-868c67b6f7   3         3         3       3m52s
+replicaset.apps/worker-app-deployment-868b6b6567   1         1         1       3m52s
+```
+
+
+
+```
+$ minikube service list
+|-------------|----------------|--------------|---------------------------|
+|  NAMESPACE  |      NAME      | TARGET PORT  |            URL            |
+|-------------|----------------|--------------|---------------------------|
+| default     | db             | No node port |
+| default     | kubernetes     | No node port |
+| default     | redis          | No node port |
+| default     | result-service |           80 | http://192.168.49.2:31991 |
+| default     | voting-service |           80 | http://192.168.49.2:31340 |
+| kube-system | kube-dns       | No node port |
+|-------------|----------------|--------------|---------------------------|
+
+```
+
+
+
+
+
+
 
 
 ## Labels
