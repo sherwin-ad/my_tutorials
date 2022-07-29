@@ -51,15 +51,24 @@
 
 ## Master Node
 
+- Manage, plan, schedule, monitor nodes
+
 - The master is another node with Kubernetes installed in it, and is configured as a Master. 
 - The master watches over the nodes in the cluster and is responsible for the actual orchestration of
   containers on the worker nodes.
+
+## Worker Nodes
+
+- Host Application as Containers
+
+  
 
 ## Components
 
 ### 1. API server
 
-- The API server acts as the front-end for kubernetes. The users, management devices, Command line interfaces all talk to the API server to interact with the kubernetes cluster.
+- acts as the front-end for kubernetes. The users, management devices, Command line interfaces all talk to the API server to interact with the kubernetes cluster.
+- is responsible for orchestrating all operations within the cluster.
 
 ### 2. Etcd
 
@@ -72,7 +81,18 @@
 - is responsible for distributing work or containers across multiple nodes. 
 - It looks for newly created containers and assigns them to Nodes.
 
-### 4. Controllers
+### 4. Controller Manager
+
+#### 	Node controller 
+
+- takes care of nodes
+- responsible for onboarding new nodes to he cluster handling situations where nodes become unavailable or get gets destroyed 
+
+#### 	Replication Controller
+
+- ensures that the desired number of containers are running at all times in your replication group
+
+
 
 - The controllers are the brain behind orchestration. 
 - They are responsible for noticing and responding when nodes, containers or endpoints goes down. 
@@ -82,9 +102,15 @@
 
 - The container runtime is the underlying software that is used to run containers. In our case it happens to be Docker.
 
-### 6. Kubelet
+### 6. Kubelet (Captain of the ships)
 
-- Kubelet is the agent that runs on each node in the cluster. The agent is responsible for making sure that the containers are running on the nodes as expected.
+- Kubelet is the agent that runs on each node in the cluster. 
+- The agent is responsible for making sure that the containers are running on the nodes as expected.
+
+### Kube-proxy service
+
+- ensures that the necessary rules are in place on the worker nodes to allow the containers running on them to reach each other.
+- helps in enabling communication between services within the cluster.
 
 ## Master vs Worker Nodes
 
