@@ -153,3 +153,121 @@ To list all keys stored by kubernetes, run the etcdctl get command like this.
 kubectl exec etcd-kube-master -n kube-system -- etcdctl get / --prefix --keys-only
 ```
 
+## Kube-API Server
+
+1. Authenticate User
+2. Validate Request
+3. Retrieve data
+4. Update ETCD  
+5. Scheduler
+6. Kubelet
+
+### Installing kube-api server
+
+### View kube-api-server options in kubeadm
+
+```
+# Non kubeadm
+cat /etc/systemd/system/kube-apiserver.service
+```
+
+OR
+
+```
+$ sudo cat /etc/kubernetes/manifests/kube-apiserver.yaml 
+```
+
+**Listing process**
+
+```
+$ sudo ps -aux | grep kube-api-server
+```
+
+
+
+## Kube Control Manager
+
+### View kube-contoller-manager options
+
+```
+# Non kubeadm
+cat /etc/systemd/system/kube-controller-manager.service
+```
+
+OR
+
+```
+$ cat /etc/kubernetes/manifests/kube-controller-manager.yaml 
+```
+
+**Listing process**
+
+```
+$ ps -aux | grep kube-controller-manager
+```
+
+
+
+## Kube Scheduler
+
+- is responsible for scheduling pods on nodes
+
+- is only responsible for deciding which pod goes on which node
+
+- It doesn’t actually place the pod on the nodes. That’s the job of the kubelet.
+
+### View kube-scheduler options
+
+```
+cat /etc/kubernetes/manifests/kube-scheduler.yaml 
+```
+
+**Listing process**
+
+```
+ps -aux | grep kube-scheduller
+```
+
+
+
+## Kubelet
+
+- Register node
+- Create pods
+- Monitor node and pods
+
+**Listing process**
+
+```
+$ ps -aux | grep kubelet
+```
+
+
+
+## Kube-proxy
+
+- is a process that runs on each node in the kubernetes cluster.
+- Its job is to look for new services and every time a new service is created it creates the appropriate rules on each node to forward traffic to those services to the backend pods.
+
+- One way it does this is using IPTABLES rules.
+
+```
+$ kubectl get pods -n kube-system
+NAME                                  READY   STATUS    RESTARTS   AGE
+coredns-6d4b75cb6d-km5f4              1/1     Running   0          23h
+coredns-6d4b75cb6d-ltgh6              1/1     Running   0          23h
+etcd-kube-master                      1/1     Running   0          23h
+kube-apiserver-kube-master            1/1     Running   0          23h
+kube-controller-manager-kube-master   1/1     Running   0          23h
+kube-proxy-46275                      1/1     Running   0          14h
+kube-proxy-fmn4t                      1/1     Running   0          22h
+kube-proxy-ssp24                      1/1     Running   0          23h
+kube-scheduler-kube-master            1/1     Running   0          23h
+
+$ kubectl get daemonsets.apps -n kube-system
+NAME         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-proxy   3         3         3       3            3           kubernetes.io/os=linux   23h
+```
+
+## Pods
+
