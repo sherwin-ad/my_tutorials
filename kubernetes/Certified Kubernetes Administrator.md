@@ -1227,5 +1227,26 @@ storage-provisioner                2m           16Mi
 
 ### Managing Application Logs
 
+```
+$ docker run -d kodekloud/event-simulator
+```
+
+```
+$ docker ps
+CONTAINER ID   IMAGE                                 COMMAND                  CREATED              STATUS              PORTS                                                                                                                                  NAMES
+f3b2cd871d56   kodekloud/event-simulator             "/bin/sh -c 'python …"   About a minute ago   Up About a minute                                                              
+$ docker logs -f f3b2cd871d56
+[2022-08-06 02:10:37,361] INFO in event-simulator: USER4 logged out
+[2022-08-06 02:10:38,362] INFO in event-simulator: USER3 is viewing page1
+[2022-08-06 02:10:39,363] INFO in event-simulator: USER1 logged in
+[2022-08-06 02:10:40,364] INFO in event-simulator: USER1 logged in
+[2022-08-06 02:10:41,365] INFO in event-simulator: USER1 logged in
+[2022-08-06 02:10:42,367] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+[2022-08-06 02:10:42,367] INFO in event-simulator: USER2 logged in
+[2022-08-06 02:10:43,368] INFO in event-simulator: USER1 logged out
+[2022-08-06 02:10:44,369] INFO in event-simulator: USER2 logged out
+[2022-08-06 02:10:45,370] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+```
+
 
 
