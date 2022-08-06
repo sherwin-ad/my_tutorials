@@ -107,7 +107,7 @@
 - Kubelet is the agent that runs on each node in the cluster. 
 - The agent is responsible for making sure that the containers are running on the nodes as expected.
 
-### Kube-proxy service
+### 7. Kube-proxy service
 
 - ensures that the necessary rules are in place on the worker nodes to allow the containers running on them to reach each other.
 - helps in enabling communication between services within the cluster.

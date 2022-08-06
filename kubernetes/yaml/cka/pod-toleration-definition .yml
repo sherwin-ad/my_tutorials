@@ -9,3 +9,9 @@ spec:
   containers:
     - name: nginx-container
       image: nginx
+
+  tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "blue"
+    effect: "NoSchedule"

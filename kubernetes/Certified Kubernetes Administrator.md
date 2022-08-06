@@ -375,6 +375,30 @@ spec:
 
 ## Namespace
 
+- provides a mechanism for isolating groups of resources within a single cluster.
+- Names of resources need to be unique within a namespace, but not across namespaces.
+
+```
+cat <<EOF >/etc/kubernetes/manifests/static-web.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-web
+  labels:
+    role: myrole
+spec:
+  containers:
+    - name: web
+      image: nginx
+      ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+EOF
+```
+
+
+
 ### DNS
 
 ![image-20220802092819244](images/image-20220802092819244.png)
@@ -535,12 +559,673 @@ $ kubectl create -f compute-quota.yml
 - listen to a port on the Node and forward requests on that port to a port on the POD running the web application,
 - the service makes an internal POD accessible on a Port on the Node.
 
+![image-20220723183558278](images/image-20220723183558278.png)
+
+pod-definition.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+```
+
+service-nodeport.yml
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name:  myapp-service
+spec:
+  type:  NodePort
+  ports:
+  - targetPort: 80
+    port:  80
+    nodePort: 30008
+  selector:
+    app: myapp
+    type: pod
+```
+
+```
+$ kubectl create -f pod-definition.yml 
+pod/myapp-pod created
+
+$ kubectl create -f service-nodeport.yml 
+service/myapp-service created
+
+$ kubectl get all
+NAME            READY   STATUS    RESTARTS   AGE
+pod/myapp-pod   1/1     Running   0          8m20s
+
+NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/kubernetes      ClusterIP   10.96.0.1       <none>        443/TCP        20h
+service/myapp-service   NodePort    10.101.46.166   <none>        80:30008/TCP   7m44s
+```
+
+![image-20220802180142437](images/image-20220802180142437.png)
+
+
+
 #### 2. ClusterIP
 
 - the service creates a virtual IP inside the cluster to enable communication between different services such as a set of front end servers to a set of back end servers.
+
+![image-20220724192905911](images/image-20220724192905911.png)
+
+
+
+service-clusterip.yml
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: back-end
+
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 80
+      port: 80
+
+  selector:
+    app: myapp
+    type: back-end
+```
+
+
 
 #### 3. LoadBalancer
 
 - were it provisions a load balancer for our service in supported cloud providers.
 
 - A good example of that would be to distribute load across the different web servers in your front end tier.
+
+
+
+## Scheduling
+
+### Manual Scheduling
+
+- Every POD has a field called NodeName that, by default, is not set.
+
+**Assigning pod to a node**
+
+ pod-node2-definition.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+  nodeName: kube-node2
+```
+
+## Labels and Selectors
+
+### Labels 
+
+- are key/value pairs that are attached to the objects like pods, services and deployments. 
+- are for users of Kubernetes to identify attributes for objects.
+
+### Selectors
+
+1. **Equility-based**
+   *  = - Two labels or values of labels should be equal
+   *  != - The values of the labels should not be equal
+2. **Set-based**
+   * IN: A value should be inside a set of defined values
+   * NOTIN: A value should not be in a set of defined values
+   * EXISTS: Determines whether a label exists or not
+
+Once the pod is created, to select the pod with the labels use the kubectl get pods command along with the selector option, and specify the condition like app=App1.
+
+```
+$ kubectl get pods --selector app=App1
+```
+
+
+
+###  Annotations
+
+- are used to record other details for inflammatory purpose.
+
+For example tool details like name, version build information etc or contact details, phone numbers, email ids etc, that may be used for some kind of integration purpose.
+
+Example:
+
+```yaml
+apiVersion: app/v1
+kind: Replicaset
+metadata:
+  name: simple-webapp
+  labels:
+    app: App1
+    function: Front-end
+  annotations:
+    buildversion: 1.34
+```
+
+
+
+## Taints and Tolerations
+
+- have nothing to do with security or intrusion on the cluster.
+- are used to set restrictions on what pods can be scheduled on a node.
+
+- taints are set on nodes and tolerations are set on pods
+
+**Note:**
+
+Taint and toleration does not tell the pods to go to a particular node. Instead it tells the node to only accept pods with certain toleration.
+
+### Taint - Node
+
+**You add a taint to a node using kubectl taint.** 
+
+```shell
+kubectl taint nodes node1 key1=value1:NoSchedule
+
+# Sample
+kubectl taint nodes node1 app=blue:NoSchedule
+```
+
+places a taint on node `node1`. The taint has key `key1`, value `value1`, and taint effect `NoSchedule`. This means that no pod will be able to schedule onto `node1` unless it has a matching toleration.
+
+#### Taint Effect
+
+1. **NoSchedule** - which means the pods will not be scheduled on the node
+
+2.  **PreferNoSchedule** - which means the system will try to avoid placing a pods on the node but that is not guaranteed.
+3. **NoExecute** -  which means that new pods will not be scheduled on the node and existing pods on the node if any will be evicted if they do not tolerate the taint.
+
+**To remove the taint added by the command above, you can run:**
+
+```shell
+kubectl taint nodes node1 key1=value1:NoSchedule-
+```
+
+### Tolerations - Pods
+
+pod-definition.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+
+  tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "blue"
+    effect: "NoSchedule"
+```
+
+**Note:**
+
+Taint is set on the master node automatically that prevents any pods from being schedule on this node. Best practice is to not deploy application workloads on a master node. 
+
+To see this taint:
+
+```
+$ kubectl describe node kube-master | grep Taint
+Taints:             node-role.kubernetes.io/control-plane:NoSchedule
+```
+
+
+
+## Node Selectors
+
+- We can set a limitation on the pods so that they only run on particular nodes
+
+**Label nodes**
+
+$ kubectl label nodes <node-name> <label-key>=<label-value>
+
+```
+$ kubectl label nodes kube-node1 size=Large
+```
+
+pod-definition-node-select.yml
+
+```
+ apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+  nodeSelector:
+    size: Large
+```
+
+## Node Affinity
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+            - key: size
+              operator: In
+              values:
+                - Large
+                - Medium
+```
+
+### Node Affinity Types
+
+1. requiredDuringSchedulingIgnoredDuringExecution
+   - The scheduler can't schedule the Pod unless the rule is met. This functions like `nodeSelector`, but with a more expressive syntax.
+2. preferredDuringSchedulingIgnoredDuringExecution
+   - The scheduler tries to find a node that meets the rule. If a matching node is not available, the scheduler still schedules the Pod.
+   - simply ignore node affinity rules and place the card on any available node. This is a way of telling the scheduler hey try your best to place the pod on matching node but if you eally cannot find one just plays it anywhere.
+
+3. requiredDuringSchedulingRequiredDuringExecution
+   - is introduced which will evict any pods that are running on nodes that do not meet affinity rules.
+
+## Resource Requirements
+
+### Resource Requests
+
+pod-definition-resource-request.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+      ports:
+        - 8080
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: 1
+```
+
+### Resource Limits
+
+- default 1 vCPU and 512 Mi
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+      ports:
+        - 8080
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: 1
+        limits:
+          memory: "2Gi"
+          cpu: 2
+```
+
+## Daemonset
+
+- Daemonsets are like replica sets, as in it helps you deploy multiple instances of pod. But it runs one copy of your pod on each node in your cluster. Whenever a new node is added to the cluster a replica of the pod is automatically added to that node and when a node is removed the pod is automatically removed.
+
+- The demonset ensures that one copy of the pod is always present in all nodes in the cluster.
+
+### Use Case of Daemonsets
+
+- Demon set is perfect for that as it can deploy your monitoring agent in the form of a pod in all the nodes in your cluster. Then, you don’t have to worry about adding/removing monitoring agents from these nodes when there are changes in your cluster. Daemonset will take care of that for you.
+
+1. **Monitoring Solutions**
+
+2. **Log Viewer**
+3. **Kube-proxy**
+4. **Networking**
+   - Weave-net
+
+daemonset-definition.yml
+
+```
+apiVersion: apps/vl
+kind: DaemonSet
+metadata:
+  name: monitoring-daemon
+spec:
+  selector:
+    matchLabels:
+      app: monitoring-agent
+  template:
+    metadata:
+      labels:
+        app: monitoring-agent
+    spec:
+      containers:
+      - name: monitoring-agent
+      image: monitoring-agent
+```
+
+```
+$ kubectl create -f daemonset-definition.yml
+
+$ kubectl get daemonsets
+
+$ kubectl describe daemonsets.apps <daemonset-name>
+```
+
+## Static Pods
+
+- *Static Pods* are managed directly by the kubelet daemon on a specific node, without the [API server](https://kubernetes.io/docs/concepts/overview/components/#kube-apiserver) observing them. Unlike Pods that are managed by the control plane (for example, a [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)); instead, the kubelet watches each static Pod (and restarts it if it fails).
+
+- Static Pods are always bound to one [Kubelet](https://kubernetes.io/docs/reference/generated/kubelet) on a specific node.
+
+### Configure
+
+Put pod definition files in  **/etc/kubernetes/manifests**
+
+kubelet.service
+
+```
+ExecStart=/usr/local/bin/kubelet \\
+  --container-runtime=remote \\
+  --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
+  --pod-manifest-path=/etc/Kubernetes/manifests \\
+  --kubeconfig=/var/1ib/kubelet/kubeconfig \\
+  --network-pluginscni \\
+  --register-node=true \\
+  --v=2
+```
+
+OR
+
+kubelet.service
+
+```
+ExecStart=/usr/local/bin/kubelet \\
+  --container-runtime=remote \\
+  --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
+  --config=kubeconfig.yaml \\
+  --kubeconfig=/var/1ib/kubelet/kubeconfig \\
+  --network-pluginscni \\
+  --register-node=true \\
+  --v=2
+```
+
+kubeconfig.yaml
+
+```
+staticPodPath: /etc/kubernetes/manifests
+```
+
+## Static Pods VS Daemonsets
+
+| Statis Pods                                    | Daemonset                                         |
+| ---------------------------------------------- | ------------------------------------------------- |
+| Created by the Kubelet                         | Created by KubeAPI server (Daemonset Controller)  |
+| Deploy Control Plane components as Static Pods | Deploy Monitoring Agents, Logging Agents on nodes |
+| Ignored by the Kube-Scheduler                  | Ignored by the Kube-Scheduler                     |
+
+
+
+## Multiple Schedulers
+
+If the default scheduler does not suit your needs you can implement your own scheduler. Moreover, you can even run multiple schedulers simultaneously alongside the default scheduler and instruct Kubernetes what scheduler to use for each of your pods.
+
+### Deploy Additional Scheduler in kubeadm
+
+kube-sheduller.yaml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: kube-scheduler
+    tier: control-plane
+  name: kube-scheduler
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-scheduler
+    - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
+    - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
+    - --bind-address=127.0.0.1
+    - --kubeconfig=/etc/kubernetes/scheduler.conf
+    - --leader-elect=true
+    image: k8s.gcr.io/kube-scheduler:v1.24.3
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10259
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    name: kube-scheduler
+    resources:
+      requests:
+        cpu: 100m
+    startupProbe:
+      failureThreshold: 24
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10259
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    volumeMounts:
+    - mountPath: /etc/kubernetes/scheduler.conf
+      name: kubeconfig
+      readOnly: true
+  hostNetwork: true
+  priorityClassName: system-node-critical
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/scheduler.conf
+      type: FileOrCreate
+    name: kubeconfig
+status: {}
+```
+
+my-custom-scheduler.yaml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: my-custom-scheduler
+    tier: control-plane
+  name: my-custom-scheduler
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-scheduler
+    - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
+    - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
+    - --bind-address=127.0.0.1
+    - --kubeconfig=/etc/kubernetes/scheduler.conf
+    - --leader-elect=true
+    - --scheduler-name=my-custom-scheduler
+    - --lock-object-name=my-custom-scheduler
+    image: k8s.gcr.io/kube-scheduler:v1.24.3
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10259
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    name: kube-scheduler
+    resources:
+      requests:
+        cpu: 100m
+    startupProbe:
+      failureThreshold: 24
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10259
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    volumeMounts:
+    - mountPath: /etc/kubernetes/scheduler.conf
+      name: kubeconfig
+      readOnly: true
+  hostNetwork: true
+  priorityClassName: system-node-critical
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/scheduler.conf
+      type: FileOrCreate
+    name: kubeconfig
+status: {}
+```
+
+```
+$ kubectl create -f my-custom-scheduler.yaml
+```
+
+```
+$ kubectl get pods --namespace=kube-system
+```
+
+Create pod definition using the new scheduler
+
+**pod-definition-with-scheduler.yml**
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+    schedulerName: my-custome-scheduler
+```
+
+### View Events
+
+```
+$ kubectl get events
+```
+
+### View Scheduler Logs
+
+```
+$ kubectl logs kube-scheduler-kube-master --namespace=kube-system 
+```
+
+
+
+## Monitoring Cluster Components
+
+ ### Metrics Server
+
+```
+$ minikube addons enable metrics-server
+    ▪ Using image k8s.gcr.io/metrics-server/metrics-server:v0.6.1
+🌟  The 'metrics-server' addon is enabled
+```
+
+```
+kubectl top nodes
+NAME       CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
+minikube   258m         3%     815Mi           5%        
+
+```
+
+```
+$ kubectl top pod -n kube-system 
+NAME                               CPU(cores)   MEMORY(bytes)   
+coredns-6d4b75cb6d-ljhv9           2m           25Mi            
+etcd-minikube                      20m          58Mi            
+kube-apiserver-minikube            72m          358Mi           
+kube-controller-manager-minikube   25m          68Mi            
+kube-proxy-9xkps                   1m           29Mi            
+kube-scheduler-minikube            4m           30Mi            
+metrics-server-8595bd7d4c-glpkl    6m           33Mi            
+storage-provisioner                2m           16Mi            
+```
+
+### Managing Application Logs
+
+
+

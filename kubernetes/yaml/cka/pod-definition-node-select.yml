@@ -9,3 +9,6 @@ spec:
   containers:
     - name: nginx-container
       image: nginx
+  nodeSelector:
+    size: Large
+  
