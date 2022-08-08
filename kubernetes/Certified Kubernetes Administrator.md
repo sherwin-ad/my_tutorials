@@ -1197,7 +1197,26 @@ $ kubectl logs kube-scheduler-kube-master --namespace=kube-system
 
 ## Monitoring Cluster Components
 
- ### Metrics Server
+###  Monitoring Solutions
+
+- Metric Server
+
+- Prometheus
+
+- Elastic Stack
+
+- Datadog
+
+- Dynatrace
+
+  
+
+ #### Metrics Server
+
+- Metric server retrieves metrics from each of the kubernetes nodes and pods, aggregates them and stores them in memory.
+- Note that the metric server is only an in memory monitoring solution and does not store the metrics on the desk and as a result you cannot see historical performance data.
+
+##### Getting Started with Metrics Server
 
 ```
 $ minikube addons enable metrics-server
@@ -1206,7 +1225,7 @@ $ minikube addons enable metrics-server
 ```
 
 ```
-kubectl top nodes
+$ kubectl top nodes
 NAME       CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
 minikube   258m         3%     815Mi           5%        
 
@@ -1225,7 +1244,29 @@ metrics-server-8595bd7d4c-glpkl    6m           33Mi
 storage-provisioner                2m           16Mi            
 ```
 
+##### Others
+
+```
+$ git clone https://github.com/kubernetes-incubator/metrics-server.git
+```
+
+```
+$ kubectl create –f deploy/1.8+/
+clusterrolebinding "metrics-server:system:auth-delegator" created
+rolebinding "metrics-server-auth-reader" created
+apiservice "v1beta1.metrics.k8s.io" created
+serviceaccount "metrics-server" created
+deployment "metrics-server" created
+service "metrics-server" created
+clusterrole "system:metrics-server" created
+clusterrolebinding "system:metrics-server" created
+```
+
+  
+
 ### Managing Application Logs
+
+### Logs in Docker
 
 ```
 $ docker run -d kodekloud/event-simulator
@@ -1248,5 +1289,642 @@ $ docker logs -f f3b2cd871d56
 [2022-08-06 02:10:45,370] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
 ```
 
+### Logs in Kubernetes
 
+event-simulator.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: event-simulator-pod
+spec:
+  containers:
+  - name: event-simulator-pod
+    image: kodekloud/event-simulator
+```
+
+```
+$ kubectl create -f event-simulator.yaml 
+pod/event-simulator-pod created
+
+```
+
+```
+$ kubectl logs -f event-simulator-pod 
+[2022-08-07 23:56:54,375] INFO in event-simulator: USER4 logged out
+[2022-08-07 23:56:55,376] INFO in event-simulator: USER1 is viewing page1
+[2022-08-07 23:56:56,377] INFO in event-simulator: USER2 is viewing page1
+[2022-08-07 23:56:57,378] INFO in event-simulator: USER2 logged in
+[2022-08-07 23:56:58,380] INFO in event-simulator: USER1 is viewing page3
+[2022-08-07 23:56:59,381] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+[2022-08-07 23:56:59,382] INFO in event-simulator: USER1 is viewing page3
+[2022-08-07 23:57:00,383] INFO in event-simulator: USER1 logged out
+[2022-08-07 23:57:01,385] INFO in event-simulator: USER3 is viewing page2
+[2022-08-07 23:57:02,387] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+[2022-08-07 23:57:02,387] INFO in event-simulator: USER4 is viewing page2
+[2022-08-07 23:57:03,389] INFO in event-simulator: USER2 logged in
+[2022-08-07 23:57:04,390] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+[2022-08-07 23:57:04,391] INFO in event-simulator: USER4 is viewing page1
+[2022-08-07 23:57:05,393] INFO in event-simulator: USER2 is viewing page2
+[2022-08-07 23:57:06,393] INFO in event-simulator: USER1 logged in
+[2022-08-07 23:57:07,395] INFO in event-simulator: USER2 is viewing page1
+[2022-08-07 23:57:08,397] INFO in event-simulator: USER4 is viewing page1
+[2022-08-07 23:57:09,399] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+```
+
+**Note:**
+
+Kubernetes PODs can have multiple docker containers in them. You must specify the name of the container explicitly in the kubectl logs command. Otherwise it would fail asking you to specify a name.
+
+```
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: event-simulator-pod
+spec:
+  containers:
+  - name: event-simulator
+    image: kodekloud/event-simulator
+  - name: image-processor
+    image: some-image-processor  
+```
+
+```
+$ kubectl logs -f event-simulator-pod event-simulator
+```
+
+ 
+
+## Application Lifecycle Management
+
+### Rolling Updates and Rollbacks in a Deployment
+
+**Rollout and Versioning**
+
+![image-20220808100523680](images/image-20220808100523680.png)
+
+**Rollout Command**
+
+```
+$ kubectl rollout status deployment/myapp-deployment
+```
+
+
+
+```
+$ kubectl rollout history deployment/myapp-deployment
+```
+
+### Deployment Strategy
+
+1. Recreate
+
+   - to destroy all of these and then create newer versions of application instances meaning first destroy the five running instances and then deploy five new instances of the new application version.
+   - during the period after the older versions are down and before any newer version is up the application is down and inaccessible to users
+
+   ![image-20220808170345384](images/image-20220808170345384.png)
+
+2. Rolling Update (default deployment strategy)
+
+   - we take down the older version and bring up a newer version one by one.
+   - this way the application never goes down and the upgrade is seamless.
+
+   ![image-20220808170430418](images/image-20220808170430418.png)
+
+**To apply the updates:**
+
+1. Edit the definition files and apply the changes with this command.
+
+```
+$ kubectl apply –f deployment-definition.yml
+```
+
+2. No need to edit the definition file but he definition file will be having different configuration.
+
+```
+$ kubectl set image deployment/myapp-deployment \
+nginx=nginx:1.9.1
+```
+
+### Upgrades
+
+![image-20220808172403647](images/image-20220808172403647.png)
+
+### Rollback
+
+![image-20220808172636546](images/image-20220808172636546.png)
+
+```
+$ kubectl rollout undo deployment/myapp-deployment
+```
+
+### Summarize Commands
+
+**Create**
+
+```
+$ kubectl create –f deployment-definition.yml
+```
+
+**Get**
+
+```
+$ kubectl get deployments
+```
+
+**Update**
+
+```
+$ kubectl apply –f deployment-definition.yml
+```
+
+```
+$ kubectl set image deployment/myapp-deployment nginx=nginx:1.9.1
+```
+
+**Status**
+
+```
+$ kubectl rollout status deployment/myapp-deployment
+```
+
+```
+$ kubectl rollout history deployment/myapp-deployment
+```
+
+**Rollback**
+
+```
+$ kubectl rollout undo deployment/myapp-deployment
+```
+
+
+
+## Commands and Arguments
+
+###  Docker
+
+git clone https://github.com/dockerfile/ubuntu.git
+
+In case of the CMD instruction the command line parameters passed will get replaced entirely, whereas in case of entry point the command line parameters will get appended.
+
+Dockerfile
+
+```
+# Pull base image.
+FROM ubuntu:14.04
+
+# Install.
+RUN \
+  sed -i 's/# \(.*multiverse$\)/\1/g' /etc/apt/sources.list && \
+  apt-get update && \
+  apt-get -y upgrade && \
+  apt-get install -y build-essential && \
+  apt-get install -y software-properties-common && \
+  apt-get install -y byobu curl git htop man unzip vim wget && \
+  rm -rf /var/lib/apt/lists/*
+
+# Add files.
+ADD root/.bashrc /root/.bashrc
+ADD root/.gitconfig /root/.gitconfig
+ADD root/.scripts /root/.scripts
+
+# Set environment variables.
+ENV HOME /root
+
+# Define working directory.
+WORKDIR /root
+
+# Define default command.
+ENTRYPOINT ["sleep"]
+CMD ["5"]
+```
+
+Build image
+
+```
+$ docker build -t ubuntu-sleeper .
+```
+
+```
+$ docker run ubuntu-sleeper 10
+```
+
+What if you really really want to modify the entry point during runtime say from sleep to an imaginary sleep 2.0 command. Well in that case you can override it by using the entry point option in the docker run command.
+
+```
+$ docker run --entrypoint sleep2.0 ubuntu-sleeper 10
+```
+
+### Kubernetes
+
+![image-20220808200351083](images/image-20220808200351083.png)
+
+## Configure Environment Variables in Applications
+
+### ENV Variables in Kubernetes
+
+```
+$ docker run -e APP_COLOR=pink simple-webapp-color
+```
+
+pod-definition.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+spec:
+  containers:
+  - name: simple-webapp-color
+    image: simple-webapp-color
+    ports:
+      - containerPort: 8080
+    env:
+      - name: APP_COLOR
+        value: pink
+```
+
+### ENV Value Types
+
+#### 1. Plain Key Value
+
+```
+env:
+  - name: APP_COLOR
+    value: pink
+```
+
+pod-definition.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+spec:
+  containers:
+  - name: simple-webapp-color
+    image: simple-webapp-color
+    ports:
+      - containerPort: 8080
+    env:
+      - name: APP_COLOR
+        value: blue
+      - name: APP_MODE
+        value: prod
+```
+
+
+
+#### 2. ConfigMaps
+
+```
+env:
+  - name: APP_COLOR
+    valueFrom:
+      configMapKeyRef:
+```
+
+##### Ways to create configmaps:
+
+##### 1. Imperative
+
+1. The command is followed by the config name and the option –from-literal. The from literal option is used to specify the key value pairs in the command itself.
+
+```
+$ kubectl create configmap <config-name> --from-literal=<key>=<value>
+```
+
+```
+$ kubectl create configmap \
+	app-config --from-literal=APP_COLOR=blue \
+			   --from-literal=APP_MOD=prod
+```
+
+2. Another way to input configuration data is through a file. Use the from file option to specify a path to the file that contains the required data.
+
+```
+kubectl create configmap \
+	<config-name> --from-file=<path-to-file>
+```
+
+```
+kubectl create configmap \
+	app-config --from-file=app_config.properties
+```
+
+##### 2. Declative
+
+configmap.yaml
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  APP_COLOR: blue
+  APP_MODE: prod
+```
+
+```
+kubectl create –f configmap.yaml
+```
+
+##### View ConfigMaps
+
+```
+$ $ kubectl get configmaps 
+NAME               DATA   AGE
+app-config         2      25s
+```
+
+```
+$ kubectl describe configmaps app-config 
+Name:         app-config
+Namespace:    default
+Labels:       <none>
+Annotations:  <none>
+
+Data
+====
+APP_COLOR:
+----
+blue
+APP_MODE:
+----
+prod
+
+BinaryData
+====
+
+Events:  <none>
+```
+
+##### ConfigMap in Pods
+
+pod-definition.yaml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+  labels:
+    name: simple-webapp-color
+spec:
+  containers:
+  - name: simple-webapp-color
+    image: simple-webapp-color
+    ports:
+      - containerPort: 8080 apiVersion: v1
+    envFrom:
+      - configMapRef:
+        	name: app-config
+```
+
+##### Injecting ConfigMap in Pods
+
+**1. ENV**
+
+```
+envFrom:
+  - configMapRef:
+  		name: app-config
+```
+
+**2. Single ENV**
+
+```
+env:
+  - name: APP_COLOR
+    valueFrom:
+      configMapKeyRef:
+        name: app-config
+        key: APP_COLOR
+```
+
+**3. Volume**
+
+```
+volumes:
+- name: app-config-volume
+  configMap:
+    name: app-config
+```
+
+
+
+#### 3. Secrets
+
+- Secrets are used to store sensitive information like passwords or keys.
+
+```
+env:
+  - name: APP_COLOR
+    valueFrom:
+      secretKeyRef:
+```
+
+#####  Ways to create configmaps:
+
+##### 1. Imperative
+
+ ```
+ $ kubectl create secret generic \ 
+ 	<secret-name> --from-literal=<key>=<value>
+ ```
+
+```
+$ kubectl create secret generic \
+	app-secret --from-literal=DB_Host=mysql
+   		       --from-literal=DB_User=root
+			   --from-literal=DB_Password=paswrd
+```
+
+
+
+```
+$ kubectl create secret generic
+	<secret-name> --from-file=<path-to-file>
+```
+
+```
+$ kubectl create secret generic \
+	app-secret --from-file=app_secret.properties
+```
+
+##### 2. Declarative
+
+secret-data.yaml
+
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+data:
+  DB_Host: bXlzcWw=
+  DB_User: cm9vdA==
+  DB_Password: cGFzd3Jk
+```
+
+```
+$ kubectl create –f secret-data.yaml
+```
+
+#####  Encode Secrets
+
+![image-20220808210315189](images/image-20220808210315189.png)
+
+```
+$ echo -n 'mysql' | base64
+bXlzcWw=
+
+$ echo -n 'root' | base64
+cm9vdA==
+
+$ echo -n 'paswrd' | base64
+cGFzd3Jk
+```
+
+##### View Secrets
+
+```
+$ kubectl get secrets 
+NAME         TYPE     DATA   AGE
+app-secret   Opaque   3      9s
+```
+
+```
+$ kubectl describe secrets app-secret 
+Name:         app-secret
+Namespace:    default
+Labels:       <none>
+Annotations:  <none>
+
+Type:  Opaque
+
+Data
+====
+DB_Host:      5 bytes
+DB_Password:  6 bytes
+DB_User:      4 bytes
+```
+
+```
+$ kubectl get secrets app-secret -o yaml
+apiVersion: v1
+data:
+  DB_Host: bXlzcWw=
+  DB_Password: cGFzd3Jk
+  DB_User: cm9vdA==
+kind: Secret
+metadata:
+  creationTimestamp: "2022-08-08T13:06:08Z"
+  name: app-secret
+  namespace: default
+  resourceVersion: "253170"
+  uid: 0f84abe6-3550-4c03-a998-20538e05c519
+type: Opaque
+```
+
+##### Decode Secrets
+
+```
+$ echo -n 'bXlzcWw=' | base64 --decode
+mysql
+
+$ echo -n 'cGFzd3Jk' | base64 --decode
+paswrd
+
+$ echo -n 'cm9vdA==' | base64 --decode
+root
+```
+
+##### Secrets in Pods
+
+pod-definition.yaml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+  labels:
+    name: simple-webapp-color
+spec:
+  containers:
+  - name: simple-webapp-color
+    image: simple-webapp-color
+    ports:
+      - containerPort: 8080 
+    envFrom:
+      - secretRef:
+			name: app-secret
+```
+
+##### Injecting Secrets in Pods
+
+**1. ENV**
+
+```
+envFrom:
+  - secretRef:
+  		name: app-config
+```
+
+**2. Single ENV**
+
+```
+env:
+  - name: DB_Password
+    valueFrom:
+      secretKeyRef:
+        name: app-secret
+        key: DB_Password
+```
+
+**3. Volume**
+
+```
+volumes:
+- name: app-secret-volume
+  secret:
+    secretName: app-secret
+```
+
+```
+$ ls /opt/app-secret-volumes
+DB_Host		DB_Password		DB_User
+```
+
+```
+$ cat /opt/app-secret-volumes/DB_Password
+paswrd
+```
+
+## Multi Container Pods
+
+pod-definition.yaml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  labels:
+    name: simple-webapp
+spec:
+  containers:
+  - name: simple-webapp
+    image: simple-webapp
+    ports:
+      - containerPort: 8080
+  - name: log-agent
+    image: log-agent
+```
 
