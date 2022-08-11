@@ -1928,3 +1928,306 @@ spec:
     image: log-agent
 ```
 
+## Cluster Maintenance
+
+### Operating System Upgrade
+
+The time it waits for a pod to come back online is known as the **pod eviction timeout** and is set on the controller manager with a default value of **five minutes**.
+
+```
+$ kube-controller-manager --pod-eviction-timeout=5m0s
+```
+
+When you drain the node the pods are gracefully terminated from the node that they're on and recreated on another. The node is also cordoned or marked as unschedulable. Meaning no pods can be scheduled on this node until you specifically remove the restriction.
+
+```
+$ kubectl drain node-1
+```
+
+Now that the pods are safe on the others nodes, you can reboot the first node. When it comes back online it is still unschedulable. You then need to uncordon it, so that pods can be scheduled on it again.  
+
+```
+$ kubectl uncordon node-1
+```
+
+Cordon simply marks a node unschedulable. It simply makes sure that new pods are not scheduled on that node.
+
+```
+kubectl cordon node-2
+```
+
+### Kubernetes Software Versions
+
+```
+$ kubectl get nodes
+NAME          STATUS   ROLES           AGE   VERSION
+kube-master   Ready    control-plane   8d    v1.24.3
+kube-node1    Ready    <none>          8d    v1.24.3
+kube-node2    Ready    <none>          8d    v1.24.3
+```
+
+![image-20220809090408661](images/image-20220809090408661.png)
+
+- minor versions are released every few months with new features and functionalities
+- patches are released more often with critical bug fixes
+
+**1. Alpha release** 
+
+- the features are disabled by default and maybe buggy
+
+**2. Beta release**
+
+- where the code is well tested
+- the new features are enabled by default
+
+**3. Main stable release**
+
+
+
+Remember that there are other components within the control plane that do not have the same version numbers. 
+
+The ETCD cluster and CoreDNS servers have their own versions as they are separate projects.  
+
+The release notes of each release provides information about the supported versions of  externally dependent applications like ETCD and CoreDNS etc.
+
+![image-20220809091236163](images/image-20220809091236163.png)
+
+### Cluster Upgrade Process
+
+- Is it not mandatory for all of these to have the same version.
+- The components can be at different release versions since the Kube API server is the primary component in the control plane and that is the component that all other components talked to. 
+
+- None of the other components should ever be at a version higher than the Kube API server 
+- Controller-manager and Kube-scheduler can be at one version lower.
+- Kubelet and Kube-proxy components can be at two versions lower.
+
+![image-20220809164809563](images/image-20220809164809563.png)
+
+
+
+- Kubernetes support only up to the recent three minor versions.
+- The recommended approach is to upgrade one minor version at a time.
+- Upgrade version 1.10 to 1.11 then 1.12 to 1.13
+
+![image-20220809165457072](images/image-20220809165457072.png)
+
+
+
+1. **Upgrade Master Nodes**
+
+- First you upgrade your master nodes and then upgrade the worker nodes.
+- While the master is being upgraded the control plane components such as the API server scheduler and controller managers goes down.
+- The master nodes going down does not mean your work or nodes and applications on the cluster are impacted all workloads hosted on the worker nodes continue to serve users as normal.
+
+2. **Upgrade Worker Nodes**
+
+   **Strategy 1**
+
+   - Upgrade all of them at once but then your pods are down and users are no longer able to access the applications. Once the upgrade is complete the nodes are back up new paths are scheduled and users can resume access.
+
+   **Strategy 2**
+
+   - Upgrade one node at a time
+   - We first upgrade the first node where the workloads move to the second and third node. Then second node where the workloads move to the first and third nodes and finally the third node where the workloads are shared between the first and second node.
+
+   **Strategy 3**
+
+   - To add new node to the cluster nodes with newer software version.
+   - This is especially convenient if you're on a cloud environment where you can easily provision new nodes and decommission old ones nodes with the newer software version can be added to the cluster.
+
+### Kubeadm upgrade
+
+**Upgrade Master node**
+
+```
+$ kubeadm upgrade plan
+```
+
+Upgrade kubeadm
+
+```
+$ apt-get upgrade -y kubeadm=1.12.0-00
+```
+
+```
+$ kubeadm upgrade apply v1.12.0
+```
+
+```
+$ kubectl get nodes
+NAME          STATUS   ROLES           AGE   VERSION
+kube-master   Ready    control-plane   8d    v1.11.3
+kube-node1    Ready    <none>          8d    v1.11.3
+kube-node2    Ready    <none>          8d    v1.11.3
+```
+
+Upgrade kubelets
+
+```
+$ apt-get upgrade -y kubelet=1.12.0-00
+```
+
+```
+$ systemctl restart kubelet
+```
+
+```
+$ kubectl get nodes
+NAME          STATUS   ROLES           AGE   VERSION
+kube-master   Ready    control-plane   8d    v1.12.0
+kube-node1    Ready    <none>          8d    v1.11.3
+kube-node2    Ready    <none>          8d    v1.11.3
+```
+
+**Upgrade Worker nodes**
+
+Node-1
+
+```
+$ kubectl drain node-1
+```
+
+```
+$ apt-get upgrade -y kubeadm=1.12.0-00
+```
+
+```
+$ apt-get upgrade -y kubelet=1.12.0-00
+```
+
+```
+$ kubeadm upgrade node confiog --kubelet-version v1.12.0
+```
+
+```
+$ systemctl restart kubelet
+```
+
+```
+$ kubectl uncordon node-1
+```
+
+ ### Backup and Restore
+
+### Backup - Resource Configs
+
+```
+$ kubectl get all --all-namespaces -o yaml > all-deploy-services.yaml
+```
+
+- Velero (tool for backup)
+
+### Backup - ECTD
+
+- The ETCD cluster stores information about the state of our cluster.
+- So information about the cluster itself,  the nodes and every other resource as created within the cluster are stored here.
+
+```
+ETCDCTL_API=3 etcdctl \
+	snapshot save snapshot.db
+```
+
+```
+ls
+snapshot.db
+```
+
+```
+ETCDCTL_API=3 etcdctl \
+	snapshot status snapshot.db
+```
+
+### Restore - ETCD
+
+- 
+
+```
+ETCDCTL_API=3 etcdctl \
+	snapshot save snapshot.db
+```
+
+```
+ls
+snapshot.db
+```
+
+```
+service kube-apiserver stop
+Service kube-apiserver stopped
+```
+
+```
+ETCDCTL_API=3 etcdctl \
+snapshot restore snapshot.db \
+--data-dir /var/lib/etcd-from-backup \
+--initial-cluster master-1=https://192.168.5.11:2380,master-2=https://192.168.5.12:2380 \
+--initial-cluster-token etcd-cluster-1 \
+--initial-advertise-peer-urls https://${INTERNAL_IP}:2380
+I | mvcc: restore compact to 475629
+I | etcdserver/membership: added member 5e89ccdfe3 [https://192.168.5.12:2380] to cluster 894c7131f5165a78
+I | etcdserver/membership: added member c8246cee7c [https://192.168.5.11:2380] to cluster 894c7131f5165a78
+```
+
+
+
+Edit the following:
+
+- --data-dir /var/lib/etcd-from-backup
+- --initial-cluster-token etcd-cluster-1
+
+etcd.service
+
+```
+ExecStart=/usr/local/bin/etcd \\
+--name ${ETCD_NAME} \\
+--cert-file=/etc/etcd/kubernetes.pem \\
+--key-file=/etc/etcd/kubernetes-key.pem \\
+--peer-cert-file=/etc/etcd/kubernetes.pem \\
+--peer-key-file=/etc/etcd/kubernetes-key.pem \\
+--trusted-ca-file=/etc/etcd/ca.pem \\
+--peer-trusted-ca-file=/etc/etcd/ca.pem \\
+--peer-client-cert-auth \\
+--client-cert-auth \\
+--initial-advertise-peer-urls https://${INTERNAL_I
+--listen-peer-urls https://${INTERNAL_IP}:2380 \\
+--listen-client-urls https://${INTERNAL_IP}:2379,h
+--advertise-client-urls https://${INTERNAL_IP}:237
+--initial-cluster-token etcd-cluster-1
+etcd-cluster-0 \ \
+--initial-cluster controller-0=https://${CONTROLLE
+--initial-cluster-state new \\
+--data-dir=/var/lib/etcd
+--data-dir=/var/lib/etcd-from-backup
+```
+
+ ```
+ $ systemctl daemon-reload
+ ```
+
+
+
+```
+$ service etcd restart
+Service etcd restarted
+```
+
+
+
+```
+$ service kube-apiserver start
+Service kube-apiserver started
+```
+
+With all the ETCD commands remember to specify the certificate files for authentication. Specify the endpoint to the ETCD cluster and the ca certificate, the etcd-server certificate and the key.
+
+```
+ETCDCTL_API=3 etcdctl \
+snapshot save snapshot.db \
+--endpoints=https://127.0.0.1:2379 \
+--cacert=/etc/etcd/ca.crt \
+--cert=/etc/etcd/etcd-server.crt \
+--key=/etc/etcd/etcd-server.key
+```
+
+
+
