@@ -38,7 +38,7 @@ sudo sed -i "s,^\(logrotate = \).*,\1"True"," /etc/odoo/odoo.conf
 
 sudo sed -i "s,^\(proxy_mode = \).*,\1"True"," /etc/odoo/odoo.conf
 
-sudo cp /opt/odoo/odoo/debian/init /etc/init.d/odoo && chmod +x /etc/init.d/odoo
+sudo cp /opt/odoo/odoo/debian/init /etc/init.d/odoo && sudo chmod +x /etc/init.d/odoo
 
 sudo ln -s /opt/odoo/odoo/odoo-bin /usr/bin/odoo
 
