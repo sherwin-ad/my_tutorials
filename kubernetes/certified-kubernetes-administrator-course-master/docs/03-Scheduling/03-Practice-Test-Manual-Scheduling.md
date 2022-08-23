@@ -41,6 +41,20 @@ Solutions to Practice Test - Manual Scheduling
   ```
   </details>
 
+  OR
+
+  ```
+  $ kubectl replace --force -f nginx.yaml
+  ```
+
+  Check the status
+
+  ```
+  $ kubectl get pods --watch
+  ```
+
+  
+
 - Set **`nodeName`** property on the pod to master node
 
   <details>
