@@ -1,6 +1,6 @@
 # Practice Test - Node Affinity
   - Take me to [Practice Test](https://kodekloud.com/topic/practice-test-node-affinity-2/)
-  
+
 Solutions to practice test - node affinity
 
 - Run the command 'kubectl describe node node01' and count the number of labels under **`Labels Section`**.
@@ -73,9 +73,49 @@ Solutions to practice test - node affinity
                 operator: In
                 values:
                 - blue
-   ```
+  ```
    </details>
 
+  blue-deployment.yaml
+  
+  ```
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: blue
+    name: blue
+  spec:
+    replicas: 3
+    selector:
+      matchLabels:
+        app: blue
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: blue
+      spec:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                 - key: color
+                   operator: In
+                   values:
+                   - blue
+        containers:
+        - image: nginx
+          name: nginx
+          resources: {}
+  status: {}
+  ```
+  
+  
+  
  - Run the command 'kubectl get pods -o wide' and see the Node column
    
    <details>
@@ -99,6 +139,44 @@ Solutions to practice test - node affinity
               - key: node-role.kubernetes.io/master
                 operator: Exists
    ```
+   red-deployment.yaml
+   
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     creationTimestamp: null
+     labels:
+       app: red
+     name: red
+   spec:
+     replicas: 2
+     selector:
+       matchLabels:
+         app: red
+     strategy: {}
+     template:
+       metadata:
+         creationTimestamp: null
+         labels:
+           app: red
+       spec:
+         affinity:
+           nodeAffinity:
+             requiredDuringSchedulingIgnoredDuringExecution:
+               nodeSelectorTerms:
+               - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: Exists
+         containers:
+         - image: nginx
+           name: nginx
+           resources: {}
+   status: {}
+   ```
+   
+   
+   
    ```
    $ kubectl create -f red-deployment.yaml
    ```
@@ -107,5 +185,5 @@ Solutions to practice test - node affinity
    ```
    </details>
    
-  
+
   

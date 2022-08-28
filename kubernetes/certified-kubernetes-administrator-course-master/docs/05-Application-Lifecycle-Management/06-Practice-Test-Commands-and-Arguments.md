@@ -1,6 +1,6 @@
 # Practice Test - Commands and Arguments
   - Take me to [Practice Test](https://kodekloud.com/topic/practice-test-commands-and-arguments/)
-  
+
 Solutions to practice test - commands and arguments
 - Run the command 'kubectl get pods' and count the number of pods.
   
@@ -22,7 +22,37 @@ Solutions to practice test - commands and arguments
   
 - Set the command option to ['sleep', '5000']. Answer file at: /var/answers/answer-ubuntu-sleeper-2.yaml
 
+  ```
+  apiVersion: v1
+  kind: Pod 
+  metadata:
+    name: ubuntu-sleeper-2
+  spec:
+    containers:
+    - name: ubuntu
+      image: ubuntu
+      command: ['sleep','5000']
+  ```
+
+  
+
 - Both sleep and 1200 should be defined as a string. Answer file at: /var/answers/answer-ubuntu-sleeper-3.yaml
+
+  ```
+  apiVersion: v1
+  kind: Pod 
+  metadata:
+    name: ubuntu-sleeper-3
+  spec:
+    containers:
+    - name: ubuntu
+      image: ubuntu
+      command:
+        - "sleep"
+        - "1200"
+  ```
+
+  
 
 - Answer file at: /var/answers/answer-ubuntu-sleeper-3-2.yaml
 
@@ -56,4 +86,21 @@ Solutions to practice test - commands and arguments
   
 - Answer file located at /var/answers/answer-webapp-color-green.yaml
 
+```
+$ kubectl run webapp-green --image=kodekloud/webapp-color --restart=Never --dry-run -o yaml > webapp-green.yaml
+```
+
+webapp-green.yaml
+
+```
+apiVersion: v1
+kind: Pod 
+metadata:
+  name: webapp-green
+spec:
+  containers:
+  - name: simple-webapp
+    image: kodekloud/webapp-color
+    args: ["--color", "pink"]
+```
 
