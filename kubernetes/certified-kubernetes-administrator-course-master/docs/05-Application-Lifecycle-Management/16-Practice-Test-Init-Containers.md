@@ -1,6 +1,6 @@
 # Practice Test - Init-Containers
   - Take me to [Practice Test](https://kodekloud.com/topic/practice-test-init-containers/)
-  
+
 Solutions to practice test - init-containers
 - Identify the pod that has an initContainer configured.
 
@@ -18,7 +18,7 @@ Solutions to practice test - init-containers
   $ kubectl describe pods blue
   ```
   </details>
-    
+  
 - Run the command kubectl describe pod blue and check the state field of the initContainer.
 
   <details>
@@ -87,4 +87,4 @@ Solutions to practice test - init-containers
   Update the orange.yaml with correct sleep command and recreate the pod
   $ kubectl create -f orange.yaml
   ```
- </details>
+   </details>

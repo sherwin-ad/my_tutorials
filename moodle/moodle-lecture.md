@@ -1067,29 +1067,20 @@ Enable Apache module named: Mod_rewrite.
    sudo apt install certbot python3-certbot-apache
    ```
 
-2. Checking your Apache Virtual Host Configuration
+2. The Certbot is successfully and can be verified by typing the command given below:
 
    ```
-   sudo nano /etc/apache2/sites-available/your_domain.conf
+   certbot --version
    ```
 
-   ```
-   ServerName your_domain
-   ServerAlias www.your_domain
-   ```
+   
 
-   ```bash
-   sudo apache2ctl configtest
-   ```
-
-3. Obtaining an SSL Certificate
+3. Get the Let’s Encrypt SSL certificate
 
    Certbot provides a variety of ways to obtain SSL certificates through plugins. The Apache plugin will take care of reconfiguring Apache and reloading the configuration whenever necessary. To use this plugin, type the following:
 
    ```bash
-   certbot --version
-   
-   sudo certbot --apache
+   sudo certbot --apache -d example.com -d www.example.com
    ```
 
    Copy
@@ -1231,13 +1222,13 @@ Enable Apache module named: Mod_rewrite.
    
    Apr 28 17:57:48 fine-turtle systemd[1]: Started Run certbot twice daily.
    ```
-   
+
    To test the renewal process, you can do a dry run with `certbot`:
 
    ```bash
    sudo certbot renew --dry-run
    ```
-   
+
    If you see no errors, you’re all set. When necessary, Certbot will renew your certificates and reload Apache to pick up the changes. If the automated renewal process ever fails, Let’s Encrypt will send a message to the email you specified, warning you when your certificate is about to expire.
 
 **Conclusion**
