@@ -331,12 +331,51 @@ $ /etc/init.d/mysql start
 # Your commands may vary depending on your OS.
 ```
 
+## Enabling Remote Access
+
+### Configure MariaDB
+
+**Verify MariaDB Server**
+
+```
+$ sudo ss -tulpn | grep 3306
+tcp    LISTEN  0       80                127.0.0.1:3306           0.0.0.0:*      users:(("mysqld",pid=903,fd=21))
+```
 
 
+
+You can do it by editing the MariaDB default configuration file **/etc/mysql/my.cnf**. You can open this file using your favorite text editor:
+
+```
+$ nano /etc/mysql/my.cnf
+```
+
+Change the value of the bind-address from **127.0.0.1** to **0.0.0.0** so that MariaDB server accepts connections on all host IPv4 interfaces.
+
+```
+bind-address = 0.0.0.0
+```
+
+Save and close the file when you are finished. Then, restart the MariaDB service to apply the changes:
+
+```
+$ sudo systemctl restart mariadb
+```
+
+You can now verify the MariaDB listening status with the following command:
+
+```
+sudo ss -tulpn | grep 3306
+tcp    LISTEN  0       80                  0.0.0.0:3306           0.0.0.0:*      users:(("mysqld",pid=156799,fd=32))  
+```
+
+### Grant Access to a User from a Remote System
+
+```
+MariaDB [(none)]> CREATE USER  'wpuser'@'%' IDENTIFIED BY 'password';
 ```
 
 ```
-
+MariaDB [(none)]> GRANT ALL ON wpdb.* to 'wpuser'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;
 ```
 
-```

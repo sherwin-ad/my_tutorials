@@ -17,6 +17,9 @@ $ sudo apt install apache2 php7.4 libapache2-mod-php7.4 php7.4-cli
 # Install Mariadb server
 $ sudo apt install mariadb-server mariadb-client
 
+# Install Mysql server
+$ sudo apt install mysql-server mysql-client
+
 # Install Additional Software
 $ sudo apt install graphviz aspell ghostscript clamav php7.4-pspell php7.4-curl php7.4-gd php7.4-intl php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-ldap php7.4-zip php7.4-soap php7.4-mbstring
 
@@ -1240,4 +1243,25 @@ Enable Apache module named: Mod_rewrite.
 ## File System Repository
 
 https://docs.moodle.org/20/en/File_system_repository
+
+
+
+## Export Table in MariDB 
+
+```
+mysqldump --user=dohlmsDBuser --password --lock-tables dohlms_db mdl_user_info_field > mdl_user_info_field.sql
+```
+
+CSV
+
+```
+select * from mdl_user_info_field
+INTO OUTFILE 'export_data.csv'
+FIELDS ENCLOSED BY '"'
+TERMINATED BY ','
+ESCAPED BY '"'
+LINES TERMINATED BY '\n';
+```
+
+
 
