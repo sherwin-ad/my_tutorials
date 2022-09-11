@@ -195,9 +195,42 @@
      <details>
 
      ```
+     $ kubectl run busybox --image=busybox --dry-run=client -o yaml -- sleep 1000 > busybox.yaml
      ```
 
-     
+     Edit busybox.yaml
+
+     ```
+     apiVersion: v1
+     kind: Pod
+     metadata:
+       creationTimestamp: null
+       labels:
+         run: busybox
+       name: busybox
+     spec:
+       nodeName: node01        
+       containers:
+       - args:
+         - sleep
+         - "1000"
+         image: busybox
+         name: busybox
+         resources: {}
+       dnsPolicy: ClusterFirst
+       restartPolicy: Always
+     status: {}
+     ```
+
+     ```
+     kubectl create -f busybox.yaml 
+     ```
+
+     ```
+     kubectl exec busybox -- ip route
+     default via 10.50.192.0 dev eth0 
+     10.50.0.0/16 dev eth0 scope link  src 10.50.192.1 
+     ```
 
 
       ```
