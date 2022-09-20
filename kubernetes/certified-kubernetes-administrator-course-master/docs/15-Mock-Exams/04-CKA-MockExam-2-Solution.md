@@ -1,9 +1,24 @@
 # Mock Exam 2 Solution
-  
-  
+
+
   1. Run the below command for solution:
 
      <details>
+     1. Search etcdctl backup in kubernetes documentation.
+     2. etcdctl snapshot save command help
+
+     ```
+     ETCDCTL_API=3 etcdctl snapshot save -h
+     ```
+
+     3. Get the certificate file 
+
+     ```
+     cat /etc/kubernetes/manifests/etcd.yaml | grep file
+     ```
+
+     
+
 
      ```
      ETCDCTL_API=3 etcdctl snapshot save --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key --endpoints=127.0.0.1:2379 /opt/etcd-backup.db
@@ -13,7 +28,16 @@
   2. Run the below command for solution:
 
      <details>
- 
+     1. Create redis-storage.yaml
+
+     ```
+     k run redis-storage --image=redis:alpine --dry-run=client -o yaml > redis-storage.yaml
+     ```
+
+     2. Search for  volumes > emptydir
+     3. Edit redis-storage.yaml add the volumes and volumeMount
+
+
      ```
      apiVersion: v1
      kind: Pod
@@ -39,10 +63,19 @@
      status: {}
      ```
      </details>
- 
+
   3. Run the below command for solution:
 
      <details>
+     1. Create super-user-pod.yaml
+
+     ```
+     k run  super-user-pod --image=busybox:1.28 --dry-run=client -o yaml --command -- sleep 4800 > super-user-pod.yaml
+     ```
+
+     2. Search for   >  security context capabilities
+     3. Edit super-user-pod.yaml add the securityContext > capabilities
+
 
      ```
      apiVersion: v1
@@ -103,21 +136,21 @@
   5. Run the below command for solution:
 
      <details>
- 
+
      For Kubernetes Version <=1.17
- 
+
      ```
      kubectl run nginx-deploy --image=nginx:1.16 --replicas=1 --record
      kubectl rollout history deployment nginx-deploy
      kubectl set image deployment/nginx-deploy nginx=nginx:1.17 --record
      kubectl rollout history deployment nginx-deploy
      ```
- 
+
      For Kubernetes Version >1.17
- 
+
      ```
      kubectl create deployment nginx-deploy --image=nginx:1.16 --dry-run=client -o yaml > deploy.yaml
-   
+      
      apiVersion: apps/v1
      kind: Deployment
      metadata:
@@ -150,7 +183,7 @@
   6. Run the below command for solution:
 
      <details>
- 
+
      ```
       apiVersion: certificates.k8s.io/v1
       kind: CertificateSigningRequest
@@ -165,8 +198,8 @@
         - client auth
         groups:
         - system:authenticated
-       ```
- 
+     ```
+
       ```
       kubectl certificate approve john-developer
       kubectl create role developer --resource=pods --verb=create,list,get,update,delete --namespace=development
@@ -175,11 +208,11 @@
       ```
   
      </details>
- 
+
   7. Run the below command for solution:
 
      <details>
- 
+
      ```
      kubectl run nginx-resolver --image=nginx
      kubectl expose pod nginx-resolver --name=nginx-resolver-service --port=80 --target-port=80 --type=ClusterIP
@@ -192,37 +225,37 @@
      kubectl run test-nslookup --image=busybox:1.28 --rm -it --restart=Never -- nslookup <P-O-D-I-P.default.pod> > /root/CKA/nginx.pod
  
      ```
- 
+
      </details>
 
   8. Run the below command for solution:
 
      <details>
- 
+
      ```
      kubectl run nginx-critical --image=nginx --dry-run=client -o yaml > static.yaml
      
      cat static.yaml - Copy the contents of this file.
- 
+      
      kubectl get nodes -o wide
      ssh node01 
      OR
      ssh <IP of node01>
- 
+      
      Check if static-pod directory is present which is /etc/kubernetes/manifests if not then create it.
      mkdir -p /etc/kubernetes/manifests
- 
+      
      Paste the contents of the file(static.yaml) copied in the first step to file nginx-critical.yaml.
- 
+      
      Move/copy the nginx-critical.yaml to path /etc/kubernetes/manifests/
- 
+      
      cp nginx-critical.yaml /etc/kubernetes/manifests
- 
+      
      Go back to master node
- 
+      
      kubectl get pods 
      ```
- 
+
      </details>
 
   

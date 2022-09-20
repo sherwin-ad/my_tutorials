@@ -184,6 +184,14 @@
   10. Apply below manifests:
 
       <details>
+      ```
+      k expose deploy hr-wep-app --name=hr-web-app-service --type NodePort --port 8080
+      ```
+
+      ```
+      k edit service hr-web-app-service
+      ```
+
 
       ```
       apiVersion: v1
