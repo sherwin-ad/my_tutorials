@@ -97,7 +97,10 @@
   4. Run the below command for solution:
 
      <details>
-     
+
+     1. Search pvc or persistent volume claim
+
+
      ```
      apiVersion: v1
      kind: PersistentVolumeClaim
@@ -110,7 +113,9 @@
          requests:
            storage: 10Mi      
      ```
-    
+
+     2. edit use-pv.yaml
+
      ```
      apiVersion: v1
      kind: Pod
@@ -184,6 +189,14 @@
 
      <details>
 
+     1. Search create certificate signing request
+     2. Create certificate signing request for john
+
+     John-csr.yaml
+
+     3. cat john.csr | base64 | tr -d "\n"
+
+
      ```
       apiVersion: certificates.k8s.io/v1
       kind: CertificateSigningRequest
@@ -200,30 +213,76 @@
         - system:authenticated
      ```
 
+     4. Approve CSR
+
+     ```
+     kubectl certificate approve john-developer
+     ```
+
+     5. Create role
+
+     ```
+     k create role -h
+     
+     kubectl create role developer --resource=pods --verb=create,list,get,update,delete --namespace=development
+     
+     k get role -n development
+     
+     k desribe role developer -n development
+     
+     k auth can-i -h
+     
+     k auth can-i get pods --namespace=development --as john
+     ```
+
+     6. Create role bindings
+
+     ```
+     k create rolebinding -h
+     
+     kubectl create rolebinding developer-role-binding --role=developer --user=john --namespace=development
+     
+     k describe rolebinding -n developmentk auth can-i get pods --namespace=development --as john
+     ```
+
+     
+
       ```
       kubectl certificate approve john-developer
       kubectl create role developer --resource=pods --verb=create,list,get,update,delete --namespace=development
       kubectl create rolebinding developer-role-binding --role=developer --user=john --namespace=development
       kubectl auth can-i update pods --as=john --namespace=development
       ```
-  
+
      </details>
 
   7. Run the below command for solution:
 
      <details>
+     
+
 
      ```
      kubectl run nginx-resolver --image=nginx
+     
      kubectl expose pod nginx-resolver --name=nginx-resolver-service --port=80 --target-port=80 --type=ClusterIP
-     kubectl run test-nslookup --image=busybox:1.28 --rm -it --restart=Never -- nslookup nginx-resolver-service
+     
+     k run busybox --image=busybox:1.28 -- sleep 4000
+     
+     k exec busybox -- nslookup nginx-resolver-service
+     
+     k exec busybox -- nslookup 172-17-0-3.default.pod.cluster.local > 
+     
+     kubectl run test-nslookup --image=busybox:1.28 --rm -it --restart=Never -- nslookup nginx-
+     resolver-service > /root/CKA/nginx.svc
+     
      kubectl run test-nslookup --image=busybox:1.28 --rm -it --restart=Never -- nslookup nginx-resolver-service > /root/CKA/nginx.svc
- 
+      
      Get the IP of the nginx-resolver pod and replace the dots(.) with hyphon(-) which will be used below.
- 
+      
      kubectl get pod nginx-resolver -o wide
      kubectl run test-nslookup --image=busybox:1.28 --rm -it --restart=Never -- nslookup <P-O-D-I-P.default.pod> > /root/CKA/nginx.pod
- 
+      
      ```
 
      </details>
