@@ -7,7 +7,13 @@
   1. Apply below manifests:
 
      <details>
+     ```
+     kubectl run messaging --image=redis:alpine
+     ```
+
      
+
+
      ```
      apiVersion: v1
      kind: Pod
@@ -36,7 +42,7 @@
      ```
      </details>
 
- 
+
   3. Run below command to create a namespace:
      
      <details>
@@ -53,7 +59,7 @@
      ```
      kubectl get nodes -o json > /opt/outputs/nodes-z3444kd9.json
      ```
-     </details>
+     </details>kubectl create deployment 
 
   5. Execute below command which will expose the pod on port 6379:
 
@@ -67,6 +73,7 @@
   6. Apply below manifests:
 
      <details>
+
 
       ```
       apiVersion: apps/v1
@@ -94,7 +101,7 @@
               resources: {}
       status: {}
       ```
-      
+
       In v1.19, we can add `--replicas` flag with `kubectl create deployment` command:
       ```
       kubectl create deployment hr-web-app --image=kodekloud/webapp-color --replicas=2
@@ -104,6 +111,10 @@
   7. To Create a static pod, copy it to the static pods directory. In this case, it is `/etc/kubernetes/manifests`. Apply below manifests:
 
      <details>
+     ```
+     k run static-busybox --image=busybox --dry-run=client -o yaml --command -- sleep 1000 > /etc/kubernetes/manifest/static-busybox.yaml
+     ```
+
 
      ```
      apiVersion: v1
@@ -144,14 +155,26 @@
      kubectl describe pod orange
      ```
 
+     ```
+     kubectl logs orange init-myservice
+     ```
+
+     ```
+     k edit pod orange
+     ```
+
+     ```
+     k replace --force -f 
+     ```
+
      Export the running pod using below command and correct the spelling of the command **`sleeeep`** to **`sleep`** 
 
      ```
      kubectl get pod orange -o yaml > orange.yaml
      ```
-   
+
      Delete the running Orange pod and recreate the pod using command.
-     
+
      ```
      kubectl delete pod orange
      kubectl create -f orange.yaml
@@ -212,4 +235,3 @@
              path: /pv/data-analytics
        ```
        </details>
-       
