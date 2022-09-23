@@ -1263,5 +1263,175 @@ ESCAPED BY '"'
 LINES TERMINATED BY '\n';
 ```
 
+## How To Create SFTP User for a Web Server Document Root
 
+### Step 1 – Installing SSH (Secure Shell)
 
+SFTP is a very secure file transfer protocol because of the encryption that SSH provides for the data as it is transferred over the network. SSH is mainly installed on Linux distributions by default, but if it is not pre-installed in your system, then you can use the below-given command to install it:
+
+```
+sudo apt install ssh 
+```
+
+[![Installing SSH Server](https://tecadmin.net/wp-content/uploads/2021/07/install-ssh-server.png)](https://tecadmin.net/wp-content/uploads/2021/07/install-ssh-server.png)
+
+If already installed, the command will upgrade OpenSSH packages.
+
+### Step 2 – Configuring SSH to use the SFTP Server Code
+
+Now open the configuration file of SSH in a text editor to modify it for SFTP server code. Here we will use the nano editor to edit the configuration file.
+
+```
+sudo nano /etc/ssh/sshd_config 
+```
+
+Locate the line starting from “Subsystem sftp”.
+
+[![Locate subsystem in ssh config](https://tecadmin.net/wp-content/uploads/2021/07/comment-subsystem-in-ssh-config.png)](https://tecadmin.net/wp-content/uploads/2021/07/comment-subsystem-in-ssh-config.png)
+
+Comment the line by adding # at the start of the line and write the following line after this line as shown in the screenshot given below:
+
+```
+Subsystem sftp internal-sftp
+```
+
+[![Adding Subsystem sftp internal-sftp](https://tecadmin.net/wp-content/uploads/2021/07/add-sftp-in-ssh-config.png)](https://tecadmin.net/wp-content/uploads/2021/07/add-sftp-in-ssh-config.png)
+
+The SSHD will use the SFTP server code instead of running the SFTP server by changing the above line.
+
+Once you have changed the configuration file, save the file and exit from it using the keyboard shortcut keys CTRL+S and CTRL+X.
+
+After changes, we need to restart the SSHD daemon to let the changes work.
+
+```
+sudo systemctl restart sshd 
+```
+
+### Step 3 – Creating a User(SFTP User)
+
+It is an excellent practice to create a new user that only has SFTP access to the document root. It is not recommended to add a user with Sudo privileges to the webserver document root. Create a new user using the adduser command:
+
+```
+sudo adduser sftpuser 
+```
+
+The terminal will ask for a couple of things like setting the password, and user information. It will also ask for a few other details, so either leave them empty or provide the proper information.
+
+[![Sudo adduser sftp](https://tecadmin.net/wp-content/uploads/2021/07/adduser-sftp.png)](https://tecadmin.net/wp-content/uploads/2021/07/adduser-sftp.png)
+
+A new user with the name of `sftpuser` is successfully created.
+
+### Step 4 – Creating Match User Directive in the SSH configuration file
+
+Now we will restrict this user to the document root and we will also disable the user’s access to SSH so that the user will log in through SFTP.
+
+To restrict the user’s access, open up the configuration file of SSH in any text editor:
+
+```
+sudo nano /etc/ssh/sshd_config 
+```
+
+Now go to the end of the file and add the following content in the “sshd_config” configuration file:
+
+```
+Match User sftpuser
+        ForceCommand internal-sftp 
+        ChrootDirectory /var/www/
+        PasswordAuthentication yes
+        X11Forwarding no 
+        AllowTcpForwarding no 
+```
+
+Make sure to replace the “sftpuser” username with the username you set.
+
+[![Match User sftpuser in sshd_config](https://tecadmin.net/wp-content/uploads/2021/07/match-user-sftp-ssh-config.png)](https://tecadmin.net/wp-content/uploads/2021/07/match-user-sftp-ssh-config.png)
+
+Once the above content is added to the SSH configuration file, save and exit using CTRL+S and CTRL+X shortcut keys.
+
+To check the syntax and verify if everything went well, you can execute the command:
+
+```
+sudo sshd -t 
+```
+
+If no error occurred, we could reload the SSH service for the changes to work.
+
+```
+sudo systemctl restart sshd 
+```
+
+### Step 5 – Adding SFTP User to www-data Group
+
+Now we will add the user to the www-data group by executing the following command:
+
+```
+sudo usermod -a -G www-data sftpuser 
+```
+
+On a successful run, no output will be displayed.
+
+### Step 6 – Setting Document Root Directory Permission
+
+Please follow the subsequent instructions very carefully as SFTP is very strict regarding chroot directory permissions.
+
+1. We will start by checking the current permissions and ownership of var:
+
+   ```
+   sudo ls -ld /var/ 
+   ```
+
+2. The permissions should be 755 and the owner should be root by default. If not, then execute the command given below to set the proper permissions:
+
+   ```
+   sudo chmod 755 /var/ 
+   ```
+
+3. Now use this command to set the correct ownership:
+
+   ```
+   sudo chown root:root /var/ 
+   ```
+
+4. Similarly, apply the same permissions to the chroot:
+
+5. ```
+   sudo chmod 755 /var/www/ 
+   ```
+
+6. Since we have set “/var/www/” to the chroot directory. Now set the right ownership of the chroot directory:
+
+   ```
+   sudo chown root:root /var/www/ 
+   ```
+
+7. To allow a group to write to the document root directory, set its permission to 755:
+
+   ```
+   sudo chmod 755 /var/www/html/ 
+   ```
+
+8. To grant the ownership of the “/var/www/html” document root and its further directories and files to the www-data group, use the below-given command:
+
+   ```
+   sudo chown -R www-data:www-data /var/www/html* 
+   ```
+
+9. Now give 755 permissions to the content placed in the “/var/www/html” document root using the command:
+
+   ```
+   sudo find /var/www/html/ -type d -exec chmod 775 {} \; 
+   ```
+
+10. The above command will grant the SFTP user read, write, and executable permissions of the directories.
+
+    We also need to give 664 permissions to all the files that are present in the document root to allow the owner and the SFTP users’ group to read and write the files:
+
+    ```
+    sudo find /var/www/html/ -type f -exec chmod 664 {} \; 
+    ```
+
+11. Now for the last step, make certain that all the new files and directories acquire the www-data group that are created the newly created SFTP user:
+
+    ```
+    sudo find /var/www/html -type d -exec chmod g+s {} \; 
+    ```
