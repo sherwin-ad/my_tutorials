@@ -111,7 +111,7 @@
      status: {}
      ```
      3. Create pod
-
+    
      ```
      root@controlplane ~ ➜  k create -f multi-pod.yaml 
      pod/multi-pod created
@@ -194,7 +194,8 @@
        Normal  Started    20s   kubelet            Started container beta
      ```
 
-     
+
+​     
 
 4. Create a Pod called `non-root-pod` , image: `redis:alpine`
      runAsUser: 1000
@@ -228,7 +229,7 @@
          image: redis:alpine
      ```
      3. Create pod 
-
+    
      ```
      root@controlplane ~ ➜  k create -f non-root-pod.yaml 
      pod/non-root-pod created
@@ -238,7 +239,8 @@
      non-root-pod   1/1     Running   0          10s
      ```
 
-     
+
+​     
 
 5. We have deployed a new pod called `np-test-1` and a service called `np-test-service`. Incoming connections to this service are not working. Troubleshoot and fix it.
      Create NetworkPolicy, by the name `ingress-to-nptest` that allows incoming connections to the service over port `80`.
@@ -321,9 +323,9 @@
        Not affecting egress traffic
        Policy Types: Ingress
      ```
-
+    
      4. Check if service is now accessible via curl
-
+    
      ```
      k run curl --image=alpine/curl --rm -it -- sh
      If you don't see a command prompt, try pressing enter.
@@ -355,7 +357,8 @@
      </html>
      ```
 
-     
+
+​     
 
 6. Taint the worker node `node01` to be Unschedulable. Once done, create a pod called `dev-redis`, image `redis:alpine`, to ensure workloads are not scheduled to this worker node. Finally, create a new pod called `prod-redis` and image: `redis:alpine` with toleration to be scheduled on `node01`.
 
@@ -392,9 +395,9 @@
      CreationTimestamp:  Fri, 23 Sep 2022 10:25:31 +0000
      Taints:             env_type=production:NoSchedule
      ```
-
+    
      2. Deploy `dev-redis` pod and to ensure that workloads are not scheduled to this `node01` worker node.
-
+    
      ```
      k run dev-redis --image=redis:alpine
      pod/dev-redis created
@@ -404,15 +407,15 @@
      dev-redis   1/1     Running   0          11s   10.50.0.4     controlplane   <none>           <none>
      np-test-1   1/1     Running   0          26m   10.50.192.1   node01         <none>           <none>
      ```
-
+    
      3. Deploy new pod `prod-redis` with toleration to be scheduled on `node01` worker node. ()
-
+    
      ```
      k run prod-redis --image=redis:alpine --dry-run=client -o yaml > prod-redis.yaml
      ```
-
+    
      edit prod-redis.yaml
-
+    
      ```
      apiVersion: v1
      kind: Pod
@@ -428,14 +431,14 @@
          operator: Equal
          value: production     
      ```
-
+    
      ```
      k create -f prod-redis.yaml 
      pod/prod-redis created
      ```
-
+    
      View the pods with short details: 
-
+    
      ```
      k get pods -o wide
      NAME         READY   STATUS    RESTARTS   AGE     IP            NODE           NOMINATED NODE   READINESS GATES
@@ -443,7 +446,7 @@
      np-test-1    1/1     Running   0          32m     10.50.192.1   node01         <none>           <none>
      prod-redis   1/1     Running   0          21s     10.50.192.2   node01         <none>           <none>
      ```
-     
+
 
 7. Create a pod called `hr-pod` in `hr` namespace belonging to the `production` `environment` and `frontend` `tier` .
      image: `redis:alpine`
@@ -455,30 +458,127 @@
 
      Run the below command for solution: 
 
-     <details>
+     1. Create namespace
 
+     
      ```
      kubectl create namespace hr
-     kubectl run hr-pod --image=redis:alpine --namespace=hr --labels=environment=production,tier=frontend
      ```
-     </details>
+     2. Create pod
 
+     ```
+     root@controlplane ~ ➜  k run hr-pod --image=redis:alpine --namespace=hr --labels="environment=production,tier=frontend" 
+     pod/hr-pod created
+     
+     root@controlplane ~ ➜  k get pods
+     NAME        READY   STATUS    RESTARTS   AGE
+     np-test-1   1/1     Running   0          7m9s
+     
+     root@controlplane ~ ➜  k get -n hr pod hr-pod 
+     NAME     READY   STATUS    RESTARTS   AGE
+     hr-pod   1/1     Running   0          60s
+     
+     root@controlplane ~ ➜  k describe -n hr pod hr-pod 
+     Name:         hr-pod
+     Namespace:    hr
+     Priority:     0
+     Node:         node01/10.97.252.3
+     Start Time:   Fri, 23 Sep 2022 23:03:28 +0000
+     Labels:       environment=production
+                   tier=frontend
+     Annotations:  <none>
+     Status:       Running
+     IP:           10.50.192.2
+     IPs:
+       IP:  10.50.192.2
+     Containers:
+       hr-pod:
+         Container ID:   docker://bf99aad2733ac1e0b686fd32e656f42d3222bf57a4d2135c55a052057d112629
+         Image:          redis:alpine
+         Image ID:       docker-pullable://redis@sha256:ce8c9df5ce70d6297ad361de9d0f8565cdd8f6679bd082f12c7db656153cc4bd
+         Port:           <none>
+         Host Port:      <none>
+         State:          Running
+           Started:      Fri, 23 Sep 2022 23:03:32 +0000
+         Ready:          True
+         Restart Count:  0
+         Environment:    <none>
+         Mounts:
+           /var/run/secrets/kubernetes.io/serviceaccount from default-token-ljgdn (ro)
+     Conditions:
+       Type              Status
+       Initialized       True 
+       Ready             True 
+       ContainersReady   True 
+       PodScheduled      True 
+     Volumes:
+       default-token-ljgdn:
+         Type:        Secret (a volume populated by a Secret)
+         SecretName:  default-token-ljgdn
+         Optional:    false
+     QoS Class:       BestEffort
+     Node-Selectors:  <none>
+     Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                      node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+     Events:
+       Type    Reason     Age   From               Message
+       ----    ------     ----  ----               -------
+       Normal  Scheduled  70s   default-scheduler  Successfully assigned hr/hr-pod to node01
+       Normal  Pulling    69s   kubelet            Pulling image "redis:alpine"
+       Normal  Pulled     66s   kubelet            Successfully pulled image "redis:alpine" in 2.738666424s
+       Normal  Created    66s   kubelet            Created container hr-pod
+       Normal  Started    66s   kubelet            Started container hr-pod
+     ```
+     
+     
+     
 8. A kubeconfig file called `super.kubeconfig` has been created under `/root/CKA`. There is something wrong with the configuration. Troubleshoot and fix it.
 
      - Fix /root/CKA/super.kubeconfig
 
      Run the below command for solution:
 
-     <details>
+     1. Check for the error
 
      ```
-     vi /root/CKA/super.kubeconfig
+     root@controlplane ~ ➜  kubectl get nodes --kubeconfig /root/CKA/super.kubeconfig
+     The connection to the server controlplane:9999 was refused - did you specify the right host or port?
      
-     Change the 2379 port to 6443 and run the below command to verify
+     OR 
      
-     kubectl cluster-info --kubeconfig=/root/CKA/super.kubeconfig     
+     root@controlplane ~ ✖ k cluster-info --kubeconfig /root/CKA/super.kubeconfig
+     
+     To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+     The connection to the server controlplane:9999 was refused - did you specify the right host or port?
      ```
-     </details>
+
+     2. Check the correct port in the .kube/config file or search control plane port in kubernetes documentation 
+
+     ```
+     cat .kube/config
+     ```
+
+     3. Edit  /root/CKA/super.kubeconfig
+
+     - Change the 2379 port to 6443 
+     - Run the below command to verify
+
+
+     ```
+     root@controlplane ~ ➜  kubectl get nodes --kubeconfig /root/CKA/super.kubeconfig
+     NAME           STATUS   ROLES                  AGE   VERSION
+     controlplane   Ready    control-plane,master   59m   v1.20.0
+     node01         Ready    <none>                 59m   v1.20.0
+     
+     OR
+     
+     root@controlplane ~ ➜  k cluster-info --kubeconfig /root/CKA/super.kubeconfig
+     Kubernetes control plane is running at https://controlplane:6443
+     KubeDNS is running at https://controlplane:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+     
+     To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.   
+     ```
+     
 
 9. We have created a new deployment called `nginx-deploy`. scale the deployment to 3 replicas. Has the replica's increased? Troubleshoot the issue and fix it.
 
@@ -486,10 +586,198 @@
 
      Run the below command for solution:
 
-     <details>
+     1. Check the deployment
 
      ```
+     k get deployment
+     NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+     nginx-deploy   1/1     1            1           26m
+     ```
+     
+     2. Scale the deployment to 3 replicas
+     
+     ```
+     k scale deployment nginx-deploy --replicas=3
+     deployment.apps/nginx-deploy scaled
+     
+     k get deployments.apps 
+     NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+     nginx-deploy   1/3     1            1           30m
+     
+     k describe deployment nginx-deploy 
+     Name:                   nginx-deploy
+     Namespace:              default
+     CreationTimestamp:      Fri, 23 Sep 2022 23:09:41 +0000
+     Labels:                 app=nginx-deploy
+     Annotations:            deployment.kubernetes.io/revision: 1
+     Selector:               app=nginx-deploy
+     Replicas:               3 desired | 1 updated | 1 total | 1 available | 0 unavailable
+     StrategyType:           RollingUpdate
+     MinReadySeconds:        0
+     RollingUpdateStrategy:  25% max unavailable, 25% max surge
+     Pod Template:
+       Labels:  app=nginx-deploy
+       Containers:
+        nginx:
+         Image:        nginx
+         Port:         <none>
+         Host Port:    <none>
+         Environment:  <none>
+         Mounts:       <none>
+       Volumes:        <none>
+     Conditions:
+       Type           Status  Reason
+       ----           ------  ------
+       Available      True    MinimumReplicasAvailable
+       Progressing    True    NewReplicaSetAvailable
+     OldReplicaSets:  <none>
+     NewReplicaSet:   nginx-deploy-65db889b76 (1/1 replicas created)
+     Events:
+       Type    Reason             Age   From                   Message
+       ----    ------             ----  ----                   -------
+       Normal  ScalingReplicaSet  30m   deployment-controller  Scaled up replica set nginx-deploy-65db889b76 to 1
+     ```
+     
+     3. Check the controller manager pod
+     
+     ```
+     k get pods -n kube-system 
+     NAME                                   READY   STATUS             RESTARTS   AGE
+     coredns-74ff55c5b-2grjc                1/1     Running            0          72m
+     coredns-74ff55c5b-ss4wr                1/1     Running            0          72m
+     etcd-controlplane                      1/1     Running            0          73m
+     kube-apiserver-controlplane            1/1     Running            0          73m
+     kube-contro1ler-manager-controlplane   0/1     ImagePullBackOff   0          7m24s
+     kube-proxy-bh465                       1/1     Running            0          72m
+     kube-proxy-wknm4                       1/1     Running            0          72m
+     kube-scheduler-controlplane            1/1     Running            0          73m
+     weave-net-7zxhv                        2/2     Running            0          72m
+     weave-net-pjgn2                        2/2     Running            1          72m
+     ```
+     
+     4. Check the error in the controller-manager pod
+        - Warning  Failed   6m30s (x4 over 7m57s)   kubelet  Failed to pull image "k8s.gcr.io/**kube-contro1ler-manager**:v1.20.0": rpc error: code = Unknown desc = Error response from daemon: manifest for k8s.gcr.io/kube-contro1ler-manager:v1.20.0 not found: manifest unknown: Failed to fetch "v1.20.0" from request "/v2/kube-contro1ler-manager/manifests/v1.20.0".
+     
+     ```
+     k describe -n kube-system pod kube-contro1ler-manager-controlplane 
+     Name:                 kube-contro1ler-manager-controlplane
+     Namespace:            kube-system
+     Priority:             2000001000
+     Priority Class Name:  system-node-critical
+     Node:                 controlplane/10.97.252.12
+     Start Time:           Fri, 23 Sep 2022 23:35:31 +0000
+     Labels:               component=kube-contro1ler-manager
+                           tier=control-plane
+     Annotations:          kubernetes.io/config.hash: f1785ce0b7f69827b85f828fee6a9cb4
+                           kubernetes.io/config.mirror: f1785ce0b7f69827b85f828fee6a9cb4
+                           kubernetes.io/config.seen: 2022-09-23T23:35:31.894852323Z
+                           kubernetes.io/config.source: file
+     Status:               Pending
+     IP:                   10.97.252.12
+     IPs:
+       IP:           10.97.252.12
+     Controlled By:  Node/controlplane
+     Containers:
+       kube-contro1ler-manager:
+         Container ID:  
+         Image:         k8s.gcr.io/kube-contro1ler-manager:v1.20.0
+         Image ID:      
+         Port:          <none>
+         Host Port:     <none>
+         Command:
+           kube-contro1ler-manager
+           --allocate-node-cidrs=true
+           --authentication-kubeconfig=/etc/kubernetes/controller-manager.conf
+           --authorization-kubeconfig=/etc/kubernetes/controller-manager.conf
+           --bind-address=127.0.0.1
+           --client-ca-file=/etc/kubernetes/pki/ca.crt
+           --cluster-cidr=10.244.0.0/16
+           --cluster-name=kubernetes
+           --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
+           --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
+           --controllers=*,bootstrapsigner,tokencleaner
+           --kubeconfig=/etc/kubernetes/controller-manager.conf
+           --leader-elect=true
+           --port=0
+           --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
+           --root-ca-file=/etc/kubernetes/pki/ca.crt
+           --service-account-private-key-file=/etc/kubernetes/pki/sa.key
+           --service-cluster-ip-range=10.96.0.0/12
+           --use-service-account-credentials=true
+         State:          Waiting
+           Reason:       ImagePullBackOff
+         Ready:          False
+         Restart Count:  0
+         Requests:
+           cpu:        200m
+         Liveness:     http-get https://127.0.0.1:10257/healthz delay=10s timeout=15s period=10s #success=1 #failure=8
+         Startup:      http-get https://127.0.0.1:10257/healthz delay=10s timeout=15s period=10s #success=1 #failure=24
+         Environment:  <none>
+         Mounts:
+           /etc/ca-certificates from etc-ca-certificates (ro)
+           /etc/kubernetes/controller-manager.conf from kubeconfig (ro)
+           /etc/kubernetes/pki from k8s-certs (ro)
+           /etc/ssl/certs from ca-certs (ro)
+           /usr/libexec/kubernetes/kubelet-plugins/volume/exec from flexvolume-dir (rw)
+           /usr/local/share/ca-certificates from usr-local-share-ca-certificates (ro)
+           /usr/share/ca-certificates from usr-share-ca-certificates (ro)
+     Conditions:
+       Type              Status
+       Initialized       True 
+       Ready             False 
+       ContainersReady   False 
+       PodScheduled      True 
+     Volumes:
+       ca-certs:
+         Type:          HostPath (bare host directory volume)
+         Path:          /etc/ssl/certs
+         HostPathType:  DirectoryOrCreate
+       etc-ca-certificates:
+         Type:          HostPath (bare host directory volume)
+         Path:          /etc/ca-certificates
+         HostPathType:  DirectoryOrCreate
+       flexvolume-dir:
+         Type:          HostPath (bare host directory volume)
+         Path:          /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+         HostPathType:  DirectoryOrCreate
+       k8s-certs:
+         Type:          HostPath (bare host directory volume)
+         Path:          /etc/kubernetes/pki
+         HostPathType:  DirectoryOrCreate
+       kubeconfig:
+         Type:          HostPath (bare host directory volume)
+         Path:          /etc/kubernetes/controller-manager.conf
+         HostPathType:  FileOrCreate
+       usr-local-share-ca-certificates:
+         Type:          HostPath (bare host directory volume)
+         Path:          /usr/local/share/ca-certificates
+         HostPathType:  DirectoryOrCreate
+       usr-share-ca-certificates:
+         Type:          HostPath (bare host directory volume)
+         Path:          /usr/share/ca-certificates
+         HostPathType:  DirectoryOrCreate
+     QoS Class:         Burstable
+     Node-Selectors:    <none>
+     Tolerations:       :NoExecute op=Exists
+     Events:
+       Type     Reason   Age                     From     Message
+       ----     ------   ----                    ----     -------
+       Normal   Pulling  6m30s (x4 over 7m57s)   kubelet  Pulling image "k8s.gcr.io/kube-contro1ler-manager:v1.20.0"
+       Warning  Failed   6m30s (x4 over 7m57s)   kubelet  Failed to pull image "k8s.gcr.io/kube-contro1ler-manager:v1.20.0": rpc error: code = Unknown desc = Error response from daemon: manifest for k8s.gcr.io/kube-contro1ler-manager:v1.20.0 not found: manifest unknown: Failed to fetch "v1.20.0" from request "/v2/kube-contro1ler-manager/manifests/v1.20.0".
+       Warning  Failed   6m30s (x4 over 7m57s)   kubelet  Error: ErrImagePull
+       Warning  Failed   6m17s (x7 over 7m56s)   kubelet  Error: ImagePullBackOff
+       Normal   BackOff  2m52s (x22 over 7m56s)  kubelet  Back-off pulling image "k8s.gcr.io/kube-contro1ler-manager:v1.20.0"
+     ```
+     
+     5. Edit /etc/kubernetes/manifests/kube-controller-manager.yaml
+     
+     
+     ```
+     # replace all in vi
+     :%s/kube-contro1ler-manager/kube-controller-manager/g
+     
+     OR
+     
      sed -i 's/kube-contro1ler-manager/kube-controller-manager/g' kube-controller-manager.yaml
      ```
-     </details>
 
