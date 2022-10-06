@@ -30,8 +30,8 @@
      
     kubectl create clusterrolebinding pvviewer-role-binding --clusterrole=pvviewer-role --serviceaccount=default:pvviewer
      
-     # CREATE POD
-     kubectl run pvviewer --image=redis --serviceaccount=pvviewer
+    # CREATE POD
+    kubectl run pvviewer --image=redis --serviceaccount=pvviewer
 
 
 
@@ -213,34 +213,36 @@
      ```
 
      2. Search "security context"  and edit non-root-pod.yaml
-
-
-     ```
-     apiVersion: v1
-     kind: Pod
-     metadata:
-       name: non-root-pod
-     spec:
-       securityContext:
-         runAsUser: 1000
-         fsGroup: 2000
-       containers:
-       - name: non-root-pod
-         image: redis:alpine
-     ```
-     3. Create pod 
-    
-     ```
-     root@controlplane ~ ➜  k create -f non-root-pod.yaml 
-     pod/non-root-pod created
      
-     root@controlplane ~ ➜  k get pods
-     NAME           READY   STATUS    RESTARTS   AGE
-     non-root-pod   1/1     Running   0          10s
      ```
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: non-root-pod
+      spec:
+        securityContext:
+          runAsUser: 1000
+          fsGroup: 2000
+        containers:
+        - name: non-root-pod
+          image: redis:alpine
+     ```
+     
+     3. Create pod
+     
+     ```
+      root@controlplane ~ ➜  k create -f non-root-pod.yaml 
+      pod/non-root-pod created
+      
+      root@controlplane ~ ➜  k get pods
+      NAME           READY   STATUS    RESTARTS   AGE
+      non-root-pod   1/1     Running   0          10s
+     ```
+     
+      
 
 
-​     
+​    
 
 5. We have deployed a new pod called `np-test-1` and a service called `np-test-service`. Incoming connections to this service are not working. Troubleshoot and fix it.
      Create NetworkPolicy, by the name `ingress-to-nptest` that allows incoming connections to the service over port `80`.
@@ -268,7 +270,7 @@
      np-test-service   ClusterIP   10.109.5.240   <none>        80/TCP    3m37s
      ```
 
-     2. Create a temporary container
+     2. Create a temporary container to test nginx
 
      ```
      root@controlplane ~ ➜  k run curl --image=alpine/curl --rm -it -- sh
@@ -281,81 +283,84 @@
         - Check labels in service 
 
      np.yaml
-
-
-     ```
-     apiVersion: networking.k8s.io/v1
-     kind: NetworkPolicy
-     metadata:
-       name: ingress-to-nptest
-       namespace: default
-     spec:
-       podSelector:
-         matchLabels:
-           run: np-test-1
-       policyTypes:
-       - Ingress
-       ingress:
-       - ports:
-         - protocol: TCP
-           port: 80
-     ```
-     ```
-     root@controlplane ~ ✦ ➜  k create -f np.yaml 
-     networkpolicy.networking.k8s.io/ingress-to-nptest created
      
+     ```
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      metadata:
+        name: ingress-to-nptest
+        namespace: default
+      spec:
+        podSelector:
+          matchLabels:
+            run: np-test-1
+        policyTypes:
+        - Ingress
+        ingress:
+        - ports:
+          - protocol: TCP
+            port: 80
+     ```
+     
+     ```
+     root@controlplane ~ ✦ ➜  k create -f np.yaml networkpolicy.networking.k8s.io/ingress-to-nptest created
+      
      root@controlplane ~ ✦ ➜  k get networkpolicies.networking.k8s.io 
      NAME                POD-SELECTOR    AGE
      default-deny        <none>          9m2s
      ingress-to-nptest   run=np-test-1   12s
-     
+      
      root@controlplane ~ ✦ ➜  k describe networkpolicies.networking.k8s.io ingress-to-nptest 
-     Name:         ingress-to-nptest
-     Namespace:    default
-     Created on:   2022-09-23 10:40:20 +0000 UTC
-     Labels:       <none>
-     Annotations:  <none>
-     Spec:
-       PodSelector:     run=np-test-1
-       Allowing ingress traffic:
-         To Port: 80/TCP
-         From: <any> (traffic not restricted by source)
-       Not affecting egress traffic
-       Policy Types: Ingress
+      Name:         ingress-to-nptest
+      Namespace:    default
+      Created on:   2022-09-23 10:40:20 +0000 UTC
+      Labels:       <none>
+      Annotations:  <none>
+      Spec:
+        PodSelector:     run=np-test-1
+        Allowing ingress traffic:
+          To Port: 80/TCP
+          From: <any> (traffic not restricted by source)
+        Not affecting egress traffic
+        Policy Types: Ingress
      ```
-    
+     
      4. Check if service is now accessible via curl
-    
+     
      ```
      k run curl --image=alpine/curl --rm -it -- sh
      If you don't see a command prompt, try pressing enter.
+     
      / # curl np-test-service
-     <!DOCTYPE html>
-     <html>
-     <head>
-     <title>Welcome to nginx!</title>
-     <style>
-         body {
-             width: 35em;
-             margin: 0 auto;
-             font-family: Tahoma, Verdana, Arial, sans-serif;
-         }
-     </style>
-     </head>
-     <body>
-     <h1>Welcome to nginx!</h1>
-     <p>If you see this page, the nginx web server is successfully installed and
-     working. Further configuration is required.</p>
-     
-     <p>For online documentation and support please refer to
-     <a href="http://nginx.org/">nginx.org</a>.<br/>
-     Commercial support is available at
-     <a href="http://nginx.com/">nginx.com</a>.</p>
-     
-     <p><em>Thank you for using nginx.</em></p>
-     </body>
-     </html>
+      <!DOCTYPE html>
+      <html>
+      <head>
+      <title>Welcome to nginx!</title>
+      <style>
+          body {
+              width: 35em;
+              margin: 0 auto;
+              font-family: Tahoma, Verdana, Arial, sans-serif;
+          }
+      </style>
+      </head>
+      <body>
+      <h1>Welcome to nginx!</h1>
+      <p>If you see this page, the nginx web server is successfully installed and
+      working. Further configuration is required.</p>
+      
+      <p>For online documentation and support please refer to
+      <a href="http://nginx.org/">nginx.org</a>.<br/>
+      Commercial support is available at
+      <a href="http://nginx.com/">nginx.com</a>.</p>
+      
+      <p><em>Thank you for using nginx.</em></p>
+      </body>
+      </html>
+      
      ```
+     
+     
 
 
 ​     
@@ -373,79 +378,78 @@
      Run the below command for solution: 
 
      1. Create taint in node01
-
-
+     
      ```
      k taint -h
-     
-     k taint node node01 env_type=production:NoSchedule
-     node/node01 tainted
-     
-     k describe nodes node01 
-     Name:               node01
-     Roles:              <none>
-     Labels:             beta.kubernetes.io/arch=amd64
-                         beta.kubernetes.io/os=linux
-                         kubernetes.io/arch=amd64
-                         kubernetes.io/hostname=node01
-                         kubernetes.io/os=linux
-     Annotations:        kubeadm.alpha.kubernetes.io/cri-socket: /var/run/dockershim.sock
-                         node.alpha.kubernetes.io/ttl: 0
-                         volumes.kubernetes.io/controller-managed-attach-detach: true
-     CreationTimestamp:  Fri, 23 Sep 2022 10:25:31 +0000
-     Taints:             env_type=production:NoSchedule
+      
+      k taint node node01 env_type=production:NoSchedule
+      node/node01 tainted
+      
+      k describe nodes node01 
+      Name:               node01
+      Roles:              <none>
+      Labels:             beta.kubernetes.io/arch=amd64
+                          beta.kubernetes.io/os=linux
+                          kubernetes.io/arch=amd64
+                          kubernetes.io/hostname=node01
+                          kubernetes.io/os=linux
+      Annotations:        kubeadm.alpha.kubernetes.io/cri-socket: /var/run/dockershim.sock
+                          node.alpha.kubernetes.io/ttl: 0
+                          volumes.kubernetes.io/controller-managed-attach-detach: true
+      CreationTimestamp:  Fri, 23 Sep 2022 10:25:31 +0000
+      Taints:             env_type=production:NoSchedule
      ```
-    
+     
      2. Deploy `dev-redis` pod and to ensure that workloads are not scheduled to this `node01` worker node.
-    
+     
      ```
      k run dev-redis --image=redis:alpine
      pod/dev-redis created
-     
+      
      k get pods -o wide
      NAME        READY   STATUS    RESTARTS   AGE   IP            NODE           NOMINATED NODE   READINESS GATES
-     dev-redis   1/1     Running   0          11s   10.50.0.4     controlplane   <none>           <none>
-     np-test-1   1/1     Running   0          26m   10.50.192.1   node01         <none>           <none>
+      dev-redis   1/1     Running   0          11s   10.50.0.4     controlplane   <none>           <none>
+      np-test-1   1/1     Running   0          26m   10.50.192.1   node01         <none>           <none>
      ```
-    
+     
      3. Deploy new pod `prod-redis` with toleration to be scheduled on `node01` worker node. ()
-    
+     
      ```
      k run prod-redis --image=redis:alpine --dry-run=client -o yaml > prod-redis.yaml
      ```
-    
+     
      edit prod-redis.yaml
-    
+     
      ```
-     apiVersion: v1
-     kind: Pod
-     metadata:
-       name: prod-redis
-     spec:
-       containers:
-       - name: prod-redis
-         image: redis:alpine
-       tolerations:
-       - effect: NoSchedule
-         key: env_type
-         operator: Equal
-         value: production     
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: prod-redis
+      spec:
+        containers:
+        - name: prod-redis
+          image: redis:alpine
+        tolerations:
+        - effect: NoSchedule
+          key: env_type
+          operator: Equal
+          value: production     
      ```
-    
+     
      ```
      k create -f prod-redis.yaml 
      pod/prod-redis created
      ```
-    
-     View the pods with short details: 
-    
+     
      ```
      k get pods -o wide
-     NAME         READY   STATUS    RESTARTS   AGE     IP            NODE           NOMINATED NODE   READINESS GATES
-     dev-redis    1/1     Running   0          6m37s   10.50.0.4     controlplane   <none>           <none>
-     np-test-1    1/1     Running   0          32m     10.50.192.1   node01         <none>           <none>
-     prod-redis   1/1     Running   0          21s     10.50.192.2   node01         <none>           <none>
+      NAME         READY   STATUS    RESTARTS   AGE     IP            NODE           NOMINATED NODE   READINESS GATES
+      dev-redis    1/1     Running   0          6m37s   10.50.0.4     controlplane   <none>           <none>
+      np-test-1    1/1     Running   0          32m     10.50.192.1   node01         <none>           <none>
+      prod-redis   1/1     Running   0          21s     10.50.192.2   node01         <none>           <none>
      ```
+     
+     
 
 
 7. Create a pod called `hr-pod` in `hr` namespace belonging to the `production` `environment` and `frontend` `tier` .
@@ -562,23 +566,24 @@
 
      - Change the 2379 port to 6443 
      - Run the below command to verify
-
-
+     
      ```
      root@controlplane ~ ➜  kubectl get nodes --kubeconfig /root/CKA/super.kubeconfig
-     NAME           STATUS   ROLES                  AGE   VERSION
-     controlplane   Ready    control-plane,master   59m   v1.20.0
-     node01         Ready    <none>                 59m   v1.20.0
-     
-     OR
+      NAME           STATUS   ROLES                  AGE   VERSION
+      controlplane   Ready    control-plane,master   59m   v1.20.0
+      node01         Ready    <none>                 59m   v1.20.0
+      
+      OR
      
      root@controlplane ~ ➜  k cluster-info --kubeconfig /root/CKA/super.kubeconfig
-     Kubernetes control plane is running at https://controlplane:6443
-     KubeDNS is running at https://controlplane:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
-     
-     To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.   
+      Kubernetes control plane is running at https://controlplane:6443
+      KubeDNS is running at https://controlplane:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+      
+      To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.   
      ```
      
+     
+
 
 9. We have created a new deployment called `nginx-deploy`. scale the deployment to 3 replicas. Has the replica's increased? Troubleshoot the issue and fix it.
 
