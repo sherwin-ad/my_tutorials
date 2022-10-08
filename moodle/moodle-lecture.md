@@ -1435,3 +1435,17 @@ Please follow the subsequent instructions very carefully as SFTP is very strict 
     ```
     sudo find /var/www/html -type d -exec chmod g+s {} \; 
     ```
+
+
+
+## Redirect to HTTPS Apache
+
+```
+<VirtualHost *:80>
+	<Location "/">
+    	Redirect permanent "https://%{HTTP_HOST}%{REQUEST_URI}"
+    </Location>
+</VirtualHost>
+
+```
+
