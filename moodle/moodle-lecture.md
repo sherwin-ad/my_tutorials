@@ -747,7 +747,7 @@ UPDATE mdl_user SET password=MD5('NEW_PASSWORD') WHERE username='admin';
 
 
 
-## Setup SSL
+## Create  SSL Cerficate using openssl
 
 1. Create a certificate signing request to send to a certificate authority
 
@@ -785,10 +785,25 @@ openssl req -new -nodes -newkey rsa:1024 -config /var/tmp/mySSL/myssl.cnf -keyou
 SSLCertificateFile      /etc/ssl/certs/6a124f857c92bc2e.crt
 SSLCertificateKeyFile   /etc/ssl/certs/server.key
 SSLCertificateChainFile /etc/ssl/certs/gd_bundle-g2-g1.crt
-
 ```
 
+4. To verify the entries we used to create a CSR, run the command:
 
+   ```
+   openssl req -noout -text -in app01.csr
+   ```
+
+## Create  Self signed SSL Cerficate using openssl
+
+```
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout app01.key -out app01.crt
+```
+
+To test if server is using correct certificate or not run this command and check if it returns your certificate:
+
+```
+echo | openssl s_client -showcerts -servername app01.com -connect app01:443 2>/dev/null | openssl x509 -inform pem
+```
 
 ## Disable directory listing in Apache
 
@@ -986,6 +1001,8 @@ $ puttygen pemKey.pem -o ppkKey.ppk -O private
 
 ```
 ssh-keygen -t rsa -b 4096 -C "your_email@domain.com"
+
+ssh-copy-id -i ~/.ssh/mykey user@host
 ```
 
 
