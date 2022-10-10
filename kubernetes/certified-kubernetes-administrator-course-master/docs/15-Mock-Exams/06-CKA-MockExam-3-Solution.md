@@ -88,110 +88,110 @@
      ```
 
      2. Edit multi-pod.yaml
-
-
+     
      ```
-     apiVersion: v1
-     kind: Pod
-     metadata:
-       name: multi-pod
-     spec:
-       containers:
-       - image: nginx
-         name: alpha
-         env:
-         - name: name
-           value: alpha
-       - image: busybox
-         name: beta
-         command: ["sleep", "4800"]
-         env:
-         - name: name
-           value: beta
-     status: {}
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: multi-pod
+      spec:
+        containers:
+        - image: nginx
+          name: alpha
+          env:
+          - name: name
+            value: alpha
+        - image: busybox
+          name: beta
+          command: ["sleep", "4800"]
+          env:
+          - name: name
+            value: beta
+      status: {}
      ```
+     
      3. Create pod
-    
+     
      ```
      root@controlplane ~ ➜  k create -f multi-pod.yaml 
-     pod/multi-pod created
-     
-     root@controlplane ~ ➜  k get pods
-     NAME        READY   STATUS    RESTARTS   AGE
-     multi-pod   2/2     Running   0          13s
-     pvviewer    1/1     Running   0          54m
-     
-     root@controlplane ~ ➜  k describe pod multi-pod
-     Name:         multi-pod
-     Namespace:    default
-     Priority:     0
-     Node:         node01/10.30.87.3
-     Start Time:   Fri, 23 Sep 2022 09:53:50 +0000
-     Labels:       run=multi-pod
-     Annotations:  <none>
-     Status:       Running
-     IP:           10.50.192.2
-     IPs:
-       IP:  10.50.192.2
-     Containers:
-       alpha:
-         Container ID:   docker://4fe1ce223ba78fe37832ba4a250b29a843f7efe2544247a08aadb3cceaf88781
-         Image:          nginx
-         Image ID:       docker-pullable://nginx@sha256:0b970013351304af46f322da1263516b188318682b2ab1091862497591189ff1
-         Port:           <none>
-         Host Port:      <none>
-         State:          Running
-           Started:      Fri, 23 Sep 2022 09:53:57 +0000
-         Ready:          True
-         Restart Count:  0
-         Environment:
-           name:  alpha
-         Mounts:
-           /var/run/secrets/kubernetes.io/serviceaccount from default-token-4znsg (ro)
-       beta:
-         Container ID:  docker://7fcd7fa5245ebe8f435d0d6943e890be4597fb555868354a0c12ca9c20f24c0c
-         Image:         busybox
-         Image ID:      docker-pullable://busybox@sha256:ad9bd57a3a57cc95515c537b89aaa69d83a6df54c4050fcf2b41ad367bec0cd5
-         Port:          <none>
-         Host Port:     <none>
-         Command:
-           sleep
-           4800
-         State:          Running
-           Started:      Fri, 23 Sep 2022 09:53:58 +0000
-         Ready:          True
-         Restart Count:  0
-         Environment:
-           name:  beta
-         Mounts:
-           /var/run/secrets/kubernetes.io/serviceaccount from default-token-4znsg (ro)
-     Conditions:
-       Type              Status
-       Initialized       True 
-       Ready             True 
-       ContainersReady   True 
-       PodScheduled      True 
-     Volumes:
-       default-token-4znsg:
-         Type:        Secret (a volume populated by a Secret)
-         SecretName:  default-token-4znsg
-         Optional:    false
-     QoS Class:       BestEffort
-     Node-Selectors:  <none>
-     Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                      node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-     Events:
-       Type    Reason     Age   From               Message
-       ----    ------     ----  ----               -------
-       Normal  Scheduled  28s   default-scheduler  Successfully assigned default/multi-pod to node01
-       Normal  Pulling    27s   kubelet            Pulling image "nginx"
-       Normal  Pulled     22s   kubelet            Successfully pulled image "nginx" in 4.382367339s
-       Normal  Created    22s   kubelet            Created container alpha
-       Normal  Started    21s   kubelet            Started container alpha
-       Normal  Pulling    21s   kubelet            Pulling image "busybox"
-       Normal  Pulled     20s   kubelet            Successfully pulled image "busybox" in 1.300104672s
-       Normal  Created    20s   kubelet            Created container beta
-       Normal  Started    20s   kubelet            Started container beta
+      pod/multi-pod created
+      
+      root@controlplane ~ ➜  k get pods
+      NAME        READY   STATUS    RESTARTS   AGE
+      multi-pod   2/2     Running   0          13s
+      pvviewer    1/1     Running   0          54m
+      
+      root@controlplane ~ ➜  k describe pod multi-pod
+      Name:         multi-pod
+      Namespace:    default
+      Priority:     0
+      Node:         node01/10.30.87.3
+      Start Time:   Fri, 23 Sep 2022 09:53:50 +0000
+      Labels:       run=multi-pod
+      Annotations:  <none>
+      Status:       Running
+      IP:           10.50.192.2
+      IPs:
+        IP:  10.50.192.2
+      Containers:
+        alpha:
+          Container ID:   docker://4fe1ce223ba78fe37832ba4a250b29a843f7efe2544247a08aadb3cceaf88781
+          Image:          nginx
+          Image ID:       docker-pullable://nginx@sha256:0b970013351304af46f322da1263516b188318682b2ab1091862497591189ff1
+          Port:           <none>
+          Host Port:      <none>
+          State:          Running
+            Started:      Fri, 23 Sep 2022 09:53:57 +0000
+          Ready:          True
+          Restart Count:  0
+          Environment:
+            name:  alpha
+          Mounts:
+            /var/run/secrets/kubernetes.io/serviceaccount from default-token-4znsg (ro)
+        beta:
+          Container ID:  docker://7fcd7fa5245ebe8f435d0d6943e890be4597fb555868354a0c12ca9c20f24c0c
+          Image:         busybox
+          Image ID:      docker-pullable://busybox@sha256:ad9bd57a3a57cc95515c537b89aaa69d83a6df54c4050fcf2b41ad367bec0cd5
+          Port:          <none>
+          Host Port:     <none>
+          Command:
+            sleep
+            4800
+          State:          Running
+            Started:      Fri, 23 Sep 2022 09:53:58 +0000
+          Ready:          True
+          Restart Count:  0
+          Environment:
+            name:  beta
+          Mounts:
+            /var/run/secrets/kubernetes.io/serviceaccount from default-token-4znsg (ro)
+      Conditions:
+        Type              Status
+        Initialized       True 
+        Ready             True 
+        ContainersReady   True 
+        PodScheduled      True 
+      Volumes:
+        default-token-4znsg:
+          Type:        Secret (a volume populated by a Secret)
+          SecretName:  default-token-4znsg
+          Optional:    false
+      QoS Class:       BestEffort
+      Node-Selectors:  <none>
+      Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                       node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+      Events:
+        Type    Reason     Age   From               Message
+        ----    ------     ----  ----               -------
+        Normal  Scheduled  28s   default-scheduler  Successfully assigned default/multi-pod to node01
+        Normal  Pulling    27s   kubelet            Pulling image "nginx"
+        Normal  Pulled     22s   kubelet            Successfully pulled image "nginx" in 4.382367339s
+        Normal  Created    22s   kubelet            Created container alpha
+        Normal  Started    21s   kubelet            Started container alpha
+        Normal  Pulling    21s   kubelet            Pulling image "busybox"
+        Normal  Pulled     20s   kubelet            Successfully pulled image "busybox" in 1.300104672s
+        Normal  Created    20s   kubelet            Created container beta
+        Normal  Started    20s   kubelet            Started container beta
      ```
 
 
@@ -285,21 +285,21 @@
      np.yaml
      
      ```
-      apiVersion: networking.k8s.io/v1
-      kind: NetworkPolicy
-      metadata:
-        name: ingress-to-nptest
-        namespace: default
-      spec:
-        podSelector:
-          matchLabels:
-            run: np-test-1
-        policyTypes:
-        - Ingress
-        ingress:
-        - ports:
-          - protocol: TCP
-            port: 80
+     apiVersion: networking.k8s.io/v1
+     kind: NetworkPolicy
+     metadata:
+       name: ingress-to-nptest
+       namespace: default
+     spec:
+       podSelector:
+         matchLabels:
+           run: np-test-1
+       policyTypes:
+       - Ingress
+       ingress:
+       - ports:
+         - protocol: TCP
+           port: 80
      ```
      
      ```
@@ -382,10 +382,10 @@
      ```
      k taint -h
       
-      k taint node node01 env_type=production:NoSchedule
-      node/node01 tainted
+     k taint node node01 env_type=production:NoSchedule
+     node/node01 tainted
       
-      k describe nodes node01 
+     k describe nodes node01 
       Name:               node01
       Roles:              <none>
       Labels:             beta.kubernetes.io/arch=amd64
