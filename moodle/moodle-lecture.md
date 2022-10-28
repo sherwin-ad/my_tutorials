@@ -344,6 +344,38 @@ Monitor the progress of an import of a large .sql file
 pv sqlfile.sql | mysql -uxxx -pxxxx dbname
 ```
 
+And if you wish to zip it at the same time:
+
+**To Export:**
+
+```
+mysqldump -u [username] -p [password] [db] | gzip > filename.sql.gz
+```
+
+**To Import:**
+
+```
+$ gunzip filename.sql.gz | mysql -u [user] -p [password] [database]
+```
+
+**Other Ways**
+
+To use gzip (or just add ‘.gz' to the end of the command above):
+
+**For Export:**
+
+```
+$ mysqldump -u [user] -p [db_name] | gzip > [filename_to_compress.sql.gz]
+```
+
+**For Import:**
+
+```
+gunzip < [compressed_filename.sql.gz]  | mysql -u [user] -p[password] [databasename]
+```
+
+
+
 
 
 ## Moodle Upgrade
@@ -1467,5 +1499,13 @@ Please follow the subsequent instructions very carefully as SFTP is very strict 
     </Location>
 </VirtualHost>
 
+```
+
+
+
+## Migrate to new URL
+
+```
+#sed -e 's/oldserver.com/newserver.com/g' oldmysqldump.sql > newmysqldump.sql
 ```
 
