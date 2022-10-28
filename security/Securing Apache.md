@@ -207,3 +207,23 @@ https://github.com/coreruleset/coreruleset
 
     
 
+## mod_qos
+
+https://www.howtoforge.com/how-to-defend-slowloris-ddos-with-mod_qos-apache2-on-debian-lenny
+
+https://mod-qos.sourceforge.net/
+
+https://sourceforge.net/projects/mod-qos/files/
+
+    sudo apt-get install libapache2-mod-qos
+
+
+
+## fail2ban
+
+
+
+​		
+
+
+

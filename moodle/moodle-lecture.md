@@ -339,6 +339,9 @@ $ mysqldump -u [user] -p [database_name] > [filename].sql
 
 Restore database
 $ mysql -u [user] -p [database_name] < [filename].sql
+
+Monitor the progress of an import of a large .sql file
+pv sqlfile.sql | mysql -uxxx -pxxxx dbname
 ```
 
 
