@@ -1,7 +1,5 @@
 [TOC]
 
-
-
 # Securing Apache 
 
 ## mod_reqtimeout
@@ -98,9 +96,9 @@ sudo systemctl restart apache2
 
 **Setting Up the OWASP ModSecurity Core Rule Set**
 
-https://owasp.org/www-project-modsecurity-core-rule-set/
+- https://owasp.org/www-project-modsecurity-core-rule-set/
 
-https://github.com/coreruleset/coreruleset
+- https://github.com/coreruleset/coreruleset
 
 5. First, delete the current rule set that comes prepackaged with ModSecurity by running the following command:
 
@@ -209,11 +207,11 @@ https://github.com/coreruleset/coreruleset
 
 ## mod_qos
 
-https://www.howtoforge.com/how-to-defend-slowloris-ddos-with-mod_qos-apache2-on-debian-lenny
+- https://www.howtoforge.com/how-to-defend-slowloris-ddos-with-mod_qos-apache2-on-debian-lenny
 
-https://mod-qos.sourceforge.net/
+- https://mod-qos.sourceforge.net/
 
-https://sourceforge.net/projects/mod-qos/files/
+- https://sourceforge.net/projects/mod-qos/files/
 
     sudo apt-get install libapache2-mod-qos
 
@@ -221,9 +219,22 @@ https://sourceforge.net/projects/mod-qos/files/
 
 ## fail2ban
 
+- https://webdock.io/en/docs/how-guides/security-guides/how-configure-fail2ban-common-services
+- https://www.linode.com/docs/guides/using-fail2ban-to-secure-your-server-a-tutorial/
 
+**Install fail2ban**
+
+```
+$ sudo apt install fail2ban -y
+```
+
+Once Fail2Ban is installed, you can check the status of Fail2Ban with the following command:
+
+```
+$ sudo systemctl status fail2ban
+```
 
 ​		
 
-
+Rew 
 
