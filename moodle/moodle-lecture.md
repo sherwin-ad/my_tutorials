@@ -1506,6 +1506,6 @@ Please follow the subsequent instructions very carefully as SFTP is very strict 
 ## Migrate to new URL
 
 ```
-#sed -e 's/oldserver.com/newserver.com/g' oldmysqldump.sql > newmysqldump.sql
+# sed -e 's/oldserver.com/newserver.com/g' oldmysqldump.sql > newmysqldump.sql
 ```
 
