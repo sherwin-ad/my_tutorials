@@ -76,12 +76,16 @@
 - is a distributed reliable key-value store used by kubernetes to store all data used to manage the cluster. Think of it this way, when you have multiple nodes and multiple masters in your cluster, etcd stores all that information on all the nodes in the cluster in a distributed manner. 
 - is responsible for implementing locks within the cluster to ensure there are no conflicts between the Masters.
 
-### 3. Sheduler
+### 3. Scheduler
 
 - is responsible for distributing work or containers across multiple nodes. 
 - It looks for newly created containers and assigns them to Nodes.
 
 ### 4. Controller Manager
+
+- The controllers are the brain behind orchestration. 
+- They are responsible for noticing and responding when nodes, containers or endpoints goes down. 
+- The controllers makes decisions to bring up new containers in such cases.
 
 #### 	Node controller 
 
@@ -91,12 +95,6 @@
 #### 	Replication Controller
 
 - ensures that the desired number of containers are running at all times in your replication group
-
-
-
-- The controllers are the brain behind orchestration. 
-- They are responsible for noticing and responding when nodes, containers or endpoints goes down. 
-- The controllers makes decisions to bring up new containers in such cases.
 
 ### 5. Container Runtime
 
@@ -437,8 +435,8 @@ Your deployment is now available at <EXTERNAL-IP>:8080
 
 ## Pod
 
-* A pod is the smallest and simplest unit in the Kubernetes object model. 
-* It represents a single instance of an application. 
+* is a single instance of an application.
+* is the smallest object, that you can create in kubernetes.
 * Each pod is made up of a container or a series of tightly coupled containers, along with options that govern how the containers are run. 
 * Pods can be connected to persistent storage in order to run stateful applications.
 
@@ -650,7 +648,7 @@ myapp-replicaset-v5rrf   1/1     Running   0          17s
 
 ##### Scale Replicasets
 
-###### replace
+###### Replace
 
 Note: Edit the Yaml file replace replicas number.
 
@@ -673,7 +671,7 @@ myapp-replicaset-z64f8   1/1     Running   0          15s
 
 ```
 
-###### scale
+###### Scale
 
 ```
 $ kubectl scale --replicas=6 -f replicaset-definition.yml 
@@ -690,7 +688,7 @@ myapp-replicaset-v5rrf   1/1     Running             0          28m
 
 ```
 
-###### describe
+###### Describe
 
 ```
 $ kubectl describe replicationcontrollers myapp-rc 
@@ -716,7 +714,7 @@ Pod Template:
 Events:           <none>
 ```
 
-###### delete
+###### Delete
 
 ```
 $ kubectl delete replicasets.apps myapp-replicaset 
