@@ -1509,3 +1509,14 @@ Please follow the subsequent instructions very carefully as SFTP is very strict 
 # sed -e 's/oldserver.com/newserver.com/g' oldmysqldump.sql > newmysqldump.sql
 ```
 
+
+
+## How to check TLS/SSL certificate expiration date from command-line
+
+```
+DOM="learn.doh.gov.ph"
+PORT="443"
+echo | openssl s_client -servername $DOM -connect $DOM:$PORT | openssl x509 -noout -dates
+
+```
+
