@@ -315,6 +315,62 @@ Goto **IAM & Admin** > **Quotas**
     - If user lose private key, Google cannot retrieve it.
     - Can Also Used Google Managed Keys.
 
+### Cloud IAM Best Prctices
+
+- Efficient architecture is always needed to avoid huge Maintenance cost.
+- Cloud Identity and Access Management (Cloud IAM) policies can be set at different levels of the resource hierarchy.
+- Resources in GCP inherit the policies of the parent resource. The effective policy for a resource is the union of the policy set at that resource and the policy inherited from its parent.
+- User is open to set Policies at any Level Organisation Level, Folder Level, Project Level or Resource Level.
+
+**Best Practices**
+
+- Organization and folder level structures are recommended for Big Firms, start-up can use the flat structure.
+- Set policies at the organization level and at the project level rather than at the resource level.
+- Grant roles to a Google group instead of to individual users when possible.
+- Use the security principle of least privilege to grant Cloud IAM roles; that is, only give the least amount of access necessary to your resources.
+- If user need to grant a role to a user or group that spans across multiple projects, set that role at the folder level instead of setting it at the project level.
+- Audit the ownership and the membership of the Google groups used in policies.
+
+### Cloud Billing
+
+**Setting Up and Monitoring is essential Architect Skill.**
+
+- Grant IAM Roles to users to Create, Manage and use Billing Accounts.
+
+- Monitor Cost and SetUp Project Budget and Alert
+
+- Manage Billing Data for Retention and Analysis.
+
+**Billing and Cloud IAM**
+
+- Assign Mostly at organization level or within Billing Account.
+- Billing Roles are Defined in Cloud IAM.
+
+**Billing + Cloud IAM**
+
+- Billing Account Creator
+
+  - Create new Organization Level Billing Account
+- Billing Account Administrator
+    - Manage Billing Accounts
+    - Configure Billing Expost
+    - Link/Unlink Projects
+    - Manage Billing User Roles
+- Billing Account User
+  - Link Project with Billing Account
+- Billing Account Viewer
+- View Billing Information (Finance Team)
+
+**View and Manage Billing Data.**
+
+- How much you are paying, and for what?
+- View Billing Data in Web Console.
+  - View Treds, Current resource Billing
+- Export Billing Data to Cloud Storage and Big Query
+    - Forwards Export to finance Department/ Auditor
+- SetUp Project Budget and Alert
+  - Doesn’t stop billing resource uses, Just send Alert.
+
 ## Stack Driver 
 
 - Monitor all Cloud Resources
