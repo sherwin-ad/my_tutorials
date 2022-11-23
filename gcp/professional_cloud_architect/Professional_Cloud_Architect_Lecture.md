@@ -371,8 +371,134 @@ Goto **IAM & Admin** > **Quotas**
 - SetUp Project Budget and Alert
   - Doesn’t stop billing resource uses, Just send Alert.
 
-## Stack Driver 
 
-- Monitor all Cloud Resources
 
- 
+## GCP : Operations Overview
+
+### Stack Driver 
+
+**What is Stack Driver?**
+
+- Tool used for Monitoring, Logging, and Tracking for application Operations.
+- Native Monitoring for GCP & AWS.
+- Dynamically Discover all GCP resources.
+  - Install StackDriver Client on VMs.
+
+**StackDriver/Operations Benefits**
+
+- Multi Cloud Monitoring GCP & AWS.
+- Identify behaviour and proactively fix the issues.
+- Centralized Logging Mechanism.
+- More Relevant and Accurate Alerts.
+- Find and Fix Problems Faster.
+
+###  Logging
+- Central Collection for all activity logs.
+
+**Logging Operations**
+
+- GCP provider single repository for all Logging Data from multiple source.
+- Store, search & analyze logs.
+- Can collect Platform, System and Application logs.
+- Realtime and Batch Monitoring.
+- Export logs to other source for long term storage/analysis.
+
+**Concept and Terminology**
+
+- Associated by project.
+  - Logs viewer only shows logs for one project.
+
+- Log Entry - record status and events.
+
+- Named collection of log entries.
+
+- Dynamic log retention period.
+
+  
+  
+
+**Log Types**
+
+- Who did what, where and when.
+- Audit logs-
+  - Admin Activity, System Activity, Data Access
+- Agent Logs
+- Agent Installed on VMs
+- Record VM system and third party app logs
+
+Admin Activity / System Event Logs
+
+- Administrative Actions and API Calls
+
+  - User ‘X’ created a Instance
+
+- System Event Logs
+- Like Live Migration Event
+
+**Data Access Logs**
+
+- Logs API Call that Create, Modify or Read user data
+- Default off, can become Huge
+- Chargeable after defined Limit.
+
+**Agent Logs**
+
+- Agent Installed on Support VM’s
+
+- Logs data from Third Party applications.
+
+- Chargeable after the Limit.
+
+**Pricing**
+
+- First 50GB/Project/Month Free - $0.5/GB
+- Admin and System Event Logs Exempt
+
+**Retention**
+
+- Admin Activity - 400 Days
+
+- Data Access - 30 Days
+
+- System Events -  400 Days
+
+- Access Transparency - 400 Days
+
+- All Other Logs - 30 Days
+
+**Exporting Logs (Imp Topic)**
+
+- After Retention, Logs are delete and can’t recover.
+- Export Logs for long term retention.
+- Long Term Storage(Cloud Storage), Big Data Analysis(Big Query),
+- System to Other Source(Pub/Sub)
+
+**Exporting Logs basics** 
+
+- Require a Project and Destination Service
+- Filter - Filter Logs Type to Export
+- Destination - Cloud Storage, Big Query, Pub/Sub
+- Filter and Destination configure using Sink - Direct What logs to copy to which location
+- Only new logs will be exported after sync creation
+
+**IAM Roles**
+
+- Logging Admin - Have Full control. Ability to add others to logging IAM
+- Logs Viewer - Can View Logs
+- Logs Writer - Grant Service Account Ability to create Logs.
+- Log Config Writer - Create Metrics and Export Sinks
+
+### Monitoring 
+- Monitor Metric, HealthChecks, Dashboard and Alerts.
+
+### Error Reporting
+- Identify and Understand Applications Errors.
+
+### Trace
+- Find Latency Bottleneck in applications.
+
+### Debugger
+- Find/Fix code error in production.
+
+### Profiler 
+- Collect CPU/Memory Data, Optimize Performance.
