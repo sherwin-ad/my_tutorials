@@ -54,6 +54,37 @@ Query OK, 0 rows affected (0.017 sec)
 
 ````
 
+```
+UPDATE wp_options SET option_value = replace(option_value, 'oldurl', 'newurl') WHERE option_name = 'home' OR option_name = 'siteurl';
+
+UPDATE wp_posts SET guid = replace(guid, 'oldurl','newurl');
+
+UPDATE wp_posts SET post_content = replace(post_content, 'oldurl', 'newurl');
+
+UPDATE wp_postmeta SET meta_value = replace(meta_value,'oldurl','newurl');
+```
+
+
+
+```
+UPDATE wp_posts SET guid = REPLACE(guid, 'https://stg1.beesites.net/bmb/', 'http://35.194.169.22/') WHERE guid LIKE 'https://stg1.beesites.net/bmb/%';
+
+```
+
+
+
+
+
+````
+UPDATE wp_options SET option_value = replace(option_value, 'https://stg1.beesites.net/bmb/', 'https://35.194.169.22/') WHERE option_name = 'home' OR option_name = 'siteurl';
+
+UPDATE wp_posts SET guid = replace(guid, 'https://stg1.beesites.net/bmb/','https://35.194.169.22/');
+
+UPDATE wp_posts SET post_content = replace(post_content, 'https://stg1.beesites.net/bmb/', 'https://35.194.169.22/');
+
+UPDATE wp_postmeta SET meta_value = replace(meta_value,'https://stg1.beesites.net/bmb/','https://35.194.169.22/');
+````
+
 
 
 # Creating a MySQL Database and User 
@@ -86,15 +117,11 @@ Update the ownership with the `chown` command which allows you to modify file ow
 sudo chown -R www-data:www-data /var/www/wordpress
 ```
 
-Copy
-
 Next, run two `find` commands to set the correct permissions on the WordPress directories and files. This first `find` command sets every directory within the `/var/www/<>^wordpress<^>` directory and sets each one’s permissions to `750`:
 
 ```bash
 sudo find /var/www/wordpress/ -type d -exec chmod 750 {} \;
 ```
-
-Copy
 
 This one finds each file within the directory and sets their permissions to `640`:
 
@@ -103,4 +130,21 @@ sudo find /var/www/wordpress/ -type f -exec chmod 640 {} \;
 ```
 
 
+
+### Apache configuration
+
+```vhdl
+sudo a2enmod rewrite
+
+sudo systemctl restart apache2
+
+sudo nano /etc/apache2/sites-available/000-default.conf
+
+    DocumentRoot "/var/www/html"
+    <Directory "/var/www/html">
+            Options FollowSymLinks
+            AllowOverride All
+            Require all granted
+    </Directory>
+```
 

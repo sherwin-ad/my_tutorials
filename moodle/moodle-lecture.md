@@ -807,7 +807,7 @@ openssl req -new -nodes -newkey rsa:1024 -config /var/tmp/mySSL/myssl.cnf -keyou
  0.organizationName  = Rizal Technological University
  organizationalUnitName  = IT Department
  commonName   = rtu
- emailAddress = franz@mybusybee.net
+ emailAddress = elearning@doh.gov.ph
  ```
 
 2. Send the CSR to a certificate authority to obtain an SSL certificate
