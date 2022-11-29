@@ -395,7 +395,7 @@ Goto **IAM & Admin** > **Quotas**
 ###  Logging
 - Central Collection for all activity logs.
 
-**Logging Operations**
+#### Logging Operations
 
 - GCP provider single repository for all Logging Data from multiple source.
 - Store, search & analyze logs.
@@ -403,7 +403,7 @@ Goto **IAM & Admin** > **Quotas**
 - Realtime and Batch Monitoring.
 - Export logs to other source for long term storage/analysis.
 
-**Concept and Terminology**
+#### Concept and Terminology
 
 - Associated by project.
   - Logs viewer only shows logs for one project.
@@ -417,7 +417,7 @@ Goto **IAM & Admin** > **Quotas**
   
   
 
-**Log Types**
+#### Log Types
 
 - Who did what, where and when.
 - Audit logs-
@@ -435,13 +435,13 @@ Admin Activity / System Event Logs
 - System Event Logs
 - Like Live Migration Event
 
-**Data Access Logs**
+#### Data Access Logs
 
 - Logs API Call that Create, Modify or Read user data
 - Default off, can become Huge
 - Chargeable after defined Limit.
 
-**Agent Logs**
+#### Agent Logs
 
 - Agent Installed on Support VM’s
 
@@ -449,12 +449,12 @@ Admin Activity / System Event Logs
 
 - Chargeable after the Limit.
 
-**Pricing**
+#### Pricing
 
 - First 50GB/Project/Month Free - $0.5/GB
 - Admin and System Event Logs Exempt
 
-**Retention**
+#### Retention
 
 - Admin Activity - 400 Days
 
@@ -466,14 +466,14 @@ Admin Activity / System Event Logs
 
 - All Other Logs - 30 Days
 
-**Exporting Logs (Imp Topic)**
+#### Exporting Logs (Imp Topic)
 
 - After Retention, Logs are delete and can’t recover.
 - Export Logs for long term retention.
 - Long Term Storage(Cloud Storage), Big Data Analysis(Big Query),
 - System to Other Source(Pub/Sub)
 
-**Exporting Logs basics** 
+#### Exporting Logs basics 
 
 - Require a Project and Destination Service
 - Filter - Filter Logs Type to Export
@@ -481,7 +481,7 @@ Admin Activity / System Event Logs
 - Filter and Destination configure using Sink - Direct What logs to copy to which location
 - Only new logs will be exported after sync creation
 
-**IAM Roles**
+#### IAM Roles
 
 - Logging Admin - Have Full control. Ability to add others to logging IAM
 - Logs Viewer - Can View Logs
@@ -490,15 +490,224 @@ Admin Activity / System Event Logs
 
 ### Monitoring 
 - Monitor Metric, HealthChecks, Dashboard and Alerts.
+- Operations Monitoring monitor the complete GCP Environment.
+- What is Up? What is Down? What is Overloaded?
+- Monitor System and Application Metrics.
+- Interact with Logging System.
+- Easy to view Dashboard, Alerts.
+- Uptime check for External Applications
+  - Must be public and allow traffic for liveness.
+
+#### Possible Exam Topics
+
+- Troubleshoot reachability with External Source.
+- Familiar with Logging/Monitoring Agent
+- Understanding, how to use monitoring with Logging and Alerts
+
+#### Pricing
+
+| Feature              | Price                                                        | Allotment/Month                                              |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Monitoring Data      | 150Mb - 100Gb - $0.25/Mb<br/>100Gb - 250Gb - $0.15/Mb<br/>>250Gb - $0.06/Mb | All GCP Metrics First<br/>150Mb/Month per Billing<br/>Account |
+| Monitoring API Calls | $0.1/1000 API Calls                                          | First Million API Calls                                      |
+
+#### Stackdriver Agent
+
+- Software Installed on VMs
+- In absence of Agent, still get CPU, Disk, Network Traffic, Uptime Info.
+- Agent to access external Application logs
+- Can Monitor Third Party Applications
+
+#### Best Practice 
+
+- Create Single Project for Monitoring Purpose
+
+  - Monitor All Resource GCP/AWS across the Projects
+
+  - IAM Control, Separate stackdriver accounts for data and control isolation.
+
+
+- Calculate/Predict Monitoring Needs in advance
 
 ### Error Reporting
 - Identify and Understand Applications Errors.
+- Error Reporting - Realtime Error monitoring and Alert mechanism.
+- Write to Logging or Error Handling APIs
+- Built in, Google App Engine & Cloud Functions - Auto Enabled
+- Compatible with GAE(Flexible), GCE, GKE, EC2
+- VM machine needs Agent Installation
+- Support - Java, Python, Ruby, C#, PHP, Go & JavaScript
 
 ### Trace
 - Find Latency Bottleneck in applications.
+- Trace - Find Performance Bottleneck (Loading Time)
+- Collects data from GCP Services like - App Engine, GCP Load Balancers.
+- Integrated with App Engine.
+- Available for Services like - GKE, GCE, GAE (Flexible)
+- Can be Installed on Non-GCP resources.
+
+#### Trace can answer below questions
+
+- How long does my application take to handle a Request?
+- Why application taking long to handle a request?
+- Why some specific requests are taking longer?
+- Which service/microservice is calling latency in system?
+- Latency status over the time?
+- What steps can be followed to reduce the latency?
+
+#### Possible Exam Topics
+
+- Conceptual Knowledge of, How individual product can solve real time business problems.
+- Interaction with Logging Component.
 
 ### Debugger
 - Find/Fix code error in production.
+- Debug - Debug Application.
+- Inspect Application State without stopping or slowing App.
+- Doesn’t require Adding Log Statement
+- Available for GKE, GCE, GAE
+- Support - Java, Python, Go, Node.js
+- Can be Installed on Non-GCP Resources.
 
 ### Profiler 
 - Collect CPU/Memory Data, Optimize Performance.
+
+## Cloud Storage
+
+- Google Cloud Storage is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure.
+- It is an Infrastructure as a Service (IaaS), comparable to Amazon S3 online storage service.
+- Cloud Storage is unified object storage service.
+- Cloud Storage is a persistent storage, it is durable, replicated and also made globally available via HTTP URL.
+- Cloud Storage is auto scalable service.
+- Cloud Storage is not a File System, because each item in cloud storage have unique URL.
+
+### Key Terms
+
+- **Buckets**: Basic containers that hold your data. Everything that you store in Google Cloud Storage must be contained in a bucket. You can use buckets to organize your data and control access to your data, but unlike directories and folders, you cannot nest buckets.
+- **Bucket names**: Should be unique as the name of the buckets stored in single Cloud Storage namespace. Also, bucket names can be used with a CNAME redirect, which means they need to
+  conform to DNS naming conventions.
+- **Bucket labels**: Bucket labels are key:value metadata pairs that allow you to group your buckets along with other Google Cloud.
+
+- **Objects**: Objects are the individual pieces of data that you store in Google Cloud Storage.
+- Objects have two components: **object data** and **object metadata**.
+  - The **object data** component is usually a file that you want to store in Google Cloud Storage.
+  - The **object metadata** component is a collection of name-value pairs that describe various object qualities.
+  - There is no limit on the number of objects that you can create in a bucket.
+
+- Cloud Storage objects are immutable.
+- Cloud Storage allow to version the stored objects.
+- Object Versioning needs to be enable explicitly, in absence of Object Versioning, new objects terminates the old.
+- Cloud Storage offers life cycle management policy for the objets in bucket.
+
+
+
+### Cloud Storage Class
+
+|                       |       Multi Regional       |              Regional               |            Nearline             |            Coldline            |
+| --------------------- | :------------------------: | :---------------------------------: | :-----------------------------: | :----------------------------: |
+| **Intended for Data** |  Most Frequently Accessed  | Accessed Frequently within a Region | Accessed less than once a month | Accessed less than once a Year |
+| **Availability SLA**  |           99.95%           |               99.90%                |             99.00%              |             99.00%             |
+| **Access APIs**       |         Consistent         |             Consistent              |           Consistent            |           Consistent           |
+| **Access Time**       |     Milisecond Access      |          Milisecond Access          |        Milisecond Access        |       Milisecond Access        |
+| **Use Cases**         | Content Storage & Delivery |   In-region Analytics, Transcodng   |   Long-tail contents, Backups   |  Archiving, Disaster Recovery  |
+
+### Cloud Storage with Other GCP Services
+
+![image-20221129105024535](images/image-20221129105024535.png)
+
+
+
+
+
+### Command line managing bucket
+
+**Create bucket**
+
+```
+gsutil mb -l asia-east1 -c Nearline gs://doh-bucket1
+```
+
+ **Remove bucket**
+
+```
+gsutil rb gs://doh-bucket1
+```
+
+**Copy file to bucket**
+
+```
+gsutil cp my-service.yaml gs://doh-bucket1                               
+```
+
+**Make file available to public**
+
+```
+gsutil acl ch -u AllUsers:R gs://doh-bucket1/my-service.yaml
+```
+
+**Copy file from bucket to another bucket** 
+
+```
+gsutil cp gs://doh-bucket1/my-service.yaml gs://doh-website-bucket/
+```
+
+List the files in your bucket****
+
+```
+gsutil ls gs://doh-website-bucket
+gs://doh-website-bucket/backup-doh.gov.ph-10-17-2022.tar.gz
+gs://doh-website-bucket/backup-doh.gov.ph-11-14-2022.tar.gz
+gs://doh-website-bucket/szelsaqkuoxz_centraldoh.sql.gz
+gs://doh-website-bucket/szelsaqkuoxz_centraldoh_10172022.sql.gz
+```
+
+**Enable versioning in bucket**
+
+```
+# Check versioning status
+$ gsutil versioning get gs://doh-bucket1
+gs://doh-bucket1: Suspended
+
+# Enable versioning in bucket
+$ gsutil versioning set on gs://doh-bucket1
+Enabling versioning for gs://doh-bucket1/...
+
+# Check versioning status
+$ gsutil versioning get gs://doh-bucket1
+gs://doh-bucket1: Enabled
+```
+
+**Configure life cycle policy in your bucket**
+
+```
+# Check if there is life cycle policy in your bucket
+$ gsutil lifecycle get gs://doh-bucket1
+gs://doh-bucket1/ has no lifecycle configuration.
+
+$ gsutil lifecycle set bucket_lifecycle.json gs://doh-bucket1
+```
+
+bucket_lifecycle.json
+
+```json
+"lifecycle": {
+    "rule": [
+    {
+        "action":{"type":"Delete"},
+        "condition":{
+            "age": 30,
+            "isLive": true    
+        }
+    },
+    {
+        "action":{"type":"Delete"},
+        "condition":{
+            "age": 10,
+            "isLive": false
+        }    
+    }    
+
+]
+}
+```
+
