@@ -617,7 +617,7 @@ Admin Activity / System Event Logs
 
 
 
-
+# Gsutil
 
 ### Command line managing bucket
 
@@ -710,4 +710,138 @@ bucket_lifecycle.json
 ]
 }
 ```
+
+**Set file to private**
+
+```
+$ gsutil acl set private gs://levelup-set-storage/file1.png
+
+# Get ACL
+$ gsutil acl get private gs://levelup-set-storage/file1.png
+
+# Change permission
+$ gsutil acl ch -u AllUsers:R gs://levelup-set-storage/file1.png
+
+```
+
+
+
+## Transfer Services
+
+- Complete large-scale online data transfers from online and on-premises sources to Cloud Storage.
+- Transfer Service Cloud and Transfer Service on-premises are highly performant pathways to Cloud Storage—both with the scalability and speed you need to simplify the data transfer process.
+  - **Transfer Service for cloud data** - Set up a recurring transfer schedule. Transfer data within Cloud Storage from one bucket to another.
+  - **Transfer Service for on-premises data** - Transfers from on-premises sources to Cloud Storage. Scale to available bandwidth and deliver seamless transfers in minutes.
+
+### Use Cases of Transfer Services
+
+- Data Center Migration
+- BackUp & Archival
+- Analytics & Machine Learning
+- Content Storage & Delivery
+
+# Gcloud
+
+**Activate service account**
+
+```
+$ gcloud auth activate-service-account --key-file lms-clients-330406-b49103cfd582.json
+
+Reinitialize gcloud
+$ gcloud init
+```
+
+**Custom encryption key in cloud storage**
+
+https://cloud.google.com/storage/docs/encryption/using-customer-supplied-keys#gsutil
+
+generateKey.py
+
+```
+#!/usr/bin/env python
+
+# Copyright 2019 Google, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# [START storage_generate_encryption_key]
+import base64
+import os
+
+
+def generate_encryption_key():
+    """Generates a 256 bit (32 byte) AES encryption key and prints the
+    base64 representation.
+    This is included for demonstration purposes. You should generate your own
+    key. Please remember that encryption keys should be handled with a
+    comprehensive security policy.
+    """
+    key = os.urandom(32)
+    encoded_key = base64.b64encode(key).decode("utf-8")
+
+    print(f"Base 64 encoded encryption key: {encoded_key}")
+
+
+# [END storage_generate_encryption_key]
+
+if __name__ == "__main__":
+    generate_encryption_key()
+```
+
+
+
+# Manage Databases
+
+- Multiple Managed Databases.
+- Each Managed DB services are for specific purpose.
+- Architect Exam will test ability to select Correct DB Service.
+- Different DB Services using different ‘stuff’, for different requirements.
+
+## Main Factor, which differentiate in these services
+
+- Scalability/Availability/Performance
+- Relational vs Non-Relational Database
+- Transactional vs Analytical DBs
+
+## How DB Scalability Works.
+
+- Availability (Regional vs Global) , Capacity, Performance
+- Horizontal vs Vertical Scaling
+  - **Horizontal** - Add more resources (New Machines) to share the load.
+  - **Vertical** - Adding More Compute Resources in exiting machine.
+
+## Google have multiple Managed Database Services.
+
+- Cloud SQL
+- Cloud Spanner
+- BigQuery
+- Cloud BigTable
+- Cloud Firestore/Datastore
+- Cloud MemoryStore
+
+## Decision Tree of Storage Options
+
+![](images/2.2 Untitled Diagram.jpg)
+
+
+
+| Category           | Product                    | Application                                                  |
+| ------------------ | :------------------------- | :----------------------------------------------------------- |
+| Object Storage     | Cloud Storage              | - Streaming Videos<br/>- Image and Web Asset Libraries       |
+| Block Storage      | Persistent Disk            | - Disks for VMs<br/>- Share Read Only Data Across the VMs<br/>- Rapid, Durable BackUp of Running VMs<br/>- Storage for Database |
+| Block Storage      | Local SSD                  | - Flash Optimized Database<br/>- Hot Caching Layer for Analytics<br/>- Application Scratch Disk |
+| Archival Storage   | Cloud Storage              | - BackUps<br/>- Media Storage<br/>- Long Tail Content        |
+| Mobile App Service | Cloud Storage for Firebase | - User Generated Content<br/>- Uploads over Mobile Network<br/>- Robust Upload and Downloads<br/>- Strong User Base Security |
+| File Storage       | Google Workspace           | - Access files from Anywhere from Drive<br/>- Stay Connected with Colleagues Through GMail, Calendar, Chat & Meet |
+| Build Artifacts    | Artifact Registry          | - CI/CD Integrations<br/>- Centralized Container Images Storage.<br/>- Built-in Container Image Scanning for Vulnerabilities |
 
