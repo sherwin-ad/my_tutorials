@@ -2459,7 +2459,7 @@ To create a shared project, a shared VPC admin role is required ( roles/compute.
 
 #### Stackdriver : Pricing
 
-![](/home/sherwinowen/Documents/my_tutorials/gcp/images/stackdriver_monitoring_pricing.png)
+![](images/stackdriver_monitoring_pricing.png)
 
   
 

@@ -1228,3 +1228,7 @@ gcloud sql connect <INSTANCE_NAME> --user= root < <SQL_FILE_NAME>
 - Google also offers two subscription plans: 
 
   Pay-as-you-go: $5 per TB per month
+
+### Choose Load Balancer Decision Tree
+
+###### ![](images/choose-lb.svg)
