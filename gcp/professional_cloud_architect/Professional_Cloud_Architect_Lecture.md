@@ -617,7 +617,7 @@ Admin Activity / System Event Logs
 
 
 
-# Gsutil
+# gsutil command
 
 ### Command line managing bucket
 
@@ -740,7 +740,7 @@ $ gsutil acl ch -u AllUsers:R gs://levelup-set-storage/file1.png
 - Analytics & Machine Learning
 - Content Storage & Delivery
 
-# Gcloud
+# gcloud command
 
 **Activate service account**
 
@@ -845,3 +845,386 @@ if __name__ == "__main__":
 | File Storage       | Google Workspace           | - Access files from Anywhere from Drive<br/>- Stay Connected with Colleagues Through GMail, Calendar, Chat & Meet |
 | Build Artifacts    | Artifact Registry          | - CI/CD Integrations<br/>- Centralized Container Images Storage.<br/>- Built-in Container Image Scanning for Vulnerabilities |
 
+## Cloud SQL
+
+- is a fully managed relational database service for MySQL, PostgreSQL, and SQL server.
+- is fully compatible with applications using MySQL, PostgreSQL, and SQL Server. You can connect with nearly any application, anywhere in the world.
+- Cloud SQL automates - Backups, Replication, and failover to ensure your database is reliable, highly available, and flexible to your performance needs.
+- Easy integration with your workstation, as well as App Engine, Compute Engine, Kubernetes, and BigQuery
+
+### Features Of Cloud SQL
+
+- Google Cloud SQL is fully managed by Google.
+- Uses open source databases that are among the most popular ones worldwide, i.e., MySQL databases.
+- Can access and manage instances through a command-line interface or a web console without difficulty.
+- Pay-per-use option is quite inexpensive. By paying only for the time for which you access data, you save money.
+- Avoid lock-in of data while migrating data on to or off the Google Cloud platform through JDBC, MySQL Wire Protocol and mysqldump.
+- Failover among the many physical locations where data is replicated is automatic. So, even if there is a major failure, your data is secure and your database is available.
+- Connecting with the secure sockets layer (SSL) protocol.
+- Greater durability and availability of data which is replicated in various geographic locations.
+- Availability of instances in Asia, EU and the US.
+
+### Start with Cloud SQL
+
+- Create a Google Cloud SQL instance and configure it with an IP address to be
+  able to connect to it.
+- Use the MySQL client to connect a Google Cloud SQL – install the MySQL client; use the IP address you created to connect to the instance; create a table and a database, key in some data and query it.
+- Configure a Google Cloud SQL instance – configure access; set a root password; create, delete, restart and edit instances; configure SSL for instances; view information about instances; export or import data; configure point-in-time recovery and schedule backups.
+- Connect to a Google Cloud SQL instance – from App Engine Go apps; using MySQL client; from App Engine PHP apps; from reporting and admin tools; from App Engine Python apps; from external apps; from App Engine Java apps; from Google Apps Scripts
+
+#### Manage Cloud SQL
+
+- **Creating an instance** – While creating a Google Cloud SQL instance, the name of the instance is the only configuration setting needed.
+- **Editing an instance** – You can edit an instance and change its settings at any time after you have created it.
+- The change is applied immediately for all instance settings except for size of the instance.
+- **Restarting an instance** – An instance is stopped as all connections from it are drained. Google Cloud SQL restarts the instance when there is a fresh connection request for the instance, until which the instance stays shut.
+- **Deleting an instance** – When deleted, the data in an instance is lost permanently and it is a good practice to delete an instance following a scheduled backup or export of the instance.
+- **Configuring SSL for instances** – You can use the SSL protocol to connect to a Google Cloud SQL instance. You can configure the instance to be able to connect to it through SSL, once you
+  have created it.
+- **Adding project members** – If you are the owner of a project, you may have to add project members who are allowed to manage instances. Use the Google Cloud SDK or the Google Developers Console to add editors and project owners.
+
+1. Connect with CLOUD SQL DB
+
+```
+gcloud sql connect <INSTANCE_NAME> --user=root
+```
+
+2. Create Database.
+
+```
+create database [databasename];
+```
+
+3. Use Specific DataBase.
+
+```
+use [db name];
+```
+
+4. List all databases on the sql server.
+
+```
+show databases;
+```
+
+5. To see all the tables in the db.
+
+```
+show tables;
+```
+
+6. To see table's field formats.
+
+```
+describe [table name];
+```
+
+7. To delete a db.
+
+```
+drop database [database name];
+```
+
+8. To delete a table.
+
+```
+drop table [table name];
+```
+
+9. Show all data from a table.
+
+```
+SELECT * FROM [table name];
+```
+
+10. To return columns and column information.
+
+```
+show columns from [table name];
+```
+
+11. Create the table "products".
+
+```
+CREATE TABLE products (
+         productID    INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+         productCode  CHAR(3)       NOT NULL DEFAULT '',
+         name         VARCHAR(30)   NOT NULL DEFAULT '',
+         quantity     INT UNSIGNED  NOT NULL DEFAULT 0,
+         price        DECIMAL(7,2)  NOT NULL DEFAULT 99999.99,
+         PRIMARY KEY  (productID)
+       );
+```
+
+12. Show all the tables to confirm that the "products" table has been created
+
+```
+SHOW TABLES;
+```
+
+13. Describe the fields (columns) of the "products" table
+
+```
+DESCRIBE products;
+```
+
+14. Show the complete CREATE TABLE statement used by MySQL to create this table
+
+```
+SHOW CREATE TABLE products \G
+```
+
+15. Insert a row with all the column values
+
+```
+INSERT INTO products VALUES (1001, 'PEN', 'Pen Red', 5000, 1.23);
+INSERT INTO products VALUES
+         (NULL, 'PEN', 'Pen Blue',  8000, 1.25),
+         (NULL, 'PEN', 'Pen Black', 2000, 1.25);
+INSERT INTO products (productCode, name, quantity, price) VALUES
+         ('PEC', 'Pencil 2B', 10000, 0.48),
+         ('PEC', 'Pencil 2H', 8000, 0.49);
+INSERT INTO products (productCode, name) VALUES ('PEC', 'Pencil HB');
+```
+
+
+
+```
+SELECT * FROM products;
+```
+
+
+
+16. Sample MySQL DataSet from github.
+
+```
+https://github.com/datacharmer/test_db.git
+```
+
+
+
+17. Run SQL file on your MySQL Instace.
+
+```
+gcloud sql connect <INSTANCE_NAME> --user= root < <SQL_FILE_NAME>
+```
+
+## Cloud Spanner
+
+- Cloud Spanner is a fully managed, scalable, relational database service for regional and global application data.
+
+- Cloud Spanner is the first scalable, globally-distributed, and strongly consistent database service built for the cloud specifically to combine the benefits of relational database structure with non-relational horizontal scale.
+
+- Cloud spanner delivers high-performance transactions and strong consistency across rows, regions, and continents with an industry-leading 99.999% availability SLA, no planned downtime, and enterprise-grade security.
+
+- Cloud Spanner: The best of the relational and non-relational worlds
+
+  |              | Cloud Spanner | Traditional Relational | Traditional Non-Relational |
+  | :----------: | :-----------: | :--------------------: | :------------------------: |
+  |    Schema    |      Yes      |          Yes           |             No             |
+  |     SQL      |      Yes      |          Yes           |             No             |
+  | Consistency  |    Strong     |         Strong         |          Eventual          |
+  | Availability |     High      |        Failover        |            High            |
+  | Scalabitity  |  Horizontal   |        Vertical        |         Horizontal         |
+  | Replication  |   Automatic   |      Configurable      |        Configurable        |
+
+- Customers across industries can use Cloud Spanner to deliver value to their customers:
+
+  |                 Use Case                  |                     Before Cloud Spanner                     |                      With Cloud Spanner                      |
+  | :---------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+  |             Financial trading             | Inconsistencies lead to potential monetary loss during reconciliation. Global synchronous replication of trades is not feasible. |     Cost savings and a consistent, unified, global view.     |
+  |                 Insurance                 |    Inconsistencies lead to incomplete views of customers.    | Up-to-date customer views provide more accurate, real-time data. |
+  |            Global call centers            |                  Eventual and out-of-touch.                  |                  Eventual and out-of-touch.                  |
+  | Supply-chain management and manufacturing | Global supply chain presents an inconsistent global view and/or data must be shipped in batches. | Global, real-time, consistent view enables real-time decision making. |
+  |            Telecom and billing            | Processing capacity limited to finite scale-up compute resources. |         Scale-out allows improved processing speed.          |
+  |       Logistics and Transportation        |       Regional reach with many systems glued together.       |    Global reach with lower latency and a consistent view.    |
+  |                  Gaming                   |         Each server or cluster is its own universe.          | Consistent, global view delivers a unified experience.Consistent, global view delivers a unified experience. |
+  |                E-Commerce                 | Limited availability SLA or no SLA guarantees. In practice, potential missed sales. | Guaranteed max of 5 minutes of downtime (including planned downtime) on paper and in |
+
+  
+
+### Features Of Cloud Spanner
+
+- **Global Scale** - Horizontally scalable across rows, regions, and continents, from 1 to hundreds or thousands of nodes.
+- **Fully Managed** - Ease of deployment at every scale and every stage. Synchronous replication and maintenance are automatic and built-in.
+- **Relational Semantics** - Everything you would expect from a relational database—schemas, ACID (Atomicity / Consistency / Isolation / Durability) transactions, and SQL queries.
+- **Multi-Language Support** - Client libraries in C#, Go, Java, Node.js, PHP, Python, and Ruby. JDBC driver for connectivity with popular third-party tools.
+- **Transactional Consistency** - Purpose-built for external, strong, global transactional consistency.
+- **Enterprise Grade Security** - Data-layer encryption, IAM integration for access and controls, and audit logging.
+- **Highly Available** - Whenever, wherever, your data is highly available.
+
+## Big Query
+
+**Why Do You Need a Data Warehouse?**
+
+- A data warehouse is the most valuable asset of your BI (Business Intelligence) team 
+
+**How it works:** 
+
+  - Data are extracted on a periodic basis from source systems and moved to a dedicated server that contains the data warehouse 
+
+  - During this process, the data are cleaned, formatted, validated, reorganized, summarized, and integrated with other sources 
+
+**A data warehouse delivers value to companies through:** 
+
+- The generation of scheduled reports 
+  
+- Packaged analytical solutions 
+  
+- Adhoc reporting and analysis 
+  
+- Dynamic visualization 
+  
+- Storage of historical data
+  
+- Data mining
+  
+
+**Choosing a Data Warehouse** 
+
+- There are many factors to consider when choosing a data warehouse: 
+  - Assets: generation of big data reports requires expensive servers 
+  - People: skilled database administrators are needed to manage data integrity 
+  - Cost: interacting with big data can be expensive, low, and inefficient 
+  - Scale: how much storage is needed and will storage needs change over time? 
+  - Security: how is data protected to ensure availability and durability?
+
+### What is BigQuery
+
+- BigQuery is Google's serverless cloud storage platform designed for large data sets. BigQuery in Non-RDBMS column base DataBase in Google Cloud Infra. 
+- Google BigQuery is an enterprise data warehouse built using BigTable and Google Cloud Platform.
+- BigQuery works great with all sizes of data, from a 100 row Excel spreadsheet to several Petabytes of data. 
+- BigQuery is Google's fully managed solution for companies who need a fully-managed and cloud based interactive query service for massive datasets. 
+- BigQuery is super-fast and execute search on million of rows in seconds. BigQuery is great alternative of Apache Hive, and used in analytics. 
+- BigQuery is not solution for Transactional Data Operations. It’s ideal for BigData Solutions.
+- BigQuery supports SQL-like query, which makes it userfriendly. 
+- BigQuery accessible via its web UI, command-line tool, or client library (written in C#, Go, Java, Node.js, PHP, Python, and Ruby) using RestAPIL. 
+- BigQuery use the Columnar storage. 
+- BigQuery achieves very high compression ratio and scan throughput. BigQuery, user can directly operate on compressed data without decompressing it.
+
+### Why BigQuery? 
+
+- Service for interactive analysis of massive datasets (TBs) 
+
+  - Query billions of rows: seconds to write, seconds to return 
+
+  - Uses a SQL-style query syntax 
+
+  - It's a service, can be accessed by a API
+- Reliable and Secure 
+  
+    - Replicated across multiple sites 
+    
+    - Secured through Access Control Lists
+    
+- Scalable 
+
+  - Store hundreds of terabytes 
+
+  - Pay only for what you use 
+- Fast 
+    - Run ad hoc queries on multi-terabyte data sets in seconds
+
+### BigQuery Organization 
+
+**BigQuery is structured as a hierarchy with 4 levels:** 
+
+- **Projects**: Top-level containers in the Google Cloud Platform that store the data 
+- **Datasets**: Within projects, datasets hold one or more tables of data
+- **Tables**: Within datasets, tables are row-column structures that hold actual data 
+- **Jobs**: The tasks you are performing on the data, such as running queries, loading data, and exporting data
+
+**Projects** 
+
+- Projects are the top-level containers that store the data 
+
+- Within the project, you can configure settings, permissions, and other metadata that describe your applications 
+
+- Each project has a name, ID, and number that you'll use as identifiers 
+
+- When billing is enabled, each project is associated with one billing account but multiple projects can be billed to the same account 
+
+**DataSets** 
+
+- Datasets allow you to organize and control access to your tables 
+- All tables must belong to a dataset. You must create a dataset before loading data into BigQuery 
+- You can configure permissions at the organization, project, and dataset level
+
+**Tables** 
+
+- Tables contain your data in BigQuery 
+- Each table has a schema that describes the data contained in the table, including field names, types, and descriptions
+- BigQuery supports the following table types: 
+  - Native tables: tables backed by native BigQuery storage 
+  - External tables: tables backed by storage external to BigQuery 
+  - Views: virtual tables defined by a SQL query
+
+ **Jobs** 
+
+- Jobs are objects that manage asynchronous tasks such as running queries, loading data, and exporting data
+
+  - You can run multiple jobs concurrently 
+
+  - Completed jobs are listed in the Jobs collection 
+
+**There are four types of jobs:** 
+
+- **Load**: load data into a table 
+- **Query**: run a query against BigQuery data 
+- **Extract**: export a BigQuery table to Google Cloud Storage 
+- **Copy**: copy an existing table into another new or existing table
+
+### BigQuery Applications
+
+|         Business Need         |    GCP Data Solution     |
+| :---------------------------: | :----------------------: |
+| Compute Storage, Disk Storage |   Persistent Disk, SSD   |
+|  Storing Media, Blob Storage  |      Cloud Storage       |
+|    Document Database NOSQL    |        DataStore         |
+|      Fast Scanning NOSQL      |         BigTable         |
+|  SQL Interfasce at file Data  |         BigQuery         |
+|    Analytics/Datawarehouse    |         BigQuery         |
+|      Transactional RDBMS      | Cloud SQL, Cloud Spanner |
+
+**BigQuery features for businesses **
+
+- **Serverless Insight** : BigQuery has a serverless architecture, which allows user to scale your analytics automatically. 
+
+- **Real-time analytics** : BigQuery machine learning offers real-time analytics. This has a high-speed streaming insertion API. 
+  - With real-time analytics, you can input your latest business data and analyze it immediately. 
+  
+- **Logical data warehousing** : User can process external data sources through BigQuery. Its a great way to help you to input all your data and process it without every duplicating your data. \
+  
+- **Data transfer services** : Service allow user to transfer your data from external sources automatically. Great tool to merge data from multiple tools at one place. 
+    - Can transfer data from Google Marketing Platform, Google Ads, YouTube, Partner SaaS applications to BigQuery, Teradata, Amazon S3
+- **High Availability** : User can have multiple locations of storage and high availability for those locations.
+- **Geoexpansion** : BigQuery machine learning gives you the option to control your geographic data. It only applies to the US, Asia, and Europe. 
+- **Automatic Backup and Easy Restore** : Data is money, user don’t want to lose it while trying to process it. With BigQuery, information is automatically replicated and stored.
+
+**BigQuery : Benefits of Use** 
+
+- **Fast SetUp** : User can set up a data warehouse in seconds. As soon as your data warehouse is set up, you can start to query your data immediately. 
+
+- **Easy to Use** : Building your own data center is not only expensive but time-consuming and challenging to scale. BigQuery makes the process simple. You load your data into the tool and only pay for what you use. 
+
+- **Automatic Scale** : BigQuery separates storing and computing data. This process enables elastic scaling, which helps you scale at a higher performance rate. It works seamlessly for real-time analytics and appropriately scales your data. 
+
+- **Data Protection** : BigQuery protects your data and maintains strong Security over it.
+
+- Affordable : BigQuery’s pricing works with your business. You only pay for the resources you use.
+
+- BigQuery charged separately for storage and streaming inserts. 
+
+  For Storage: 
+
+  - $0.02 per GB, per month 
+
+  - $0.01 per Gb, per month for long-term storage
+  
+  For Streaming Inserts: 
+
+  - $0.01 per 200MB
+
+- Google also offers two subscription plans: 
+
+  Pay-as-you-go: $5 per TB per month
