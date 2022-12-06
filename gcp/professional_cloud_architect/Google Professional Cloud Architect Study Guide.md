@@ -430,7 +430,7 @@ This list of business requirements helps us start to understand or at least esti
 | BigQuery                 | Analytics               | Data warehousing and analytics                               |
 | Cloud Datalab            | Analytics               | Interactive data analysis tool based on Jupyter Notebooks    |
 | Dataproc                 | Analytics               | Managed Hadoop and Spark service                             |
-| Cloud Data Fusion        | Data management         | Data integration and ETL tool                                |
+| Cloud Data Fusion        | Data management         | Data integration and ETL (Extract, Transform, and Load) tool |
 | Data Catalog             | Data management         | Metadata management service                                  |
 | Dataflow                 | Data management         | Stream and batch processing                                  |
 | Cloud Spanner            | Database                | Global relational database                                   |
@@ -595,3 +595,13 @@ In addition to using business requirements to understand which systems need to w
 - ROI is a way of measuring the monetary value of an investment. 
 - ROI is expressed as a percentage, and it is based on the value of some aspect of the business after an investment when compared to its value before the investment.
 - ROI = [( value of invesment -cost of investment) / cost of investment] * 100
+
+
+
+# Chapter 3: Designing Solutions to Meet Technical Requirements
+
+## High Availability
+
+- is the continuous operation of a system at sufficient capacity to meet the demands of ongoing workloads. 
+- Availability is usually measured as a percent of time that a system is available and responding to requests with latency not exceeding some certain threshold.
+
