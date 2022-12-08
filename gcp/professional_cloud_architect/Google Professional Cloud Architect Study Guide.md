@@ -2115,3 +2115,274 @@ The core tenets of systems reliability engineering include the following:
 
 - There are several kinds of tests, and all should be used to improve reliability. 
 - Testing for reliability includes practices used in CI/CD but adds others as well, particularly stress testing. These tests may be applied outside of the CI/CD process.
+
+# Chapter 9: Analyzing and Defining Technical Processes
+
+## Software Development Lifecycle Plan
+
+- The *software development lifecycle* (*SDLC)* is a series of steps that software engineers follow to create, deploy, and maintain complicated software systems. 
+
+SDLC consists of seven phases.
+
+1. Analysis
+
+2. Design
+
+3. Development
+
+4. Testing
+
+5. Deployment
+
+6. Documentation
+
+7. Maintenance
+
+### Analysis 
+
+-  The purpose of the analysis phase is to do the following:
+
+   - Identify the scope of the problem to address.
+
+   - Evaluate options for solving the problem.
+
+   - Assess the cost benefit of various options.
+
+-  Analysis begins with understanding the problem to be solved.
+
+#### Scoping the Problem to Be Solved
+
+- At this point, the focus is on the business or organizational problem that is to be solved. 
+- This requires a combination of domain knowledge about the problem area and software and systems knowledge to understand how to frame a solution.
+
+#### Evaluating Options 
+
+- Once the scope of the problem is decided, you should consider options for solving the problem. 
+- There may be multiple ways to address a business need, from modifying an existing system to building a new service from scratch.
+
+- A common question at this stage is, “Should the organization buy a software solution or build one?”
+-  *Commercial off-the-shelf software (COTS)* is a term that you may hear to describe existing software solutions.
+
+The advantages of buying software or using a service include the following:
+
+- Faster time to solution since you do not have to build an application.
+- Allows developers to focus on other business requirements for which there are no good “buy” options.
+- The purchased software or service likely comes with support.
+
+There are disadvantages to buying software, and these can include potentially high licensing costs and the inability to customize the software or service to your specific needs.
+
+#### Cost-Benefit Analysis 
+
+- Another task in the analysis phase is to consider the costs and benefits of undertaking the project as scoped. 
+- The *opportunity cost* described earlier is one example of a cost-benefit consideration. In addition to the opportunity cost of software engineers' time, there is also the financial cost of developing an application.
+
+### Design 
+
+- In the design phase, you map out in detail how the software will be structured and how key functions will be implemented. 
+
+The design phase can often be broken into two subphases: high-level design and detailed design.
+
+#### High-Level Design 
+
+- During the *high-level design* phase, the major subcomponents of a system are identified.
+
+#### Detailed Design 
+
+- *Detailed design* focuses on how to implement each of the subcomponents. 
+
+#### Development, Testing, and Deployment 
+
+- During development, software engineers create software artifacts that implement a system. This can include application code, which implements functionality, and configuration files, which specify environment-specific details, such as file locations or environment variables.
+
+#### Documentation 
+
+There are three distinct kinds of documentation with regard to software systems.
+
+Developer documentation
+
+- is designed for software engineers who will be working with code. 
+
+Operations documentation
+
+- consists of instructions used by system administrators and DevOps engineers to deploy and maintain system operations.
+
+User documentation
+
+- explains how to use an application and is often written by technical writers. 
+
+#### Maintenance
+
+- *Maintenance* is the process of keeping software running and up-to-date with business requirements.
+
+- Maintenance includes configuring monitoring, alerting, and logging
+
+## Continuous Integration/Continuous Delivery
+
+- CI/CD is the process of incorporating code into a baseline of software, testing it, and if the code passes tests, releasing it for use.
+
+### CI/CD Building Blocks
+
+CI/CD is a practice that builds on several types of tools, including the following:
+
+- Version control
+- Secrets management
+- Automated builds
+- Deployment pipelines
+
+#### Version Control 
+
+- Version control is the practice of tracking changes to software. 
+- The basic idea is that teams of developers need to collaborate on software development, and that requires tools that track changes, enable multiple changes to source code at one time, and allow developers to revert to previous versions of software when needed.
+
+#### Secrets Management 
+
+- We often need to use secrets when working with services in the cloud, including API keys, certificates, passwords, and other data we would not want widely known. 
+- An obvious bad practice is hard-coding secrets into application or configuration code.
+
+- Secrets managers like HashiCorp Vault and Google Cloud's Secret Manager are secure storage systems for managing secrets in a secure, centralized service.
+
+#### Deployment Pipelines 
+
+- Modern applications are built using many components, libraries, and modules. 
+- Build pipelines automate the process of creating deployable artifacts. 
+- Deployment pipelines are used to release previously built artifacts for use. 
+
+## Troubleshooting and Post-Mortem Analysis Culture
+
+- Complicated and complex systems fail, sometimes in ways that we do not anticipate. There are a number of ways to respond to this reality.
+
+- We can extend more effort to ensure that our software is correct
+
+- *Chaos engineering*, which is the practice of introducing failures into a system to better understand the consequences of those failures and identify unanticipated failure modes, is another approach. 
+
+- Netflix's *Simian Army* is a collection of chaos engineering tools that introduce failures at various levels of infrastructure from instances to availability zones.
+
+- There are two types of post-mortems: one for **incidents** and another for **projects**.
+
+
+
+### Incident Post-Mortems 
+
+- An *incident* is an event that disrupts a service. 
+- An *incident post-mortem* is a review of the causes of an incident, assessment of the effectiveness of responses to the incident, and discussions of lessons learned.
+
+
+
+#### Learning from Minor Incidents
+
+- Minor incidents in themselves may not provide much opportunity to learn—at least from a single incident.
+
+- Minor incidents can help you to identify weak spots in your procedures without significant adverse effects on system users.
+
+#### Learning from Major Incidents 
+
+- When a large portion of users is adversely affected by a disruption in service or there is a loss of data, then we are experiencing a major incident. 
+
+### Project Post-Mortems 
+
+- Another type of post-mortem that is sometimes used in software engineering is a *project post-mortem*. 
+- These are reviews of a project that review the way work was done. 
+- The goal in these post-mortems is to identify issues that might have slowed down work or caused problems for members of the team.
+
+## IT Enterprise Processes
+
+-  One of the most comprehensive sets of IT enterprise practices is known as ITIL.
+
+- **Information Technology Infrastructure Library (ITIL)** is a set of service management practices
+- **ISO/IEC 20000** is an international standard for IT service management that is similar to ITIL
+
+The ITIL model is organized around four dimensions.
+
+- **Organizations and people:** This dimension is about how people and groups contribute to IT processes.
+- **Information and technology products:** This dimension relates to information technology services within an organization.
+- **Partners and suppliers:** These are external organizations that provide information technology services.
+- **Value streams and processes:** These are the activities executed to realize the benefits of information technologies.
+
+ITIL also organizes management practices into three groups.
+
+- **General management practices:** These practices include strategy, portfolio, and architecture management.
+- **Service management practices:** These practices include business analysis, service catalog management, availability management, and service desk management.
+- **Technical management practices:** These practices are related to deployment management, infrastructure and platform management, and software development management.
+
+## Business Continuity Planning and Disaster Recovery
+
+- This is planning for keeping business operations functioning in the event of a large-scale natural or human-made disaster. 
+- A part of business continuity planning is planning for operations of information systems throughout, or despite the presence of, disasters. This is called *disaster recovery*.
+
+### Business Continuity Planning 
+
+- It tries to answer the question, “How can we keep the business operating in the event of large-scale disruption of services on which our business depends?” 
+
+- Large-scale disruptions include extreme weather events, such as Category 5 hurricanes, or other disasters, such as 7.0 magnitude or greater earthquakes. 
+
+- These kinds of events can cause major community-scale damage to power, water, transportation, and communication systems. 
+
+To enable business operations to continue in spite of such events requires considerable planning. This includes defining the following:
+
+- **Disaster plan**
+  - A *disaster plan* documents a strategy for responding to a disaster. 
+  - It includes information such as where operations will be established, which services are the highest priority, what personnel are considered vital to recovery operations, and plans for dealing with insurance carriers and maintaining relationships with suppliers and customers.
+- **Business impact analysis**
+  - A *business impact analysis* describes the possible outcomes of different levels of disaster.
+  - Business impact analysis includes cost estimates as well
+- **Recovery plan**
+  - The *recovery plan* describes how services will be restored to normal operations.
+  - Once key services, such as power and access to physical infrastructure, are restored, business can start to move operations back to their usual location.
+- **Recovery time objectives**
+  - The recovery plan will also include *recovery time objectives (RTOs)*. 
+  - These prioritize which services should be restored first and the time expected to restore them.
+
+### Disaster Recovery 
+
+- *Disaster recovery (DR)* is the subset of business continuity planning that focuses specifically on IT operations. 
+- DR starts with planning. 
+
+## Summary
+
+- Cloud architects contribute to and participate in a wide range of technical and business processes. Some are focused on individual developers and small teams. 
+
+- The software development lifecycle is a series of phases developers go through to understand business requirements, plan the architecture of a solution, design a detailed implementation, develop the code, deploy for use, and maintain it.
+
+- Some software development projects can use highly automated CI/CD procedures. This allows for rapid release of features and helps developers catch bugs or misunderstood requirements faster than batch updates that were common in the past.
+- As systems become more complicated and fail in unanticipated ways, it is important to learn from those failures. 
+  - A post-mortem analysis provides the means to learn from minor and major incidents in a blameless culture.
+- Large enterprises with expansive portfolios of software employ additional organization-level processes in order to manage dynamic IT and business environments. 
+- ITIL is a well-established set of enterprise practices for managing the general, service, and technical aspects of an organization's IT operations.
+
+- Business continuity planning is the process of preparing for major disruptions in an organization's ability to deliver services. 
+- Disaster planning is a subset of business continuity planning and focuses on making IT services available in the event of a disaster.
+
+## Exam Essentials
+
+- **Understand that information systems are highly dynamic and individual developers, teams, businesses, and other organizations use technical processes to manage the complexity of these environments.** 
+  - Technical processes have been developed to help individual developers and entire organizations function and operate in a coordinated fashion. 
+  - SDLC processes focus on creating, deploying, and maintaining code. 
+  - Other processes include CI/CD, post-mortem analysis, and business continuity planning.
+- **Know that the first stage of the SDLC is analysis.** 
+  - This involves identifying the scope of the problem to address, evaluating options for solving the problem, and assessing the costs/benefits of various options. 
+  - Options should include examining building versus buying. 
+  - Cost considerations should include the opportunity costs of developers' time and the competitive value of the proposed software development effort.
+- **Understand the difference between high-level and detailed design.** 
+  - High-level design focuses on major subcomponents of a system and how they integrate. Architecture decisions, such as when to use asynchronous messaging or synchronous interfaces, are made during the high-level design. 
+  - Detailed design describes how subcomponents will be structured and operate. This includes decisions about algorithms and data structures. Decisions about frameworks and libraries may be made during either high-level or detailed design.
+- **Know the three kinds of documentation.** 
+  - Developer documentation is for other software engineers to help them understand application code and how to modify it. 
+  - Operations documentation is for DevOps engineers and site reliability engineers (SREs) so that they can keep systems functioning. A runbook is documentation that describes steps to run an application and correct operational problems. 
+  - User documentation is for users of the system, and it explains how to interact with the system to have it perform the functions required by the user.
+- **Understand the benefits of CI/CD.** 
+  - CI/CD is the process of incorporating code into a baseline of software, testing it, and if the code passes tests, releasing it for use. 
+  - A key benefit of CI/CD is that new features can be rolled out for use by customers quickly. This may not always be an option. For example, safety-critical software may require substantial testing and validation before it can be changed.
+- **Know what a post-mortem is and why it is used.** 
+  - Post-mortems are reviews of incidents or projects with the goal of improving services or project practices. 
+  - Incidents are disruptions to services. 
+  - Major incidents are often the result of two or more failures within a system. 
+  - Post-mortems help developers better understand application failure modes and learn ways to mitigate risks of similar incidents. 
+  - Post-mortems are best conducted without assigning blame.
+- **Understand that enterprises with large IT operations need enterprise-scale management practices.** 
+  - Large organizations need ways to manage large numbers of software projects, operational systems, and expanding infrastructures. 
+  - Over time, IT professionals have developed good practices for managing information technology systems at an enterprise level. One of the most comprehensive sets of IT enterprise practices is ITIL.
+- **Know why enterprises use business continuity planning and disaster recovery planning.** 
+  - These are ways of preparing for natural or human-made disasters that disrupt an organization's ability to deliver services. 
+  - Disaster planning is a component of business continuity planning. 
+  - Disaster planning includes defining the criteria for declaring a disaster, establishing and switching to a DR environment, and having a plan for restoring normal operations. 
+  - DR plans should be tested regularly.
