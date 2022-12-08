@@ -2386,3 +2386,83 @@ To enable business operations to continue in spite of such events requires consi
   - Disaster planning is a component of business continuity planning. 
   - Disaster planning includes defining the criteria for declaring a disaster, establishing and switching to a DR environment, and having a plan for restoring normal operations. 
   - DR plans should be tested regularly.
+
+# Chapter 10:  Analyzing and Defining Business Processes
+
+## Stakeholder Management
+
+- A stakeholder is someone or some group with an interest in a business initiative. 
+- There are many kinds of stakeholders involved with IT projects, including employees, contractors, consultants, project managers, program managers, business process owners, compliance officers, external partners, and vendors. 
+- Stakeholder management begins with understanding the relationship between interest and influence, the scope of stakeholder interests, and processes for managing stakeholders.
+
+### Interests and Influence
+
+- Interests describe what a stakeholder wants. 
+- Influence describes the stakeholder's ability to get it.
+
+
+
+Interests come in several forms, such as the following:
+
+- Financial interests around costs and benefits of an initiative
+- Organizational interests, such as the priority in which projects will be funded and completed
+- Personnel interests that include assignment of engineers to a project and opportunities for career advancement
+- Functional interests, such as another team of engineers who want the new service to include some specific API functions”
+
+### Projects, Programs, and Portfolios
+
+**Project**
+
+- A project is an initiative focused on completing some organizational task. 
+- Projects have budgets specifying the funding available for the project. They also have schedules that describe the expected time frame for completing the project. 
+- Projects also have resources, which include employees, contractors, and consultants assigned to the project. 
+
+**Programs**
+
+- Programs are initiatives designed to achieve some business goal.
+
+**Porfolios**
+
+- Portfolios are groups of projects and programs that collectively implement a business or organization's strategy.
+
+
+
+### Stages of Stakeholder Management
+
+The four basic stages of stakeholder management are as follows:
+
+- Identifying stakeholders
+- Determining their roles and scope of interests
+- Developing a communications plan
+- Communicating with and influencing stakeholders
+
+### Exam Essentials
+
+- Know that stakeholder management involves the interests and influence of individuals and groups who are affected by a project or program.  
+  - There are different kinds of stakeholders with varying levels of influence. 
+  - Know how to identify stakeholders, discover their interests, and understand how to communicate with them.
+  
+- Understand that change management is particularly challenging.  
+  
+    - Change can occur at the individual, team, department, and enterprise levels. 
+    
+    - Change may be initiated internally or prompted by external factors. 
+    
+    - One way to manage change is to treat it like a scientific experiment and follow a methodology such as **Plan-Do-Study-Act**.
+    
+- Know that team skills are a resource that can be managed.  
+  - As an architect, you understand the skills needed to execute projects in the corporate portfolio. 
+  - You are also able to identify gaps between needed skills and the skills of employees. 
+  - Use this knowledge to develop training and to recruit additional team members.
+  
+- Understand that customer success management is a key business process that may require some architecture consultations.  
+
+    - Early stages of customer success management, such as customer acquisition, marketing, and sales, are not likely to need architecture skills, but later stages, such as professional services engagement and technical support, may benefit from the advice of an architect.
+
+- Know the various aspects of cost management.  
+
+  - The main steps in cost management are resource planning, cost estimating, cost budgeting, and cost control. 
+  - Architects may be especially helpful with resource planning and cost estimating, since these require knowledge of how projects serve business strategy and an understanding of the cost of developing services.
+  
+  ​    
+
