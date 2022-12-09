@@ -2436,13 +2436,109 @@ The four basic stages of stakeholder management are as follows:
 - Developing a communications plan
 - Communicating with and influencing stakeholders
 
+
+
+## Change Management
+
+### Reasons for Change 
+
+- Individuals can experience change for reasons that they bring **upon themselves** or **because of external changes**.
+  - Choosing to switch teams, take a new job, or change career paths are examples of self-directed changes.
+  - If a company reorganizes, a colleague leaves a team, or collaborators are moved to a new office, then those are examples of externally motivated changes.
+- Similarly, teams or departments can change. 
+  - Team members leave, and others join. 
+  - Management reassigns responsibilities based on changing business needs. 
+  - Competition can prompt changes in organizational strategy that in turn lead to changes in programs and projects.
+- Enterprises can experience change, too.
+  - Automakers are dealing with the advent of autonomous vehicle technologies. 
+  - Traditional media companies have had to adapt to new forms of competition from social media.
+  -  Manufacturers are using new kinds of technologies that require new sets of skills from workers. These are examples of technology-driven changes.
+
+- Change may be prompted by new regulatory conditions
+- Change can come from factors outside of business and economics
+- **Digital transformation** is a term used to describe the widespread adoption of digital technology to transform the way that companies create products and deliver value to customers.
+
+### Change Management Methodologies 
+
+- The *Plan-Do-Study-Act* methodology of change management was developed by Walter Shewhart, an engineer and statistician, and later popularized by W. Edwards Deming, engineer and management consultant. 
+
+**It includes four stages.**
+
+- **Plan:** When a change experiment is developed, predictions are made, and various possible results are outlined
+- **Do:** When the experiment is carried out, and the results are collected
+- **Study:** When results are compared to predictions, and other learning opportunities are identified
+- **Act:** When a decision is made about using the results of the experiment, for example, by changing a workflow or implementing a new standard
+
+## Team Skill Management
+
+- Architects typically have a wide range of experience and are knowledgeable about a broad range of technical topics. 
+
+**They can contribute to team skill development by doing the following:**
+
+- Defining skills needed to execute programs and projects defined by organization strategy
+
+- Identifying skill gaps on a team or in an organization
+
+- Working with managers to develop plans to develop skills of individual contributors
+
+- Helping recruit and retain people with the skills needed by the team
+
+- Mentoring engineers and other professionals
+
+## Customer Success Management
+
+- Customer success management is another set of soft skills that helps architects succeed. 
+- The goal of *customer success management* is to advance the goals of the business by helping customers derive value from the products and services their company provides.
+
+There are four basic stages of customer success management.
+
+- **Customer acquisition**
+  - is the practice of engaging new customers.
+- **Marketing and sales**
+  - Businesses dedicate significant resources to *marketing and sales*. 
+  - These are efforts to communicate with customers and convince them to engage with the business
+- **Professional services**
+  - *Professional services* are basically consulting services. 
+  - Customers may buy or license software and service and want to integrate it with the existing set of applications
+- **Training and support**
+  - Enterprise customers will expect *training and support* from their service vendors. 
+  - Architects may assist with establishing training programs for customers and help set up support teams, including tools to manage support calls and track customer questions and issues.
+
+
+
+## Cost Optimization/Resource Optimization
+
+- *Cost management* is another business domain with which architects should be familiar. 
+
+- This domain is more than accounting, and it begins with planning that is guided by business strategies and established programs that implement those strategies. 
+
+The main areas of cost management are as follows:
+
+- **Resource planning**
+  - is the first step of cost control. 
+  - It involves identifying projects and programs that require funding and prioritizing their needs. 
+  - You may also consider the time required to complete projects and the relative benefit of the project when planning for resources.
+- **Cost estimating**
+  - Once programs and projects have been prioritized, you can start to estimate the costs of the top-priority initiatives. 
+  - *Cost estimating* should consider several types of costs, including the following:
+    - Human resources costs, including salary and benefits
+    - Infrastructure, such as cloud computing and storage costs
+    - Operational costs, such as supplies
+    - Capital costs, such as investments in new equipment
+- **Cost budgeting**
+  - *Cost budgeting* is the stage of cost management where decisions are made about how to allocate funds. 
+  - Stakeholders may exercise their influence during budget discussions to promote their projects and programs.
+- **Cost control**
+  - The final stage of cost management is *cost control*, that is, when funds are expended.
+
 ### Exam Essentials
 
-- Know that stakeholder management involves the interests and influence of individuals and groups who are affected by a project or program.  
+- **Know that stakeholder management involves the interests and influence of individuals and groups who are affected by a project or program.**  
+  
   - There are different kinds of stakeholders with varying levels of influence. 
   - Know how to identify stakeholders, discover their interests, and understand how to communicate with them.
   
-- Understand that change management is particularly challenging.  
+- **Understand that change management is particularly challenging.**  
   
     - Change can occur at the individual, team, department, and enterprise levels. 
     
@@ -2450,7 +2546,8 @@ The four basic stages of stakeholder management are as follows:
     
     - One way to manage change is to treat it like a scientific experiment and follow a methodology such as **Plan-Do-Study-Act**.
     
-- Know that team skills are a resource that can be managed.  
+- **Know that team skills are a resource that can be managed**.  
+  
   - As an architect, you understand the skills needed to execute projects in the corporate portfolio. 
   - You are also able to identify gaps between needed skills and the skills of employees. 
   - Use this knowledge to develop training and to recruit additional team members.
@@ -2466,3 +2563,617 @@ The four basic stages of stakeholder management are as follows:
   
   ​    
 
+# Chapter 11: Development and Operations
+
+## Application Development Methodologies
+
+- *Application development methodologies* are principles for organizing and managing software development projects. 
+- *Methodologies* provide a set of practices that developers and stakeholders follow in order to produce operational software.
+
+- Software developers and other stakeholders have developed a variety of application development methodologies. 
+
+Many of these methodologies are specific implementations of one of three paradigms or models of software development.
+
+- Waterfall
+- Spiral
+- Agile
+
+### Waterfall 
+
+- The waterfall model of application development is aptly named because with *waterfall methodologies*, once you complete a phase, there is no going back, much like going over a waterfall. 
+
+**The typical phases in a waterfall methodology are as follows:**
+
+  - Requirements
+  - Design
+  - Implementation
+  - Testing and verification
+  - Maintenance
+
+### Spiral 
+
+- *Spiral methodologies* drop the strict requirement of not returning to an earlier stage in the process. 
+- Spiral methodologies use similar phases to waterfall methodologies, but instead of trying to complete each stage for the entire application, spiral approaches work on only a limited set of functionalities at a time.
+
+- Spiral models are designed to reduce risk in application development.
+
+**They do this by specifying what should occur in each cycle, including the following:**
+
+- Understanding stakeholders' objectives
+- Reviewing product and process alternatives
+- Identifying risks and how to mitigate them
+- Securing stakeholder commitment to the next iteration
+
+### Agile 
+
+- *Agile methodologies* are increasingly being used for software development. 
+- These methodologies are distinguished by their focus on close collaboration between developers and stakeholders and on frequent code deployments. 
+
+**Early advocates for agile methods summarized the principles of agile as follows:**
+
+- Individuals and interactions over processes and tools
+- Working software over comprehensive documentation
+- Customer collaboration over contract negotiation
+- Responding to change over following a plan
+
+## Technical Debt
+
+- to describe the process of making expedient choices to meet an objective, like releasing code by a particular date. 
+- Technical debt incurs something analogous to interest on the national debt, which is the loss of future productivity. 
+- Ideally, technical debt is paid down by refactoring code and implementing a better solution.
+- You are incurring technical debt by making a suboptimal design and coding choice in order to meet other requirements or constraints. The code will need to be refactored in the future. 
+- You are paying down technical debt by changing suboptimal code that was intentionally used to mitigate but not correct a bug
+
+**Projects incur technical debt for many reasons, including the following:**
+
+- Insufficient understanding of requirements
+- Need to deliver some functional code by a set time or within a fixed budget
+- Poor collaboration between teams developing in parallel
+- Lack of coding standards
+- Insufficient testing
+
+## API Best Practices
+
+- APIs provide programmatic access to services. 
+- APIs are often REST APIs or RPC APIs. 
+  - **REST APIs** are resource oriented and use HTTP
+  - **RPC APIs** tend to be oriented around functions implemented using sockets and designed for high efficiency. 
+
+### Resources and Standard Methods 
+
+- **Custom methods** are used to implement functionality that is not available in the standard methods. 
+- Standard methods are preferred over custom methods.
+
+**The following are the four most commonly used HTTP methods for REST APIs:**
+
+- GET
+- POST
+- PUT
+- DELETE
+
+The following is an example of a message resource name:
+
+```
+customers.example.com/contacts/somename@example.com/outgoing/message1
+```
+
+Note that a resource name is not the same as the REST URL. A REST URL should include an API version number. The following is the REST URL for the preceding example:
+
+```
+customers.example.com/v2/contacts/somename@example.com/outgoing/message1
+```
+
+ **The following are example HTTP error codes:**
+
+- 200: status code for a successful call
+
+- 400: Bad request (for example, the call contained an invalid argument)
+- 401: Request not authenticated
+- 403: Permission denied
+- 404: Resource not found
+- 500: Unknown server error
+- 501: Method not implemented by the API
+- 503: Server unavailable
+
+### `API` Security
+
+- APIs should enforce controls to protect the confidentiality and integrity of data and the availability of services. 
+- Confidentiality and integrity are protected in part by HTTPS-provided encryption. This protects data in transit between a client and an API endpoint. 
+
+#### Authentication 
+
+- API functions execute operations on behalf of an entity with an identity. 
+- In the Google Cloud Platform, an identity may be a user or a service account. Identities should be managed by a centralized system, such as Cloud Identity and IAM.
+- One way to authenticate users of API functions is to require an **API key**. 
+  - **API keys** are strings of alphanumeric characters that uniquely identify an app or device to a service.
+
+#### Authorization 
+
+- **JSON Web Tokens (JWT)** are commonly used for authorizing when making API calls.
+
+-  JWTs are digitally signed and can be encrypted. A JWT is a JSON structure with three parts.
+  - Header
+    - contain a type attribute indicating that the token is a JWT type of token and the algorithm used to sign the token.
+  - Payload
+    - is a set of claims. 
+    - *Claims* make statements about the issuer, subject, or token. They may include commonly used claims such as an **expiration time** or the name of the subject.
+  - Signature
+    - is the output of the signature algorithm generated using the header, the payload, and a secret. 
+    - Before using the claims in the payload, a service should validate the signature.
+
+#### Resource Limiting 
+
+- One way to limit resource consumption is to set a maximum threshold for using a service for a given period of time. 
+
+  - For example, a user may be limited to 100 API calls a minute. Once a user has made 100 requests, no other requests from that user will be executed until the start of the next minute.
+
+- Another way to control resource usage is by rate limiting. In this case, you set a maximum rate, such as 100 API requests a minute, which would be an average of one request every 0.6 seconds. 
+
+  - If a user invokes API functions at a rate faster than one every 0.6 seconds, some requests can be dropped until the rate falls below the rate limit.
+- Sometimes limits are set on the overall number of requests without regard to individual users. These limits are higher than the limits that apply to individual users.
+  
+- When one of these limits is exceeded, the response should have **status code 429 (Too Many Requests)**. Responding to excessive requests in this way is called **throttling**.
+
+## Testing Frameworks
+
+- Testing is an important activity of software development, and it is part of all software development methodologies.
+
+### Testing Framework Models 
+
+**Testing tools that enable automation may employ a number of different testing frameworks, including the following:**
+
+- **Data-driven testing**
+
+  - **Data-driven testing** uses structured data sets to drive testing. 
+  - Tests are defined using a set of conditions or input values and expected output values. A test is executed by reading the test data source; then, for each condition or set of inputs, the tested function is executed, and the output is compared to the expected value. 
+  - Data-driven testing is appropriate for testing APIs or functions executed from a command line.
+
+- **Modularity-driven testing**
+
+  - **Modularity-driven testing** uses small scripts designed to test a limited set of functionalities. 
+  - These scripts are combined to test higher-order abstractions. 
+  - For example, a developer may create test scripts for creating, reading, updating, and deleting a customer record. Those four scripts may be combined into a customer management test script. Another script designed to search and sort customers may be combined with the customer management test script into a higher-level script that tests all customer data operations.
+
+- **Keyword-driven testing**
+
+  - **Keyword-driven testing** separates test data from instructions for running a test. 
+
+  - Each test is identified using a keyword or key term. 
+
+  - A *test* is defined as a sequence of steps to execute. 
+
+    For example, the steps to enter a new customer into a database might start with the following:
+
+    1. Opening a customer form
+    2. Clicking the New Customer button
+    3. Waiting for a new window to appear with the data entry form
+    4. Clicking in the First Name field on the New Customer form
+    5. Entering a name in the First Name field
+    6. And so on…
+
+- **Model-based testing**
+
+  - In *model-based testing*, instead of having a person generate test data, a simulation program is used to generate it. 
+  - Typically, when model-based testing is used, the simulator is built in parallel with the system under test. 
+  - Model-based testing uses several methods to simulate the system being tested, including describing the expected system behavior in a finite state machine model or defining logical predicates that describe the system.
+
+- **Test-driven development**
+
+  - **Test-driven development** incorporates testing into the development process. 
+  - In this framework, requirements are mapped to tests. 
+  - The tests are usually specific and narrowly scoped. 
+  - This encourages developing small amounts of code and frequent testing. 
+  - Once a piece of code passes its tests, it can be integrated into the baseline of code.
+
+- **Hybrid testing**
+
+  - **Hybrid testing** is a testing framework that incorporates two or more distinct frameworks.
+
+### Automated Testing Tools 
+
+- **Pytest** -  is a Python testing framework that makes it easy to write and execute unit tests for Python programs. 
+- **JUnit** - is a comparable framework for developers testing Java code.
+- **Selenium** - is a widely used open source browser automation tool that can be used as part of testing. The Selenium WebDriver API enables tests to function as if a user were interacting with a browser. Selenium scripts can be written in a programming language or by using the Selenium IDE.
+
+- Katalon Studio -  is an open source, interactive testing platform that builds on Selenium. It can be used to test web-based and mobile applications and APIs.
+
+- **Fuzzing** - A method of subjecting a program to semi-random inputs for an extended period of time, it can be used to find bugs and security vulnerabilities that would otherwise turn up only at runtime.
+  - Tools that do fuzzing are called **fuzzers**.
+
+## Data and System Migration Tooling
+
+**Data and system migration tools** support the transition from on-premises or other clouds to GCP cloud-based infrastructure.
+
+### Types of Cloud Migrations 
+
+**Cloud migration projects typically fall into one of three categories.**
+
+- **Lift and shift:** In lift-and-shift (also known as re-hosting) projects, infrastructure and data are moved from an on-premises data center to the cloud with minimal changes.
+- **Move and improve:** In move-and-improve projects, infrastructure and architecture are modified to take advantage of cloud infrastructure, for example, moving to containers managed by Kubernetes Engine.
+- **Rebuild in the cloud:** In rebuild-in-the-cloud projects, also known as rip and replace, a legacy application is replaced by a new, native cloud application.
+
+Variations on these migration strategies include replatforming, repurchasing, retirement, and retaining:
+
+- **Replatforming** is a strategy to follow when you don't want to make any changes to an application, but the platform it runs on is not available in the cloud. For example, a mainframe application might require this strategy. The strategy itself involves a combination of additional software to simulate the existing environment along with some minor code changes and recompilation to adapt to the differences between the original environment and the simulated environment.
+- **Repurchasing** is an alternative to rebuild in the cloud.
+- **Retirement** is technically not a migration strategy but should be considered when there are applications that do similar things. In such a case, retiring one and migrating the other can be a good strategy.
+- **Retaining** is usually required when there is an old application and no one knows exactly what it does and lift-and-shift is not an option.
+
+### Migration Services and Tools 
+
+Migrations typically require the transfer of large volumes of data. How you will go about transferring that data is determined by a number of factors, including the following:
+
+- Volume of data
+- Network bandwidth
+- Workflow time constraints on data transfer
+- Location of data
+
+You have several options for transferring data into Google Cloud, including the following:
+
+- Storage Transfer Service
+  - The *Storage Transfer Service* allows for the transfer of data from an HTTP/S location, an AWS S3 bucket, or a Cloud Storage bucket. The data is always transferred to a Cloud Storage bucket. Transfer operations are defined using transfer jobs that run in the Google Cloud. The Transfer Service is the recommended way of transferring data from AWS or other cloud providers to Google Cloud.
+- `gsutil` command-line utility
+  - The *gsutil command-line utility* is the recommended way to transfer data from on-premises to Google Cloud. 
+  - Consider compressing and de-duplicating data before transferring data to save time on the transfer operation. 
+  - Compressing data is CPU intensive, so there is a trade-off between reducing transfer time and incurring additional CPU load.
+  - `gsutil` is multithreaded, which improves performance when transferring a large number of files. 
+  - `gsutil` also supports parallel loading of chunks or subsets of data in large files. The chunks are reassembled at the destination. 
+  - `gsutil` also supports restarts after failures. You can tune `gsutil`transfers with command-line parameters specifying the number of processes, number of threads per process, and other options.
+- Google Transfer Appliance
+  - If large volumes of data will be transferred and a transfer over the network would take too long, then it is recommended that you use the *Google Transfer Appliance*, which is a high-capacity storage device that is shipped to your site. Currently, 40 TB (TA40) and 300 TB (TA400) appliances are available. 
+  - The appliance is installed on your network, and data is transferred to the storage unit, which is then shipped back to Google. After Google receives the storage unit, it will make the unit accessible to you so that you can log in to the console and transfer the data to a Cloud Storage bucket.
+- Third-party vendors
+  - Another option is to use a third-party service, such as those offered by **Zadara**, **Iron Mountain**, and **Prime Focus Technologies**.
+- Database Migration Service
+  - Google Cloud's Database Migration Service is used to migrate MySQL and PostgreSQL databases from on-premises or in Compute Engine, or other clouds to Cloud SQL. 
+  - Support for SQL Server migrations is expected soon. The service supports continuous change data capture, so it provides for minimal downtime.
+
+**GCP SDK** 
+
+- is a set of command-line tools for managing Google Cloud resources. 
+- These commands allow you to manage infrastructure and perform operations from the command line instead of the console. 
+- The GCP SDK components are especially useful for automating routine tasks and for viewing information about the state of your infrastructure.
+
+## Interacting with Google Cloud Programmatically
+
+- Developers, engineers, and others who work with Google Cloud have the option of using the cloud console for interactive work as well as three options for interacting with Google Cloud programmatically: 
+  - Google Cloud SDK, 
+  - Google Cloud Shell, and 
+  - Emulators.
+
+### Google Cloud `SDK`
+
+The Cloud SDK includes the following:
+
+- **gcloud:** A command-line tool for interacting with most GCP services
+- **gsutil:** A command-line tool for working with Cloud Storage
+- **bq:** A command-line tool for working with BigQuery
+
+`gcloud`, `gsutil`, and `bq` are installed by default when installing the GCP SDK. Additional components can be installed as needed using the `gcloud components install` command. The additional components include the following:
+
+- **cbt:** A command-line tool for Bigtable (Note: The current versions of `gcloud` include a `gcloud bigtable` component.)
+- **kubectl:** A command-line tool for managing Kubernetes clusters
+- **pubsub emulator:** A Cloud Pub/Sub emulator
+
+### Google Cloud Shell 
+
+- Google Cloud Shell is a managed service that provides an online development environment with the features of a Linux shell along with pre-installed tools such as the Google Cloud SDK and kubectl. 
+- The service also includes a Cloud Shell Editor.
+
+- Cloud Shell can be accessed from a web browser and provides 5 GB of persistent storage.
+
+
+
+### Cloud Emulators 
+
+- Google Cloud provides emulators for several services that allow you to develop locally before running your code in the cloud.
+- Emulators are installed using the `gcloud` commands. 
+
+This can help reduce cloud charges. Emulators are available for the following:
+
+- Cloud Bigtable
+
+- Cloud Datastore
+- Cloud Firestore
+- Cloud Pub/Sub
+- Cloud Spanner
+
+## Exam Essentials
+
+- **Know the defining characteristics of different application development methodologies.** 
+
+  - Waterfall is a linear process that does not repeat a phase once it is completed. 
+    - Waterfall was an early application development approach. 
+    - The need to know all requirements early in the development process is particularly problematic. 
+  - Spiral methodologies repeat the main phases of the application development process. At the beginning of each iteration, stakeholders define the scope of work and identify risks. 
+  - Agile methodologies are highly collaborative, transparent, and drive to release code frequently.
+
+- **Understand technical debt.** 
+
+  - Application development requires trade-offs. 
+  - Coding and design decisions have to be made in the broad business context, such as the need to deliver a functional product by a set date. 
+  - When an application contains code that is suboptimal, that is a form of technical debt. 
+  - Technical debt is repaid by refactoring code. Architects and developers should consider paying down technical debt as a necessary part of the software development process.
+
+- **Know API best practices.** 
+
+  - APIs should be designed around resources and operations that can be performed on those resources. 
+  - Resources have a resource name and a set of methods. 
+  - The standard set of methods is list, get, create, update, and delete. 
+  - When an API call results in an error, a standard HTTP error should be returned. Additional detail about the error can be provided in the message payload.
+
+- **Understand ways of securing APIs.** 
+
+  - APIs should enforce controls to protect the confidentiality and integrity of data and the availability of services. 
+  - Confidentiality and integrity of data in motion is protected by HTTPS-provided encryption. 
+  - One way to authenticate users of API functions is to require an API key. 
+    - API keys are strings of alphanumeric characters that uniquely identify a user to a service. 
+    - JSON Web Tokens (JWTs) are commonly used for authorizing when making API calls. 
+    - To prevent the unauthorized use of system resources, APIs should include resource-limiting mechanisms.
+    - Resource limiting is often implemented by API gateways that are separate and distinct from the API itself. 
+    - GCP has two different API gateway offerings: the **API Gateway**, a basic service; and **Apigee**, which is more feature rich.
+
+- **Understand that there are a variety of testing frameworks and test automation tools.** 
+
+  - Testing frameworks include data-driven, modularity-driven, keyword-driven, model-based, test-driven, and hybrid testing. 
+  - Developers have a choice of testing tools that range from functionally limited, language-specific tools to general-purpose testing platforms.
+
+- **Know the different kinds of migrations.** 
+
+  - Cloud migration projects typically fall into one of three categories: 
+
+    - lift and shift 
+    - move and improve, and 
+    - rebuild in the cloud. 
+
+  - There are several ways to transfer data during a migration. 
+  - When deciding on a transfer method, consider 
+    - volume of data, 
+    - network bandwidth, 
+    - workflow time constraints on data transfer, and 
+    - location of data.
+
+- **Understand how and when to use the GCP SDK.** 
+
+  - The GCP SDK is a set of command-line tools for managing Google Cloud resources. 
+  - These commands allow you to manage infrastructure and perform operations from the command line instead of the console. 
+  - The GCP SDK components are especially useful for automating routine tasks and for viewing information about the state of your infrastructure.
+
+# Chapter 12: Migration Planning
+
+- They can start by building new systems in the cloud. That will bring some benefits, but there are likely further advantages to migrating existing applications from on-premises data centers to the cloud. 
+
+This requires methodical planning that includes the following:
+
+- Integrating cloud services with existing systems
+- Migrating systems and data to support a solution
+- Software license mapping
+- Network planning
+- Testing and proof-of-concept development
+- Dependency management planning
+
+## Integrating Cloud Services with Existing Systems
+
+- Cloud migrations are inherently about incrementally changing existing infrastructure in order to use cloud services to deliver information services. 
+- During migrations, some applications will move to the cloud, but those migrated applications may be integrated with other applications still running on premises. 
+- You will need to plan a migration carefully to minimize the risk of disrupting services while maximizing the likelihood of successfully moving applications and data to the cloud.
+
+It helps to think of these tasks as part of a four-step migration.
+
+1. Assess
+
+   - During the *assessment phase*, take inventory of applications and infrastructure
+   - During the assessment phase, consider migrating one or two applications in an effort to learn about the cloud, develop experience running applications in the cloud, and get a sense of the level of effort required to set up networking and security. 
+   - This is also a good time to perform a total cost of ownership assessment so the business has an understanding of current costs and anticipated costs after migration. 
+   - Finally, determine the order in which you will migrate workloads.
+
+2. Plan
+
+   - In the *planning phase* you should focus on defining the foundations of your cloud environment, including the resource organization hierarchy, identities, groups, and roles.'
+   - With regard to identities, you will need to plan how you will manage user and service account identities, including whether you will use G Suite or Cloud Identity domains and if you will be integrating an existing identity provider into your Google Cloud infrastructure. In addition to users, you will need to decide how to structure different types of roles, such as managers for the resource hierarchy, network administration, and security.
+   - At this stage, you will also plan your network topology and connectivity.
+
+3. Deploy
+
+   - you will decide on a deployment approach and begin to move workloads to the cloud. 
+
+   - Fully manual deployments are simple and can get fast results, but they are best saved for proof-of-concept work only. 
+
+   - For production workloads, it is better to use a service that can automatically replicate existing workloads to Google Cloud. 
+
+     - Migrate for Compute Engine migrates VM-based applications
+     - Migrate for Anthos converts VM workloads to containers in Google Kubernetes Engine. 
+     - Google Cloud SQL provides replication support, which can help with migrating on-premises databases to the Google Cloud. 
+     - VMware Engine is a tool for migrating VMware workloads from your existing systems to Google Cloud VMware engine.
+
+    - It is highly recommended you use configuration management tools, such as Puppet, Ansible, Chef, and Salt, to automate configuration once you have provisioned virtual machine infrastructure. 
+
+    - When deploying to Google Kubernetes Engine, use GKE deployment services.
+
+    - It is also recommended that you use infrastructure-as-code (IaC) tools to provision cloud resources. Both **Terraform** and **Deployment Manager** can be used for IaC.
+
+
+4. Optimize
+   - Finally, once data and applications are in the cloud, you can shift your focus to optimizing the cloud implementation. 
+   - For example, during the *optimization phase*, you may add monitoring and logging to applications.
+
+## Migrating Systems and Data to Support a Solution
+
+- Part of migration planning is determining which applications should be migrated and in what order. -
+- You also need to consider how to migrate data.
+
+### Planning for Systems Migrations 
+
+- A significant amount of effort can go into understanding applications and their dependencies. 
+
+- During the assessment phase, document the characteristics of each application that may be migrated to the cloud. 
+
+**Include at least the following:**
+
+- Consider the criticality of the system. Systems that must be available 24 hours a day, 7 days a week or risk significant adverse impact on the business are highly critical and considered Tier 1. Moderately important applications, such as batch processing jobs that can tolerate some delay or degradation in service, are Tier 2. Tier 3 applications include all others.
+- Document the production level of each application. Typical levels are production, staging, test, and development.
+- Also note whether the application is developed by a third party or in-house and the level of support available. If the third-party vendor that developed the application is out of business or if a custom application has been minimally maintained for extended periods and there is relatively little in-house expertise with the application, document that risk.
+- Consider the service-level agreements (SLAs) that the application has in place. Can this application tolerate downtime without missing SLA commitments? What compliance issues should be considered with moving this application?
+- How well documented is the application? Is there design, runtime, and architecture documentation? What troubleshooting guides are available?
+- If the application were moved to the cloud, what level of effort would be required to make it functional in the cloud? An application running on premises in a Docker container will require minimal changes, while an application running on an operating system not available in the cloud will likely be more problematic.
+- What databases are read from by this application? What databases are written to by this application? Are these high-availability databases? If so, where are failover databases located? What is the recovery time objective in the event of a failover?
+- On what other systems is the application dependent, such as identity management, messaging, monitoring, and log collection? How is the application backed up?
+- How well automated are the deployment and maintenance of the application? Are manual operations needed for normal operations?
+
+### Planning for Data Migration 
+
+- As you plan for data migrations, you will need to consider factors related to data governance and the way that data is stored. 
+- Different types of storage require different procedures to migrate data. This section covers two scenarios: **migrating object storage** and **migrating relational data.**
+
+#### Data Governance and Data Migration 
+
+- Before migrating data, you should understand any regulations that cover that data. 
+
+  For example, 
+
+  - in the United States, the privacy of personal healthcare data is governed by HIPAA regulations, 
+
+  - in the European Union, the GDPR restricts where data on EU citizens may be stored. 
+  - Businesses and organizations may have their own data classifications and data governance policies. These should be investigated and, if they exist, considered when planning data migrations.
+
+#### Migrating Object Storage 
+
+- Archived data, large object data, and other data that is stored on premises in an object store or filesystem storage may be migrated to Cloud Storage. 
+
+  In these cases, you should do the following:
+
+  - Plan the structure of buckets
+  - Determine roles and access controls
+  - Understand the time and cost of migrating data to Cloud Storage
+  - Plan the order in which data will be transferred
+  - Determine the method to transfer the data
+
+- When transferring data from an on-premises data center, transferring with **gsutil** is a good option when the data volume is less than 10 TB of data and network bandwidth is at least 100 Mbps. 
+- If the volume of data is over 20 TB, the **Google Transfer Appliance** is recommended. When the volume of data is between 10 TB and 20 TB, consider the time needed to transfer the data at your available bandwidth. If the cost and time requirements are acceptable, use `gsutil`; otherwise, use the **Google Transfer Appliance**.
+
+#### Migrating Relational Data 
+
+- When migrating relational databases to the cloud, you should consider the volume of data to migrate, but you should also understand how the database is used and any existing SLAs that may constrain your migration options.
+
+  - One way to migrate a relational database is to export data from the database, transfer the data to the cloud, and then import the data into the cloud instance of the database. 
+    - This option requires the database to be unavailable to users during the migration. 
+    - To ensure a consistent export, the database should be locked for writes during the export operation. It can be available for read operations during the export. 
+    - Once the data is available in the cloud database, database applications can be configured to point to the new database.
+
+  - If a database SLA or other requirements do not allow for an export-based migration, 
+    - you should consider creating a replica of the database in which the replica database is in the Google Cloud. 
+    - This configuration is referred to as *primary/replica* or *leader/follower*, and in general it is the 
+
+- Google Cloud offers the Database Migration Service for migrating PostgreSQL and MySQL databases to Cloud SQL
+
+## Software Licensing Mapping
+
+- Another task in migration planning is understanding the licenses for the software you plan to use in the cloud. Operating system, application, middleware services, and third-party tools may all have licenses.
+
+## Network Planning
+
+- If you are planning to migrate completely to the cloud and eventually stop using on-premises solutions, you will need to plan to configure your GCP network as well as plan for the transition period when you will have both on-premises and cloud-based infrastructure.
+
+- If you intend to continue to use on-premises infrastructure along with cloud infrastructure in a hybrid cloud scenario, you will also need to have a plan for your GCP network as well as long-term connectivity between the cloud and your on-premises network.
+
+**Network migration planning can be broken down into four broad categories of planning tasks.**
+
+- **Virtual private clouds (VPCs)**
+
+  ***Virtual private clouds*** are collections of networking components and configurations that organize your infrastructure in the Google Cloud. The components of VPCs include the following:
+
+  - **Networks**
+    - 10.0.0.0 to 10.255.255.255, with 16,777,216 available addresses
+    - 172.16.0.0 to 172.31.255.255, with 1,048,576 available addresses
+    - 192.168.0.0 to 192.168.255.255, with 65,546 available addresses
+  - **Subnets**
+    - Within networks, you can create subnets to group resources by region. 
+    - Google networking can manage subnets automatically, or you can manage your own subnets.
+    - Automatically managed subnets are useful when you want a subnet in each region and you are not connecting to other networks. 
+    - In general, it is recommended that you manage your own subnets, which are called *custom mode networks*. 
+    - These provide you with complete control over which regions have subnets and the address ranges of each subnet.
+  - **IP addresses**
+    - VM instances can have both internal and external IP addresses. 
+    - The internal IP address is used for traffic within the VPC network. 
+    - The external IP address is optional, and it is used to communicate with external networks. - -- 
+      - External addresses may be ephemeral or static. 
+      - Static IP addresses are used when you need a consistent long-term IP address, for example, for a public website or API endpoint.
+  - **Routes**
+    - Routes are rules for forwarding traffic. 
+    - Some routes are generated automatically when VPCs are created, but you can also create custom routes. 
+    - Routes between subnets are created by default. 
+    - You may want to create custom routes if you need to implement *many-to-one NAT* or *transparent proxies*.
+  - **Virtual private networks (VPNs)**
+    - VPNs are provided by the Cloud VPN service that links your Google Cloud VPC to an on-premises network or another cloud service, such as AWS or Azure. 
+    - VPCs use an IPSec tunnel to secure transmission. 
+    - Cloud VPN is currently available as Classic VPN and HA VPN
+    - A single VPN gateway can sustain up to 3 Gbps
+
+- **Access controls**
+
+  - You should plan how you will control access to network management functions using IAM roles. Some networking-specific roles that you may want to consider assigning are as follows:
+
+    - **Network Admin**: For full permissions to manage network resources
+    - **Network Viewer**: For read-only access to network resources
+    - **Security Admin**: For managing firewall rules and SSL certificates
+    - **Compute Instance Admin**: For managing VM instances
+  - Firewalls are used to control the flow of traffic between subnets and networks. 
+    - You should plan what types of traffic will be allowed to enter and leave each subnet. 
+    - For firewall rule purposes, you will need to define the traffic protocol, such as TCP or IP, whether it applies to incoming (ingress) or outgoing (egress) traffic, and the priority of the rule. 
+    - Higher-priority rules take precedence over lower-priority rules.
+
+- **Scaling**
+
+  - Planning for network scalability may entail the use of autoscaling in managed instance groups and, if you have large static objects that are referenced from around the globe, the use of a content distribution network.
+  - Cloud load balancing can distribute traffic and workloads globally using a single *anycast IP address*.
+  - Application layer load balancing can be done using HTTP(S) layer 7 load balancing, which can distribute traffic across regions routing traffic to the nearest healthy node. 
+  - Traffic can also be routed based on content type. For example, video may be distributed globally using Cloud CDN, Google Cloud's *content delivery network*.
+  - Network load balancing occurs at layer 4. This type of load balancing is useful for dealing with spikes in TCP and IP traffic, load balancing additional protocols, or supporting session affinity.
+  - Also consider how you will manage DNS records for services. 
+    - Cloud DNS is a Google-managed DNS service that can be used to make your services globally available. 
+    - Cloud DNS is designed to provide high-availability and low-latency DNS services.
+
+- **Connectivity**
+
+  - If you are maintaining a hybrid cloud, you will want to plan for networking between the Google Cloud and your on-premises data center.
+  - You may want to consider using Cloud Interconnect, which routes traffic directly to Google Cloud without going over internet networks. 
+  - Cloud Interconnect is available as Dedicated Interconnect and Partner Interconnect. 
+    - **Dedicated** provides a direct physical connection between Google Cloud's network and your on-premises network. 
+    - **Partner Interconnect** provides a connection to the Google Cloud network using a service provided by a telecom service provider that can physically connect to both your on-premises network and the Google Cloud network.
+
+## Exam Essentials
+
+- **Cloud migrations are inherently about incrementally changing existing infrastructure to use cloud services to deliver information services.** 
+  - You will need to plan a migration carefully to minimize the risk of disrupting services while maximizing the likelihood of successfully moving applications and data to the cloud. 
+  - For many organizations, cloud computing is a new approach to delivering information services. 
+  - These organizations may have built large, complex infrastructures running a wide array of applications using on-premises data centers. 
+  - Now those same organizations want to realize the advantages of cloud computing.
+  
+- **Know the four stages of migration planning: assessment, planning, deployment, and optimization.** 
+  - During the assessment phase, take inventory of applications and infrastructure. 
+  - During the planning stage, you will define fundamental aspects of your cloud services, including the structure of the resource hierarchy as well as identities, roles, and groups. 
+  - You will also migrate one or two applications in an effort to learn about the cloud and develop experience running applications in the cloud. 
+  - In the deployment phase, data and applications are moved in a logical order that minimizes the risk of service disruption. 
+  - Finally, once data and applications are in the cloud, you can shift your focus to optimizing the cloud implementation.
+  
+- **Understand how to assess the risk of migrating an application.** 
+  - Considerations include service-level agreements, criticality of the system, availability of support, and quality of documentation. 
+  - Consider other systems on which the migrating system depends. 
+  - Consider other applications that depend on the migrating system. 
+  - Watch for challenging migration operations, such as performing a database replication and then switching to a cloud instance of a database.
+  
+- **Understand how to map licensing to the way you will use the licensed software in the cloud.** 
+  - Operating system, application, middleware services, and third-party tools may all have licenses. 
+  - There are a few different ways to pay for software running in the cloud. 
+    - In some cases, the cost of licensing is included with cloud service charges. 
+    - In other cases, you may have to pay for the software directly in one of two ways. 
+    - You may have an existing license that can be used in the cloud, known as the BYOL model, or you may purchase a license from the vendor specifically for use in the cloud. 
+    - In other cases, software vendors will charge based on usage, much like cloud service pricing.
+  
+- **Know the steps involved in planning a network migration.** 
+  - Network migration planning can be broken down into four broad categories of planning tasks:
+    - **VPCs**, **access controls**, **scaling**, and **connectivity**. 
+    - Planning for each of these will help identify potential risks and highlight architecture decisions that need to be made. 
+    - Consider how you will use networks, subnets, IP addresses, routes, and VPNs. 
+  
+  - Plan for linking on-premises networks to the Google Cloud using either VPNs or Cloud Interconnect.
