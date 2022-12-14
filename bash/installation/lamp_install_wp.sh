@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo 'Update Ubuntu'
+
+sudo apt update
 
 echo 'Installing Apache Web Server'
 
@@ -34,7 +37,7 @@ echo 'Enabling the services'
 
 sudo systemctl enable apache2
 
-sudo systemctl enable mariadb
+sudo systemctl enable mysql
 
 echo 'Enabled the services'
 
