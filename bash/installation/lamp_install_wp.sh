@@ -34,7 +34,7 @@ echo 'Enabling the services'
 
 sudo systemctl enable apache2
 
-sudo systemctl enable mariadb
+sudo systemctl enable mysql
 
 echo 'Enabled the services'
 
