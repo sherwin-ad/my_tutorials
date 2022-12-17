@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo 'Update Ubuntu'
+
+sudo apt update
 
 echo 'Installing Apache Web Server'
 
