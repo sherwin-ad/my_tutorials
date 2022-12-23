@@ -1226,7 +1226,7 @@ Three kinds of IP addresses are supported in Kubernetes.
 
 - is well suited for use with frequently accessed (“hot”) data or for data that is stored briefly.
 
-Types:
+**Types:**
 
 **Region** - stores multiple copies of an object in multiple zones in one region
 
