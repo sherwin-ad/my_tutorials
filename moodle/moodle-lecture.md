@@ -344,6 +344,35 @@ Monitor the progress of an import of a large .sql file
 pv sqlfile.sql | mysql -uxxx -pxxxx dbname
 ```
 
+If you want to take a full backup i.e., all databases, procedures, routines, and events without interrupting any connections:
+
+```none
+mysqldump -u [username] -p -A -R -E --triggers --single-transaction > full_backup.sql
+```
+
+1. `-A` For all databases (you can also use `--all-databases`)
+2. `-R` For all routines (stored procedures & triggers)
+3. `-E` For all events
+4. `--single-transaction` Without locking the tables i.e., without interrupting any connection (R/W).
+
+If you want to take a backup of only specified database(s):
+
+```none
+mysqldump -u [username] -p [database_name] [other_database_name] -R -E --triggers --single-transaction > database_backup.sql
+```
+
+If you want to take a backup of only a specific table in a database:
+
+```sql
+mysqldump -u [username] -p [database_name] [table_name] > table_backup.sql
+```
+
+If you want to take a backup of the database structure only just add `--no-data` to the previous commands:
+
+```sql
+mysqldump -u [username] –p[password] –-no-data [database_name] > dump_file.sql
+```
+
 And if you wish to zip it at the same time:
 
 **To Export:**
@@ -1520,3 +1549,14 @@ echo | openssl s_client -servername $DOM -connect $DOM:$PORT | openssl x509 -noo
 
 ```
 
+
+
+# Moodle solution to "Failed to unserialise data from file. Either failed to read, or failed to write."
+
+1. Execute script purgecaches to reset the cache system.
+
+```
+php /moodle/admin/cli/purge_caches.php		
+```
+
+2. Remove all files and directories unde directory /moodledata/cache
