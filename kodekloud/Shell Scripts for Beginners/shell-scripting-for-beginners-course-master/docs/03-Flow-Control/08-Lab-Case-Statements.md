@@ -32,7 +32,7 @@
 
      <details>
 
-     ```
+     ```bash
      month_number=$1
 
      if [ -z $month_number ]
@@ -70,7 +70,7 @@
 
      <details>
 
-     ```
+     ```bash
      while true
      do
        echo "1. Add"
@@ -81,33 +81,35 @@
      
        read -p "Enter your choice: " choice
      
-       if [ $choice -eq 1 ]
-       then
+       case $choice in
+         1)
              read -p "Enter Number1: " number1
              read -p "Enter Number2: " number2
              echo Answer=$(( $number1 + $number2 ))
-       elif [ $choice -eq 2 ]
-       then
+             ;;
+         2)
              read -p "Enter Number1: " number1
              read -p "Enter Number2: " number2
              echo Answer=$(( $number1 - $number2 ))
-       elif [ $choice -eq 3 ]
-       then
+             ;;
+     
+         3)
              read -p "Enter Number1: " number1
              read -p "Enter Number2: " number2
              echo Answer=$(( $number1 * $number2 ))
-       elif [ $choice -eq 4 ]
-       then
+             ;;
+         4)
              read -p "Enter Number1: " number1
              read -p "Enter Number2: " number2
              echo Answer=$(( $number1 / $number2 ))
-       elif [ $choice -eq 5 ]
-       then
-         break
-       fi
+             ;;
+         5)
+             break
+             ;;
+       esac
      
      done
- 
+      
      ```
      </details>
 
