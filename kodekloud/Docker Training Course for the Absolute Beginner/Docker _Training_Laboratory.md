@@ -780,7 +780,7 @@
       - 643b9cf496c099293d77cf530ed627c815321d2c22def65ef21cc29071d80a4a
       - null
       - 6fa415a7d24c669c661597853b5ef4f375c86761a2c5d12bfa2550a3a48ed95e
-     
+       
       ```
       $ docker ps -a
       CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
@@ -805,15 +805,16 @@
       - 10
       - 40
       - 20
-     
+       
       
+
    get-data.sh 
       
       ```
       docker exec mysql-db mysql -pdb_pass123 -e 'use foo; select * from myTable'
    ```
       
-      ```
+   ```
       $ sh get-data.sh 
       mysql: [Warning] Using a password on the command line interface can be insecure.
       id      Name    Phone   Email
@@ -856,11 +857,11 @@
       - **NO**
       - YES
      
-      ```
+   ```
       $ sh get-data.sh 
       Error: No such container: mysql-db
       ```
-   
+
    6. Damn! We didn't plan that well at all. Let's try again!!
    
       Ok
@@ -1087,3 +1088,162 @@
       ```
 
    9. If you are successfull, you should be able to view the application by clicking on the `HOST:38080` at the top of your terminal. You should see a green success message.
+
+      
+
+# DOCKER REGISTRY, LAB: DOCKER REGISTRY
+
+1. In this lab we will explore some concepts related to `Docker Registry` and also practice setting up our own simple `registry server`.
+
+2. What is a `Docker Registry`?
+
+   - **It is a storage and distribution system for named Docker images**
+   - It is an alternative to code hosting platform for version control like Github, GitLab etc.
+   - It is a place to store Dockerfiles
+   - All of the options
+
+3. By default, the `Docker engine` interacts with ?
+
+   - Amazon Elastic Container Registry
+   - **DockerHub**
+   - On-premises Registry
+   - Azure Container Registry
+   - Google Container Registry
+
+4. DockerHub is a hosted registry solution by `Docker Inc`.
+
+   Besides public and private repositories, it also provides: automated builds,integration with source control solutions like Github and Bitbucket etc.
+
+5. Which command is used for `Login` to a `self-hosted registry`?
+
+   - docker load [SERVER]
+   - docker sign-in [SERVER]
+   - **docker login [SERVER]**
+   - docker connect [SERVER]
+
+6. Let practice deploying a `registry server` on our own.
+   Run a registry server with name equals to `my-registry` using `registry:2` image with host port set to `5000`, and restart policy set to `always`.
+
+   Note: Registry server is exposed on port `5000` in the image.
+
+   Here we are hosting our own registry using the open source Docker Registry.
+
+   Check
+
+   - Container Name: my-registry
+   - Host Port: 5000
+   - Image: registry:2
+   - Restart Policy: always
+
+   ```
+   $ docker run -d -p 5000:5000 --restart=always --name my-registry registry:2
+   
+   $ docker ps
+   CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+   4885210ed954        registry:2          "/entrypoint.sh /etc…"   11 seconds ago      Up 10 seconds       0.0.0.0:5000->5000/tcp   my-registry
+   ```
+
+7. Now its time to push some images to our registry server. Let's push two images for now .i.e. `nginx:latest` and `httpd:latest`.
+
+   Note: Don't forget to pull them first.
+
+   To check the list of images pushed , use `curl -X GET localhost:5000/v2/_catalog`
+
+   Check
+
+   - Image nginx:latest pushed?
+   - Image httpd:latest pushed?
+
+   ```
+   # Download 
+   $ docker pull nginx:latest
+   
+   # Tag
+   $ docker image tag nginx:latest localhost:5000/nginx:latest 
+   
+   # and finally push it using 
+   # docker push localhost:5000/nginx:latest
+   
+   
+   $ docker pull httpd:latest 
+   
+   $ docker image tag httpd:latest localhost:5000/httpd:latest 
+   
+   $ docker push localhost:5000/httpd:latest
+   ```
+
+   **Check list of images pushed**
+
+   ```
+   $ curl -X GET localhost:5000/v2/_catalog
+   {"repositories":["httpd","nginx"]}
+   $ 
+   ```
+
+8. Let's remove all the dangling images we have locally. Use `docker image prune -a` to remove them. How many images do we have now?
+
+   Note`: Make sure we don't have any running containers except our `registry-sever`.
+   To get list of images use: `docker image ls
+
+   - 3
+   - 2
+   - **1**
+   - 4
+
+   ```
+   $ docker image prune -a
+   
+   $ docker images
+   REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+   registry            2                   81c944c2288b        6 weeks ago         24.1MB
+   ```
+
+9. Now we can pull images from our `registry-server` as well. Use `docker pull [server-addr/image-name]` to pull the images that we pushed earlier.
+
+   In our case we can use: `docker pull localhost:5000/nginx`
+
+   ```
+   $ docker pull localhost:5000/nginx
+   Using default tag: latest
+   latest: Pulling from nginx
+   3f4ca61aafcd: Pull complete 
+   50c68654b16f: Pull complete 
+   3ed295c083ec: Pull complete 
+   40b838968eea: Pull complete 
+   88d3ab68332d: Pull complete 
+   5f63362a3fa3: Pull complete 
+   Digest: sha256:9a821cadb1b13cb782ec66445325045b2213459008a41c72d8d87cde94b33c8c
+   Status: Downloaded newer image for localhost:5000/nginx:latest
+   localhost:5000/nginx:latest
+   
+   $ docker images
+   REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
+   localhost:5000/nginx   latest              1403e55ab369        5 days ago          142MB
+   registry               2                   81c944c2288b        6 weeks ago         24.1MB
+   ```
+
+10. Let's clean up after ourselves.
+    Stop and remove the `my-registry` container.
+
+    Check
+
+    - my-registry container removed?
+
+    ```
+    $ docker ps
+    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+    4885210ed954        registry:2          "/entrypoint.sh /etc…"   22 minutes ago      Up 22 minutes       0.0.0.0:5000->5000/tcp   my-registry
+    
+    $ docker stop my-registry
+    my-registry
+    
+    $ docker rm  my-registry
+    my-registry
+    
+    $ docker ps
+    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+    ```
+
+    
+
+    
