@@ -1004,7 +1004,153 @@ gzip /home/bob/python.tar
 
 
 
-# 
+# SECURITY AND FILE PERMISSIONS, LAB: ACCOUNT MANAGEMENT
+
+1. This lab requires some commands to be run as the `root` user. Always use sudo.
+
+   Bob's default password is `caleston123`
+
+2. What type of account does `Bob` use?
+
+   - Service Account
+   - System Account
+   - **User Account**
+   - Superuser Account
+
+3. Which of the following commands will show you the `UID for a user`?
+
+   If unsure, try out the commands in the terminal and find the answer!
+
+   - echo $HOME
+   - print_home
+   - **id**
+   - cwd
+
+   ```
+   $ id
+   uid=1000(bob) gid=1000(bob) groups=1000(bob)
+   ```
+
+4. What is the `UID` for `bob`?
+
+   - 1001
+   - **1000**
+   - 1010
+   - 1
+
+5. What level of `sudo` access does `bob` have in this system?
+
+   - Permission to remove packages
+   - Permission to Install Packages
+   - Permissions to Reboot the laptop
+   - **All Permissions**
+
+   ```
+   ~$ sudo cat /etc/sudoers
+   #
+   # This file MUST be edited with the 'visudo' command as root.
+   #
+   # Please consider adding local content in /etc/sudoers.d/ instead of
+   # directly modifying this file.
+   #
+   # See the man page for details on how to write a sudoers file.
+   #
+   Defaults        env_reset
+   Defaults        mail_badpass
+   Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+   
+   # Host alias specification
+   
+   # User alias specification
+   
+   # Cmnd alias specification
+   
+   # User privilege specification
+   root    ALL=(ALL:ALL) ALL
+   
+   # Members of the admin group may gain root privileges
+   bob ALL=(ALL) ALL
+   
+   # Allow members of group sudo to execute any command
+   %sudo   ALL=(ALL:ALL) ALL
+   
+   # See sudoers(5) for more information on "#include" directives:
+   
+   #includedir /etc/sudoers.d
+   ```
+
+6. Which access control file has the encrypted password for the users?
+
+   - /etc/group
+   - **/etc/shadow**
+   - /etc/sudoers
+   - /etc/passwd
+
+   ```
+   $ sudo grep bob /etc/shadow
+   bob:$6$VjvQjl5/$x6yvvflnz8xlRAUCKHfiTUNRrxiF4yjTXQh0wNbSiGKSM6o5BVESRFQe1qmxdwq0S0nyehrfkxgf7eFpCNgGo1:18366:0:99999:7:::
+   ```
+
+
+7. A user called `chris` has been created.
+
+   Can you find out his Full Name?
+
+   - **Chris Hunter**
+   - Chris Goodman
+   - Chris Jones
+   - Chris Helmsworth
+
+   ```
+   $ sudo grep chris /etc/passwd
+   chris:x:1002:1002:Chris Hunter:/home/chris:/bin/sh
+   ```
+
+8. Which groups are `chris` part of?
+
+   - mercury,venus
+   - chris,storm,cannon
+   - venus,sapphire
+   - storm,cannon
+   - **cannon,sapphire,chris**
+
+   ```
+   $ id chris                
+   uid=1002(chris) gid=1002(chris) groups=1002(chris),1003(cannon),1004(sapphire)
+   ```
+
+9. What is `chris's` primary group?
+
+   - venus
+   - cannon
+   - sapphire
+   - mercury
+   - **chris**
+
+   ```
+   $ id chris                
+   uid=1002(chris) gid=1002(chris) groups=1002(chris),1003(cannon),1004(sapphire)
+   ```
+
+10. Now, lets create a new user called `sarah`. Once done, set her password to `caleston321`
+
+    ```
+    $ sudo useradd sarah
+    
+    $ sudo passwd sarah
+    ```
+
+11. Create a group called `john` with the `GID 1010`. Next create another user called `john` with `UID = 1010`, `primary group = john` and `login shell = /bin/sh`
+
+    ```
+    $ sudo groupadd -g 1010 john
+    
+    $ sudo useradd -u 1010 -g 1010 -s /bin/sh john
+    ```
+
+    
+
+   
 
 
 
