@@ -1148,13 +1148,927 @@ gzip /home/bob/python.tar
     $ sudo useradd -u 1010 -g 1010 -s /bin/sh john
     ```
 
+
+
+
+# SECURITY AND FILE PERMISSIONS, LAB: PERMISSIONS AND OWNERSHIP
+
+1. This lab requires some commands to be run as the `root` user. Always use `sudo`.
+
+   Bob's default password is `caleston123`
+
+2. A new directory called `sports` has been created in your home directory. Inspect it.
+
+   What is the permission set for the `owner` of this directory?
+
+   - **Full Permission - Read, Write and Execute**
+   - No Permissions
+   - Read Only
+   - Write Only
+
+   ```
+   $ ls -ld /home/bob/sports/
+   drwxr-x--- 2 bob bob 4096 Dec 28 23:33 /home/bob/sports/
+   
+   OR
+   
+   $ ls -l 
+   total 2512
+   -rw-rw-r-- 1 bob bob 2557716 Apr 15  2020 caleston-code.tar.gz
+   drwxr-xr-x 1 bob bob    4096 Apr 15  2020 media
+   drwxr-x--- 2 bob bob    4096 Dec 28 23:33 sports
+   ```
+
+3. What is the permission set for group users for the same directory `sports`?
+
+   - **READ and EXECUTE**
+   - READ ONLY
+   - FULL PERMISSIONS
+   - NO PERMISSIONS
+
+   ```
+   $ ls -ld /home/bob/sports/
+   drwxr-x--- 2 bob bob 4096 Dec 28 23:33 /home/bob/sports/
+   ```
+
+4. What are the permissions set for `other` users for the `sports` directory?
+
+   - READ ONLY
+   - FULL PERMISSIONS
+   - **NO PERMISSIONS**
+   - WRITE AND EXECUTE
+
+   ```
+   $ ls -ld /home/bob/sports/
+   drwxr-x--- 2 bob bob 4096 Dec 28 23:33 /home/bob/sports/
+   ```
+
+5. Who's the owner of this directory?
+
+   - **bob**
+   - dave
+   - root
+   - michael
+
+   ```
+   $ ls -ld /home/bob/sports/
+   drwxr-x--- 2 bob bob 4096 Dec 28 23:33 /home/bob/sports/
+   ```
+
+6. A new file called `soccer` has been created under the `sports` directory.
+
+   It has full permissions, update the file so that the group and others only have `read` and `execute` permissions.
+
+   ```
+   $ chmod 755 /home/bob/sports/soccer 
+   
+   OR 
+   
+   $ chmod go-w /home/bob/sports/soccer
+   ```
+
+7. Now, `add` back the `write` permission for group and `remove all` permission for others for the same file called `soccer`.
+
+   ```
+   $ chmod 770 /home/bob/sports/soccer 
+   
+   OR 
+   
+   $ chmod g+w,o-rwx /home/bob/sports/soccer
+   ```
+
+8. Now, change the ownership of the file called `soccer` to the `service account` called `mercury`.
+
+   ```
+   $ sudo chown mercury /home/bob/sports/soccer
+   ```
+
+9. We have created another file in the `sports` directory. Change the ownership for the entire `sports` directory including all the files inside to the service account `mercury`.
+
+   Try to do this with one single command. Explore the `-R` recursive flag with the `chown` command.
+
+   ```
+   $ sudo chown -R mercury /home/bob/sports
+   ```
+
+
+
+# SECURITY AND FILE PERMISSIONS, LAB: SSH AND SCP
+
+
+
+1. Which port number does the `SSH` service use by default?
+
+   Bob's default password is `caleston123`
+
+   - 80
+   - 443
+   - **22**
+   - 25
+
+   
+
+2. If you run `ssh devapp01` in the terminal, which user are you using to connect to the server?
+
+   If unsure, try it out on the terminal.
+
+   - bob
+   - superuser
+   - ssh user
+   - root
+
+   ```
+   $ ssh devapp01
+   bob@devapp01's password: 
+   Permission denied, please try again.
+   bob@devapp01's password: 
+   Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 5.4.0-1093-gcp x86_64)
+   
+    * Documentation:  https://help.ubuntu.com
+    * Management:     https://landscape.canonical.com
+    * Support:        https://ubuntu.com/advantage
+   
+   This system has been minimized by removing packages and content that are
+   not required on a system that users do not log into.
+   
+   To restore this content, you can run the 'unminimize' command.
+   
+   The programs included with the Ubuntu system are free software;
+   the exact distribution terms for each program are described in the
+   individual files in /usr/share/doc/*/copyright.
+   
+   Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+   applicable law.
+   
+    _______  _______  _        _______  _______ _________ _______  _       
+   (  ____ \(  ___  )( \      (  ____ \(  ____ \\__   __/(  ___  )( (    /|
+   | (    \/| (   ) || (      | (    \/| (    \/   ) (   | (   ) ||  \  ( |
+   | |      | (___) || |      | (__    | (_____    | |   | |   | ||   \ | |
+   | |      |  ___  || |      |  __)   (_____  )   | |   | |   | || (\ \) |
+   | |      | (   ) || |      | (            ) |   | |   | |   | || | \   |
+   | (____/\| )   ( || (____/\| (____/\/\____) |   | |   | (___) || )  \  |
+   (_______/|/     \|(_______/(_______/\_______)   )_(   (_______)|/    )_)
+   Last login: Wed Apr 15 08:19:16 2020 from 172.16.238.3
+   bob@devapp01:~$ 
+   ```
+
+3. Now, let's set up password-less ssh between Bob's laptop and the Dev Application server `devapp01`.
+
+   We will make use of `bob's` user account that has been created in the application server.
+   It uses the same default password: `caleston123`
+
+4. First, generate the SSH key-pair using the `ssh-keygen` command in the `caleston-lp10` server.
+
+   Key Type - `RSA`
+
+   ```
+   $ ssh-keygen -t rsa
+   Generating public/private rsa key pair.
+   Enter file in which to save the key (/home/bob/.ssh/id_rsa): 
+   Enter passphrase (empty for no passphrase): 
+   Enter same passphrase again: 
+   Your identification has been saved in /home/bob/.ssh/id_rsa.
+   Your public key has been saved in /home/bob/.ssh/id_rsa.pub.
+   The key fingerprint is:
+   SHA256:sZXZrDmTs0XSayLNcWVTkkoKoTGMOnkmLneaO3ikOow bob@caleston-lp10
+   The key's randomart image is:
+   +---[RSA 2048]----+
+   |     oo ..    =o.|
+   |    . .+.  *.o.o |
+   |   o  . ..*o*.   |
+   |  = o    *.O..   |
+   | . =    S @ +    |
+   |. + .    . O     |
+   |o* +      .      |
+   |E.=              |
+   |oo.o             |
+   +----[SHA256]-----+
+   ```
+
+5. The public key created using the previous command is:
+
+   - **/home/bob/.ssh/id_rsa.pub**
+   - /home/bob/.ssh/id_rsa
+   - /home/bob.ssh
+   - /root/id_rsa.pub
+
+6. Copy the public key to the target server `devapp01`.
+
+   Make use of the `ssh-copy-id` command
+
+   ```
+   $ ssh-copy-id bob@devapp01
+   /usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/bob/.ssh/id_rsa.pub"
+   /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+   /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+   bob@devapp01's password: 
+   
+   Number of key(s) added: 1
+   
+   Now try logging into the machine, with:   "ssh 'bob@devapp01'"
+   and check to make sure that only the key(s) you wanted were added.
+   ```
+
+7. Which file on the target server is the public key copied in to?
+
+   - **/home/bob/.ssh/authorized_keys**
+   - /root/.ssh/authorized_users
+   - /etc/authoried_users
+   - /home/bob/.ssh/known_hosts
+
+8. Finally, copy the file `/home/bob/caleston-code.tar.gz` from Bob's laptop to the server `devapp01`
+
+   Copy the file to Bob's home directory.
+
+   ```
+   $ scp /home/bob/caleston-code.tar.gz devapp01:/home/bob 
+   ```
+
+
+
+# SECURITY AND FILE PERMISSIONS > LAB – IPTABLES
+
+1. In this Lab, we will secure the development environment by making use of `iptables`.
+
+   Wherever required, use `sudo` to run commands as the root user. Bob's password is `caleston123`.
+
+2. Here is the simple architecture diagram of the implementation. This is a two-tier application.
+   The web server is hosted on `devapp01`.
+   The DB server is hosted on `devdb01`.
+   The Software Repository is hosted on `caleston-repo-01`.
+
+   Here are the connectivity requirements:
+
+   1. `SSH` should be allowed from Bob's laptop to both Web and DB servers.
+   2. `HTTP/80` from the Web Server should be accessible from Bob's laptop.
+   3. The `Web Server` should be able to access the `Software Repository` server at port `80`
+
+   ![](images/iptables-arch.png)
+
+3. Install `iptables` on `devapp01 and devdb01` servers
+
+   Check
+
+   - installed on devapp01?
+
+   - installed on devdb01?
+
+   ```
+   $ ssh devapp01
+    
+   $ sudo apt install iptables
+   
+   $ ssh devdb01
+    
+   $ sudo apt install iptables
+   ```
+
+4. Are there any `iptable` rules created on either Web Server or DB Server right now?
+
+   - **NO**
+   - YES
+
+   ```
+   bob@devapp01:~$ sudo iptables -L
+   Chain INPUT (policy ACCEPT)
+   target     prot opt source               destination         
+   
+   Chain FORWARD (policy ACCEPT)
+   target     prot opt source               destination         
+   
+   Chain OUTPUT (policy ACCEPT)
+   target     prot opt source               destination         
+   bob@devapp01:~$ 
+   ```
+
+   ```
+   bob@devdb01:~$ sudo iptables -L
+   Chain INPUT (policy ACCEPT)
+   target     prot opt source               destination         
+   
+   Chain FORWARD (policy ACCEPT)
+   target     prot opt source               destination         
+   
+   Chain OUTPUT (policy ACCEPT)
+   target     prot opt source               destination        
+   ```
+
+5. On `devapp01`, add an incoming rule permitting SSH and HTTP connection from Bob's Laptop.
+
+   Bob's Laptop has an IP address of `172.16.238.187`.
+
+   Check
+
+   - Incoming SSH allowed?
+   - Incoming HTTP allowed?
+
+   ```
+   $ sudo iptables -A INPUT -p TCP -s 172.16.238.187 --dport 22 -j ACCEPT 
+   
+   and 
+   
+   $ sudo iptables -A INPUT -p TCP -s 172.16.238.187 --dport 80 -j ACCEPT
+   ```
+
+6. Now, lockdown incoming traffic on `devapp01`. Drop incoming connections from any source on any destination port for any protocol (TCP/UDP).
+
+   Remember, this rule should be at the `bottom of the chain` for the SSH and HTTP access from `caleston-lp10` to work.
+
+   Check
+
+   - All Incoming traffic blocked?
+
+   ```
+   $ sudo iptables -A INPUT -j DROP
+   ```
+
+7. On `devapp01`, add an outgoing rule permitting access to `port 5432 on devdb01` and HTTP access to `caleston-repo-01`. Once this is done, block outgoing traffic to any destination on `http/https ports` from `devapp01`
+
+   Note: `caleston-repo-01` has the ip address of `172.16.238.15`
+
+   Check
+
+   - Access to DB Server permitted?
+   - Access to Software Repo Server permitted?
+   - Outgoing HTTP access denied?
+   - Outgoing HTTPS access denied?
+
+   ```
+   sudo iptables -A OUTPUT -p TCP -d 172.16.238.11 --dport 5432 -j ACCEPT
+   sudo iptables -A OUTPUT -p TCP -d 172.16.238.15 --dport 80 -j ACCEPT
+   sudo iptables -A OUTPUT -p tcp --dport 80 -j DROP
+   sudo iptables -A OUTPUT -p tcp --dport 443 -j DROP
+   ```
+
+8. Add an `OUTPUT` rule to the top of the chain which will allow `https` connection to `google.com` on `devapp01`
+
+   Check
+
+   - Task completed?
+
+   ```
+   sudo iptables -I OUTPUT -p tcp -d google.com --dport 443 -j ACCEPT
+   ```
+
+
+
+#    SECURITY AND FILE PERMISSIONS, LAB: CRONJOB
+
+1. Which command is used to list all the cronjobs created for a user?
+
+   - **crontab -l**
+   - crontab -r
+   - crontab -i
+   - crontab -e
+
+2. How many cronjobs are currently scheduled for `bob`?
+
+   - 1
+   - 6
+   - 3
+   - 5
+
+   ```
+   $ crontab -l
+   11 11 * * 3 /usr/local/bin/system-reporter.sh
+   23 11 * * 2 /usr/local/bin/system-checker.sh
+   23 23 * * 2 /usr/local/bin/system-debugger.sh
+   11 23 * * * /usr/local/bin/system-tester.sh
+   11 23 * 2 * /usr/local/bin/system-troubleshooter.sh
+   11 23 * * 2 /usr/local/bin/system-identifier.sh
+   ```
+
+3. How about now? How many cronjobs are scheduled for the `root` user ?
+
+   - 3
+   - 0
+   - 1
+   - 2
+
+   ```
+   $ sudo crontab -l
+   [sudo] password for bob: 
+   0 21 * * * date >> /tmp/date.txt
+   ```
+
+4. Inspect the cronjobs scheduled for `bob` again. Which command/script is run at `11 minutes past 11 PM` every `Tuesday`?
+
+   - /usr/local/bin/system-checker.sh
+   - /usr/local/bin/system-debugger.sh
+   - /usr/local/bin/system-tester.sh
+   - **/usr/local/bin/system-identifier.sh**
+   - /usr/local/bin/system-troubleshooter.sh
+   - /usr/local/bin/system-reporter.sh
+
+   ```
+   ~$ crontab -l
+   11 11 * * 3 /usr/local/bin/system-reporter.sh
+   23 11 * * 2 /usr/local/bin/system-checker.sh
+   23 23 * * 2 /usr/local/bin/system-debugger.sh
+   11 23 * * * /usr/local/bin/system-tester.sh
+   11 23 * 2 * /usr/local/bin/system-troubleshooter.sh
+   11 23 * * 2 /usr/local/bin/system-identifier.sh
+   ```
+
+5. Schedule a cronjob to run the script `/usr/local/bin/last-reboot.sh` on the `first day of every month at 6 AM`.
+   The script should not run any other day.
+
+   ```
+   # Use: Run 
+   $ crontab -e
+   
+   # This will open the crontab in the VI Editor. Add the below line to the file:
+   0 6 1 * * /usr/local/bin/last-reboot.sh
+   ```
+
+6. When will the script `/usr/local/bin/system-troubleshooter.sh` be run?
+
+   Inspect the cronjobs scheduled for `bob`.
+
+   - 11 Minutes past 11 PM on every Tuesday
+   - 11 minutes past 11 AM on every other day
+   - **11 minutes past 11 PM on all days in the month of February**
+   - 11 minutes past 11 AM on every Monday
+
+   ```
+   $ crontab -l
+   11 11 * * 3 /usr/local/bin/system-reporter.sh
+   23 11 * * 2 /usr/local/bin/system-checker.sh
+   23 23 * * 2 /usr/local/bin/system-debugger.sh
+   11 23 * * * /usr/local/bin/system-tester.sh
+   11 23 * 2 * /usr/local/bin/system-troubleshooter.sh
+   11 23 * * 2 /usr/local/bin/system-identifier.sh
+   0 6 1 * * /usr/local/bin/last-reboot.sh
+   ```
+
+7. The script `/usr/local/bin/system-debugger.sh` was incorrectly scheduled. It should run every half hour at minute `0` and minute `30`
+
+   Example: 09:00, 09:30, 10:00, 10:30, 11:00, 11:30……so on every half hour.
+
+   ```
+   Use Step values for the minute column = */30 OR
+   Specify the minute column as 00,30 both of which mean at minute zero then minute 30.
+   To sum up, add this to the crontab:
+   */30 * * * * /usr/local/bin/system-debugger.sh
+   ```
+
+
+
+# SERVICE MANAGEMENT WITH SYSTEMD, LAB: SYSTEMD SERVICES
+
+1. This lab requires several commands to be run as the `root` user. Always use `sudo`.
+
+   Bob's default password is `caleston123`
+
+2. What is the status of the `sample.service` unit?
+
+   - Unknown
+   - **Inactive(dead)**
+   - Active(Running)
+   - Does not exist
+
+   ```
+   $ sudo systemctl status sample.service
+   ● sample.service - A template service unit file. Use this to create a service
+      Loaded: error (Reason: Invalid argument)
+      Active: inactive (dead)
+   
+   Dec 29 07:59:59 caleston-lp10 systemd[1]: sample.service: Service lacks both ExecStart= and ExecSto
+   Dec 29 08:00:20 caleston-lp10 systemd[1]: sample.service: Service lacks both ExecStart= and ExecSto
+   ```
+
+3. Try starting the service
+
+   Does it start?
+
+   - Yes
+   - **No**
+
+   ```
+   $ sudo systemctl start sample.service
+   Failed to start sample.service: Unit sample.service is not loaded properly: Invalid argument.
+   See system logs and 'systemctl status sample.service' for details.
+   ```
+
+4. Why did the service start fail?
+
+   - multi-user.target not enabled
+   - **Service section not defined**
+   - Install section not defined
+   - Unit section not defined
+
+   ```
+   $ sudo journalctl -u sample.service
+   -- Logs begin at Thu 2022-12-29 07:58:08 UTC, end at Thu 2022-12-29 08:03:05 UTC. --
+   Dec 29 07:59:59 caleston-lp10 systemd[1]: sample.service: Service lacks both ExecStart= and ExecSto
+   Dec 29 08:00:20 caleston-lp10 systemd[1]: sample.service: Service lacks both ExecStart= and ExecSto
+   Dec 29 08:01:20 caleston-lp10 systemd[1]: sample.service: Service lacks both ExecStart= and ExecSto
+   ```
+
+5. Update the `[Service]` section
+
+   Set the `ExecStart` to run the script `/bin/bash /root/sample_script.sh`.
+   Once done, start the service.
+
+   Check
+
+   - Task completed?
+
+   ```
+   Run: sudo vi /etc/systemd/system/sample.service
+   Add /bin/bash /root/sample_script.sh to ExecStart
+   Save and Exit.
+   and then start the service: - sudo systemctl start sample.service
+   ```
+
+   /etc/systemd/system/sample.service
+
+   ```
+   [Unit]
+   Description=A template service unit file. Use this to create a service
+   
+   [Service]
+   ExecStart=/bin/bash /root/sample_script.sh
+   
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+6. Inspect the status of the service now.
+
+   What is the status?
+
+   - Failed
+   - Inactive(dead)
+   - Unknown
+   - **Active(running)**
+
+   ```
+   $ sudo systemctl status sample.service
+   ● sample.service - A template service unit file. Use this to create a service
+      Loaded: loaded (/etc/systemd/system/sample.service; disabled; vendor preset: enabled)
+      Active: active (running) since Thu 2022-12-29 08:07:56 UTC; 1min 0s ago
+    Main PID: 948 (bash)
+       Tasks: 2 (limit: 251382)
+      CGroup: /docker/ac0a0ebe109dd36ae2eb1fc3e0edad2b953fa8745c96c8766ae951adf7ca495c/system.slice/sa
+              ├─948 /bin/bash /root/sample_script.sh
+              └─950 sleep 100
+   
+   Dec 29 08:07:56 caleston-lp10 bash[948]: Thu Dec 29 08:07:56 UTC 2022
+   ```
+
+   
+
+7. ```
+   Enable` this service now so that it will be started automatically after a reboot for `multi-user.target
+   ```
+
+   Check
+
+   - Task completed?
+
+   ```
+   $ sudo systemctl enable sample.service
+   ```
+
+8. Now update the service to ensure that it restarts when stopped for `any` reason.
+
+   user `Restart=always` derivative.
+
+   Check
+
+   - Task completed?
+
+   ```
+   Run: sudo vi /etc/systemd/system/sample.service
+   Add Restart=always to the Service section.
+   Save and Exit
+   ```
+
+   /etc/systemd/system/sample.service
+
+   ````
+   [Unit]
+   Description=A template service unit file. Use this to create a service
+   
+   [Service]
+   ExecStart=/bin/bash /root/sample_script.sh
+   
+   Restart=always
+   
+   [Install]
+   WantedBy=multi-user.target
+   ````
+
+9. Try and restart the service now.
+
+   There seems to be a warning. What is the fix?
+
+   - **Reload the Unit**
+   - Fix Permissions
+   - Fix the Unit File
+
+   ```
+   $ sudo systemctl restart sample.service
+   Warning: The unit file, source configuration file or drop-ins of sample.service changed on disk. Run 'systemctl daemon-reload' to reload units.
+   ```
+
+10. Reload the service unit file
+
+    ```
+    $ sudo systemctl daemon-reload
+    ```
+
+11. How would you check the errors encountered earlier when the sample service did not have a valid service section?
+
+    - **journalctl -u sample.service**
+    - cat /var/log/faillog
+    - systemctl status sample.service -l
+
+
+
+# THE CLIENT DEMONSTRATION > LAB – TROUBLESHOOT THE DEVELOPMENT ENVIRONMENT
+
+1. Bob needs your help to get his app ready in time for the client presentation!
+
+   His app is working perfectly on his own laptop, but while transferring the code to the Dev servers, things are not working as expected!
+
+   Wherever required, use `sudo` to run commands as the root user. Bob's password is `caleston123`.
+   Proceed to the next question to see the application architecture.
+
+2. Here is the simple architecture diagram of the implementation. This is a two-tier application.
+   The web server is hosted on `devapp01`.
+   The DB server is hosted on `devdb01`
+
+   Bob has done his bit when it comes to the code. Everything is set up to work properly.
+   All you need to do is to fix some of the things he has missed while migrating the code and the database on the DEV servers.
+
+   Click on `OK` to move to the first task.
+
+   ![](images/Caleston_demo.jpg)
+
+4. Task 1:`
+Copy the file `caleston-code.tar.gz` from Bob's laptop to Bob's home directory on the webserver `devapp01
+
+
+   Bob's password is `caleston123`
+
+   Check
+
+   - Task completed?
+
+     ```
+     $ scp caleston-code.tar.gz bob@devapp01:~/
+     ```
+
+4. `Task 2:`
+   On the `devapp01` webserver, unzip and extract the copied file in the directory `/opt/`.
+
+   The password for the `devapp01` webserver is `caleston123`.
+
+   Check
+
+   - Task completed?
+
+   ```
+   $ sudo tar -xvzf caleston-code.tar.gz -C /opt/
+   ```
+
+5. `Task 3`:
+   Delete the tar file from `devapp01` webserver.
+
+   ```
+   $ rm -rf caleston-code.tar.gz 
+   
+   OR
+   
+   $ rm caleston-code.tar.gz 
+   ```
+
+6. `Task 4:`
+   Make sure that the directory is extracted in such a way that the path `/opt/caleston-code/mercuryProject/` exists on the `webserver`.
+
+   ```\
+   $ sudo ls -l /opt/caleston-code/mercuryProject/
+   total 48
+   -rw-rw-r-- 1 bob bob  7079 Jan  8  2021 admin.json
+   drwxrwxr-x 3 bob bob  4096 Jan  8  2021 blog
+   -rw-rw-r-- 1 bob bob 15331 Jan  8  2021 db.json
+   -rwxrwxr-x 1 bob bob   627 Jan  8  2021 manage.py
+   drwxrwxr-x 3 bob bob  4096 Jan  8  2021 media
+   drwxrwxr-x 2 bob bob  4096 Jan  8  2021 mercury
+   drwxrwxr-x 3 bob bob  4096 Jan  8  2021 portfolios
+   drwxrwxr-x 3 bob bob  4096 Jan  8  2021 templates
+   ```
+
+7. For the client demo, Bob has installed a `postgres` database in `devdb01`.
+
+   SSH to the database `devdb01` and check the status of the `postgresql.service`
+
+   What is the state of the DB?
+   Bob's password is `caleston123`
+
+   - **inactive (dead)**
+   - active (exited)
+   - Unknown
+   - Suspended
+
+   ```
+   $ sudo systemctl status postgresql.service
+   ● postgresql.service - PostgreSQL RDBMS
+      Loaded: loaded (/lib/systemd/system/postgresql.service; enabled; vendor preset: enabled)
+      Active: inactive (dead) since Thu 2022-12-29 08:18:36 UTC; 20min ago
+     Process: 5313 ExecStart=/bin/true (code=exited, status=0/SUCCESS)
+    Main PID: 5313 (code=exited, status=0/SUCCESS)
+   
+   Dec 29 08:18:35 devdb01 systemd[1]: Starting PostgreSQL RDBMS...
+   Dec 29 08:18:35 devdb01 systemd[1]: Started PostgreSQL RDBMS.
+   Dec 29 08:18:36 devdb01 systemd[1]: Stopped PostgreSQL RDBMS.
+   ```
+
+8. `Task 5`:
+   Add an entry `host all all 0.0.0.0/0 md5` to the end of the file `/etc/postgresql/10/main/pg_hba.conf` on the DB server.
+
+   This will allow the web application to connect to the DB.
+
+9. `Task 6`:
+   Start the `postgres` DB on the `devdb01` server.
+
+   Check
+
+   - Task completed?
+
+   ```
+   $ sudo systemctl start postgresql.service
+   
+   $ sudo systemctl status postgresql.service
+   ● postgresql.service - PostgreSQL RDBMS
+      Loaded: loaded (/lib/systemd/system/postgresql.service; enabled; vendor preset: enabled)
+      Active: active (exited) since Thu 2022-12-29 08:46:42 UTC; 7s ago
+     Process: 5601 ExecStart=/bin/true (code=exited, status=0/SUCCESS)
+    Main PID: 5601 (code=exited, status=0/SUCCESS)
+   
+   Dec 29 08:46:42 devdb01 systemd[1]: Starting PostgreSQL RDBMS...
+   Dec 29 08:46:42 devdb01 systemd[1]: Started PostgreSQL RDBMS.
+   ```
+
+10. What port is `postgres` running on? Check using the `netstat` command?
+
+   Bob's password is `caleston123`.
+
+   - 3306
+   - 2206
+   - 5433
+   - 5432
+
+   ```
+   $ sudo netstat -natulp | grep postgres | grep LISTEN
+   tcp        0      0 0.0.0.0:5432            0.0.0.0:*               LISTEN      5583/postgres       
+   tcp6       0      0 :::5432                 :::*                    LISTEN      5583/postgres  
+   ```
+
+11. `Task 7`:
+    Back on the `devapp01` webserver. Attempt to start the web application by:
+
+    1. Navigate to the directory `/opt/caleston-code/mercuryProject`
+    2. Next, run the command `python3 manage.py runserver 0.0.0.0:8000`
+
+    Was the command successful? Did the application load up?
+
+    Key in `Control + C` to get back to the bash prompt.
+
+    - Yes
+    - **No**
+
+    ```
+    $ cd /opt/caleston-code/mercuryProject
+    
+    $ python3 manage.py runserver 0.0.0.0:8000
+    ```
+
+12. 
+
+13. `Task 8`:
+    It appears that Bob did not configure his app to connect a `postgres` database running on a different server.
+    That explains why things are working on his laptop and not in the `DEV` servers.
+    It also appears that he is using the `wrong` port for postgres!
+
+    1. Find the file in the directory under `/opt/caleston-code` that has a string matching `DATABASES = {`.
+    2. Replace the value of `localhost` to `devdb01`
+    3. In the same file fix the postgres port to match the port being used on `devdb01`
+
+    Check
+
+    - Task completed?
+
+    ```
+    $ grep -ir "DATABASES = {" /opt/caleston-code/
+    /opt/caleston-code/mercuryProject/mercury/settings.py:DATABASES = {
+    
+    $ sudo vi mercuryProject/mercury/settings.py
+    ```
+
+14. `Task 9`:
+    Now that has been set up, change the ownership of `ALL` files and directories under `/opt/caleston-code` to user `mercury`.
+
+    Bob's password is `caleston123`.
+
+    ```
+    $ sudo chown -R mercury /opt/caleston-code 
+    ```
+
+15. Great! Everything should now be in order to restart the application.
+    On the `devapp01` server start the webserver again by running the command:
+
+    1. Navigate to the directory `/opt/caleston-code/mercuryProject`
+    2. Next, run the command `python3 manage.py runserver 0.0.0.0:8000`
+
+    **Note:-** Make sure to activate the virtual environment using `source ../venv/bin/activate` within the current project before executing `python3 manage.py migrate`.
+    Something like `(venv)` should now be a part of the prompt.
+
+    To access the application, click on the `Project Mercury` tab!
+
+    ```
+    $ cd /opt/caleston-code/mercuryProject
+    
+    $ source ../venv/bin/activate
+    
+    (venv) python3 manage.py migrate
+    
+    (venv) python3 manage.py runserver 0.0.0.0:8000
+    ```
+
+16. Well done! Now, for the final task before the client presentation.
+    Create a new service called `mercury.service` with the following requirements.
+
+    1. Service name, `mercury.service`, `WorkingDirectory`: `/opt/caleston-code/mercuryProject/`, Command to run: `python3 manage.py runserver 0.0.0.0:8000`
+    2. Restart `on failure` and enable for `multi-user.target`
+    3. Run as user `mercury`.
+    4. Set description: `Project Mercury Web Application`
+
+    Create the unit file under `/etc/systemd/system`. Once done enable and start the `mercury.service`.
+
+    ```
+    $ sudo vi /etc/systemd/system/mercury.service
+    ```
+
+    ```
+    [Unit]
+    Description=Project Mercury Web Application
+    
+    [Service]
+    ExecStart=/usr/bin/python3 manage.py runserver 0.0.0.0:8000
+    Restart=on-failure
+    WorkingDirectory=/opt/caleston-code/mercuryProject
+    User=mercury
+    
+    [Install]
+    WantedBy=multi-user.target
+    ```
+
+    Start and enable the service and check the status as follows: -
+
+    ```
+    sudo systemctl enable --now mercury.service
+    
+    sudo systemctl status mercury.service
+    ```
+
     
 
+
+
+
+
+
+
+
+
+   
+
+   
+
+   
+
    
 
 
 
-   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
