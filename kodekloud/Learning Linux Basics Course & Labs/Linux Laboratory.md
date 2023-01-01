@@ -1946,7 +1946,12 @@ Copy the file `caleston-code.tar.gz` from Bob's laptop to Bob's home directory o
     $ python3 manage.py runserver 0.0.0.0:8000
     ```
 
-12. 
+12. Why did the command not work?
+
+    - Configuration files not found
+    - **Connection refused to DB on 127.0.0.1, port 5433**
+    - Connection refused to DB on 172.16.238.10, port 5432
+    - Packages Missing
 
 13. `Task 8`:
     It appears that Bob did not configure his app to connect a `postgres` database running on a different server.

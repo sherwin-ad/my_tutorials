@@ -74,13 +74,13 @@ UPDATE wp_posts SET guid = REPLACE(guid, 'https://stg1.beesites.net/bmb/', 'http
 
 
 ````
-UPDATE wp_options SET option_value = replace(option_value, 'https://bbmg.webrepublik.net', 'https://35.234.48.251') WHERE option_name = 'home' OR option_name = 'siteurl';
+UPDATE wp_options SET option_value = replace(option_value, 'https://beecr8tive.net/SSS', 'http://sss.gov.ph.sample') WHERE option_name = 'home' OR option_name = 'siteurl';
 
-UPDATE wp_posts SET guid = replace(guid, 'https://bbmg.webrepublik.net','http://35.234.48.251');
+UPDATE wp_posts SET guid = replace(guid,'https://beecr8tive.net/SSS','http://sss.gov.ph.sample');
 
-UPDATE wp_posts SET post_content = replace(post_content, 'https://bbmg.webrepublik.net', 'http://35.234.48.251');
+UPDATE wp_posts SET post_content = replace(post_content, ' https://beecr8tive.net/SSS', 'http://sss.gov.ph.sample');
 
-UPDATE wp_postmeta SET meta_value = replace(meta_value,'https://bbmg.webrepublik.net','http://35.234.48.251');
+UPDATE wp_postmeta SET meta_value = replace(meta_value,' https://beecr8tive.net/SSS','http://sss.gov.ph.sample');
 ````
 
 
