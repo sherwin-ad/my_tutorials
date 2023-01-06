@@ -1047,6 +1047,10 @@ chmod +x /home/bob/filter.sh
 
  # CHALLENGE 5, LINUX CHALLENGE 5
 
+![](images/linux-challenge5.png)
+
+
+
 We got a couple of tasks that need to be done on `centos-host` server. Most of these tasks are dependent on each other but not all of them.
 
 All the tasks require you to be root, so the first step is to become root

@@ -355,6 +355,12 @@ mysqldump -u [username] -p -A -R -E --triggers --single-transaction > full_backu
 3. `-E` For all events
 4. `--single-transaction` Without locking the tables i.e., without interrupting any connection (R/W).
 
+Compress output using gzip
+
+```
+mysqldump -uroot -p --single-transaction --quick --skip-lock-tables db | gzip > "db_$(date +"%FT%H%M").sql.gz"
+```
+
 If you want to take a backup of only specified database(s):
 
 ```none
