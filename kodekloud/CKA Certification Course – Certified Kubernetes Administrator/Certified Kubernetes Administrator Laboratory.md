@@ -3848,3 +3848,1069 @@ deployment.apps/deployment-1 created
 
 
 
+<<<<<<< HEAD
+=======
+# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST SECRETS
+
+1. How many `Secrets` exist on the system?
+
+   In the current(default) namespace.
+
+   - 0
+   - 4
+   - 3
+   - **1**
+   - 2
+
+   ```
+   kubectl get secrets 
+   NAME              TYPE                                  DATA   AGE
+   dashboard-token   kubernetes.io/service-account-token   3      63s
+   ```
+
+2. How many secrets are defined in the `dashboard-token` secret?
+
+   - **3**
+   - 0
+   - 1
+   - 5
+   - 2
+   - 4
+
+   ```
+   kubectl describe secrets dashboard-token 
+   Name:         dashboard-token
+   Namespace:    default
+   Labels:       <none>
+   Annotations:  kubernetes.io/service-account.name: dashboard-sa
+                 kubernetes.io/service-account.uid: 70abd0bc-9976-4fd5-ba99-a2bd27562768
+   
+   Type:  kubernetes.io/service-account-token
+   
+   Data
+   ====
+   ca.crt:     566 bytes
+   namespace:  7 bytes
+   token:      eyJhbGciOiJSUzI1NiIsImtpZCI6Im90YU9PQ2JOY1FNakZYX1lHZzhNUlBrYXk1V2gyMjlYenQ4ZWRXOURrVFEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRhc2hib2FyZC10b2tlbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJkYXNoYm9hcmQtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI3MGFiZDBiYy05OTc2LTRmZDUtYmE5OS1hMmJkMjc1NjI3NjgiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpkYXNoYm9hcmQtc2EifQ.klpodtmbTe1NV5YRjec7B9xnWy_rKbkUbXuLe-GT4-gju_-W5WMWyqv6NguzkAhJMh5cZBr2-DQdDK3IajpgHAF_hiybp51_3fEP4l4keVJeS73mSAjlmdoyVUcQA9_s8rdMbKTv3wGhJoeHgsYmg1EoUkNOALkoV5kTD5b7YuEGHtaxa2TztDwb_BqUvduKVn1Uju0G17ODfSotYyN2AjjDfOnJHiDi09L0HvtC5W-p9KkBI_Q6QHdnKSlx0Zwx3qfHXmv7Nj7r3UHnCUvTBauMs0QQPXFM56OXSHdKOO2ERnTOho9q6S0FrTWtLYgHWYjFg6zNxedhcf-7uOAHOw
+   ```
+
+3. What is the type of the `dashboard-token` secret?
+
+   - **kubernetes.io/service-account-token**
+   - Opaque
+   - Secret
+
+   ```
+   kubectl describe secrets dashboard-token 
+   Name:         dashboard-token
+   Namespace:    default
+   Labels:       <none>
+   Annotations:  kubernetes.io/service-account.name: dashboard-sa
+                 kubernetes.io/service-account.uid: 70abd0bc-9976-4fd5-ba99-a2bd27562768
+   
+   Type:  kubernetes.io/service-account-token
+   ```
+
+4. Which of the following is not a secret data defined in `dashboard-token` secret?
+
+   - **type**
+   - ca.crt
+   - namespace
+   - token
+
+   Run the command `kubectl describe secrets dashboard-token` and look at the `data` field.
+   There are three secrets - `ca.crt`, `namespace` and `token`.
+   `type` is not a secret data.
+
+5. We are going to deploy an application with the below architecture
+
+   We have already deployed the required pods and services. Check out the pods and services created. Check out the web application using the `Webapp MySQL` link above your terminal, next to the Quiz Portal Link.
+
+   Ok
+
+   ![image-20230107093732545](images/image-20230107093732545.png)
+
+6. The reason the application is failed is because we have not created the secrets yet. Create a new secret named `db-secret` with the data given below.
+
+   You may follow any one of the methods discussed in lecture to create the secret.
+
+   Check
+
+   - Secret Name: db-secret
+   - Secret 1: DB_Host=sql01
+   - Secret 2: DB_User=root
+   - Secret 3: DB_Password=password123
+
+   ```
+   $ kubectl create secret generic db-secret --from-literal=DB_Host=sql01 --from-literal=DB_User=root --from-literal=DB_Password=password123
+   secret/db-secret created
+   
+   $ kubectl get secrets 
+   NAME              TYPE                                  DATA   AGE
+   db-secret         Opaque                                3      58s
+   
+   $ kubectl describe secrets db-secret 
+   Name:         db-secret
+   Namespace:    default
+   Labels:       <none>
+   Annotations:  <none>
+   
+   Type:  Opaque
+   
+   Data
+   ====
+   DB_Host:      5 bytes
+   DB_Password:  11 bytes
+   DB_User:      4 bytes
+   ```
+
+7. Configure `webapp-pod` to load environment variables from the newly created secret.
+
+   Delete and recreate the pod if required.
+
+   Check
+
+   - Pod name: webapp-pod
+   - Image name: kodekloud/simple-webapp-mysql
+   - Env From: Secret=db-secret
+
+   ```
+   $ kubectl edit pod webapp-pod 
+   ```
+
+   
+
+   Add the secret in the pod spec as below:
+
+   ```yaml
+   apiVersion: v1 
+   kind: Pod 
+   metadata:
+     labels:
+       name: webapp-pod
+     name: webapp-pod
+     namespace: default 
+   spec:
+     containers:
+     - image: kodekloud/simple-webapp-mysql
+       imagePullPolicy: Always
+       name: webapp
+       envFrom:
+       - secretRef:
+           name: db-secret
+   ```
+
+   Recreate the pod.
+
+   ```
+   $ kubectl replace -f /tmp/kubectl-edit-240172369.yaml --force 
+   pod "webapp-pod" deleted
+   pod/webapp-pod replaced
+   ```
+
+8. View the web application to verify it can successfully connect to the database
+
+   Ok
+
+
+
+# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST – MULTI CONTAINER PODS
+
+1. Identify the number of containers created in the `red` pod.
+
+   - 2
+   - 3
+   - 1
+   - 4
+
+   ```
+   kubectl get pods
+   NAME        READY   STATUS    RESTARTS   AGE
+   app         1/1     Running   0          4m31s
+   fluent-ui   1/1     Running   0          4m31s
+   red         3/3     Running   0          85s
+   ```
+
+2. Identify the name of the containers running in the `blue` pod.
+
+   - **teal & navy**
+   - orange & yellow
+   - Red & green
+   - grey & white
+
+   ```
+   ubectl describe pod blue 
+   Name:             blue
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/10.12.230.6
+   Start Time:       Fri, 06 Jan 2023 21:21:22 -0500
+   Labels:           <none>
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.0.10
+   IPs:
+     IP:  10.244.0.10
+   Containers:
+     teal:
+       Container ID:  containerd://ab79c23dd906a18756c2b5ac1c1326ce9f025e277578207029a8302c12c2394d
+       Image:         busybox
+       Image ID:      docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sleep
+         4500
+       State:          Running
+         Started:      Fri, 06 Jan 2023 21:21:24 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-64v98 (ro)
+     navy:
+       Container ID:  containerd://43fe098af1ba45bd560ef8d02b53072ba9c7cc9c109898ecf75d3a822cbad917
+       Image:         busybox
+       Image ID:      docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sleep
+         4500
+       State:          Running
+         Started:      Fri, 06 Jan 2023 21:21:25 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-64v98 (ro)
+   ```
+
+3. Create a multi-container pod with 2 containers.
+
+   Use the spec given below.
+   If the pod goes into the `crashloopbackoff` then add the command `sleep 1000` in the `lemon` container.
+
+   Check
+
+   - Name: yellow
+   - Container 1 Name: lemon
+   - Container 1 Image: busybox
+   - Container 2 Name: gold
+   - Container 2 Image: redis
+
+   ```
+   kubectl run yellow --image=busybox --dry-run=client  -o yaml --command -- sleep 1000 > yellow-pod.yaml
+   ```
+
+   yellow-pod.yaml
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     labels:
+       run: yellow
+     name: yellow
+   spec:
+     containers:
+     - command:
+       - sleep
+       - "1000"
+       image: busybox
+       name: lemon
+   
+     - name: gold
+       image: redis
+   ```
+
+   ```
+   kubectl create -f yellow-pod.yaml 
+   pod/yellow created
+   ```
+
+4. We have deployed an application logging stack in the `elastic-stack` namespace. Inspect it.
+
+   Before proceeding with the next set of questions, please wait for all the pods in the `elastic-stack` namespace to be ready. This can take a few minutes.
+
+   Ok
+
+   ![image-20230107103937335](images/image-20230107103937335.png)
+
+5. Once the pod is in a ready state, inspect the Kibana UI using the link above your terminal. There shouldn't be any logs for now.
+
+   We will configure a sidecar container for the application to send logs to Elastic Search.
+
+   NOTE: It can take a couple of minutes for the `Kibana` UI to be ready after the `Kibana` pod is ready.
+
+   You can inspect the `Kibana` logs by running:
+   `kubectl -n elastic-stack logs kibana`
+
+   Ok
+
+6. Inspect the `app` pod and identify the number of containers in it.
+
+   It is deployed in the `elastic-stack` namespace.
+
+   - 2
+   - 4
+   - **1**
+   - 3
+
+   ```
+   kubectl describe pod app -n elastic-stack 
+   Name:             app
+   Namespace:        elastic-stack
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/10.12.230.6
+   Start Time:       Fri, 06 Jan 2023 21:16:28 -0500
+   Labels:           name=app
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.0.4
+   IPs:
+     IP:  10.244.0.4
+   Containers:
+     app:
+       Container ID:   containerd://f9a3aacd2eadaa662d754efa377654cab31c5f4c000af551ad9a64bbb1896d67
+       Image:          kodekloud/event-simulator
+       Image ID:       docker.io/kodekloud/event-simulator@sha256:1e3e9c72136bbc76c96dd98f29c04f298c3ae241c7d44e2bf70bcc209b030bf9
+       Port:           <none>
+       Host Port:      <none>
+       State:          Running
+         Started:      Fri, 06 Jan 2023 21:17:07 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /log from log-volume (rw)
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-tt6q6 (ro)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:
+     log-volume:
+       Type:          HostPath (bare host directory volume)
+       Path:          /var/log/webapp
+       HostPathType:  DirectoryOrCreate
+     kube-api-access-tt6q6:
+       Type:                    Projected (a volume that contains injected data from multiple sources)
+       TokenExpirationSeconds:  3607
+       ConfigMapName:           kube-root-ca.crt
+       ConfigMapOptional:       <nil>
+       DownwardAPI:             true
+   QoS Class:                   BestEffort
+   Node-Selectors:              <none>
+   Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                                node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+   Events:
+     Type    Reason     Age   From               Message
+     ----    ------     ----  ----               -------
+     Normal  Scheduled  29m   default-scheduler  Successfully assigned elastic-stack/app to controlplane
+     Normal  Pulling    29m   kubelet            Pulling image "kodekloud/event-simulator"
+     Normal  Pulled     29m   kubelet            Successfully pulled image "kodekloud/event-simulator" in 7.275455698s (36.402436092s including waiting)
+     Normal  Created    29m   kubelet            Created container app
+     Normal  Started    29m   kubelet            Started container app
+   ```
+
+7. The application outputs logs to the file `/log/app.log`. View the logs and try to identify the user having issues with Login.
+
+   Inspect the log file inside the pod.
+
+   - USER7
+   - USER1
+   - **USER5**
+   - USER3
+
+   ```
+   $ kubectl -n elastic-stack exec -it app -- cat /log/app.log | tail
+   [2023-01-07 02:49:03,969] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-07 02:49:03,969] INFO in event-simulator: USER1 is viewing page1
+   [2023-01-07 02:49:04,254] INFO in event-simulator: USER4 logged out
+   [2023-01-07 02:49:04,971] INFO in event-simulator: USER3 is viewing page3
+   [2023-01-07 02:49:05,254] INFO in event-simulator: USER3 is viewing page1
+   [2023-01-07 02:49:05,972] INFO in event-simulator: USER4 is viewing page3
+   [2023-01-07 02:49:06,256] INFO in event-simulator: USER4 logged out
+   [2023-01-07 02:49:06,973] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-07 02:49:06,974] INFO in event-simulator: USER2 is viewing page1
+   [2023-01-07 02:49:07,257] INFO in event-simulator: USER1 is viewing page2
+   ```
+
+8. Edit the pod to add a sidecar container to send logs to Elastic Search. Mount the log volume to the sidecar container.
+
+   Only add a new container. Do not modify anything else. Use the spec provided below.
+
+   
+
+   > Note: State persistence concepts are discussed in detail later in this course. For now please make use of the below documentation link for updating the concerning pod.
+
+   
+   `https://kubernetes.io/docs/tasks/access-application-cluster/communicate-containers-same-pod-shared-volume/`
+
+   Check
+
+   - Name: app
+   - Container Name: sidecar
+   - Container Image: kodekloud/filebeat-configured
+   - Volume Mount: log-volume
+   - Mount Path: /var/log/event-simulator/
+   - Existing Container Name: app
+   - Existing Container Image: kodekloud/event-simulator
+
+   ```
+   kubectl edit -n elastic-stack pod app
+   ```
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: app
+     namespace: elastic-stack
+     labels:
+       name: app
+   spec:
+     containers:
+     - name: app
+       image: kodekloud/event-simulator
+       volumeMounts:
+       - mountPath: /log
+         name: log-volume
+   
+     - name: sidecar
+       image: kodekloud/filebeat-configured
+       volumeMounts:
+       - mountPath: /var/log/event-simulator/
+         name: log-volume
+   
+     volumes:
+     - name: log-volume
+       hostPath:
+         # directory location on host
+         path: /var/log/webapp
+         # this field is optional
+         type: DirectoryOrCreate
+   ```
+
+   ```
+   kubectl replace -f /tmp/kubectl-edit-2134590203.yaml --force 
+   pod "app" deleted
+   pod/app replaced
+   ```
+
+9. Inspect the Kibana UI. You should now see logs appearing in the `Discover` section.
+
+   You might have to wait for a couple of minutes for the logs to populate. You might have to create an index pattern to list the logs. If not sure check this video: `https://bit.ly/2EXYdHf`
+
+
+
+# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST – INIT CONTAINERS
+
+1. Identify the pod that has an `initContainer` configured.
+
+   - green
+   - **blue**
+   - red
+   - pink
+
+   ```
+   controlplane ~ ➜  kubectl get pods
+   NAME    READY   STATUS    RESTARTS   AGE
+   green   2/2     Running   0          2m57s
+   red     1/1     Running   0          2m57s
+   blue    1/1     Running   0          2m57s
+   
+   controlplane ~ ✖ kubectl describe pod red | grep -i "init containers" -A 10
+   
+   controlplane ~ ✖ kubectl describe pod green | grep -i "init containers" -A 10
+   
+   controlplane ~ ✖ kubectl describe pod blue | grep -i "init containers" -A 10
+   Init Containers:
+     init-myservice:
+       Container ID:  containerd://9553c62d34a8b2092bff85ac1b3f4ee40f380be9aed26d26be0bad0bfa2c0d25
+       Image:         busybox
+       Image ID:      docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sh
+         -c
+         sleep 5
+   ```
+
+2. What is the image used by the `initContainer` on the `blue` pod?
+
+   - busybox:1.28
+   - **busybox**
+   - nginx
+   - alpine
+   - busybox:1.1
+
+   ```
+   controlplane ~ ✖ kubectl describe pod blue | grep -i "init containers" -A 10
+   Init Containers:
+     init-myservice:
+       Container ID:  containerd://9553c62d34a8b2092bff85ac1b3f4ee40f380be9aed26d26be0bad0bfa2c0d25
+       Image:         busybox
+       Image ID:      docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sh
+         -c
+         sleep 5
+   ```
+
+3. What is the state of the `initContainer` on pod `blue`?
+
+   - Alive
+   - Running
+   - **Terminated**
+   - Completed
+
+   ```
+   controlplane ~ ➜  kubectl describe pod blue | grep -i "init containers" -A 20
+   Init Containers:
+     init-myservice:
+       Container ID:  containerd://9553c62d34a8b2092bff85ac1b3f4ee40f380be9aed26d26be0bad0bfa2c0d25
+       Image:         busybox
+       Image ID:      docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sh
+         -c
+         sleep 5
+       State:          Terminated
+         Reason:       Completed
+         Exit Code:    0
+         Started:      Sat, 07 Jan 2023 03:15:29 +0000
+         Finished:     Sat, 07 Jan 2023 03:15:34 +0000
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vrhmd (ro)
+   ```
+
+4. Why is the `initContainer` terminated? What is the reason?
+
+   - **The process completed successfully**
+   - The process cannot start
+   - The process crashed
+
+   ```
+   controlplane ~ ➜  kubectl describe pod blue | grep -i "init containers" -A 20
+   Init Containers:
+     init-myservice:
+       Container ID:  containerd://9553c62d34a8b2092bff85ac1b3f4ee40f380be9aed26d26be0bad0bfa2c0d25
+       Image:         busybox
+       Image ID:      docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sh
+         -c
+         sleep 5
+       State:          Terminated
+         Reason:       Completed
+         Exit Code:    0
+         Started:      Sat, 07 Jan 2023 03:15:29 +0000
+         Finished:     Sat, 07 Jan 2023 03:15:34 +0000
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vrhmd (ro)
+   ```
+
+5. We just created a new app named `purple`. How many `initContainers` does it have?
+
+   - 1
+   - 3
+   - 4
+   - **2**
+
+   ```
+   kubectl describe pod purple 
+   Name:             purple
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/172.25.0.85
+   Start Time:       Sat, 07 Jan 2023 03:25:05 +0000
+   Labels:           <none>
+   Annotations:      <none>
+   Status:           Pending
+   IP:               10.42.0.12
+   IPs:
+     IP:  10.42.0.12
+   Init Containers:
+     warm-up-1:
+       Container ID:  containerd://0af6104853e313c67cc3b6b41fc48e01f1e5fb2058553c75f879703dfe508f35
+       Image:         busybox:1.28
+       Image ID:      docker.io/library/busybox@sha256:141c253bc4c3fd0a201d32dc1f493bcf3fff003b6df416dea4f41046e0f37d47
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sh
+         -c
+         sleep 600
+       State:          Running
+         Started:      Sat, 07 Jan 2023 03:25:05 +0000
+       Ready:          False
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5q6c8 (ro)
+     warm-up-2:
+       Container ID:  
+       Image:         busybox:1.28
+       Image ID:      
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sh
+         -c
+         sleep 1200
+       State:          Waiting
+         Reason:       PodInitializing
+       Ready:          False
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5q6c8 (ro)
+   ```
+
+6. What is the state of the POD?
+
+   - Terminated
+   - **Pending**
+   - Running
+
+   ```
+   kubectl describe pod purple 
+   Name:             purple
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/172.25.0.85
+   Start Time:       Sat, 07 Jan 2023 03:25:05 +0000
+   Labels:           <none>
+   Annotations:      <none>
+   Status:           Pending
+   IP:               10.42.0.12
+   IPs:
+     IP:  10.42.0.12
+   ```
+
+7. How long after the creation of the POD will the application come up and be available to users?
+
+   - 10 Minutes
+   - 600 Seconds
+   - 20 Minutes
+   - 30 Minutes
+
+   sleep 600 + 1200 = 1800 OR 30 minutes
+
+   ```
+   kubectl describe pod purple 
+   Name:             purple
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/172.25.0.85
+   Start Time:       Sat, 07 Jan 2023 03:25:05 +0000
+   Labels:           <none>
+   Annotations:      <none>
+   Status:           Pending
+   IP:               10.42.0.12
+   IPs:
+     IP:  10.42.0.12
+   Init Containers:
+     warm-up-1:
+       Container ID:  containerd://0af6104853e313c67cc3b6b41fc48e01f1e5fb2058553c75f879703dfe508f35
+       Image:         busybox:1.28
+       Image ID:      docker.io/library/busybox@sha256:141c253bc4c3fd0a201d32dc1f493bcf3fff003b6df416dea4f41046e0f37d47
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sh
+         -c
+         sleep 600
+       State:          Running
+         Started:      Sat, 07 Jan 2023 03:25:05 +0000
+       Ready:          False
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5q6c8 (ro)
+     warm-up-2:
+       Container ID:  
+       Image:         busybox:1.28
+       Image ID:      
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sh
+         -c
+         sleep 1200
+   ```
+
+8. Update the pod `red` to use an `initContainer` that uses the `busybox` image and `sleeps for 20` seconds
+
+   Delete and re-create the pod if necessary. But make sure no other configurations change.
+
+   Check
+
+   - Pod: red
+   - initContainer Configured Correctly
+
+   ```
+   kubectl edit pod red
+   ```
+
+   Add initContainers section in the pod spec as below:
+
+   ```yaml
+   ---
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: red
+     namespace: default
+   spec:
+     containers:
+     - command:
+       - sh
+       - -c
+       - echo The app is running! && sleep 3600
+       image: busybox:1.28
+       name: red-container
+     initContainers:
+     - image: busybox
+       name: red-initcontainer
+       command: 
+         - "sleep"
+         - "20"
+   ```
+
+   Recreate the pod.
+
+   ```
+   kubectl replace -f /tmp/kubectl-edit-1318669784.yaml --force 
+   pod "red" deleted
+   pod/red replaced
+   ```
+
+9. A new application `orange` is deployed. There is something wrong with it. Identify and fix the issue.
+
+   Once fixed, wait for the application to run before checking solution.
+
+   Check
+
+   - Issue fixed
+
+   ```
+   kubectl get pod orange -o yaml > orange.yaml
+   ```
+
+   Check sleep command
+
+   ```
+   piVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: "2023-01-07T03:38:39Z"
+     name: orange
+     namespace: default
+     resourceVersion: "1519"
+     uid: 4437e91a-e73e-4d63-a9c9-0ccd3ff01cdc
+   spec:
+     containers:
+     - command:
+       - sh
+       - -c
+       - echo The app is running! && sleep 3600
+       image: busybox:1.28
+       imagePullPolicy: IfNotPresent
+       name: orange-container
+       resources: {}
+       terminationMessagePath: /dev/termination-log
+       terminationMessagePolicy: File
+       volumeMounts:
+       - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+         name: kube-api-access-gq2nc
+         readOnly: true
+     dnsPolicy: ClusterFirst
+     enableServiceLinks: true
+     initContainers:
+     - command:
+       - sh
+       - -c
+       - sleep 2;
+       image: busybox
+       imagePullPolicy: Always
+       name: init-myservice
+       resources: {}
+       terminationMessagePath: /dev/termination-log
+       terminationMessagePolicy: File
+       volumeMounts:
+       - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+         name: kube-api-access-gq2nc
+         readOnly: true
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl replace -f orange.yaml --force
+   pod "orange" deleted
+   pod/orange replaced
+   
+   controlplane ~ ➜  kubectl get pods
+   NAME     READY   STATUS     RESTARTS   AGE
+   green    2/2     Running    0          28m
+   blue     1/1     Running    0          28m
+   purple   0/1     Init:1/2   0          18m
+   red      1/1     Running    0          5m18s
+   orange   1/1     Running    0          13s
+   ```
+
+
+
+# CLUSTER MAINTENANCE, PRACTICE TEST OS UPGRADES
+
+1. Let us explore the environment first. How many nodes do you see in the cluster?
+
+   Including the controlplane and worker nodes.
+
+   - 1
+   - **2**
+   - 3
+
+   ```
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS   ROLES           AGE   VERSION
+   controlplane   Ready    control-plane   23m   v1.24.0
+   node01         Ready    <none>          23m   v1.24.0
+   ```
+
+2. How many applications do you see hosted on the cluster?
+
+   Check the number of deployments in the `default` namespace.
+
+   - **1**
+   - 5
+   - 0
+   - 2
+   - 3
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps 
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   blue   3/3     3            3           56s
+   ```
+
+3. Which nodes are the applications hosted on?
+
+   - node01,node02
+   - controlplane,node03
+   - **controlplane,node01**
+
+   ```
+   $ kubectl get pods -o wide
+   NAME                    READY   STATUS    RESTARTS   AGE    IP           NODE           NOMINATED NODE   READINESS GATES
+   blue-797fc567b4-8xnmd   1/1     Running   0          2m7s   10.244.1.3   node01         <none>           <none>
+   blue-797fc567b4-bhcsg   1/1     Running   0          2m7s   10.244.1.2   node01         <none>           <none>
+   blue-797fc567b4-wk5r7   1/1     Running   0          2m7s   10.244.0.4   controlplane   <none>           <none>
+   ```
+
+4. We need to take `node01` out for maintenance. Empty the node of all applications and mark it unschedulable.
+
+   Check
+
+   - Node node01 Unschedulable
+   - Pods evicted from node01
+
+   ```
+   controlplane ~ ➜  kubectl drain node01 --ignore-daemonsets 
+   node/node01 cordoned
+   WARNING: ignoring DaemonSet-managed Pods: kube-system/kube-flannel-ds-8vj5x, kube-system/kube-proxy-cz5h5
+   evicting pod default/blue-797fc567b4-bhcsg
+   evicting pod default/blue-797fc567b4-8xnmd
+   pod/blue-797fc567b4-8xnmd evicted
+   pod/blue-797fc567b4-bhcsg evicted
+   node/node01 drained
+   ```
+
+5. What nodes are the apps on now?
+
+   - controlplane,node01
+   - **controlplane**
+   - node01,node02
+   - controlplane,node02
+
+   ```
+   controlplane ~ ➜  kubectl get pods -o wide
+   NAME                    READY   STATUS    RESTARTS   AGE     IP           NODE           NOMINATED NODE   READINESS GATES
+   blue-797fc567b4-rmjcm   1/1     Running   0          13s     10.244.0.6   controlplane   <none>           <none>
+   blue-797fc567b4-vfvjz   1/1     Running   0          13s     10.244.0.5   controlplane   <none>           <none>
+   blue-797fc567b4-wk5r7   1/1     Running   0          4m22s   10.244.0.4   controlplane   <none>           <none>
+   ```
+
+6. The maintenance tasks have been completed. Configure the node `node01` to be schedulable again.
+
+   Check
+
+   - Node01 is Schedulable
+
+   ```
+   $ kubectl uncordon node01 
+   node/node01 uncordoned
+   ```
+
+7. How many pods are scheduled on `node01` now?
+
+   - 2
+   - **0**
+   - 3
+   - 1
+
+   ```
+   kubectl get pods -o wide
+   NAME                    READY   STATUS    RESTARTS   AGE     IP           NODE           NOMINATED NODE   READINESS GATES
+   blue-797fc567b4-rmjcm   1/1     Running   0          6m48s   10.244.0.6   controlplane   <none>           <none>
+   blue-797fc567b4-vfvjz   1/1     Running   0          6m48s   10.244.0.5   controlplane   <none>           <none>
+   blue-797fc567b4-wk5r7   1/1     Running   0          10m     10.244.0.4   controlplane   <none>           <none>
+   ```
+
+8. Why are there no pods on `node01`?
+
+   - node01 is faulty
+   - **Only when new pods are created they will be scheduled**
+   - node01 is cordoned
+   - node01 did not upgrade successfully
+
+9. Why are the pods placed on the `controlplane` node?
+
+   Check the controlplane node details.
+
+   - you can never have pods on master nodes
+   - controlplane node is cordoned
+   - **controlplane node does not have any taints**
+   - controlplane node has taints set on it
+   - controlplane node is faulty
+
+   ```
+   $ kubectl describe nodes controlplane | grep Taints
+   Taints:             <none>
+   ```
+
+10. Time travelling to the next maintenance window…
+
+   Ok
+
+11. We need to carry out a maintenance activity on `node01` again. Try draining the node again using the same command as before: `kubectl drain node01 --ignore-daemonsets`
+
+    Did that work?
+
+    - **NO**
+
+    - YES
+
+    ```
+    kubectl drain node01 --ignore-daemonsets 
+    node/node01 cordoned
+    error: unable to drain node "node01" due to error:cannot delete Pods declare no controller (use --force to override): default/hr-app, continuing command...
+    There are pending nodes to be drained:
+     node01
+    cannot delete Pods declare no controller (use --force to override): default/hr-app
+    ```
+
+12. Why did the drain command fail on `node01`? It worked the first time!
+
+    - **there is a pod in node01 which is not part of a replicaset**
+    - no pods on node01
+    - node01 was not upgraded correctly the last time
+    - node01 tainted
+
+    ```
+    $ kubectl get pods -o wide
+    NAME                    READY   STATUS    RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+    blue-797fc567b4-rmjcm   1/1     Running   0          13m   10.244.0.6   controlplane   <none>           <none>
+    blue-797fc567b4-vfvjz   1/1     Running   0          13m   10.244.0.5   controlplane   <none>           <none>
+    blue-797fc567b4-wk5r7   1/1     Running   0          17m   10.244.0.4   controlplane   <none>           <none>
+    hr-app                  1/1     Running   0          75s   10.244.1.4   node01         <none>           <none>
+    ```
+
+    
+
+13. What is the name of the POD hosted on `node01` that is not part of a replicaset?
+
+    - simple-webapp-1
+    - redis
+    - **hr-app**
+    - red
+    - blue
+
+    ```
+    $ kubectl get pods -o wide
+    NAME                    READY   STATUS    RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+    blue-797fc567b4-rmjcm   1/1     Running   0          13m   10.244.0.6   controlplane   <none>           <none>
+    blue-797fc567b4-vfvjz   1/1     Running   0          13m   10.244.0.5   controlplane   <none>           <none>
+    blue-797fc567b4-wk5r7   1/1     Running   0          17m   10.244.0.4   controlplane   <none>           <none>
+    hr-app                  1/1     Running   0          75s   10.244.1.4   node01         <none>           <none>
+    ```
+
+14. What would happen to `hr-app` if `node01` is drained forcefully?
+
+    Try it and see for yourself.
+
+    - hr-app will be recreated on other nodes
+    - hr-app will continue to run as a Docker container
+    - hr-app will be re-created on master
+    - **hr-app will be lost forever**
+
+    ```
+    kubectl drain node01 --ignore-daemonsets --force 
+    node/node01 already cordoned
+    WARNING: deleting Pods that declare no controller: default/hr-app; ignoring DaemonSet-managed Pods: kube-system/kube-flannel-ds-8vj5x, kube-system/kube-proxy-cz5h5
+    evicting pod default/hr-app
+    pod/hr-app evicted
+    node/node01 drained
+    
+    kubectl get pods -o wide
+    NAME                    READY   STATUS    RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+    blue-797fc567b4-rmjcm   1/1     Running   0          25m   10.244.0.6   controlplane   <none>           <none>
+    blue-797fc567b4-vfvjz   1/1     Running   0          25m   10.244.0.5   controlplane   <none>           <none>
+    blue-797fc567b4-wk5r7   1/1     Running   0          29m   10.244.0.4   controlplane   <none>           <none>
+    ```
+
+15. Oops! We did not want to do that! `hr-app` is a critical application that should not be destroyed. We have now reverted back to the previous state and re-deployed `hr-app` as a deployment.
+
+    OK
+
+16. `hr-app` is a critical app and we do not want it to be removed and we do not want to schedule any more pods on `node01`.
+    Mark `node01` as `unschedulable` so that no new pods are scheduled on this node.
+
+    Make sure that `hr-app` is not affected.
+
+    Check
+
+    - Node01 Unschedulable
+    - hr-app still running on node01?
+
+    ```
+    kubectl cordon node01 
+    node/node01 cordoned
+    ```
+
+
+
+# CLUSTER MAINTENANCE, PRACTICE TEST CLUSTER UPGRADE PROCESS
+
+>>>>>>> 7ac0df6d02fce4e649b474018c13645d24bec86c
