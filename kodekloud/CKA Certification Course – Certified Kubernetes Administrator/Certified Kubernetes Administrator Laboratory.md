@@ -3848,9 +3848,3 @@ deployment.apps/deployment-1 created
 
 
 
-# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST SECRETS
-
-
-
-​    
-
