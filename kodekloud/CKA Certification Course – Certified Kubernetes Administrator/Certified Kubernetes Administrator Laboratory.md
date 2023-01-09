@@ -2,7 +2,9 @@
 
 
 
-# CORE CONCEPTS, PRACTICE TEST – PODS
+# CORE CONCEPTS
+
+## PRACTICE TEST – PODS
 
 1. How many `pods` exist on the system?
 
@@ -413,7 +415,7 @@
 
 
 
-# CORE CONCEPTS, PRACTICE TEST – REPLICASETS
+## PRACTICE TEST – REPLICASETS
 
 1. How many PODs exist on the system?
 
@@ -738,7 +740,7 @@
 
 
 
-# CORE CONCEPTS, PRACTICE TESTS – DEPLOYMENTS
+## PRACTICE TESTS – DEPLOYMENTS
 
 
 
@@ -1016,7 +1018,7 @@ deployment.apps/deployment-1 created
 
 
 
-# CORE CONCEPTS, PRACTICE TEST NAMESPACES
+## PRACTICE TEST NAMESPACES
 
 1. How many Namespaces exist on the system?
 
@@ -1124,7 +1126,9 @@ deployment.apps/deployment-1 created
 
 
 
-# SCHEDULING, PRACTICE TEST MANUAL SCHEDULING
+# SCHEDULING
+
+## PRACTICE TEST MANUAL SCHEDULING
 
 
 
@@ -1269,7 +1273,7 @@ deployment.apps/deployment-1 created
 
 
 
-# SCHEDULING, PRACTICE TEST LABELS AND SELECTORS
+## PRACTICE TEST LABELS AND SELECTORS
 
 
 
@@ -1400,7 +1404,7 @@ deployment.apps/deployment-1 created
 
 
 
-# SCHEDULING, PRACTICE TEST – TAINTS AND TOLERATIONS
+## PRACTICE TEST – TAINTS AND TOLERATIONS
 
 1. How many `nodes` exist on the system?
 
@@ -1592,7 +1596,7 @@ deployment.apps/deployment-1 created
 
 
 
-# SCHEDULING, PRACTICE TEST – NODE AFFINITY
+## PRACTICE TEST – NODE AFFINITY
 
 
 
@@ -1809,7 +1813,7 @@ deployment.apps/deployment-1 created
 
    
 
-# SCHEDULING, PRACTICE TEST RESOURCE LIMITS
+## PRACTICE TEST RESOURCE LIMITS
 
 
 
@@ -1969,7 +1973,7 @@ deployment.apps/deployment-1 created
 
 
 
-# SCHEDULING, PRACTICE TEST DAEMONSETS
+## PRACTICE TEST DAEMONSETS
 
 1. How many `DaemonSets` are created in the cluster in all namespaces?
 
@@ -2174,7 +2178,7 @@ deployment.apps/deployment-1 created
 
 
 
-# SCHEDULING, PRACTICE TEST – STATIC PODS
+## PRACTICE TEST – STATIC PODS
 
 
 
@@ -2448,7 +2452,7 @@ deployment.apps/deployment-1 created
 
 
 
-# SCHEDULING, PRACTICE TEST MULTIPLE SCHEDULERS
+## PRACTICE TEST MULTIPLE SCHEDULERS
 
 
 
@@ -2621,7 +2625,9 @@ deployment.apps/deployment-1 created
 
 
 
-# LOGGING & MONITORING, PRACTICE TEST MONITOR CLUSTER COMPONENTS
+# LOGGING & MONITORING
+
+## PRACTICE TEST MONITOR CLUSTER COMPONENTS
 
 
 
@@ -2725,7 +2731,7 @@ deployment.apps/deployment-1 created
 
 
 
-# LOGGING & MONITORING, PRACTICE TEST MANAGING APPLICATION LOGS
+## PRACTICE TEST MANAGING APPLICATION LOGS
 
 1. We have deployed a POD hosting an application. Inspect it. Wait for it to start.
 
@@ -2776,7 +2782,9 @@ deployment.apps/deployment-1 created
 
 
 
-# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST ROLLING UPDATES AND ROLLBACKS
+# APPLICATION LIFECYCLE MANAGEMENT
+
+## PRACTICE TEST ROLLING UPDATES AND ROLLBACKS
 
 
 
@@ -3197,7 +3205,7 @@ deployment.apps/deployment-1 created
 
 
 
-# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST COMMANDS AND ARGUMENTS
+## PRACTICE TEST COMMANDS AND ARGUMENTS
 
 1. How many PODs exist on the system?
 
@@ -3640,7 +3648,7 @@ deployment.apps/deployment-1 created
 
    
 
-# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST ENV VARIABLES
+## PRACTICE TEST ENV VARIABLES
 
 1. How many PODs exist on the system?
 
@@ -3848,9 +3856,9 @@ deployment.apps/deployment-1 created
 
 
 
-<<<<<<< HEAD
+
 =======
-# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST SECRETS
+## PRACTICE TEST SECRETS
 
 1. How many `Secrets` exist on the system?
 
@@ -4014,7 +4022,7 @@ deployment.apps/deployment-1 created
 
 
 
-# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST – MULTI CONTAINER PODS
+## PRACTICE TEST – MULTI CONTAINER PODS
 
 1. Identify the number of containers created in the `red` pod.
 
@@ -4309,7 +4317,7 @@ deployment.apps/deployment-1 created
 
 
 
-# APPLICATION LIFECYCLE MANAGEMENT, PRACTICE TEST – INIT CONTAINERS
+## PRACTICE TEST – INIT CONTAINERS
 
 1. Identify the pod that has an `initContainer` configured.
 
@@ -4682,7 +4690,9 @@ deployment.apps/deployment-1 created
 
 
 
-# CLUSTER MAINTENANCE, PRACTICE TEST OS UPGRADES
+# CLUSTER MAINTENANCE
+
+## PRACTICE TEST OS UPGRADES
 
 1. Let us explore the environment first. How many nodes do you see in the cluster?
 
@@ -4911,6 +4921,2962 @@ deployment.apps/deployment-1 created
 
 
 
-# CLUSTER MAINTENANCE, PRACTICE TEST CLUSTER UPGRADE PROCESS
+## PRACTICE TEST CLUSTER UPGRADE PROCESS
 
->>>>>>> 7ac0df6d02fce4e649b474018c13645d24bec86c
+1. This lab tests your skills on **upgrading a kubernetes cluster**. We have a production cluster with applications running on it. Let us explore the setup first.
+
+   What is the current version of the cluster?
+
+   - v1.20.0
+   - v1.19.1
+   - **v1.25.0**
+   - v1.21.0
+
+   ```
+   ➜  kubectl get nodes
+   NAME           STATUS   ROLES           AGE    VERSION
+   controlplane   Ready    control-plane   175m   v1.25.0
+   node01         Ready    <none>          174m   v1.25.0
+   ```
+
+2. How many nodes are part of this cluster?
+
+   Including controlplane and worker nodes
+
+   - 1
+   - **2**
+   - 0
+   - 3
+   - 4
+
+   ```
+   ➜  kubectl get nodes
+   NAME           STATUS   ROLES           AGE    VERSION
+   controlplane   Ready    control-plane   176m   v1.25.0
+   node01         Ready    <none>          175m   v1.25.0
+   ```
+
+3. How many nodes can host workloads in this cluster?
+
+   Inspect the applications and taints set on the nodes.
+
+   - **2**
+   - 3
+   - 4
+   - 1
+
+   By running the `kubectl describe node` command, we can see that neither nodes have taints.
+
+   ```
+   controlplane ~ ✖ kubectl describe nodes controlplane | grep -i taints
+   Taints:             <none>
+   
+   controlplane ~ ➜  kubectl describe nodes node01 | grep -i taints
+   Taints:             <none>
+   ```
+
+   This means that both nodes have the ability to schedule workloads on them.
+
+4. How many applications are hosted on the cluster?
+
+   Count the number of deployments in the `default` namespace.
+
+   - 3
+   - 2
+   - 0
+   - **1**
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps 
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   blue   5/5     5            5           5m35s
+   ```
+
+5. What nodes are the pods hosted on?
+
+   - node01,node02
+   - node02
+   - controlplane
+   - **controlplane,node01**
+   - node01
+
+   ```
+   ➜  kubectl get pods -o wide
+   NAME                    READY   STATUS    RESTARTS   AGE     IP           NODE           NOMINATED NODE   READINESS GATES
+   blue-5db6db69f7-48ht6   1/1     Running   0          8m55s   10.244.1.4   node01         <none>           <none>
+   blue-5db6db69f7-9brkw   1/1     Running   0          8m55s   10.244.1.3   node01         <none>           <none>
+   blue-5db6db69f7-kmsjd   1/1     Running   0          8m55s   10.244.0.5   controlplane   <none>           <none>
+   blue-5db6db69f7-r6gsl   1/1     Running   0          8m55s   10.244.1.2   node01         <none>           <none>
+   blue-5db6db69f7-wjddq   1/1     Running   0          8m55s   10.244.0.4   controlplane   <none>           <none>
+   ```
+
+6. You are tasked to upgrade the cluster. Users accessing the applications must not be impacted, and you cannot provision new VMs. What strategy would you use to upgrade the cluster?
+
+   - Users will be impacted since there is only one worker node
+   - **Upgrade one node at a time while moving the workloads to the other**
+   - Upgrade all nodes at once
+   - Add new nodes with newer versions while taking down existing nodes
+
+7. What is the latest stable version of Kubernetes as of today?
+
+   Look at the `remote version` in the output of the `kubeadm upgrade plan` command.
+
+   - 1.22.5
+   - 1.23.0
+   - **1.26.0**
+   - 1.21.0
+
+   ```
+    ➜  kubeadm upgrade plan
+   [upgrade/config] Making sure the configuration is correct:
+   [upgrade/config] Reading configuration from the cluster...
+   [upgrade/config] FYI: You can look at this config file with 'kubectl -n kube-system get cm kubeadm-config -o yaml'
+   [preflight] Running pre-flight checks.
+   [upgrade] Running cluster health checks
+   [upgrade] Fetching available versions to upgrade to
+   [upgrade/versions] Cluster version: v1.25.0
+   [upgrade/versions] kubeadm version: v1.25.0
+   I0107 20:05:25.032336   31014 version.go:256] remote version is much newer: v1.26.0; falling back to: stable-1.25
+   [upgrade/versions] Target version: v1.25.5
+   [upgrade/versions] Latest version in the v1.25 series: v1.25.5
+   
+   Components that must be upgraded manually after you have upgraded the control plane with 'kubeadm upgrade apply':
+   COMPONENT   CURRENT       TARGET
+   kubelet     2 x v1.25.0   v1.25.5
+   
+   Upgrade to the latest version in the v1.25 series:
+   
+   COMPONENT                 CURRENT   TARGET
+   kube-apiserver            v1.25.0   v1.25.5
+   kube-controller-manager   v1.25.0   v1.25.5
+   kube-scheduler            v1.25.0   v1.25.5
+   kube-proxy                v1.25.0   v1.25.5
+   CoreDNS                   v1.9.3    v1.9.3
+   etcd                      3.5.4-0   3.5.4-0
+   
+   You can now apply the upgrade by executing the following command:
+   
+           kubeadm upgrade apply v1.25.5
+   
+   Note: Before you can perform this upgrade, you have to update kubeadm to v1.25.5.
+   
+   _____________________________________________________________________
+   
+   
+   The table below shows the current state of component configs as understood by this version of kubeadm.
+   Configs that have a "yes" mark in the "MANUAL UPGRADE REQUIRED" column require manual config upgrade or
+   resetting to kubeadm defaults before a successful upgrade can be performed. The version to manually
+   upgrade to is denoted in the "PREFERRED VERSION" column.
+   
+   API GROUP                 CURRENT VERSION   PREFERRED VERSION   MANUAL UPGRADE REQUIRED
+   kubeproxy.config.k8s.io   v1alpha1          v1alpha1            no
+   kubelet.config.k8s.io     v1beta1           v1beta1             no
+   _____________________________________________________________________
+   ```
+
+8. What is the latest version available for an upgrade with the current version of the kubeadm tool installed?
+
+   Use the `kubeadm` tool
+
+   - v1.21.0
+   - **v1.25.5**
+   - v1.20.0
+   - v1.22.1
+
+   ```
+   ➜  kubeadm upgrade plan
+   [upgrade/config] Making sure the configuration is correct:
+   [upgrade/config] Reading configuration from the cluster...
+   [upgrade/config] FYI: You can look at this config file with 'kubectl -n kube-system get cm kubeadm-config -o yaml'
+   [preflight] Running pre-flight checks.
+   [upgrade] Running cluster health checks
+   [upgrade] Fetching available versions to upgrade to
+   [upgrade/versions] Cluster version: v1.25.0
+   [upgrade/versions] kubeadm version: v1.25.0
+   I0107 20:08:30.523113   31498 version.go:256] remote version is much newer: v1.26.0; falling back to: stable-1.25
+   [upgrade/versions] Target version: v1.25.5
+   [upgrade/versions] Latest version in the v1.25 series: v1.25.5
+   
+   Components that must be upgraded manually after you have upgraded the control plane with 'kubeadm upgrade apply':
+   COMPONENT   CURRENT       TARGET
+   kubelet     2 x v1.25.0   v1.25.5
+   
+   Upgrade to the latest version in the v1.25 series:
+   
+   COMPONENT                 CURRENT   TARGET
+   kube-apiserver            v1.25.0   v1.25.5
+   kube-controller-manager   v1.25.0   v1.25.5
+   kube-scheduler            v1.25.0   v1.25.5
+   kube-proxy                v1.25.0   v1.25.5
+   CoreDNS                   v1.9.3    v1.9.3
+   etcd                      3.5.4-0   3.5.4-0
+   
+   You can now apply the upgrade by executing the following command:
+   
+           kubeadm upgrade apply v1.25.5
+   
+   Note: Before you can perform this upgrade, you have to update kubeadm to v1.25.5.
+   
+   _____________________________________________________________________
+   
+   
+   The table below shows the current state of component configs as understood by this version of kubeadm.
+   Configs that have a "yes" mark in the "MANUAL UPGRADE REQUIRED" column require manual config upgrade or
+   resetting to kubeadm defaults before a successful upgrade can be performed. The version to manually
+   upgrade to is denoted in the "PREFERRED VERSION" column.
+   
+   API GROUP                 CURRENT VERSION   PREFERRED VERSION   MANUAL UPGRADE REQUIRED
+   kubeproxy.config.k8s.io   v1alpha1          v1alpha1            no
+   kubelet.config.k8s.io     v1beta1           v1beta1             no
+   _____________________________________________________________________
+   ```
+
+9. We will be upgrading the controlplane node first. Drain the controlplane node of workloads and mark it `UnSchedulable`
+
+   Check
+
+   - Controlplane Node: SchedulingDisabled
+
+   ```
+   ➜  kubectl drain controlplane --ignore-daemonsets 
+   node/controlplane cordoned
+   Warning: ignoring DaemonSet-managed Pods: kube-flannel/kube-flannel-ds-m5jps, kube-system/kube-proxy-2jdz5
+   evicting pod kube-system/coredns-565d847f94-m74rb
+   evicting pod default/blue-5db6db69f7-wjddq
+   evicting pod default/blue-5db6db69f7-kmsjd
+   evicting pod kube-system/coredns-565d847f94-5w2q2
+   pod/blue-5db6db69f7-kmsjd evicted
+   pod/blue-5db6db69f7-wjddq evicted
+   pod/coredns-565d847f94-5w2q2 evicted
+   pod/coredns-565d847f94-m74rb evicted
+   node/controlplane drained
+   ```
+
+10. Upgrade the `controlplane` components to exact version `v1.26.0`
+
+   Upgrade the kubeadm tool (if not already), then the controlplane components, and finally the kubelet. Practice referring to the Kubernetes documentation page.
+   **Note:** While upgrading kubelet, if you hit dependency issues while running the `apt-get upgrade kubelet` command, use the `apt install kubelet=1.26.0-00` command instead.
+
+   Check
+
+   - Controlplane Node Upgraded to v1.26.0
+   - Controlplane Kubelet Upgraded to v1.26.0
+
+   On the `controlplane` node, run the following commands:
+
+   This will update the package lists from the software repository.
+
+   ```sh
+   apt update
+   ```
+
+   This will install the kubeadm version 1.26.0
+
+   ```sh
+   apt-get install kubeadm=1.26.0-00
+   ```
+
+   This will upgrade Kubernetes controlplane node.
+
+   ```sh
+   kubeadm upgrade apply v1.26.0
+   ```
+
+   > Note that the above steps can take a few minutes to complete.
+
+   This will update the `kubelet` with the version `1.26.0`.
+
+   ```sh
+   apt-get install kubelet=1.26.0-00 
+   ```
+
+   You may need to reload the `daemon` and restart `kubelet` service after it has been upgraded.
+
+   ```sh
+   systemctl daemon-reload
+   systemctl restart kubelet
+   ```
+
+11. Mark the `controlplane` node as "Schedulable" again
+
+    Check
+
+    - Controlplane Node: Ready & Schedulable
+
+    ```
+    $ kubectl uncordon controlplane 
+    node/controlplane uncordoned
+    ```
+
+12. Next is the worker node. `Drain` the worker node of the workloads and mark it `UnSchedulable`
+
+    Check
+
+    - Worker node: Unschedulable
+
+    ```
+    ➜  kubectl drain node01 --ignore-daemonsets
+    node/node01 cordoned
+    Warning: ignoring DaemonSet-managed Pods: kube-flannel/kube-flannel-ds-wl2m4, kube-system/kube-proxy-cdzpv
+    evicting pod kube-system/coredns-787d4945fb-vzb68
+    evicting pod default/blue-5db6db69f7-r6gsl
+    evicting pod default/blue-5db6db69f7-48ht6
+    evicting pod default/blue-5db6db69f7-gvrzr
+    evicting pod kube-system/coredns-787d4945fb-sprnr
+    evicting pod default/blue-5db6db69f7-v5nrh
+    evicting pod default/blue-5db6db69f7-9brkw
+    pod/blue-5db6db69f7-9brkw evicted
+    pod/blue-5db6db69f7-gvrzr evicted
+    pod/blue-5db6db69f7-v5nrh evicted
+    pod/blue-5db6db69f7-r6gsl evicted
+    pod/blue-5db6db69f7-48ht6 evicted
+    pod/coredns-787d4945fb-vzb68 evicted
+    pod/coredns-787d4945fb-sprnr evicted
+    node/node01 drained
+    ```
+
+13. Upgrade the worker node to the exact version `v1.26.0`
+
+    Check
+
+    - Worker Node Upgraded to v1.26.0
+    - Worker Node Ready
+
+    On the `node01` node, run the following commands:
+
+    > If you are on the `controlplane` node, run `ssh node01` to log in to the `node01`.
+
+    This will update the package lists from the software repository.
+
+    ```sh
+    apt-get update
+    ```
+
+    This will install the kubeadm version 1.26.0.
+
+    ```sh
+    apt-get install kubeadm=1.26.0-00
+    ```
+
+    This will upgrade the `node01` configuration.
+
+    ```sh
+    kubeadm upgrade node
+    ```
+
+    This will update the `kubelet` with the version `1.26.0`.
+
+    ```sh
+    apt-get install kubelet=1.26.0-00 
+    ```
+
+    You may need to reload the `daemon` and restart `kubelet` service after it has been upgraded.
+
+    ```sh
+    systemctl daemon-reload
+    systemctl restart kubelet
+    ```
+
+    > Type `exit` or `logout` or enter `CTRL + d` to go back to the `controlplane` node.
+
+14. Remove the restriction and mark the worker node as schedulable again.
+
+    Check
+
+    - Worker Node: Schedulable
+
+    ```
+     ➜  kubectl uncordon node01 
+    node/node01 uncordoned
+    ```
+
+
+
+## PRACTICE TEST BACKUP AND RESTORE METHODS
+
+1. We have a working kubernetes cluster with a set of applications running. Let us first explore the setup.
+
+   How many deployments exist in the cluster?
+
+   - 0
+   - 1
+   - **2**
+   - 6
+   - 4
+   - 3
+   - 5
+
+   ```
+   ➜  kubectl get deployments.apps 
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   blue   3/3     3            3           28s
+   red    2/2     2            2           28s
+   ```
+
+2. What is the version of ETCD running on the cluster?
+
+   Check the ETCD Pod or Process
+
+   - "2.1.0"
+   - "3.5.6"
+   - "3.4.13"
+   - "2.3.4"
+
+   Look at the ETCD Logs using the command `kubectl logs etcd-controlplane -n kube-system` or check the image used by the ETCD pod: `kubectl describe pod etcd-controlplane -n kube-system`
+
+   ```
+   $ kubectl describe pod etcd-controlplane -n kube-system 
+   Name:                 etcd-controlplane
+   Namespace:            kube-system
+   Priority:             2000001000
+   Priority Class Name:  system-node-critical
+   Node:                 controlplane/10.10.231.3
+   Start Time:           Sat, 07 Jan 2023 20:45:40 -0500
+   Labels:               component=etcd
+                         tier=control-plane
+   Annotations:          kubeadm.kubernetes.io/etcd.advertise-client-urls: https://10.10.231.3:2379
+                         kubernetes.io/config.hash: 0da57a5682dc024e6ce819d0074b20e0
+                         kubernetes.io/config.mirror: 0da57a5682dc024e6ce819d0074b20e0
+                         kubernetes.io/config.seen: 2023-01-07T20:45:40.194241313-05:00
+                         kubernetes.io/config.source: file
+   Status:               Running
+   IP:                   10.10.231.3
+   IPs:
+     IP:           10.10.231.3
+   Controlled By:  Node/controlplane
+   Containers:
+     etcd:
+       Container ID:  containerd://4bb52e16aa320113d46f2e3853ae69cb3ad8f15545b8656c917bf271fb43de7f
+       Image:         registry.k8s.io/etcd:3.5.6-0
+       Image ID:      registry.k8s.io/etcd@sha256:dd75ec974b0a2a6f6bb47001ba09207976e625db898d1b16735528c009cb171c
+       Port:          <none>
+       Host Port:     <none>
+   ```
+
+   OR
+
+   ```
+   $ kubectl -n kube-system logs etcd-controlplane | grep -i 'etcd-version'
+   {"level":"info","ts":"2023-01-08T01:45:43.825Z","caller":"embed/etcd.go:306","msg":"starting an etcd server","etcd-version":"3.5.6","git-sha":"cecbe35ce","go-version":"go1.16.15","go-os":"linux","go-arch":"amd64","max-cpu-set":36,"max-cpu-available":36,"member-initialized":false,"name":"controlplane","data-dir":"/var/lib/etcd","wal-dir":"","wal-dir-dedicated":"","member-dir":"/var/lib/etcd/member","force-new-cluster":false,"heartbeat-interval":"100ms","election-timeout":"1s","initial-election-tick-advance":true,"snapshot-count":10000,"max-wals":5,"max-snapshots":5,"snapshot-catchup-entries":5000,"initial-advertise-peer-urls":["https://10.10.231.3:2380"],"listen-peer-urls":["https://10.10.231.3:2380"],"advertise-client-urls":["https://10.10.231.3:2379"],"listen-client-urls":["https://10.10.231.3:2379","https://127.0.0.1:2379"],"listen-metrics-urls":["http://127.0.0.1:2381"],"cors":["*"],"host-whitelist":["*"],"initial-cluster":"controlplane=https://10.10.231.3:2380","initial-cluster-state":"new","initial-cluster-token":"etcd-cluster","quota-backend-bytes":2147483648,"max-request-bytes":1572864,"max-concurrent-streams":4294967295,"pre-vote":true,"initial-corrupt-check":true,"corrupt-check-time-interval":"0s","compact-check-time-enabled":false,"compact-check-time-interval":"1m0s","auto-compaction-mode":"periodic","auto-compaction-retention":"0s","auto-compaction-interval":"0s","discovery-url":"","discovery-proxy":"","downgrade-check-interval":"5s"}
+   ```
+
+3. At what address can you reach the ETCD cluster from the controlplane node?
+
+   Check the ETCD Service configuration in the ETCD POD
+
+   - https://10.96.0.1:2379
+   - **https://127.0.0.1:2379**
+   - https://10.96.0.1:8080
+   - https://127.0.0.1:2380
+
+   ```
+   $ kubectl -n kube-system describe pod etcd-controlplane | grep '\--listen-client-urls'
+         --listen-client-urls=https://127.0.0.1:2379,https://10.10.231.3:2379
+   ```
+
+   This means that ETCD is reachable on localhost (127.0.0.1) at port 2379.
+
+4. Where is the ETCD server certificate file located?
+
+   Note this path down as you will need to use it later
+
+   - /etc/kubernetes/pki/etcd/ca.crt
+   - /etc/kubernetes/pki/etcd/peer.crt
+   - /etc/kubernetes/pki/server.crt
+   - **/etc/kubernetes/pki/etcd/server.crt**
+
+   ```
+   $ kubectl -n kube-system describe pod etcd-controlplane | grep '\--cert-file'
+         --cert-file=/etc/kubernetes/pki/etcd/server.crt
+   ```
+
+5. Where is the ETCD CA Certificate file located?
+
+   Note this path down as you will need to use it later.
+
+   - /etc/kubernetes/pki/etcd/ca.key
+   - /etc/kubernetes/pki/ca.crt
+   - **/etc/kubernetes/pki/etcd/ca.crt**
+   - /etc/kubernetes/pki/etcd/peer.crt
+
+   ```
+   $ kubectl -n kube-system describe pod etcd-controlplane | grep '\--trusted-ca-file'
+         --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+   ```
+
+6. The master node in our cluster is planned for a regular maintenance reboot tonight. While we do not anticipate anything to go wrong, we are required to take the necessary backups. Take a snapshot of the **ETCD** database using the built-in **snapshot** functionality.
+
+   Store the backup file at location `/opt/snapshot-pre-boot.db`
+
+   Check
+
+   - Backup ETCD to /opt/snapshot-pre-boot.db
+
+   ```
+   ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 \
+   > --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+   > --cert=/etc/kubernetes/pki/etcd/server.crt \
+   > --key=/etc/kubernetes/pki/etcd/server.key \
+   > snapshot save /opt/snapshot-pre-boot.db
+   Snapshot saved at /opt/snapshot-pre-boot.db
+   ```
+
+7. Great! Let us now wait for the maintenance window to finish. Go get some sleep. (Don't go for real)
+
+   Click `Ok` to Continue
+
+   Ok
+
+8. Wake up! We have a conference call! After the reboot the master nodes came back online, but none of our applications are accessible. Check the status of the applications on the cluster. What's wrong?
+
+   - Deployments are not present
+   - Pods are not present
+   - **All of the above**
+   - Services are not present
+
+9. Luckily we took a backup. Restore the original state of the cluster using the backup file.
+
+   Check
+
+   - Deployments: 2
+   - Services: 3
+
+   **First Restore the snapshot:**
+
+   ```sh
+   root@controlplane:~# ETCDCTL_API=3 etcdctl --data-dir /var/lib/etcd-from-backup \
+   > snapshot restore /opt/snapshot-pre-boot.db 
+   2023-01-07 21:26:57.971050 I | mvcc: restore compact to 2452
+   2023-01-07 21:26:57.977491 I | etcdserver/membership: added member 8e9e05c52164694d [http://localhost:2380] to cluster cdf818194e3a8c32
+   ```
+
+   Note: In this case, we are restoring the snapshot to a different directory but in the same server where we took the backup **(the controlplane node)** As a result, the only required option for the restore command is the `--data-dir`.
+
+   Next, update the `/etc/kubernetes/manifests/etcd.yaml`:
+
+   We have now restored the etcd snapshot to a new path on the controlplane - `/var/lib/etcd-from-backup`, so, the only change to be made in the YAML file, is to change the hostPath for the volume called `etcd-data` from old directory (`/var/lib/etcd`) to the new directory (`/var/lib/etcd-from-backup`).
+
+   ```sh
+     volumes:
+     - hostPath:
+         path: /var/lib/etcd-from-backup
+         type: DirectoryOrCreate
+       name: etcd-data
+   ```
+
+   With this change, `/var/lib/etcd` on the container points to `/var/lib/etcd-from-backup` on the `controlplane` (which is what we want).
+
+   When this file is updated, the `ETCD` pod is automatically re-created as this is a static pod placed under the `/etc/kubernetes/manifests` directory.
+
+   > Note 1: As the ETCD pod has changed it will automatically restart, and also `kube-controller-manager` and `kube-scheduler`. Wait 1-2 to mins for this pods to restart. You can run the command: `watch "crictl ps | grep etcd"` to see when the ETCD pod is restarted.
+   >
+   > Note 2: If the etcd pod is not getting `Ready 1/1`, then restart it by `kubectl delete pod -n kube-system etcd-controlplane` and wait 1 minute.
+   >
+   > Note 3: This is the simplest way to make sure that ETCD uses the restored data after the ETCD pod is recreated. You **don't** have to change anything else.
+
+   If you do change `--data-dir` to `/var/lib/etcd-from-backup` in the ETCD YAML file, make sure that the `volumeMounts` for `etcd-data` is updated as well, with the mountPath pointing to `/var/lib/etcd-from-backup` **(THIS COMPLETE STEP IS OPTIONAL AND NEED NOT BE DONE FOR COMPLETING THE RESTORE)**
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps 
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   blue   3/3     3            3           38m
+   red    2/2     2            2           38m
+   
+   controlplane ~ ➜  kubectl get service
+   NAME           TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+   blue-service   NodePort    10.104.69.24   <none>        80:30082/TCP   38m
+   kubernetes     ClusterIP   10.96.0.1      <none>        443/TCP        53m
+   red-service    NodePort    10.99.41.19    <none>        80:30080/TCP   38m
+   ```
+
+
+
+## PRACTICE TEST BACKUP AND RESTORE METHODS 2
+
+1. In this lab environment, you will get to work with `multiple` kubernetes clusters where we will practice backing up and restoring the `ETCD` database.
+
+2. You will notice that, you are logged in to the `student-node` (instead of the `controlplane`).
+
+   The `student-node` has the `kubectl` client and has access to all the `Kubernetes` clusters that are configured in the lab environment.
+
+   Before proceeding to the next question, explore the `student-node` and the clusters it has access to.
+
+   Ok
+
+3. How many `clusters` are defined in the kubeconfig on the `student-node`?
+
+   You can make use of the `kubectl config` command.
+
+   - 4
+   - **2**
+   - 0
+   - 1
+   - 3
+
+   ```
+   
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: DATA+OMITTED
+       server: https://cluster1-controlplane:6443
+     name: cluster1
+   - cluster:
+       certificate-authority-data: DATA+OMITTED
+       server: https://10.6.187.9:6443
+     name: cluster2
+   contexts:
+   - context:
+       cluster: cluster1
+       user: cluster1
+     name: cluster1
+   - context:
+       cluster: cluster2
+       user: cluster2
+     name: cluster2
+   current-context: cluster1
+   kind: Config
+   preferences: {}
+   users:
+   - name: cluster1
+     user:
+       client-certificate-data: REDACTED
+       client-key-data: REDACTED
+   - name: cluster2
+     user:
+       client-certificate-data: REDACTED
+       client-key-data: REDACTED
+   ```
+
+4. How many nodes (both controlplane and worker) are part of `cluster1`?
+
+   Make sure to switch the context to `cluster1`:
+
+   ```sh
+   kubectl config use-context cluster1
+   ```
+
+   - 0
+   - 3
+   - **2**
+   - 1
+   - 4
+
+   ```
+   student-node ~ ➜  kubectl config use-context cluster1
+   Switched to context "cluster1".
+   
+   student-node ~ ➜  kubectl get nodes 
+   NAME                    STATUS   ROLES           AGE   VERSION
+   cluster1-controlplane   Ready    control-plane   22m   v1.24.0
+   cluster1-node01         Ready    <none>          22m   v1.24.0
+   ```
+
+5. What is the name of the controlplane node in `cluster2`?
+
+   Make sure to switch the context to `cluster2`:
+
+   ```sh
+   kubectl config use-context cluster2
+   ```
+
+   - cluster1-controlplane
+   - **cluster2-controlplane**
+   - cluster2controlplane
+   - controlplane-cluster2
+   - cluster2-master
+   - controlplane
+
+   ```
+   student-node ~ ➜  kubectl config use-context cluster2
+   Switched to context "cluster2".
+   
+   student-node ~ ➜  kubectl get nodes
+   NAME                    STATUS   ROLES           AGE   VERSION
+   cluster2-controlplane   Ready    control-plane   26m   v1.24.0
+   cluster2-node01         Ready    <none>          25m   v1.24.0
+   ```
+
+6. You can SSH to all the nodes (of both clusters) from the `student-node`.
+
+   For example:
+
+   ```sh
+   student-node ~ ➜  ssh cluster1-controlplane
+   Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 5.4.0-1086-gcp x86_64)
+   
+    * Documentation:  https://help.ubuntu.com
+    * Management:     https://landscape.canonical.com
+    * Support:        https://ubuntu.com/advantage
+   This system has been minimized by removing packages and content that are
+   not required on a system that users do not log into.
+   
+   To restore this content, you can run the 'unminimize' command.
+   
+   cluster1-controlplane ~ ➜ 
+   ```
+
+   To get back to the `student` node, use the `logout` or `exit` command, or, hit `Control +D`
+
+   ```sh
+   cluster1-controlplane ~ ➜  logout
+   Connection to cluster1-controlplane closed.
+   
+   student-node ~ ➜  
+   ```
+
+   Ok
+
+7. How is `ETCD` configured for `cluster1`?
+
+   Remember, you can access the clusters from `student-node` using the `kubectl` tool. You can also `ssh` to the cluster nodes from the `student-node`.
+
+   Make sure to switch the context to `cluster1`:
+
+   ```sh
+   kubectl config use-context cluster1
+   ```
+
+   - External ETCD
+   - **Stacked ETCD**
+   - No ETCD
+
+   If you check out the pods running in the `kube-system` namespace in `cluster1`, you will notice that `etcd` is running as a pod:
+
+   ```
+   student-node ~ ➜  kubectl config use-context cluster1 
+   Switched to context "cluster1".
+   
+   student-node ~ ➜  kubectl get pods -n kube-system 
+   NAME                                            READY   STATUS    RESTARTS      AGE
+   coredns-6d4b75cb6d-8pwt7                        1/1     Running   0             31m
+   coredns-6d4b75cb6d-gsrzf                        1/1     Running   0             31m
+   etcd-cluster1-controlplane                      1/1     Running   0             31m
+   kube-apiserver-cluster1-controlplane            1/1     Running   0             31m
+   kube-controller-manager-cluster1-controlplane   1/1     Running   0             31m
+   kube-proxy-vfp62                                1/1     Running   0             30m
+   kube-proxy-x57t8                                1/1     Running   0             31m
+   kube-scheduler-cluster1-controlplane            1/1     Running   0             31m
+   weave-net-hldk6                                 2/2     Running   0             30m
+   weave-net-kwhc7                                 2/2     Running   1 (31m ago)   31m
+   
+   OR
+   
+   student-node ~ ➜  kubectl get pods -n kube-system | grep etcd
+   etcd-cluster1-controlplane                      1/1     Running   0             32m
+   ```
+
+   This means that ETCD is set up as a `Stacked ETCD Topology` where the distributed data storage cluster provided by `etcd` is stacked on top of the cluster formed by the nodes managed by kubeadm that run control plane components.
+
+8. How is `ETCD` configured for `cluster2`?
+
+   Remember, you can access the clusters from `student-node` using the `kubectl` tool. You can also `ssh` to the cluster nodes from the `student-node`.
+
+   Make sure to switch the context to `cluster2`:
+
+   ```sh
+   kubectl config use-context cluster2
+   ```
+
+   - No ETCD
+   - **External ETCD**
+   - Stacked ETCD
+
+   ```
+   ```
+
+   If you check out the pods running in the `kube-system` namespace in `cluster1`, you will notice that there are **NO** `etcd` pods running in this cluster!
+
+   ```sh
+   student-node ~ ➜  kubectl config use-context cluster2
+   Switched to context "cluster2".
+   
+   student-node ~ ➜  kubectl get pods -n kube-system  | grep etcd
+   
+   student-node ~ ✖ 
+   ```
+
+   Also, there is **NO** static pod configuration for `etcd` under the static pod path: (no etcd.yaml)
+
+   ```sh
+   student-node ~ ✖ ssh cluster2-controlplane
+   Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 5.4.0-1086-gcp x86_64)
+   
+    * Documentation:  https://help.ubuntu.com
+    * Management:     https://landscape.canonical.com
+    * Support:        https://ubuntu.com/advantage
+   This system has been minimized by removing packages and content that are
+   not required on a system that users do not log into.
+   
+   To restore this content, you can run the 'unminimize' command.
+   Last login: Wed Aug 31 05:05:04 2022 from 10.1.127.14
+   
+   cluster2-controlplane ~ ➜  ls /etc/kubernetes/manifests/ | grep -i etcd
+   
+   cluster2-controlplane ~ ✖ 
+   ```
+
+   However, if you inspect the process on the controlplane for cluster2, you will see that that the process for the `kube-apiserver` is referencing an external etcd datastore:
+
+   ```sh
+   cluster2-controlplane ~ ✖ ps -ef | grep etcd
+   root        1705    1320  0 05:03 ?        00:00:31 kube-apiserver --advertise-address=10.1.127.3 --allow-privileged=true --authorization-mode=Node,RBAC --client-ca-file=/etc/kubernetes/pki/ca.crt --enable-admission-plugins=NodeRestriction --enable-bootstrap-token-auth=true --etcd-cafile=/etc/kubernetes/pki/etcd/ca.pem --etcd-certfile=/etc/kubernetes/pki/etcd/etcd.pem --etcd-keyfile=/etc/kubernetes/pki/etcd/etcd-key.pem --etcd-servers=https://10.1.127.10:2379 --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname --proxy-client-cert-file=/etc/kubernetes/pki/front-proxy-client.crt --proxy-client-key-file=/etc/kubernetes/pki/front-proxy-client.key --requestheader-allowed-names=front-proxy-client --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt --requestheader-extra-headers-prefix=X-Remote-Extra- --requestheader-group-headers=X-Remote-Group --requestheader-username-headers=X-Remote-User --secure-port=6443 --service-account-issuer=https://kubernetes.default.svc.cluster.local --service-account-key-file=/etc/kubernetes/pki/sa.pub --service-account-signing-key-file=/etc/kubernetes/pki/sa.key --service-cluster-ip-range=10.96.0.0/12 --tls-cert-file=/etc/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
+   root        5754    5601  0 05:15 pts/0    00:00:00 grep etcd
+   
+   cluster2-controlplane ~ ➜  
+   ```
+
+   You can see the same information by inspecting the `kube-apiserver` pod (which runs as a static pod in the kube-system namespace):
+
+   ```sh
+   kubectl -n kube-system describe pod kube-apiserver-cluster2-controlplane 
+   Name:                 kube-apiserver-cluster2-controlplane
+   Namespace:            kube-system
+   Priority:             2000001000
+   Priority Class Name:  system-node-critical
+   Node:                 cluster2-controlplane/10.6.187.9
+   Start Time:           Sun, 08 Jan 2023 23:43:29 +0000
+   Labels:               component=kube-apiserver
+                         tier=control-plane
+   Annotations:          kubeadm.kubernetes.io/kube-apiserver.advertise-address.endpoint: 10.6.187.9:6443
+                         kubernetes.io/config.hash: 2cd013c2af46430a2a11ceff45701856
+                         kubernetes.io/config.mirror: 2cd013c2af46430a2a11ceff45701856
+                         kubernetes.io/config.seen: 2023-01-08T23:43:28.115612990Z
+                         kubernetes.io/config.source: file
+                         seccomp.security.alpha.kubernetes.io/pod: runtime/default
+   Status:               Running
+   IP:                   10.6.187.9
+   IPs:
+     IP:           10.6.187.9
+   Controlled By:  Node/cluster2-controlplane
+   Containers:
+     kube-apiserver:
+       Container ID:  containerd://f3b86a287f6bdad9c832180798db6a70f62a5b4adcf57da8994a0f8a26a99903
+       Image:         k8s.gcr.io/kube-apiserver:v1.24.0
+       Image ID:      k8s.gcr.io/kube-apiserver@sha256:a04522b882e919de6141b47d72393fb01226c78e7388400f966198222558c955
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         kube-apiserver
+         --advertise-address=10.6.187.9
+         --allow-privileged=true
+         --authorization-mode=Node,RBAC
+         --client-ca-file=/etc/kubernetes/pki/ca.crt
+         --enable-admission-plugins=NodeRestriction
+         --enable-bootstrap-token-auth=true
+         --etcd-cafile=/etc/kubernetes/pki/etcd/ca.pem
+         --etcd-certfile=/etc/kubernetes/pki/etcd/etcd.pem
+         --etcd-keyfile=/etc/kubernetes/pki/etcd/etcd-key.pem
+         --etcd-servers=https://10.6.187.20:2379
+   --------- End of Snippet---------
+   ```
+
+9. What is the IP address of the `External ETCD` datastore used in `cluster2`?
+
+   - 10.0.0.6
+   - **10.9.65.15**
+   - 192.168.1.1
+   - 10.16.56.33
+
+   ```
+   cluster2-controlplane ~ ➜  ps -ef | grep etcd
+   root        1735    1369  0 00:49 ?        00:02:02 kube-apiserver --advertise-address=10.9.65.3 --allow-privileged=true --authorization-mode=Node,RBAC --client-ca-file=/etc/kubernetes/pki/ca.crt --enable-admission-plugins=NodeRestriction --enable-bootstrap-token-auth=true --etcd-cafile=/etc/kubernetes/pki/etcd/ca.pem --etcd-certfile=/etc/kubernetes/pki/etcd/etcd.pem --etcd-keyfile=/etc/kubernetes/pki/etcd/etcd-key.pem --etcd-servers=https://10.9.65.15:2379 --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname --proxy-client-cert-file=/etc/kubernetes/pki/front-proxy-client.crt --proxy-client-key-file=/etc/kubernetes/pki/front-proxy-client.key --requestheader-allowed-names=front-proxy-client --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt --requestheader-extra-headers-prefix=X-Remote-Extra- --requestheader-group-headers=X-Remote-Group --requestheader-username-headers=X-Remote-User --secure-port=6443 --service-account-issuer=https://kubernetes.default.svc.cluster.local --service-account-key-file=/etc/kubernetes/pki/sa.pub --service-account-signing-key-file=/etc/kubernetes/pki/sa.key --service-cluster-ip-range=10.96.0.0/12 --tls-cert-file=/etc/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
+   root        7654    7479  0 01:27 pts/0    00:00:00 grep etcd
+   ```
+   
+10. What is the default data directory used the for `ETCD` datastore used in `cluster1`?
+      Remember, this cluster uses a `Stacked ETCD` topology.
+
+   Make sure to switch the context to `cluster1`:
+
+   ```sh
+   kubectl config use-context cluster1
+   ```
+
+   - /etc/etcd/data-dir
+   - /etc/etcd
+   - /var/lib/etcd-data
+   - **/var/lib/etcd**
+
+   Inspect the value assigned to data-dir on the etcd pod:
+
+   ```
+   student-node ~ ➜  kubectl config use-context cluster1
+   Switched to context "cluster1".
+   
+   student-node ~ ➜  kubectl describe pods -n kube-system etcd-cluster1-controlplane | grep data-dir
+         --data-dir=/var/lib/etcd
+   ```
+
+11. For the subsequent questions, you would need to login to the `External ETCD` server.
+
+    To do this, open a new terminal (using the `+` button located above the default terminal).
+
+    From the new terminal you can now `SSH` from the `student-node` to either the `IP` of the ETCD datastore (that you identified in the previous questions) OR the hostname `etcd-server`:
+
+    ![image-20230109083914009](images/image-20230109083914009.png)
+
+12. What is the default data directory used the for `ETCD` datastore used in `cluster2`?
+    Remember, this cluster uses an `External ETCD` topology.
+
+    - /etc/etcd
+    - /var/lib/etcd
+    - /etc/etcd/data-dir
+    - **/var/lib/etcd-data**
+
+    ```
+    student-node ~ ➜  ssh etcd-server
+    Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 5.4.0-1093-gcp x86_64)
+    
+     * Documentation:  https://help.ubuntu.com
+     * Management:     https://landscape.canonical.com
+     * Support:        https://ubuntu.com/advantage
+    This system has been minimized by removing packages and content that are
+    not required on a system that users do not log into.
+    
+    To restore this content, you can run the 'unminimize' command.
+    
+    etcd-server ~ ➜  ps -f | grep etcd
+    root        1046     969  0 00:43 pts/0    00:00:00 grep etcd
+    
+    etcd-server ~ ➜  ps -ef | grep etcd
+    etcd         855       1  0 Jan08 ?        00:01:04 /usr/local/bin/etcd --name etcd-server --data-dir=/var/lib/etcd-data --cert-file=/etc/etcd/pki/etcd.pem --key-file=/etc/etcd/pki/etcd-key.pem --peer-cert-file=/etc/etcd/pki/etcd.pem --peer-key-file=/etc/etcd/pki/etcd-key.pem --trusted-ca-file=/etc/etcd/pki/ca.pem --peer-trusted-ca-file=/etc/etcd/pki/ca.pem --peer-client-cert-auth --client-cert-auth --initial-advertise-peer-urls https://10.6.187.20:2380 --listen-peer-urls https://10.6.187.20:2380 --advertise-client-urls https://10.6.187.20:2379 --listen-client-urls https://10.6.187.20:2379,https://127.0.0.1:2379 --initial-cluster-token etcd-cluster-1 --initial-cluster etcd-server=https://10.6.187.20:2380 --initial-cluster-state new
+    root        1103     969  0 00:43 pts/0    00:00:00 grep etcd
+    ```
+
+13. How many nodes are part of the `ETCD` cluster that `etcd-server` is a part of?
+
+    - **1**
+    - 4
+    - 0
+    - 2
+
+    Check the members of the cluster:
+
+    ```
+    etcd-server ~ ➜  ETCDCTL_API=3 etcdctl \
+     --endpoints=https://127.0.0.1:2379 \
+     --cacert=/etc/etcd/pki/ca.pem \
+     --cert=/etc/etcd/pki/etcd.pem \
+     --key=/etc/etcd/pki/etcd-key.pem \
+      member list
+    defa974a89b844aa, started, etcd-server, https://10.6.187.20:2380, https://10.6.187.20:2379, false
+    ```
+
+    This shows that there is only one member in this cluster.
+
+14. Take a backup of `etcd` on `cluster1` and save it on the `student-node` at the path `/opt/cluster1.db`
+
+    
+
+    If needed, make sure to set the context to `cluster1` (on the student-node):
+
+    ```
+    student-node ~ ➜  kubectl config use-context cluster1
+    Switched to context "cluster1".
+    
+    student-node ~ ➜  
+    ```
+
+    Check
+
+    - task completed?
+
+    On the `student-node`:
+
+    First set the context to `cluster1`:
+
+    ```sh
+    student-node ~ ➜  kubectl config use-context cluster1
+    Switched to context "cluster1".
+    ```
+
+    
+    Next, inspect the endpoints and certificates used by the `etcd` pod. We will make use of these to take the backup.
+
+    ```sh
+    student-node ~ ➜  student-node ~ ➜  kubectl config use-context cluster1
+    Switched to context "cluster1".
+    
+    student-node ~ ➜  kubectl describe  pods -n kube-system etcd-cluster1-controlplane  | grep advertise-client-urls
+    Annotations:          kubeadm.kubernetes.io/etcd.advertise-client-urls: https://10.9.65.23:2379
+          --advertise-client-urls=https://10.9.65.23:2379
+    
+    student-node ~ ➜  
+    
+    student-node ~ ➜  kubectl describe  pods -n kube-system etcd-cluster1-controlplane  | grep advertise-client-urls
+    Annotations:          kubeadm.kubernetes.io/etcd.advertise-client-urls: https://10.9.65.23:2379
+          --advertise-client-urls=https://10.9.65.23:2379
+    
+    student-node ~ ➜  kubectl describe  pods -n kube-system etcd-cluster1-controlplane  | grep pki
+          --cert-file=/etc/kubernetes/pki/etcd/server.crt
+          --key-file=/etc/kubernetes/pki/etcd/server.key
+          --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt
+          --peer-key-file=/etc/kubernetes/pki/etcd/peer.key
+          --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+          --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+          /etc/kubernetes/pki/etcd from etcd-certs (rw)
+        Path:          /etc/kubernetes/pki/etcd
+    
+    student-node ~ ➜  
+    ```
+
+    
+    SSH to the `controlplane` node of `cluster1` and then take the backup using the endpoints and certificates we identified above:
+
+    ```
+    cluster1-controlplane ~ ➜  ETCDCTL_API=3 etcdctl \
+    > --endpoints=https://10.9.65.23:2379 \
+    > --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+    > --cert=/etc/kubernetes/pki/etcd/server.crt \
+    > --key=/etc/kubernetes/pki/etcd/server.key \
+    > snapshot save /opt/cluster1.db
+    Snapshot saved at /opt/cluster1.db
+    ```
+
+    
+    Finally, copy the backup to the `student-node`. To do this, go back to the `student-node` and use `scp` as shown below:
+
+    ```sh
+    student-node ~ ➜  scp cluster1-controlplane:/opt/cluster1.db /opt
+    cluster1.db                                                       100% 2104KB 146.0MB/s   00:00    
+    ```
+
+15. An `ETCD` backup for `cluster2` is stored at `/opt/cluster2.db`. Use this snapshot file to carryout a restore on `cluster2` to a new path `/var/lib/etcd-data-new`.
+
+    Once the restore is complete, ensure that the controlplane components on `cluster2` are running.
+
+    The snapshot was taken when there were objects created in the `critical` namespace on `cluster2`. These objects should be available post restore.
+
+    If needed, make sure to set the context to `cluster2` (on the student-node):
+
+    ```
+    student-node ~ ➜  kubectl config use-context cluster2
+    Switched to context "cluster2".
+    
+    student-node ~ ➜  
+    ```
+
+    Check
+
+    - etcd restored to the new directory ?
+
+    - kube-apiserver running on cluster2?
+
+    - objects restored?
+
+      
+
+    Step 1. Copy the snapshot file from the student-node to the etcd-server. In the example below, we are copying it to the /root directory:
+
+    ```sh
+    student-node ~  scp /opt/cluster2.db etcd-server:/root
+    cluster2.db                                                                                                        100% 1108KB 178.5MB/s   00:00    
+    
+    student-node ~ ➜  
+    ```
+
+    
+    Step 2: Restore the snapshot on the `cluster2`. Since we are restoring directly on the `etcd-server`, we can use the endpoint `https:/127.0.0.1`. Use the same certificates that were identified earlier. Make sure to use the `data-dir` as `/var/lib/etcd-data-new`:
+
+    ```sh
+    etcd-server ~ ➜  ETCDCTL_API=3 etcdctl \
+    > --endpoints=https://127.0.0.1:2379 \
+    > --cacert=/etc/etcd/pki/ca.pem \
+    > --cert=/etc/etcd/pki/etcd.pem \
+    > --key=/etc/etcd/pki/etcd-key.pem \
+    > snapshot restore /root/cluster2.db \
+    > --data-dir /var/lib/etcd-data-new
+    {"level":"info","ts":1673228688.6840649,"caller":"snapshot/v3_snapshot.go:296","msg":"restoring snapshot","path":"/root/cluster2.db","wal-dir":"/var/lib/etcd-data-new/member/wal","data-dir":"/var/lib/etcd-data-new","snap-dir":"/var/lib/etcd-data-new/member/snap"}
+    {"level":"info","ts":1673228688.7015152,"caller":"mvcc/kvstore.go:388","msg":"restored last compact revision","meta-bucket-name":"meta","meta-bucket-name-key":"finishedCompactRev","restored-compact-revision":3643}
+    {"level":"info","ts":1673228688.7087736,"caller":"membership/cluster.go:392","msg":"added member","cluster-id":"cdf818194e3a8c32","local-member-id":"0","added-peer-id":"8e9e05c52164694d","added-peer-peer-urls":["http://localhost:2380"]}
+    {"level":"info","ts":1673228688.7211502,"caller":"snapshot/v3_snapshot.go:309","msg":"restored snapshot","path":"/root/cluster2.db","wal-dir":"/var/lib/etcd-data-new/member/wal","data-dir":"/var/lib/etcd-data-new","snap-dir":"/var/lib/etcd-data-new/member/snap"}
+    ```
+
+    Step 3: Update the systemd service unit file for `etcd`by running `vi /etc/systemd/system/etcd.service` and add the new value for `data-dir`:
+
+    ```sh
+    [Unit]
+    Description=etcd key-value store
+    Documentation=https://github.com/etcd-io/etcd
+    After=network.target
+    
+    [Service]
+    User=etcd
+    Type=notify
+    ExecStart=/usr/local/bin/etcd \
+      --name etcd-server \
+      --data-dir=/var/lib/etcd-data-new \
+    ---End of Snippet---
+    ```
+
+    
+    Step 4: make sure the permissions on the new directory is correct (should be owned by `etcd` user):
+
+    ```sh
+    etcd-server /var/lib ➜  chown -R etcd:etcd /var/lib/etcd-data-new
+    
+    etcd-server /var/lib ➜ 
+    
+    
+    etcd-server /var/lib ➜  ls -ld /var/lib/etcd-data-new/
+    drwx------ 3 etcd etcd 4096 Sep  1 02:41 /var/lib/etcd-data-new/
+    etcd-server /var/lib ➜ 
+    ```
+
+    
+    Step 5: Finally, reload and restart the etcd service.
+
+    ```sh
+    etcd-server ~/default.etcd ➜  systemctl daemon-reload 
+    etcd-server ~ ➜  systemctl restart etcd
+    etcd-server ~ ➜  
+    ```
+
+
+    Step 6 (optional): It is recommended to restart controlplane components (e.g. kube-scheduler, kube-controller-manager, kubelet) to ensure that they don't rely on some stale data.
+
+
+
+# SECURITY
+
+## PRACTICE TEST VIEW CERTIFICATE DETAILS
+
+1. Identify the certificate file used for the `kube-api server`
+
+   - /etc/kubernetes/pki/kube-apiserver.crt
+   - /etc/apiserver.crt
+   - /etc/apiserver.key
+   - /tmp/kube-apiserver.crt
+   - **/etc/kubernetes/pki/apiserver.crt**
+
+   Run the command `cat /etc/kubernetes/manifests/kube-apiserver.yaml` and look for the line --tls-cert-file
+
+   ```
+   controlplane ~ ➜  cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep tls-cert-file
+       - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
+   ```
+
+   
+
+2. Identify the Certificate file used to authenticate `kube-apiserver` as a client to `ETCD` Server
+
+   - **/etc/kubernetes/pki/apiserver-etcd-client.crt**
+   - /etc/kubernetes/pki/apiserver.crt
+   - /etc/kubernetes/pki/apiserver-kubelet-client.crt
+   - /etc/kubernetes/pki/apiserver-etcd-client.key
+   - /etc/kubernetes/pki/apiserver-etcd.crt
+
+   Look for etcd-certfile option in the file `/etc/kubernetes/manifests/kube-apiserver.yaml`
+
+   ```
+   controlplane ~ ➜  cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep etcd-certfile
+       - --etcd-certfile=/etc/kubernetes/pki/apiserver-etcd-client.crt
+   ```
+
+3. Identify the key used to authenticate `kubeapi-server` to the `kubelet` server
+
+   - **/etc/kubernetes/pki/apiserver-kubelet-client.key**
+   - /etc/kubernetes/pki/apiserver-etcd-client.key
+   - /etc/kubernetes/pki/front-proxy-client.key
+   - /etc/kubernetes/pki/apiserver.key
+   - /etc/kubernetes/pki/apiserver-kubelet-client.crt
+
+   Look for kubelet-client-key option in the file `/etc/kubernetes/manifests/kube-apiserver.yaml`
+
+   ```
+   controlplane ~ ➜  cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep kubelet-client-key
+       - --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key
+   ```
+
+4. Identify the ETCD Server Certificate used to host ETCD server
+
+   - **/etc/kubernetes/pki/etcd/server.crt**
+   - /etc/kubernetes/pki/apiserver.crt
+   - /etc/kubernetes/pki/apiserver-etcd-client.crt
+   - /etc/kubernetes/pki/etcd/ca.crt
+
+   Look for `cert-file` option in the file `/etc/kubernetes/manifests/etcd.yaml`
+
+   ```
+   controlplane ~ ➜  cat /etc/kubernetes/manifests/etcd.yaml | grep cert-file
+       - --cert-file=/etc/kubernetes/pki/etcd/server.crt
+       - --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt
+   ```
+
+5. Identify the ETCD Server CA Root Certificate used to serve ETCD Server
+
+   ETCD can have its own CA. So this may be a different CA certificate than the one used by kube-api server.
+
+   - /etc/kubernetes/pki/etcd/server.crt
+   - /etc/kubernetes/pki/apiserver-kubelet-client.crt
+   - **/etc/kubernetes/pki/etcd/ca.crt**
+   - /etc/kubernetes/pki/ca.crt
+
+   Look for CA Certificate (`trusted-ca-file`) in file `/etc/kubernetes/manifests/etcd.yaml`
+
+   ```
+   controlplane ~ ➜  cat /etc/kubernetes/manifests/etcd.yaml | grep trusted-ca-file
+       - --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+       - --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+   ```
+
+6. What is the Common Name (CN) configured on the Kube API Server Certificate?
+
+   **OpenSSL Syntax:** `openssl x509 -in file-path.crt -text -noout`
+
+   - api-server
+   - kube-api-server
+   - kubernetes
+   - **kube-apiserver**
+   - kubeapi-server
+
+   Run the command `openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text` and look for Subject CN.
+
+   ```
+   controlplane ~ ➜  openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text 
+   Certificate:
+       Data:
+           Version: 3 (0x2)
+           Serial Number: 4648182497223116912 (0x4081a95aa62c0870)
+           Signature Algorithm: sha256WithRSAEncryption
+           Issuer: CN = kubernetes
+           Validity
+               Not Before: Jan  9 01:36:28 2023 GMT
+               Not After : Jan  9 01:36:28 2024 GMT
+           Subject: CN = kube-apiserver
+           Subject Public Key Info:
+               Public Key Algorithm: rsaEncryption
+                   RSA Public-Key: (2048 bit)
+                   Modulus:
+                       00:c2:35:1c:d8:58:51:32:91:b2:80:c7:96:92:be:
+                       fa:9d:0c:b5:69:26:c7:38:1b:3b:c0:4d:ed:8f:b6:
+                       0a:ad:4d:ca:52:24:6e:e5:37:20:1d:74:5e:06:17:
+                       e1:a2:95:39:9f:18:fe:14:f3:3b:9f:74:01:ef:c1:
+                       8a:6e:4b:58:7b:83:79:8f:f9:53:d5:ee:0d:66:58:
+                       b6:16:35:25:c7:90:08:ed:9c:21:b4:49:50:75:14:
+                       ca:01:3b:fb:e0:08:37:92:1f:1c:6c:cb:45:fb:a9:
+                       e0:69:15:bc:39:be:e6:ce:46:0e:99:4d:79:3e:13:
+                       6f:a1:fa:22:10:34:e5:0a:86:5a:a1:4d:f1:aa:2c:
+                       10:33:7c:38:34:df:e3:99:9a:a9:66:07:f1:23:20:
+                       c0:f6:8e:4f:1b:c9:a9:2e:05:42:e7:30:d5:bb:63:
+                       87:f8:db:c7:8d:6d:bd:3e:f1:8f:de:5e:31:9b:03:
+                       e3:99:c0:b5:b4:bb:bb:42:60:59:fc:1a:e3:02:b3:
+                       ab:5b:45:6b:a1:ec:98:46:59:79:7c:98:01:15:c8:
+                       e0:af:a2:e3:f3:40:5c:98:c9:c0:cd:74:28:a3:5e:
+                       75:92:50:ad:8f:8e:74:ff:bf:82:c1:9a:5b:1c:31:
+                       4d:0a:d8:cf:eb:df:69:87:af:ad:c3:3a:6f:6d:74:
+                       1d:5f
+                   Exponent: 65537 (0x10001)
+   ```
+
+7. What is the name of the CA who issued the Kube API Server Certificate?
+
+   - kubernetes-ca
+   - ca
+   - **kubernetes**
+   - kube-apiserver
+
+   Run the command `openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text` and look for issuer
+
+   ```'
+   controlplane ~ ➜  openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text 
+   Certificate:
+       Data:
+           Version: 3 (0x2)
+           Serial Number: 4648182497223116912 (0x4081a95aa62c0870)
+           Signature Algorithm: sha256WithRSAEncryption
+           Issuer: CN = kubernetes
+           Validity
+               Not Before: Jan  9 01:36:28 2023 GMT
+               Not After : Jan  9 01:36:28 2024 GMT
+           Subject: CN = kube-apiserver
+           Subject Public Key Info:
+   ```
+
+8. Which of the below alternate names is not configured on the Kube API Server Certificate?
+
+   - kubernetes.default.svc
+   - kubernetes
+   - controlplane
+   - **kube-master**
+
+   Run the command `openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text` and look at Alternative Names
+
+   ```
+   controlplane ~ ➜  openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text 
+   Certificate:
+       Data:
+           Version: 3 (0x2)
+           Serial Number: 4648182497223116912 (0x4081a95aa62c0870)
+           Signature Algorithm: sha256WithRSAEncryption
+           Issuer: CN = kubernetes
+           Validity
+               Not Before: Jan  9 01:36:28 2023 GMT
+               Not After : Jan  9 01:36:28 2024 GMT
+           Subject: CN = kube-apiserver
+           Subject Public Key Info:
+               Public Key Algorithm: rsaEncryption
+                   RSA Public-Key: (2048 bit)
+                   Modulus:
+                       00:c2:35:1c:d8:58:51:32:91:b2:80:c7:96:92:be:
+                       fa:9d:0c:b5:69:26:c7:38:1b:3b:c0:4d:ed:8f:b6:
+                       0a:ad:4d:ca:52:24:6e:e5:37:20:1d:74:5e:06:17:
+                       e1:a2:95:39:9f:18:fe:14:f3:3b:9f:74:01:ef:c1:
+                       8a:6e:4b:58:7b:83:79:8f:f9:53:d5:ee:0d:66:58:
+                       b6:16:35:25:c7:90:08:ed:9c:21:b4:49:50:75:14:
+                       ca:01:3b:fb:e0:08:37:92:1f:1c:6c:cb:45:fb:a9:
+                       e0:69:15:bc:39:be:e6:ce:46:0e:99:4d:79:3e:13:
+                       6f:a1:fa:22:10:34:e5:0a:86:5a:a1:4d:f1:aa:2c:
+                       10:33:7c:38:34:df:e3:99:9a:a9:66:07:f1:23:20:
+                       c0:f6:8e:4f:1b:c9:a9:2e:05:42:e7:30:d5:bb:63:
+                       87:f8:db:c7:8d:6d:bd:3e:f1:8f:de:5e:31:9b:03:
+                       e3:99:c0:b5:b4:bb:bb:42:60:59:fc:1a:e3:02:b3:
+                       ab:5b:45:6b:a1:ec:98:46:59:79:7c:98:01:15:c8:
+                       e0:af:a2:e3:f3:40:5c:98:c9:c0:cd:74:28:a3:5e:
+                       75:92:50:ad:8f:8e:74:ff:bf:82:c1:9a:5b:1c:31:
+                       4d:0a:d8:cf:eb:df:69:87:af:ad:c3:3a:6f:6d:74:
+                       1d:5f
+                   Exponent: 65537 (0x10001)
+           X509v3 extensions:
+               X509v3 Key Usage: critical
+                   Digital Signature, Key Encipherment
+               X509v3 Extended Key Usage: 
+                   TLS Web Server Authentication
+               X509v3 Basic Constraints: critical
+                   CA:FALSE
+               X509v3 Authority Key Identifier: 
+                   keyid:EC:BA:AF:DE:EF:B9:C3:B6:F0:C3:3A:5A:A0:84:74:ED:C5:9A:03:E4
+   
+               X509v3 Subject Alternative Name: 
+                   DNS:controlplane, DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster.local, IP Address:10.96.0.1, IP Address:10.10.217.3
+       Signature Algorithm: sha256WithRSAEncryption
+   ```
+
+9. What is the Common Name (CN) configured on the ETCD Server certificate?
+
+   - etcd-server
+   - kubernetes
+   - etcd
+   - **controlplane**
+
+   Run the command `openssl x509 -in /etc/kubernetes/pki/etcd/server.crt -text` and look for Subject CN.
+
+   ```
+   controlplane ~ ➜  openssl x509 -in /etc/kubernetes/pki/etcd/server.crt -text 
+   Certificate:
+       Data:
+           Version: 3 (0x2)
+           Serial Number: 5353748666609261462 (0x4a4c560c01f75b96)
+           Signature Algorithm: sha256WithRSAEncryption
+           Issuer: CN = etcd-ca
+           Validity
+               Not Before: Jan  9 01:36:29 2023 GMT
+               Not After : Jan  9 01:36:29 2024 GMT
+           Subject: CN = controlplane
+           Subject Public Key Info:
+   ```
+
+10. How long, from the issued date, is the Kube-API Server Certificate valid for?
+
+   File: `/etc/kubernetes/pki/apiserver.crt`
+
+   - 2 Years
+   - **1 Year**
+   - 6 months
+   - 10 years
+
+   Run the command `openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text` and check on the Expiry date.
+
+   ```
+   controlplane ~ ➜  openssl x509 -in /etc/kubernetes/pki/etcd/server.crt -text 
+   Certificate:
+       Data:
+           Version: 3 (0x2)
+           Serial Number: 5353748666609261462 (0x4a4c560c01f75b96)
+           Signature Algorithm: sha256WithRSAEncryption
+           Issuer: CN = etcd-ca
+           Validity
+               Not Before: Jan  9 01:36:29 2023 GMT
+               Not After : Jan  9 01:36:29 2024 GMT
+   ```
+
+11. How long, from the issued date, is the Root CA Certificate valid for?
+
+    File: `/etc/kubernetes/pki/ca.crt`
+
+    - **10 years**
+    - 6 Months
+    - 1 Year
+    - 2 Years
+
+    Run the command `openssl x509 -in /etc/kubernetes/pki/ca.crt -text` and look for validity
+
+    ```
+    controlplane ~ ➜  openssl x509 -in /etc/kubernetes/pki/ca.crt -text 
+    Certificate:
+        Data:
+            Version: 3 (0x2)
+            Serial Number: 0 (0x0)
+            Signature Algorithm: sha256WithRSAEncryption
+            Issuer: CN = kubernetes
+            Validity
+                Not Before: Jan  9 01:36:28 2023 GMT
+                Not After : Jan  6 01:36:28 2033 GMT
+    ```
+
+12. Kubectl suddenly stops responding to your commands. Check it out! Someone recently modified the `/etc/kubernetes/manifests/etcd.yaml` file
+
+    You are asked to investigate and fix the issue. Once you fix the issue wait for sometime for kubectl to respond. Check the logs of the ETCD container.
+
+    Check
+
+    - Fix the kube-api server
+
+    The certificate file used here is incorrect. It is set to `/etc/kubernetes/pki/etcd/server-certificate.crt` which does not exist. As we saw in the previous questions the correct path should be `/etc/kubernetes/pki/etcd/server.crt`.
+
+    ```
+    controlplane ~ ➜  ls -l /etc/kubernetes/pki/etcd/server*
+    -rw-r--r-- 1 root root 1208 Jan  8 20:36 /etc/kubernetes/pki/etcd/server.crt
+    -rw------- 1 root root 1675 Jan  8 20:36 /etc/kubernetes/pki/etcd/server.key
+    ```
+
+    Update the YAML file with the correct certificate path and wait for the ETCD pod to be recreated. wait for the `kube-apiserver` to get to a `Ready` state.
+
+    ```
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      annotations:
+        kubeadm.kubernetes.io/etcd.advertise-client-urls: https://10.10.217.3:2379
+      creationTimestamp: null
+      labels:
+        component: etcd
+        tier: control-plane
+      name: etcd
+      namespace: kube-system
+    spec:
+      containers:
+      - command:
+        - etcd
+        - --advertise-client-urls=https://10.10.217.3:2379
+        - --cert-file=/etc/kubernetes/pki/etcd/server.crt
+    ```
+
+    **NOTE**: It may take a few minutes for the kubectl commands to work again so please be patient.
+
+13. The kube-api server stopped again! Check it out. Inspect the kube-api server logs and identify the root cause and fix the issue.
+
+    Run `crictl ps -a` command to identify the kube-api server container. Run `crictl logs container-id` command to view the logs.
+
+    Check
+
+    - Fix the kube-api server
+
+    
+
+    If we inspect the `kube-apiserver` container on the `controlplane`, we can see that it is frequently exiting.
+
+    ```sh
+    controlplane ~ ➜  crictl ps -a
+    CONTAINER           IMAGE               CREATED              STATE               NAME                      ATTEMPT             POD ID              POD
+    649683ee12cf3       a31e1d84401e6       4 seconds ago        Running             kube-apiserver            2                   2877a141236c3       kube-apiserver-controlplane
+    d4a916dd08bbb       a31e1d84401e6       47 seconds ago       Exited              kube-apiserver            1                   2877a141236c3       kube-apiserver-controlplane
+    de432709238aa       5d7c5dfd3ba18       About a minute ago   Running             kube-controller-manager   2                   66b1436f4ef8d       kube-controller-manager-controlplane
+    1d9251fff3dcf       dafd8ad70b156       About a minute ago   Running             kube-scheduler            2                   3a87331c73489       kube-scheduler-controlplane
+    e992e23f1738a       fce326961ae2d       2 minutes ago        Running             etcd                      0                   f5b9f298d0000       etcd-controlplane
+    7a9bc39d91501       dafd8ad70b156       9 minutes ago        Exited              kube-scheduler            1                   3a87331c73489       kube-scheduler-controlplane
+    75f3760beea14       5d7c5dfd3ba18       9 minutes ago        Exited              kube-controller-manager   1                   66b1436f4ef8d       kube-controller-manager-controlplane
+    7e25a4326e1e1       5185b96f0becf       About an hour ago    Running             coredns                   0                   22355cead5172       coredns-787d4945fb-s2vq5
+    b9f7a5e80eedc       5185b96f0becf       About an hour ago    Running             coredns                   0                   f7ae9b34b2d6a       coredns-787d4945fb-qvgkv
+    781d365505277       8b675dda11bb1       About an hour ago    Running             kube-flannel              0                   6ac4f35b7ecab       kube-flannel-ds-6rdjn
+    fbae98f0c75e8       8b675dda11bb1       About an hour ago    Exited              install-cni               0                   6ac4f35b7ecab       kube-flannel-ds-6rdjn
+    ad04494f631b8       fcecffc7ad4af       About an hour ago    Exited              install-cni-plugin        0                   6ac4f35b7ecab       kube-flannel-ds-6rdjn
+    4f0e813d56329       556768f31eb1d       About an hour ago    Running             kube-proxy                0                   39fe85c8d8c6a       kube-proxy-hshll
+    
+    OR
+    
+    controlplane ~ ➜  crictl ps -a | grep kube-apiserver
+    0bb356c08c5be       a31e1d84401e6       About a minute ago   Exited              kube-apiserver            5                   2877a141236c3       kube-apiserver-controlplane
+    ```
+
+    If we now inspect the logs of this exited container, we would see the following errors:
+
+    ```sh
+    controlplane ~ ➜  crictl logs --tail=2 0bb356c08c5be
+    }. Err: connection error: desc = "transport: authentication handshake failed: x509: certificate signed by unknown authority"
+    E0109 02:43:05.692397       1 run.go:74] "command failed" err="context deadline exceeded"
+    ```
+
+    This indicates an issue with the ETCD CA certificate used by the `kube-apiserver`. Correct it to use the file `/etc/kubernetes/pki/etcd/ca.crt`.
+
+    ```
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      annotations:
+        kubeadm.kubernetes.io/kube-apiserver.advertise-address.endpoint: 10.10.217.3:6443
+      creationTimestamp: null
+      labels:
+        component: kube-apiserver
+        tier: control-plane
+      name: kube-apiserver
+      namespace: kube-system
+    spec:
+      containers:
+      - command:
+        - kube-apiserver
+        - --advertise-address=10.10.217.3
+        - --allow-privileged=true
+        - --authorization-mode=Node,RBAC
+        - --client-ca-file=/etc/kubernetes/pki/ca.crt
+        - --enable-admission-plugins=NodeRestriction
+        - --enable-bootstrap-token-auth=true
+        - --etcd-cafile=/etc/kubernetes/pki/etcd/ca.crt
+    ```
+
+    Once the YAML file has been saved, wait for the `kube-apiserver` pod to be `Ready`. This can take a couple of minutes.
+
+
+
+## PRACTICE TEST CERTIFICATES API
+
+1. A new member `akshay` joined our team. He requires access to our cluster. The Certificate Signing Request is at the `/root` location.
+
+   Inspect it
+
+   Ok
+
+   ```
+   controlplane ~ ➜  ls
+   akshay.csr  akshay.key
+   ```
+
+2. Create a **CertificateSigningRequest** object with the name `akshay` with the contents of the `akshay.csr` file
+
+   As of kubernetes 1.19, the API to use for CSR is `certificates.k8s.io/v1`.
+
+   Please note that an additional field called `signerName` should also be added when creating CSR. For client authentication to the API server we will use the built-in signer `kubernetes.io/kube-apiserver-client`.
+
+   Check
+
+   - CSR akshay created
+   - Right CSR is used
+
+
+   Use this command to generate the base64 encoded format as following: -
+
+   ```sh
+   controlplane ~ ➜  cat akshay.csr | base64 -w 0
+   LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1ZqQ0NBVDRDQVFBd0VURVBNQTBHQTFVRUF3d0dZV3R6YUdGNU1JSUJJakFOQmdrcWhraUc5dzBCQVFFRgpBQU9DQVE4QU1JSUJDZ0tDQVFFQTJhRFpuZW1JMzJUNzB2a2hWT1BHMytlKzVpTk9SeGUwZTlwbEVVZ3pwcldZClZ1UzhDTjM0S1NsV0hWNDRRbWtuU3YrMTdNUGJsTUVZNm9jQmJKUFJrYmZBSlVjOVhhVnVLcGN1VkJ1WDRVbmwKMmlRZkQ5NnB3TjkxbVVkWCsxcUNXbzYxVWNpRUV3SjR6N0FBMFlOb05nNkRaY1lwMW5BZWhkNUVhUTd2Rjl2UQp3emFxcy9VbTBYdlBpazRHYU5tZDZNSU5LdzdNT2IyYmNCQ3RrR0s5emc1aTJNZ2g5UDBkcThlWkNwSVQ1c3FXCndMQ3FnaUltbkMyMnliamVVTnk0dEJsVXhDR1liaW1KWnB3K2ljZUJoVUI2bmVsRFVnN3J3ZWN6dkVUbklLbnAKUkhOU09hYnBVN3g3MG5JZDhpSlByTWg0NDJONk5DK0dyR3VLVVF5dVpRSURBUUFCb0FBd0RRWUpLb1pJaHZjTgpBUUVMQlFBRGdnRUJBRzRGbEF4Y0tnSVh2S2FiWDh4VDgyUzBEWmN0R3VUQUFXQmZJSWFOd2h2WVpyaGJWTWJ5CkU2U0pyWVpHWjRhNlVINnBGdnB5K2VVYmhNSGVPSUpobThBMHpCSXltNlFpaG9rMmlPZCtYVk5RekJiY0lFeWkKQ0VTcURleURrMGhWYm0zUWdJeEFpMDVRRTFQSmQ4aXlLbjB4NlowNHRtNzduYWZyaWdHMDBhWGpmekNOMlc3UwpxZ3dtUE1vZVdHV01NUXkwSDI1ZSszNXBaMTNoeFEzbEtJbEZ4b1p5NXZLWjN3NkZ0M1JBTStmSEpVcXd2UHNICjlMSGpYSy9BbldncmRab1VUUThWaFRDTitES0pjNlBNYmMxSzJnSUxHcWRBM0xsUWZJMHFiQ1E2aktnMnYrcE8KV0ZpSzFwdWhkM0V6QzM2VzZSMHh5ZWwwcXlPWDJScjhrdFU9Ci0tLS0tRU5EIENFUlRJRklDQVRFIFJFUVVFU1QtLS0tLQo=
+   ```
+
+   -w 0 - prints in a single line
+
+   and finally, create a CSR name `akshay` as follows: -
+
+   Create akshay.yaml
+
+   akshay.yaml
+
+   ```yaml
+   apiVersion: certificates.k8s.io/v1
+   kind: CertificateSigningRequest
+   metadata:
+     name: akshay
+   spec:
+     request: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1ZqQ0NBVDRDQVFBd0VURVBNQTBHQTFVRUF3d0dZV3R6YUdGNU1JSUJJakFOQmdrcWhraUc5dzBCQVFFRgpBQU9DQVE4QU1JSUJDZ0tDQVFFQTJhRFpuZW1JMzJUNzB2a2hWT1BHMytlKzVpTk9SeGUwZTlwbEVVZ3pwcldZClZ1UzhDTjM0S1NsV0hWNDRRbWtuU3YrMTdNUGJsTUVZNm9jQmJKUFJrYmZBSlVjOVhhVnVLcGN1VkJ1WDRVbmwKMmlRZkQ5NnB3TjkxbVVkWCsxcUNXbzYxVWNpRUV3SjR6N0FBMFlOb05nNkRaY1lwMW5BZWhkNUVhUTd2Rjl2UQp3emFxcy9VbTBYdlBpazRHYU5tZDZNSU5LdzdNT2IyYmNCQ3RrR0s5emc1aTJNZ2g5UDBkcThlWkNwSVQ1c3FXCndMQ3FnaUltbkMyMnliamVVTnk0dEJsVXhDR1liaW1KWnB3K2ljZUJoVUI2bmVsRFVnN3J3ZWN6dkVUbklLbnAKUkhOU09hYnBVN3g3MG5JZDhpSlByTWg0NDJONk5DK0dyR3VLVVF5dVpRSURBUUFCb0FBd0RRWUpLb1pJaHZjTgpBUUVMQlFBRGdnRUJBRzRGbEF4Y0tnSVh2S2FiWDh4VDgyUzBEWmN0R3VUQUFXQmZJSWFOd2h2WVpyaGJWTWJ5CkU2U0pyWVpHWjRhNlVINnBGdnB5K2VVYmhNSGVPSUpobThBMHpCSXltNlFpaG9rMmlPZCtYVk5RekJiY0lFeWkKQ0VTcURleURrMGhWYm0zUWdJeEFpMDVRRTFQSmQ4aXlLbjB4NlowNHRtNzduYWZyaWdHMDBhWGpmekNOMlc3UwpxZ3dtUE1vZVdHV01NUXkwSDI1ZSszNXBaMTNoeFEzbEtJbEZ4b1p5NXZLWjN3NkZ0M1JBTStmSEpVcXd2UHNICjlMSGpYSy9BbldncmRab1VUUThWaFRDTitES0pjNlBNYmMxSzJnSUxHcWRBM0xsUWZJMHFiQ1E2aktnMnYrcE8KV0ZpSzFwdWhkM0V6QzM2VzZSMHh5ZWwwcXlPWDJScjhrdFU9Ci0tLS0tRU5EIENFUlRJRklDQVRFIFJFUVVFU1QtLS0tLQo=
+     signerName: kubernetes.io/kube-apiserver-client
+     usages:
+     - client auth
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl create -f akshay.yaml 
+   certificatesigningrequest.certificates.k8s.io/akshay created
+   ```
+
+   
+
+3. What is the Condition of the newly created Certificate Signing Request object?
+
+   - Approved
+   - **Pending**
+   - Issued
+
+   ```
+   controlplane ~ ➜  kubectl get csr
+   NAME        AGE   SIGNERNAME                                    REQUESTOR                  REQUESTEDDURATION   CONDITION
+   akshay      74s   kubernetes.io/kube-apiserver-client           kubernetes-admin           <none>              Pending
+   ```
+
+4. Approve the CSR Request
+
+   Check
+
+   - CSR Approved
+
+   ```
+   controlplane ~ ➜  kubectl certificate approve akshay
+   certificatesigningrequest.certificates.k8s.io/akshay approved
+   
+   controlplane ~ ➜  kubectl get csr
+   NAME        AGE     SIGNERNAME                                    REQUESTOR                  REQUESTEDDURATION   CONDITION
+   akshay      2m26s   kubernetes.io/kube-apiserver-client           kubernetes-admin           <none>              Approved,Issued
+   ```
+
+5. How many CSR requests are available on the cluster?
+
+   Including approved and pending
+
+   - 1
+   - 4
+   - **2**
+   - 5
+   - 3
+
+   ```
+   controlplane ~ ➜  kubectl get csr
+   NAME        AGE     SIGNERNAME                                    REQUESTOR                  REQUESTEDDURATION   CONDITION
+   akshay      3m20s   kubernetes.io/kube-apiserver-client           kubernetes-admin           <none>              Approved,Issued
+   csr-trkc6   23m     kubernetes.io/kube-apiserver-client-kubelet   system:node:controlplane   <none>              Approved,Issued
+   ```
+
+6. During a routine check you realized that there is a new CSR request in place. What is the name of this request?
+
+   - administrator
+   - master
+   - node
+   - admin-user
+   - **agent-smith**
+
+   ```
+   controlplane ~ ➜  kubectl get csr
+   NAME          AGE     SIGNERNAME                                    REQUESTOR                  REQUESTEDDURATION   CONDITION
+   agent-smith   45s     kubernetes.io/kube-apiserver-client           agent-x                    <none>              Pending
+   akshay        4m13s   kubernetes.io/kube-apiserver-client           kubernetes-admin           <none>              Approved,Issued
+   csr-trkc6     23m     kubernetes.io/kube-apiserver-client-kubelet   system:node:controlplane   <none>              Approved,Issued
+   ```
+
+7. Hmmm.. You are not aware of a request coming in. What groups is this CSR requesting access to?
+
+   Check the details about the request. Preferebly in YAML.
+
+   - system:apiserver
+   - certificateapprovals
+   - system:nodes
+   - **system:masters**
+
+   ```
+   controlplane ~ ➜  kubectl get csr agent-smith -o yaml
+   apiVersion: certificates.k8s.io/v1
+   kind: CertificateSigningRequest
+   metadata:
+     creationTimestamp: "2023-01-09T04:06:08Z"
+     name: agent-smith
+     resourceVersion: "2250"
+     uid: 56abc4c7-8ea5-43c9-a4cb-99de4f1d6009
+   spec:
+     groups:
+     - system:masters
+     - system:authenticated
+     request: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1dEQ0NBVUFDQVFBd0V6RVJNQThHQTFVRUF3d0libVYzTFhWelpYSXdnZ0VpTUEwR0NTcUdTSWIzRFFFQgpBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRRE8wV0pXK0RYc0FKU0lyanBObzV2UklCcGxuemcrNnhjOStVVndrS2kwCkxmQzI3dCsxZUVuT041TXVxOTlOZXZtTUVPbnJEVU8vdGh5VnFQMncyWE5JRFJYall5RjQwRmJtRCs1eld5Q0sKeTNCaWhoQjkzTUo3T3FsM1VUdlo4VEVMcXlhRGtuUmwvanYvU3hnWGtvazBBQlVUcFdNeDRCcFNpS2IwVSt0RQpJRjVueEF0dE1Wa0RQUTdOYmVaUkc0M2IrUVdsVkdSL3o2RFdPZkpuYmZlek90YUF5ZEdMVFpGQy93VHB6NTJrCkVjQ1hBd3FDaGpCTGt6MkJIUFI0Sjg5RDZYYjhrMzlwdTZqcHluZ1Y2dVAwdEliT3pwcU52MFkwcWRFWnB3bXcKajJxRUwraFpFV2trRno4MGxOTnR5VDVMeE1xRU5EQ25JZ3dDNEdaaVJHYnJBZ01CQUFHZ0FEQU5CZ2txaGtpRwo5dzBCQVFzRkFBT0NBUUVBUzlpUzZDMXV4VHVmNUJCWVNVN1FGUUhVemFsTnhBZFlzYU9SUlFOd0had0hxR2k0CmhPSzRhMnp5TnlpNDRPT2lqeWFENnRVVzhEU3hrcjhCTEs4S2czc3JSRXRKcWw1ckxaeTlMUlZyc0pnaEQ0Z1kKUDlOTCthRFJTeFJPVlNxQmFCMm5XZVlwTTVjSjVURjUzbGVzTlNOTUxRMisrUk1uakRRSjdqdVBFaWM4L2RoawpXcjJFVU02VWF3enlrcmRISW13VHYybWxNWTBSK0ROdFYxWWllKzBIOS9ZRWx0K0ZTR2poNUw1WVV2STFEcWl5CjRsM0UveTNxTDcxV2ZBY3VIM09zVnBVVW5RSVNNZFFzMHFXQ3NiRTU2Q0M1RGhQR1pJcFVibktVcEF3a2ErOEUKdndRMDdqRytocGtueG11RkFlWHhnVXdvZEFMYUo3anUvVERJY3c9PQotLS0tLUVORCBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0K
+     signerName: kubernetes.io/kube-apiserver-client
+     usages:
+     - digital signature
+     - key encipherment
+     - server auth
+     username: agent-x
+   status: {}
+   ```
+
+8. That doesn't look very right. Reject that request.
+
+   Check
+
+   - Request Denied
+
+   ```
+   controlplane ~ ➜  kubectl certificate deny agent-smith
+   certificatesigningrequest.certificates.k8s.io/agent-smith denied
+   
+   controlplane ~ ➜  kubectl get csr
+   NAME          AGE     SIGNERNAME                                    REQUESTOR                  REQUESTEDDURATION   CONDITION
+   agent-smith   4m47s   kubernetes.io/kube-apiserver-client           agent-x                    <none>              Denied
+   ```
+
+9. Let's get rid of it. Delete the new CSR object
+
+   Check
+
+   - CSR agent-smith deleted
+
+   ```
+   controlplane ~ ➜  kubectl delete csr agent-smith 
+   certificatesigningrequest.certificates.k8s.io "agent-smith" deleted
+   ```
+
+
+
+## PRACTICE TEST KUBECONFIG
+
+1. Where is the default kubeconfig file located in the current environment?
+
+   Find the current home directory by looking at the HOME environment variable.
+
+   - /root/,kube/kubeconfig
+   - /home/packer/.kube/config
+   - /root/kubeconfig
+   - **/root/.kube/config**
+
+   ```
+   controlplane ~ ➜  ls -la .kube/
+   total 24
+   drwxr-xr-x 3 root root 4096 Jan  9 02:19 .
+   drwx------ 1 root root 4096 Jan  9 02:19 ..
+   drwxr-x--- 4 root root 4096 Jan  9 02:19 cache
+   -rw------- 1 root root 5640 Jan  9 02:10 config
+   ```
+
+2. How many clusters are defined in the default kubeconfig file?
+
+   - 0
+   - 3
+   - **1**
+   - 2
+
+   ```
+   controlplane ~ ➜  kubectl config view
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: DATA+OMITTED
+       server: https://controlplane:6443
+     name: kubernetes
+   contexts:
+   - context:
+       cluster: kubernetes
+       user: kubernetes-admin
+     name: kubernetes-admin@kubernetes
+   current-context: kubernetes-admin@kubernetes
+   kind: Config
+   preferences: {}
+   users:
+   - name: kubernetes-admin
+     user:
+       client-certificate-data: DATA+OMITTED
+       client-key-data: DATA+OMITTED
+   ```
+
+3. How many Users are defined in the default kubeconfig file?
+
+   - 3
+   - 0
+   - **1**
+   - 2
+
+   ```
+   controlplane ~ ➜  kubectl config view
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: DATA+OMITTED
+       server: https://controlplane:6443
+     name: kubernetes
+   contexts:
+   - context:
+       cluster: kubernetes
+       user: kubernetes-admin
+     name: kubernetes-admin@kubernetes
+   current-context: kubernetes-admin@kubernetes
+   kind: Config
+   preferences: {}
+   users:
+   - name: kubernetes-admin
+     user:
+       client-certificate-data: DATA+OMITTED
+       client-key-data: DATA+OMITTED
+   ```
+
+4. How many contexts are defined in the default kubeconfig file?
+
+   - 4
+   - 2
+   - 3
+   - **1**
+
+   ```
+   controlplane ~ ➜  kubectl config view
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: DATA+OMITTED
+       server: https://controlplane:6443
+     name: kubernetes
+   contexts:
+   - context:
+       cluster: kubernetes
+       user: kubernetes-admin
+     name: kubernetes-admin@kubernetes
+   current-context: kubernetes-admin@kubernetes
+   kind: Config
+   preferences: {}
+   users:
+   - name: kubernetes-admin
+     user:
+       client-certificate-data: DATA+OMITTED
+       client-key-data: DATA+OMITTED
+   ```
+
+5. What is the user configured in the current context?
+
+   - sysadmin
+   - kube-admin
+   - root
+   - **kubernetes-admin**
+   - admin
+
+   ```
+   controlplane ~ ➜  kubectl config view
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: DATA+OMITTED
+       server: https://controlplane:6443
+     name: kubernetes
+   contexts:
+   - context:
+       cluster: kubernetes
+       user: kubernetes-admin
+     name: kubernetes-admin@kubernetes
+   current-context: kubernetes-admin@kubernetes
+   kind: Config
+   preferences: {}
+   users:
+   - name: kubernetes-admin
+     user:
+       client-certificate-data: DATA+OMITTED
+       client-key-data: DATA+OMITTED
+   ```
+
+6. What is the name of the cluster configured in the default kubeconfig file?
+
+   - kube
+   - kube-cluster
+   - default-cluster
+   - **kubernetes**
+
+   ```
+   controlplane ~ ➜  kubectl config view
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: DATA+OMITTED
+       server: https://controlplane:6443
+     name: kubernetes
+   contexts:
+   - context:
+       cluster: kubernetes
+       user: kubernetes-admin
+     name: kubernetes-admin@kubernetes
+   current-context: kubernetes-admin@kubernetes
+   kind: Config
+   preferences: {}
+   users:
+   - name: kubernetes-admin
+     user:
+       client-certificate-data: DATA+OMITTED
+       client-key-data: DATA+OMITTED
+   ```
+
+7. A new kubeconfig file named `my-kube-config` is created. It is placed in the `/root` directory. How many clusters are defined in that kubeconfig file?
+
+   - 3
+   - 2
+   - 5
+   - **4**
+   - 1
+
+   ```
+   controlplane ~ ➜  kubectl config view --kubeconfig my-kube-config
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: development
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: kubernetes-on-aws
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: production
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: test-cluster-1
+   contexts:
+   - context:
+       cluster: kubernetes-on-aws
+       user: aws-user
+     name: aws-user@kubernetes-on-aws
+   - context:
+       cluster: test-cluster-1
+       user: dev-user
+     name: research
+   - context:
+       cluster: development
+       user: test-user
+     name: test-user@development
+   - context:
+       cluster: production
+       user: test-user
+     name: test-user@production
+   current-context: test-user@development
+   kind: Config
+   preferences: {}
+   users:
+   - name: aws-user
+     user:
+       client-certificate: /etc/kubernetes/pki/users/aws-user/aws-user.crt
+       client-key: /etc/kubernetes/pki/users/aws-user/aws-user.key
+   - name: dev-user
+     user:
+       client-certificate: /etc/kubernetes/pki/users/dev-user/developer-user.crt
+       client-key: /etc/kubernetes/pki/users/dev-user/dev-user.key
+   - name: test-user
+     user:
+       client-certificate: /etc/kubernetes/pki/users/test-user/test-user.crt
+       client-key: /etc/kubernetes/pki/users/test-user/test-user.key
+   ```
+
+8. How many contexts are configured in the `my-kube-config` file?
+
+   - 3
+   - 2
+   - 1
+   - 5
+   - **4**
+
+   ```
+   controlplane ~ ➜  kubectl config view --kubeconfig my-kube-config
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: development
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: kubernetes-on-aws
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: production
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: test-cluster-1
+   contexts:
+   - context:
+       cluster: kubernetes-on-aws
+       user: aws-user
+     name: aws-user@kubernetes-on-aws
+   - context:
+       cluster: test-cluster-1
+       user: dev-user
+     name: research
+   - context:
+       cluster: development
+       user: test-user
+     name: test-user@development
+   - context:
+       cluster: production
+       user: test-user
+     name: test-user@production
+   current-context: test-user@development
+   kind: Config
+   preferences: {}
+   users:
+   - name: aws-user
+     user:
+       client-certificate: /etc/kubernetes/pki/users/aws-user/aws-user.crt
+       client-key: /etc/kubernetes/pki/users/aws-user/aws-user.key
+   - name: dev-user
+     user:
+       client-certificate: /etc/kubernetes/pki/users/dev-user/developer-user.crt
+       client-key: /etc/kubernetes/pki/users/dev-user/dev-user.key
+   - name: test-user
+     user:
+       client-certificate: /etc/kubernetes/pki/users/test-user/test-user.crt
+       client-key: /etc/kubernetes/pki/users/test-user/test-user.key
+   ```
+
+9. What user is configured in the `research` context?
+
+   - admin-user
+   - **Dev-user**
+   - aws-user
+   - test-user
+
+   ```
+   controlplane ~ ➜  kubectl config view --kubeconfig my-kube-config
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: development
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: kubernetes-on-aws
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: production
+   - cluster:
+       certificate-authority: /etc/kubernetes/pki/ca.crt
+       server: https://controlplane:6443
+     name: test-cluster-1
+   contexts:
+   - context:
+       cluster: kubernetes-on-aws
+       user: aws-user
+     name: aws-user@kubernetes-on-aws
+   - context:
+       cluster: test-cluster-1
+       user: dev-user
+     name: research
+   - context:
+       cluster: development
+       user: test-user
+     name: test-user@development
+   - context:
+       cluster: production
+       user: test-user
+     name: test-user@production
+   current-context: test-user@development
+   kind: Config
+   preferences: {}
+   users:
+   - name: aws-user
+     user:
+       client-certificate: /etc/kubernetes/pki/users/aws-user/aws-user.crt
+       client-key: /etc/kubernetes/pki/users/aws-user/aws-user.key
+   - name: dev-user
+     user:
+       client-certificate: /etc/kubernetes/pki/users/dev-user/developer-user.crt
+       client-key: /etc/kubernetes/pki/users/dev-user/dev-user.key
+   - name: test-user
+     user:
+       client-certificate: /etc/kubernetes/pki/users/test-user/test-user.crt
+       client-key: /etc/kubernetes/pki/users/test-user/test-user.key
+   ```
+
+10. What is the name of the client-certificate file configured for the `aws-user`?
+
+       - aws-certificate.crt
+
+       - ca.crt
+
+       - aws-user.key
+
+       - **aws-user.crt**
+
+    ```
+    controlplane ~ ➜  kubectl config view --kubeconfig my-kube-config
+    apiVersion: v1
+    clusters:
+    - cluster:
+        certificate-authority: /etc/kubernetes/pki/ca.crt
+        server: https://controlplane:6443
+      name: development
+    - cluster:
+        certificate-authority: /etc/kubernetes/pki/ca.crt
+        server: https://controlplane:6443
+      name: kubernetes-on-aws
+    - cluster:
+        certificate-authority: /etc/kubernetes/pki/ca.crt
+        server: https://controlplane:6443
+      name: production
+    - cluster:
+        certificate-authority: /etc/kubernetes/pki/ca.crt
+        server: https://controlplane:6443
+      name: test-cluster-1
+    contexts:
+    - context:
+        cluster: kubernetes-on-aws
+        user: aws-user
+      name: aws-user@kubernetes-on-aws
+    - context:
+        cluster: test-cluster-1
+        user: dev-user
+      name: research
+    - context:
+        cluster: development
+        user: test-user
+      name: test-user@development
+    - context:
+        cluster: production
+        user: test-user
+      name: test-user@production
+    current-context: test-user@development
+    kind: Config
+    preferences: {}
+    users:
+    - name: aws-user
+      user:
+        client-certificate: /etc/kubernetes/pki/users/aws-user/aws-user.crt
+        client-key: /etc/kubernetes/pki/users/aws-user/aws-user.key
+    - name: dev-user
+      user:
+        client-certificate: /etc/kubernetes/pki/users/dev-user/developer-user.crt
+        client-key: /etc/kubernetes/pki/users/dev-user/dev-user.key
+    - name: test-user
+      user:
+        client-certificate: /etc/kubernetes/pki/users/test-user/test-user.crt
+        client-key: /etc/kubernetes/pki/users/test-user/test-user.key
+    ```
+
+11. What is the current context set to in the `my-kube-config` file?
+
+    - test-user@production
+    - **test-user@development**
+    - research
+    - aws-user@kubernetes
+
+    ```
+    controlplane ~ ➜  kubectl config current-context --kubeconfig my-kube-config
+    test-user@development
+    ```
+
+12. I would like to use the `dev-user` to access `test-cluster-1`. Set the current context to the right one so I can do that.
+
+    Once the right context is identified, use the `kubectl config use-context` command.
+
+    Check
+
+    - Current context set
+
+    
+
+    To use that context, run the command: `kubectl config --kubeconfig=/root/my-kube-config use-context research`
+    To know the current context, run the command: `kubectl config --kubeconfig=/root/my-kube-config current-context`
+
+13. We don't want to have to specify the kubeconfig file option on each command. Make the `my-kube-config` file the default kubeconfig.
+
+    Check
+
+    - Default kubeconfig file configured
+
+    Replace the contents in the `default` kubeconfig file with the content from `my-kube-config` file.
+
+    
+
+14. With the current-context set to `research`, we are trying to access the cluster. However something seems to be wrong. Identify and fix the issue.
+
+    Try running the `kubectl get pods` command and look for the error. All users certificates are stored at `/etc/kubernetes/pki/users`.
+
+    Check
+
+    - Issue fixed
+
+    The path to certificate is incorrect in the kubeconfig file. Correct the certificate name which is available at `/etc/kubernetes/pki/users/`.
+
+
+
+## PRACTICE TEST ROLE BASED ACCESS CONTROLS
+
+1. Inspect the environment and identify the authorization modes configured on the cluster.
+
+   Check the `kube-apiserver` settings.
+
+   - RBAC
+   - **Node,RBAC**
+   - ABAC
+   - Node
+
+   Use the command `kubectl describe pod kube-apiserver-controlplane -n kube-system` and look for `--authorization-mode`.
+
+   ```
+   controlplane ~ ➜  kubectl describe pod kube-apiserver-controlplane -n kube-system | grep authorization-mode
+         --authorization-mode=Node,RBAC
+   ```
+
+2. How many roles exist in the `default` namespace?
+
+   - 1
+   - **0**
+   - 3
+   - 2
+
+   ```
+   controlplane ~ ➜  kubectl get roles
+   No resources found in default namespace.
+   ```
+
+3. How many roles exist in all namespaces together?
+
+   - **12**
+   - 5
+   - 15
+   - 10
+   - 1
+   - 2
+   - 0
+
+   ```
+   controlplane ~ ➜  kubectl get roles --all-namespaces
+   NAMESPACE     NAME                                             CREATED AT
+   blue          developer                                        2023-01-09T08:08:51Z
+   kube-public   kubeadm:bootstrap-signer-clusterinfo             2023-01-09T08:00:59Z
+   kube-public   system:controller:bootstrap-signer               2023-01-09T08:00:58Z
+   kube-system   extension-apiserver-authentication-reader        2023-01-09T08:00:58Z
+   kube-system   kube-proxy                                       2023-01-09T08:01:00Z
+   kube-system   kubeadm:kubelet-config                           2023-01-09T08:00:58Z
+   kube-system   kubeadm:nodes-kubeadm-config                     2023-01-09T08:00:58Z
+   kube-system   system::leader-locking-kube-controller-manager   2023-01-09T08:00:58Z
+   kube-system   system::leader-locking-kube-scheduler            2023-01-09T08:00:58Z
+   kube-system   system:controller:bootstrap-signer               2023-01-09T08:00:58Z
+   kube-system   system:controller:cloud-provider                 2023-01-09T08:00:58Z
+   kube-system   system:controller:token-cleaner                  2023-01-09T08:00:58Z
+   ```
+
+4. What are the resources the `kube-proxy` role in the `kube-system` namespace is given access to?
+
+   - deployments
+   - secrets
+   - **configmaps**
+   - pods
+
+   ```
+   controlplane ~ ➜  kubectl describe role kube-proxy -n kube-system
+   Name:         kube-proxy
+   Labels:       <none>
+   Annotations:  <none>
+   PolicyRule:
+     Resources   Non-Resource URLs  Resource Names  Verbs
+     ---------   -----------------  --------------  -----
+     configmaps  []                 [kube-proxy]    [get]
+   ```
+
+5. What actions can the `kube-proxy` role perform on `configmaps`?
+
+   - List
+   - Delete
+   - Update
+   - **Get**
+
+   Run the command: `kubectl describe role -n kube-system kube-proxy` and check under the `Verbs` column.
+
+   ```
+   controlplane ~ ➜  kubectl describe role -n kube-system kube-proxy
+   Name:         kube-proxy
+   Labels:       <none>
+   Annotations:  <none>
+   PolicyRule:
+     Resources   Non-Resource URLs  Resource Names  Verbs
+     ---------   -----------------  --------------  -----
+     configmaps  []                 [kube-proxy]    [get]
+   ```
+
+6. Which of the following statements are true?
+
+   - kube-proxy role can get details of all configmap objects in the default namespace
+   - **kube-proxy role can get details of configmap object by the name kube-proxy only**
+   - kube-proxy role can get details of all configmap objects in the cluster
+   - kube-proxy role can delete the configmap it created
+   - kube-proxy role can only view and update configmap object by the name kube-proxy
+
+7. Which account is the `kube-proxy` role assigned to?
+
+   - kube-system
+   - ServiceAccount: kube-proxy
+   - User: kube-proxy
+   - **Group: system:bootstrappers:kubeadm:default-node-token**
+   - admin user
+
+   ```
+   controlplane ~ ➜  kubectl describe rolebinding kube-proxy -n kube-system
+   Name:         kube-proxy
+   Labels:       <none>
+   Annotations:  <none>
+   Role:
+     Kind:  Role
+     Name:  kube-proxy
+   Subjects:
+     Kind   Name                                             Namespace
+     ----   ----                                             ---------
+     Group  system:bootstrappers:kubeadm:default-node-token  
+   ```
+
+8. A user `dev-user` is created. User's details have been added to the `kubeconfig` file. Inspect the permissions granted to the user. Check if the user can list pods in the `default` namespace.
+
+   Use the `--as dev-user` option with `kubectl` to run commands as the `dev-user`.
+
+   - **dev-user does not have permissions to list pods**
+   - dev-user has permissions to list pods
+
+   ```
+   controlplane ~ ✖ kubectl get pods --as dev-user
+   Error from server (Forbidden): pods is forbidden: User "dev-user" cannot list resource "pods" in API group "" in the namespace "default"
+   ```
+
+9. Create the necessary roles and role bindings required for the `dev-user` to create, list and delete pods in the `default` namespace.
+
+   Use the given spec:
+
+   Check
+
+   - Role: developer
+   - Role Resources: pods
+   - Role Actions: list
+   - Role Actions: create
+   - Role Actions: delete
+   - RoleBinding: dev-user-binding
+   - RoleBinding: Bound to dev-user
+
+   To create a Role:
+
+   ```
+   kubectl create role developer --namespace=default --verb=list,create,delete --resource=pods
+   ```
+
+   To create a RoleBinding:
+
+   ```
+   kubectl create rolebinding dev-user-binding --namespace=default --role=developer --user=dev-user
+   ```
+
+
+   OR
+
+   Solution manifest file to create a role and rolebinding in the `default` namespace:
+
+   ```yaml
+   kind: Role
+   apiVersion: rbac.authorization.k8s.io/v1
+   metadata:
+     namespace: default
+     name: developer
+   rules:
+   - apiGroups: [""]
+     resources: ["pods"]
+     verbs: ["list", "create","delete"]
+   
+   ---
+   kind: RoleBinding
+   apiVersion: rbac.authorization.k8s.io/v1
+   metadata:
+     name: dev-user-binding
+   subjects:
+   - kind: User
+     name: dev-user
+     apiGroup: rbac.authorization.k8s.io
+   roleRef:
+     kind: Role
+     name: developer
+     apiGroup: rbac.authorization.k8s.io
+   ```
+
+10. A set of new roles and role-bindings are created in the `blue` namespace for the `dev-user`. However, the `dev-user` is unable to get details of the `dark-blue-app` pod in the `blue` namespace. Investigate and fix the issue.
+
+   We have created the required roles and rolebindings, but something seems to be wrong.
+
+   Check
+
+   - Issue Fixed
+
+   Run the command: `kubectl edit role developer -n blue` and correct the `resourceNames` field. You don't have to delete the role.
+
+11. Add a new rule in the existing role `developer` to grant the `dev-user` permissions to create deployments in the `blue` namespace.
+
+    Remember to add api group `"apps"`.
+
+    Check
+
+    - Permission added to create deployment
+
+    Edit the `developer` role in the `blue` namespace to add a new rule under the `rules` section.
+
+    Append the below rule to the end of the file
+
+    ```
+    kubectl edit role developer -n blue
+    - apiGroups:
+      - apps
+      resources:
+      - deployments
+      verbs:
+      - get
+      - watch
+      - create
+      - delete
+    ```
+
+    So it looks like this:
+
+    ```yaml
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: developer
+      namespace: blue
+    rules:
+    - apiGroups:
+      - apps
+      resourceNames:
+      - dark-blue-app
+      resources:
+      - pods
+      verbs:
+      - get
+      - watch
+      - create
+      - delete
+    - apiGroups:
+      - apps
+      resources:
+      - deployments
+      verbs:
+      - get
+      - watch
+      - create
+      - delete
+    ```
+
+
+
+## PRACTICE TEST CLUSTER ROLES
+
+1. For the first few questions of this lab, you would have to inspect the existing `ClusterRoles` and `ClusterRoleBindings` that have been created in this cluster.
+
+   Ok
+
+2. How many `ClusterRoles` do you see defined in the cluster?
+
+   - 34
+   - 119
+   - 0
+   - **69**
+   - 10
+
+   ```
+   controlplane ~ ➜  kubectl get clusterroles --no-headers | wc -l
+   69
+   
+   controlplane ~ ➜  kubectl get clusterroles --no-headers -o json | jq '.items | length'
+   69
+   ```
+
+3. How many `ClusterRoleBindings` exist on the cluster?
+
+   - 43
+   - 19
+   - **54**
+   - 0
+   - 119
+
+   ```
+   controlplane ~ ➜  kubectl get clusterrolebindings --no-headers | wc -l
+   54
+   
+   controlplane ~ ➜  kubectl get clusterrolebindings --no-headers -o json | jq '.items | length'
+   54
+   ```
+
+4. What namespace is the `cluster-admin` clusterrole part of?
+
+   - default
+   - Cluster Roles are cluster wide and not part of any namespace
+   - kube-system
+   - kube-public
+
+
+
+5. What user/groups are the `cluster-admin` role bound to?
+
+   The ClusterRoleBinding for the role is with the same name.
+
+   - **system:masters**
+   - cluster-admin
+   - system:nodes
+   - kube-admin
+
+   ```
+   controlplane ~ ➜  kubectl describe clusterrolebinding cluster-admin
+   Name:         cluster-admin
+   Labels:       kubernetes.io/bootstrapping=rbac-defaults
+   Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
+   Role:
+     Kind:  ClusterRole
+     Name:  cluster-admin
+   Subjects:
+     Kind   Name            Namespace
+     ----   ----            ---------
+     Group  system:masters  
+   ```
+
+6. What level of permission does the `cluster-admin` role grant?
+
+   Inspect the `cluster-admin` role's privileges.
+
+   - **Perform any action on any resource in the cluster**
+   - Security related tasks only
+   - Pod level tasks only
+   - Node level tasks only
+
+   ```
+   controlplane ~ ➜  kubectl describe clusterrole cluster-admin
+   Name:         cluster-admin
+   Labels:       kubernetes.io/bootstrapping=rbac-defaults
+   Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
+   PolicyRule:
+     Resources  Non-Resource URLs  Resource Names  Verbs
+     ---------  -----------------  --------------  -----
+     *.*        []                 []              [*]
+                [*]                []              [*]
+   ```
+
+7. A new user `michelle` joined the team. She will be focusing on the `nodes` in the cluster. Create the required `ClusterRoles` and `ClusterRoleBindings` so she gets access to the `nodes`.
+
+   Check
+
+   - Grant permission to access nodes
+
+   Solution manifest file to create a clusterrole and clusterrolebinding for `michelle` user:
+
+   ```yaml
+   ---
+   kind: ClusterRole
+   apiVersion: rbac.authorization.k8s.io/v1
+   metadata:
+     name: node-admin
+   rules:
+   - apiGroups: [""]
+     resources: ["nodes"]
+     verbs: ["get", "watch", "list", "create", "delete"]
+   
+   ---
+   kind: ClusterRoleBinding
+   apiVersion: rbac.authorization.k8s.io/v1
+   metadata:
+     name: michelle-binding
+   subjects:
+   - kind: User
+     name: michelle
+     apiGroup: rbac.authorization.k8s.io
+   roleRef:
+     kind: ClusterRole
+     name: node-admin
+     apiGroup: rbac.authorization.k8s.io
+   ```
+
+   After save into a file, run the command `kubectl create -f <file-name>.yaml` to create a resources from definition file.
+
+8. `michelle`'s responsibilities are growing and now she will be responsible for storage as well. Create the required `ClusterRoles` and `ClusterRoleBindings` to allow her access to Storage.
+
+   Get the API groups and resource names from command `kubectl api-resources`. Use the given spec:
+
+   Check
+
+   - ClusterRole: storage-admin
+
+   - Resource: persistentvolumes
+
+   - Resource: storageclasses
+
+   - ClusterRoleBinding: michelle-storage-admin
+
+   - ClusterRoleBinding Subject: michelle
+
+   - ClusterRoleBinding Role: storage-admin
+
+     
+
+   Solution manifest file to create a clusterrole and clusterrolebinding for `michelle` user:
+
+   ```yaml
+   ---
+   kind: ClusterRole
+   apiVersion: rbac.authorization.k8s.io/v1
+   metadata:
+     name: storage-admin
+   rules:
+   - apiGroups: [""]
+     resources: ["persistentvolumes"]
+     verbs: ["get", "watch", "list", "create", "delete"]
+   - apiGroups: ["storage.k8s.io"]
+     resources: ["storageclasses"]
+     verbs: ["get", "watch", "list", "create", "delete"]
+   
+   ---
+   kind: ClusterRoleBinding
+   apiVersion: rbac.authorization.k8s.io/v1
+   metadata:
+     name: michelle-storage-admin
+   subjects:
+   - kind: User
+     name: michelle
+     apiGroup: rbac.authorization.k8s.io
+   roleRef:
+     kind: ClusterRole
+     name: storage-admin
+     apiGroup: rbac.authorization.k8s.io
+   ```
+
+   After save into a file, run the command `kubectl create -f <file-name>.yaml` to create a resources from definition file.
+
+
+
+## PRACTICE TEST SERVICE ACCOUNTS
+
+1. How many Service Accounts exist in the default namespace?
+
+   - 0
+   - 4
+   - **2**
+   - 1
+   - 3
+
+   ```
+   controlplane ~ ➜  kubectl get serviceaccounts
+   NAME      SECRETS   AGE
+   default   0         3m56s
+   dev       0         62s
+   ```
+
+   
+
+2. What is the secret token used by the default service account?
+
+   - default-token-zf6x9
+   - default-token-j4hkv
+   - default-token-87x8w
+   - **none**
+
+   Run the command `kubectl describe serviceaccount default` and look at the `Tokens` field.
+
+   ```
+   controlplane ~ ➜  kubectl describe serviceaccount default
+   Name:                default
+   Namespace:           default
+   Labels:              <none>
+   Annotations:         <none>
+   Image pull secrets:  <none>
+   Mountable secrets:   <none>
+   Tokens:              <none>
+   Events:              <none>
+   ```
+
+3. We just deployed the Dashboard application. Inspect the deployment. What is the image used by the deployment?
+
+   - **gcr.io/kodekloud/customimage/my-kubernetes-dashboard**
+   - web-dashboard
+   - kodekloud/my-kubernetes-dashboard
+   - kubernetes-dashboard
+
+   ```
+   controlplane ~ ➜  kubectl describe deployments.apps web-dashboard 
+   Name:                   web-dashboard
+   Namespace:              default
+   CreationTimestamp:      Mon, 09 Jan 2023 09:16:48 +0000
+   Labels:                 <none>
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               name=web-dashboard
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  name=web-dashboard
+     Containers:
+      web-dashboard:
+       Image:      gcr.io/kodekloud/customimage/my-kubernetes-dashboard
+       Port:       8080/TCP
+       Host Port:  0/TCP
+       Environment:
+         PYTHONUNBUFFERED:  1
+       Mounts:              <none>
+     Volumes:               <none>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   web-dashboard-65b9cf6cbb (1/1 replicas created)
+   Events:
+     Type    Reason             Age    From                   Message
+     ----    ------             ----   ----                   -------
+     Normal  ScalingReplicaSet  2m15s  deployment-controller  Scaled up replica set web-dashboard-65b9cf6cbb to 1
+   ```
+
+4. Wait for the deployment to be ready. Access the custom-dashboard by clicking on the link to dashboard portal.
+
+   Ok
+
+5. What is the state of the dashboard? Have the pod details loaded successfully?
+
+   - **Failed**
+   - Success
+
+6. What type of account does the Dashboard application use to query the Kubernetes API?
+
+   - **Service Account**
+   - OAuth Account
+   - User Account
+   - LDAP Account
+
+7. Which account does the Dashboard application use to query the Kubernetes API?
+
+   - Admin
+   - Kube-admin
+   - **Default**
+   - Administrator
+
+8. Inspect the Dashboard Application POD and identify the Service Account mounted on it.
+
+   - service-account
+   - **default**
+   - dashboard-sa
+
+   Run the command `kubectl get po -o yaml` and inspect serviceAccount.
+
+   ```
+   controlplane ~ ➜  kubectl get po -o yaml
+   apiVersion: v1
+   items:
+   - apiVersion: v1
+     kind: Pod
+     metadata:
+       creationTimestamp: "2023-01-09T09:16:48Z"
+       generateName: web-dashboard-65b9cf6cbb-
+       labels:
+         name: web-dashboard
+         pod-template-hash: 65b9cf6cbb
+       name: web-dashboard-65b9cf6cbb-ll88s
+       namespace: default
+       ownerReferences:
+       - apiVersion: apps/v1
+         blockOwnerDeletion: true
+         controller: true
+         kind: ReplicaSet
+         name: web-dashboard-65b9cf6cbb
+         uid: be46a67f-1dfd-4843-876f-1dc40c788766
+       resourceVersion: "751"
+       uid: 68079556-ff6b-4e76-a2d1-6d4cddd0fd3d
+     spec:
+       containers:
+       - env:
+         - name: PYTHONUNBUFFERED
+           value: "1"
+         image: gcr.io/kodekloud/customimage/my-kubernetes-dashboard
+         imagePullPolicy: Always
+         name: web-dashboard
+         ports:
+         - containerPort: 8080
+           protocol: TCP
+         resources: {}
+         terminationMessagePath: /dev/termination-log
+         terminationMessagePolicy: File
+         volumeMounts:
+         - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+           name: kube-api-access-67zvl
+           readOnly: true
+       dnsPolicy: ClusterFirst
+       enableServiceLinks: true
+       nodeName: controlplane
+       preemptionPolicy: PreemptLowerPriority
+       priority: 0
+       restartPolicy: Always
+       schedulerName: default-scheduler
+       securityContext: {}
+       serviceAccount: default
+       serviceAccountName: default
+       terminationGracePeriodSeconds: 30
+       tolerations:
+       - effect: NoExecute
+         key: node.kubernetes.io/not-ready
+         operator: Exists
+         tolerationSeconds: 300
+       - effect: NoExecute
+         key: node.kubernetes.io/unreachable
+         operator: Exists
+         tolerationSeconds: 300
+   ```
+
+9. At what location is the ServiceAccount credentials available within the pod?
+
+   - **/var/run/secrets**
+   - /var/run/token
+   - /etc/run/secrets
+   - /opt/run/secrets
+
+   Run the command `kubectl describe pod` and look for volume mount path.
+
+   ```
+   controlplane ~ ➜  kubectl describe pod web-dashboard-65b9cf6cbb-ll88s 
+   Name:             web-dashboard-65b9cf6cbb-ll88s
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/172.25.0.108
+   Start Time:       Mon, 09 Jan 2023 09:16:48 +0000
+   Labels:           name=web-dashboard
+                     pod-template-hash=65b9cf6cbb
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.42.0.9
+   IPs:
+     IP:           10.42.0.9
+   Controlled By:  ReplicaSet/web-dashboard-65b9cf6cbb
+   Containers:
+     web-dashboard:
+       Container ID:   containerd://ced2fc2098569aa51a5cfd2ce156ba8c5945dcac3947d4156ed9508cf19a81e9
+       Image:          gcr.io/kodekloud/customimage/my-kubernetes-dashboard
+       Image ID:       gcr.io/kodekloud/customimage/my-kubernetes-dashboard@sha256:7d70abe342b13ff1c4242dc83271ad73e4eedb04e2be0dd30ae7ac8852193069
+       Port:           8080/TCP
+       Host Port:      0/TCP
+       State:          Running
+         Started:      Mon, 09 Jan 2023 09:16:54 +0000
+       Ready:          True
+       Restart Count:  0
+       Environment:
+         PYTHONUNBUFFERED:  1
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-67zvl (ro)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:
+     kube-api-access-67zvl:
+       Type:                    Projected (a volume that contains injected data from multiple sources)
+       TokenExpirationSeconds:  3607
+       ConfigMapName:           kube-root-ca.crt
+       ConfigMapOptional:       <nil>
+       DownwardAPI:             true
+   QoS Class:                   BestEffort
+   Node-Selectors:              <none>
+   Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                                node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+   ```
+
+10. The application needs a ServiceAccount with the Right permissions to be created to authenticate to Kubernetes. The `default` ServiceAccount has limited access. Create a new ServiceAccount named `dashboard-sa`.
+
+   Check
+
+   - Service Account Name: dashboard-sa
+
+   ```
+   controlplane ~ ➜  kubectl create serviceaccount dashboard-sa
+   serviceaccount/dashboard-sa created
+   ```
+
+11. We just added additional permissions for the newly created `dashboard-sa` account using RBAC.
+
+    If you are interested checkout the files used to configure RBAC at `/var/rbac`. We will discuss RBAC in a separate section.
+
+    Ok
+
+    ```
+    controlplane ~ ➜  ls -l /var/rbac/
+    total 8
+    -rw-rw-rw-    1 root     root           399 Jan  6 14:24 dashboard-sa-role-binding.yaml
+    -rw-rw-rw-    1 root     root           191 Jan  6 14:24 pod-reader-role.yaml
+    
+    controlplane ~ ➜  cat /var/rbac/dashboard-sa-role-binding.yaml 
+    ---
+    kind: RoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: read-pods
+      namespace: default
+    subjects:
+    - kind: ServiceAccount
+      name: dashboard-sa # Name is case sensitive
+      namespace: default
+    roleRef:
+      kind: Role #this must be Role or ClusterRole
+      name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
+      apiGroup: rbac.authorization.k8s.io
+    ```
+
+12. Enter the access token in the UI of the dashboard application. Click `Load Dashboard` button to load Dashboard
+
+    Create an authorization token for the newly created service account, copy the generated token and paste it into the `token` field of the UI.
+
+    To do this, run `kubectl create token dashboard-sa` for the `dashboard-sa` service account, copy the token and paste it in the UI.
+
+    ```
+    controlplane ~ ➜  kubectl create token dashboard-sa
+    eyJhbGciOiJSUzI1NiIsImtpZCI6IldWRmp0Rm9aREZOZE5TRWVKem1kcm52akxvZGZzRGFVaFRhQm42b1BhUkUifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiLCJrM3MiXSwiZXhwIjoxNjczMjYyNTUyLCJpYXQiOjE2NzMyNTg5NTIsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJkZWZhdWx0Iiwic2VydmljZWFjY291bnQiOnsibmFtZSI6ImRhc2hib2FyZC1zYSIsInVpZCI6ImFkYjU5ZDkxLWY1YjgtNDc3Yy04M2VlLTI0ZDIyMzVmNTNiYyJ9fSwibmJmIjoxNjczMjU4OTUyLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpkYXNoYm9hcmQtc2EifQ.XlpfiDfF7Kle_UvWYujf18A7OIwMtZTKMVC0BdbPv_OsJ2OWY-K17X2D7HnRpTkoCrP_tu6iBtl-p2hrbvCuJ7Hax1X9np3aXW7Be892rSTifLcJJMMkKf5_6GWBVg8St6ItCW3m_JkVfqtsjvBmR_AjOaSji9qYXSEdx7m5sJWiaA76b3sDGnn-ucRtXIaeqhw7mpM4T1cqn9hvSif32J2Kif-8Q_yj35wIsHD6yKBKEcqLXf-Ky-DL2-Zg_Bqu4ZZFkdeV-4_VMmWyzUw8ObiF1kwKdwxAh80lAtB9txFwbjOX3pkTPVQ-sR4_8sWl-n-d9gOGp04Bs0Kd3srdug
+    ```
+
+13. You shouldn't have to copy and paste the token each time. The Dashboard application is programmed to read token from the secret mount location. However currently, the `default` service account is mounted. Update the deployment to use the newly created ServiceAccount
+
+    Edit the deployment to change ServiceAccount from `default` to `dashboard-sa`.
+
+    Check
+
+    - Deployment name: web-dashboard
+    - Service Account: dashboard-sa
+    - Deployment Ready
+
+    Use the `kubectl edit` command for the deployment and specify the `serviceAccountName` field inside the pod spec.
+
+    OR
+
+    Make use of the `kubectl set` command. Run the following command to use the newly created service account: - `kubectl set serviceaccount deploy/web-dashboard dashboard-sa`
+
+    Use following `YAML` file:
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: web-dashboard
+      namespace: default
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          name: web-dashboard
+      strategy:
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
+        type: RollingUpdate
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            name: web-dashboard
+        spec:
+          serviceAccountName: dashboard-sa
+          containers:
+          - image: gcr.io/kodekloud/customimage/my-kubernetes-dashboard
+            imagePullPolicy: Always
+            name: web-dashboard
+            ports:
+            - containerPort: 8080
+              protocol: TCP
+    ```
+
+    Then run the command: `kubectl apply -f <FILE-NAME>.yaml`
+
+14. Refresh the Dashboard application UI and you should now see the PODs listed automatically.
+
+    This time you shouldn't have to put in the token manually.
+
+    Ok
+
+
+
