@@ -7103,9 +7103,39 @@ deployment.apps/deployment-1 created
    Use the command `kubectl describe pod kube-apiserver-controlplane -n kube-system` and look for `--authorization-mode`.
 
    ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   coredns-787d4945fb-jfblj               1/1     Running   0          4m54s
+   coredns-787d4945fb-l7wpz               1/1     Running   0          4m54s
+   etcd-controlplane                      1/1     Running   0          5m8s
+   kube-apiserver-controlplane            1/1     Running   0          5m8s
+   kube-controller-manager-controlplane   1/1     Running   0          5m8s
+   kube-proxy-kjblb                       1/1     Running   0          4m54s
+   kube-scheduler-controlplane            1/1     Running   0          5m8s
+   ```
+
+   ```
    controlplane ~ ➜  kubectl describe pod kube-apiserver-controlplane -n kube-system | grep authorization-mode
          --authorization-mode=Node,RBAC
    ```
+
+   OR
+
+   Look for authorization-mode
+
+   ```
+   controlplane ~ ➜  cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep authorization-mode
+       - --authorization-mode=Node,RBAC
+   ```
+
+   OR
+
+   ```
+   controlplane ~ ➜  ps -aux | grep authorization-mode
+   root        2779  0.0  0.1 1125140 370508 ?      Ssl  21:26   0:14 kube-apiserver --advertise-address=10.0.108.8 --allow-privileged=true --authorization-mode=Node,RBAC --client-ca-file=/etc/kubernetes/pki/ca.crt --enable-admission-plugins=NodeRestriction --enab
+   ```
+
+   
 
 2. How many roles exist in the `default` namespace?
 
@@ -7128,6 +7158,13 @@ deployment.apps/deployment-1 created
    - 1
    - 2
    - 0
+
+   ```
+   controlplane ~ ➜  kubectl get roles --all-namespaces --no-headers | wc -l
+   12
+   ```
+
+   OR
 
    ```
    controlplane ~ ➜  kubectl get roles --all-namespaces
@@ -7153,8 +7190,24 @@ deployment.apps/deployment-1 created
    - **configmaps**
    - pods
 
+   List roles
+
    ```
-   controlplane ~ ➜  kubectl describe role kube-proxy -n kube-system
+   controlplane ~ ➜  kubectl get roles -n kube-system 
+   NAME                                             CREATED AT
+   extension-apiserver-authentication-reader        2023-01-12T02:26:59Z
+   kube-proxy                                       2023-01-12T02:27:02Z
+   kubeadm:kubelet-config                           2023-01-12T02:26:59Z
+   kubeadm:nodes-kubeadm-config                     2023-01-12T02:26:59Z
+   system::leader-locking-kube-controller-manager   2023-01-12T02:26:59Z
+   system::leader-locking-kube-scheduler            2023-01-12T02:26:59Z
+   system:controller:bootstrap-signer               2023-01-12T02:26:59Z
+   system:controller:cloud-provider                 2023-01-12T02:26:59Z
+   system:controller:token-cleaner                  2023-01-12T02:26:59Z
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl describe roles -n kube-system kube-proxy 
    Name:         kube-proxy
    Labels:       <none>
    Annotations:  <none>
@@ -7200,8 +7253,24 @@ deployment.apps/deployment-1 created
    - **Group: system:bootstrappers:kubeadm:default-node-token**
    - admin user
 
+   List rolebindings
+
    ```
-   controlplane ~ ➜  kubectl describe rolebinding kube-proxy -n kube-system
+   controlplane ~ ➜  kubectl get rolebindings -n kube-system 
+   NAME                                                ROLE                                                  AGE
+   kube-proxy                                          Role/kube-proxy                                       10m
+   kubeadm:kubelet-config                              Role/kubeadm:kubelet-config                           10m
+   kubeadm:nodes-kubeadm-config                        Role/kubeadm:nodes-kubeadm-config                     10m
+   system::extension-apiserver-authentication-reader   Role/extension-apiserver-authentication-reader        10m
+   system::leader-locking-kube-controller-manager      Role/system::leader-locking-kube-controller-manager   10m
+   system::leader-locking-kube-scheduler               Role/system::leader-locking-kube-scheduler            10m
+   system:controller:bootstrap-signer                  Role/system:controller:bootstrap-signer               10m
+   system:controller:cloud-provider                    Role/system:controller:cloud-provider                 10m
+   system:controller:token-cleaner                     Role/system:controller:token-cleaner                  10m
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl describe rolebindings -n kube-system kube-proxy 
    Name:         kube-proxy
    Labels:       <none>
    Annotations:  <none>
@@ -7220,6 +7289,37 @@ deployment.apps/deployment-1 created
 
    - **dev-user does not have permissions to list pods**
    - dev-user has permissions to list pods
+
+   Check if the dev-user added to the config
+
+   ```
+   controlplane ~ ➜  kubectl config view 
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: DATA+OMITTED
+       server: https://controlplane:6443
+     name: kubernetes
+   contexts:
+   - context:
+       cluster: kubernetes
+       user: kubernetes-admin
+     name: kubernetes-admin@kubernetes
+   current-context: kubernetes-admin@kubernetes
+   kind: Config
+   preferences: {}
+   users:
+   - name: dev-user
+     user:
+       client-certificate-data: DATA+OMITTED
+       client-key-data: DATA+OMITTED
+   - name: kubernetes-admin
+     user:
+       client-certificate-data: DATA+OMITTED
+       client-key-data: DATA+OMITTED
+   ```
+
+   Check if the user dev-user can list pods in the `default` namespace
 
    ```
    controlplane ~ ✖ kubectl get pods --as dev-user
@@ -7243,20 +7343,57 @@ deployment.apps/deployment-1 created
    To create a Role:
 
    ```
-   kubectl create role developer --namespace=default --verb=list,create,delete --resource=pods
+   controlplane ~ ➜  kubectl create role developer --namespace=default --verb=list,create,delete --resource=pods
+   role.rbac.authorization.k8s.io/developer created
    ```
-
+   
+   Check if role is created
+   
+   ```
+   controlplane ~ ✖ kubectl get roles
+   NAME        CREATED AT
+   developer   2023-01-12T02:58:43Z
+   
+   controlplane ~ ➜  kubectl describe role developer 
+   Name:         developer
+   Labels:       <none>
+   Annotations:  <none>
+   PolicyRule:
+     Resources  Non-Resource URLs  Resource Names  Verbs
+     ---------  -----------------  --------------  -----
+     pods       []                 []              [list create delete]
+   ```
+   
+   
+   
    To create a RoleBinding:
-
+   
    ```
-   kubectl create rolebinding dev-user-binding --namespace=default --role=developer --user=dev-user
+   controlplane ~ ➜  kubectl create rolebinding dev-user-binding --namespace=default --role=developer --user=dev-user
+   rolebinding.rbac.authorization.k8s.io/dev-user-binding created
    ```
-
-
-   OR
-
+   
+   ```
+   controlplane ~ ➜  kubectl get rolebindings
+   NAME               ROLE             AGE
+   dev-user-binding   Role/developer   17s
+   
+   controlplane ~ ➜  kubectl describe rolebindings dev-user-binding 
+   Name:         dev-user-binding
+   Labels:       <none>
+   Annotations:  <none>
+   Role:
+     Kind:  Role
+     Name:  developer
+   Subjects:
+     Kind  Name      Namespace
+     ----  ----      ---------
+     User  dev-user  
+   ```
+   
+      OR
+   
    Solution manifest file to create a role and rolebinding in the `default` namespace:
-
    ```yaml
    kind: Role
    apiVersion: rbac.authorization.k8s.io/v1
@@ -7283,15 +7420,56 @@ deployment.apps/deployment-1 created
      apiGroup: rbac.authorization.k8s.io
    ```
 
+
 10. A set of new roles and role-bindings are created in the `blue` namespace for the `dev-user`. However, the `dev-user` is unable to get details of the `dark-blue-app` pod in the `blue` namespace. Investigate and fix the issue.
 
-   We have created the required roles and rolebindings, but something seems to be wrong.
+    We have created the required roles and rolebindings, but something seems to be wrong.
 
-   Check
+    Check
 
-   - Issue Fixed
+    - Issue Fixed
 
-   Run the command: `kubectl edit role developer -n blue` and correct the `resourceNames` field. You don't have to delete the role.
+    Test if dev-user can do "get pods dark-blue-app"
+
+    ```
+    controlplane ~ ➜  kubectl --as dev-user get pods dark-blue-app -n blue
+    Error from server (Forbidden): pods "dark-blue-app" is forbidden: User "dev-user" cannot get resource "pods" in API group "" in the namespace "blue"
+    ```
+
+    Check role developer
+
+    - found out that Resource Names is "blue-app"
+
+    ```
+    controlplane ~ ✖ kubectl get roles -n blue 
+    NAME        CREATED AT
+    developer   2023-01-12T02:27:28Z
+    
+    controlplane ~ ➜  kubectl describe role -n blue developer 
+    Name:         developer
+    Labels:       <none>
+    Annotations:  <none>
+    PolicyRule:
+      Resources  Non-Resource URLs  Resource Names  Verbs
+      ---------  -----------------  --------------  -----
+      pods       []                 [blue-app]      [get watch create delete]
+    ```
+
+    Edit role developer and change the resource name to from "blue-app" to "dark-blue-app"
+
+    ```
+    controlplane ~ ➜  kubectl edit role -n blue developer 
+    ```
+
+    Test if dev-user can do "get pods dark-blue-app"
+
+    ```
+    controlplane ~ ➜  kubectl --as dev-user get pods dark-blue-app -n blue
+    NAME            READY   STATUS    RESTARTS   AGE
+    dark-blue-app   1/1     Running   0          53m
+    ```
+
+    
 
 11. Add a new rule in the existing role `developer` to grant the `dev-user` permissions to create deployments in the `blue` namespace.
 
@@ -7301,12 +7479,24 @@ deployment.apps/deployment-1 created
 
     - Permission added to create deployment
 
-    Edit the `developer` role in the `blue` namespace to add a new rule under the `rules` section.
-
-    Append the below rule to the end of the file
+    Check if dev-user can create deployment in namespace "blue"
 
     ```
-    kubectl edit role developer -n blue
+    controlplane ~ ➜  kubectl --as dev-user create deployment nginx --image=-nginx -n blue
+    error: failed to create deployment: deployments.apps is forbidden: User "dev-user" cannot create resource "deployments" in API group "apps" in the namespace "blue"
+    ```
+    
+    
+    
+    Edit the `developer` role in the `blue` namespace to add a new rule under the `rules` section.
+    
+    Append the below rule to the end of the file
+    
+    ```
+    controlplane ~ ✖ kubectl edit role developer -n blue
+    ```
+    
+    ```
     - apiGroups:
       - apps
       resources:
@@ -7317,18 +7507,21 @@ deployment.apps/deployment-1 created
       - create
       - delete
     ```
-
+    
     So it looks like this:
-
-    ```yaml
+    
+    ```
     apiVersion: rbac.authorization.k8s.io/v1
     kind: Role
     metadata:
+      creationTimestamp: "2023-01-12T03:40:00Z"
       name: developer
       namespace: blue
+      resourceVersion: "2898"
+      uid: e8ea28fb-7e37-45d9-a9b9-3c2e2e9c2e49
     rules:
     - apiGroups:
-      - apps
+      - ""
       resourceNames:
       - dark-blue-app
       resources:
@@ -7348,6 +7541,32 @@ deployment.apps/deployment-1 created
       - create
       - delete
     ```
+    
+    Check the role developer policy
+    
+    ```
+    controlplane ~ ➜  kubectl describe role developer -n blue 
+    Name:         developer
+    Labels:       <none>
+    Annotations:  <none>
+    PolicyRule:
+      Resources         Non-Resource URLs  Resource Names   Verbs
+      ---------         -----------------  --------------   -----
+      pods              []                 [dark-blue-app]  [get watch create delete]
+      deployments.apps  []                 []               [get watch create delete]
+    
+    controlplane ~ ➜  kubectl edit role developer -n blue 
+    Edit cancelled, no changes made.
+    ```
+    
+    Check if dev-user can create deployment in namespace "blue"
+    
+    ```
+    controlplane ~ ✖ kubectl --as dev-user create deployment nginx --image=nginx -n blue
+    deployment.apps/nginx created
+    ```
+    
+    
 
 
 
@@ -7392,7 +7611,7 @@ deployment.apps/deployment-1 created
 4. What namespace is the `cluster-admin` clusterrole part of?
 
    - default
-   - Cluster Roles are cluster wide and not part of any namespace
+   - **Cluster Roles are cluster wide and not part of any namespace**
    - kube-system
    - kube-public
 
@@ -7406,6 +7625,16 @@ deployment.apps/deployment-1 created
    - cluster-admin
    - system:nodes
    - kube-admin
+
+   Check clusterrolebindings associated the clusterrole "cluster-admin"
+
+   ```
+   controlplane ~ ➜  kubectl get clusterrolebindings | grep cluster-admincluster-admin                                          ClusterRole/cluster-admin                                          13m
+   helm-kube-system-traefik-crd                           ClusterRole/cluster-admin                                          13m
+   helm-kube-system-traefik                               ClusterRole/cluster-admin                                          13m
+   ```
+
+   
 
    ```
    controlplane ~ ➜  kubectl describe clusterrolebinding cluster-admin
@@ -7447,6 +7676,56 @@ deployment.apps/deployment-1 created
    Check
 
    - Grant permission to access nodes
+
+   Check if michelle has access to the nodes
+
+   ```
+   controlplane ~ ✖ kubectl get nodes --as michelle
+   Error from server (Forbidden): nodes is forbidden: User "michelle" cannot list resource "nodes" in API group "" at the cluster scope
+   ```
+
+   Create clusterrole
+
+   ```
+   controlplane ~ ➜  kubectl create clusterrole michelle-role --verb=get,list,create --resource=nodes
+   clusterrole.rbac.authorization.k8s.io/michelle-role created
+   
+   controlplane ~ ➜  kubectl describe clusterrole michelle-role 
+   Name:         michelle-role
+   Labels:       <none>
+   Annotations:  <none>
+   PolicyRule:
+     Resources  Non-Resource URLs  Resource Names  Verbs
+     ---------  -----------------  --------------  -----
+     nodes      []                 []              [get list create]
+   ```
+
+   Create clusterrolebinding
+
+   ```
+   controlplane ~ ➜  kubectl create clusterrolebinding michelle-role-binding --clusterrole=michelle-role --user=michelle
+   clusterrolebinding.rbac.authorization.k8s.io/michelle-role-binding created
+   
+   controlplane ~ ➜  kubectl describe clusterrolebinding michelle-role-binding Name:         michelle-role-binding
+   Labels:       <none>
+   Annotations:  <none>
+   Role:
+     Kind:  ClusterRole
+     Name:  michelle-role
+   Subjects:
+     Kind  Name      Namespace
+     ----  ----      ---------
+     User  michelle  
+   ```
+
+   Check if michelle has access to the nodes
+
+   ```
+   controlplane ~ ➜  kubectl get nodes --as michelleNAME           STATUS   ROLES                  AGE   VERSION
+   controlplane   Ready    control-plane,master   34m   v1.26.0+k3s1
+   ```
+
+   
 
    Solution manifest file to create a clusterrole and clusterrolebinding for `michelle` user:
 
@@ -7496,10 +7775,55 @@ deployment.apps/deployment-1 created
 
    - ClusterRoleBinding Role: storage-admin
 
-     
-
+   Create clusterrole
+   
+   ```
+   controlplane ~ ➜  kubectl create clusterrole storage-admin --resource=persistentvolumes,storageclasses --verb=get,list,create,watch 
+   clusterrole.rbac.authorization.k8s.io/storage-admin created
+   
+   controlplane ~ ➜  kubectl describe clusterrole storage-admin 
+   Name:         storage-admin
+   Labels:       <none>
+   Annotations:  <none>
+   PolicyRule:
+     Resources                      Non-Resource URLs  Resource Names  Verbs
+     ---------                      -----------------  --------------  -----
+     persistentvolumes              []                 []              [get list create watch]
+     storageclasses.storage.k8s.io  []                 []              [get list create watch]
+   ```
+   
+   Create clusterrolebinding
+   
+   ```
+   controlplane ~ ➜  kubectl create clusterrolebinding michelle-storage-admin --clusterrole=storage-admin --user=michelle
+   clusterrolebinding.rbac.authorization.k8s.io/michelle-storage-admin created
+   
+   controlplane ~ ➜  kubectl describe clusterrolebinding michelle-storage-admin 
+   Name:         michelle-storage-admin
+   Labels:       <none>
+   Annotations:  <none>
+   Role:
+     Kind:  ClusterRole
+     Name:  storage-admin
+   Subjects:
+     Kind  Name      Namespace
+     ----  ----      ---------
+     User  michelle  
+   ```
+   
+   Check if it is working
+   
+   ```
+   controlplane ~ ➜  kubectl get storageclasses --as michelle
+   NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+   local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  52m
+   ```
+   
+   
+   
+   
    Solution manifest file to create a clusterrole and clusterrolebinding for `michelle` user:
-
+   
    ```yaml
    ---
    kind: ClusterRole
@@ -7528,7 +7852,7 @@ deployment.apps/deployment-1 created
      name: storage-admin
      apiGroup: rbac.authorization.k8s.io
    ```
-
+   
    After save into a file, run the command `kubectl create -f <file-name>.yaml` to create a resources from definition file.
 
 
@@ -7632,12 +7956,16 @@ deployment.apps/deployment-1 created
    - User Account
    - LDAP Account
 
+   As evident from the error in the `web-dashboard` UI, the pod makes use of a service account to query the Kubernetes API.
+
 7. Which account does the Dashboard application use to query the Kubernetes API?
 
    - Admin
    - Kube-admin
    - **Default**
    - Administrator
+
+   Again, the name of the Service Account is displayed in the error message on the dashboard. The deployment makes use of the `default` service account which we inspected earlier.
 
 8. Inspect the Dashboard Application POD and identify the Service Account mounted on it.
 
@@ -7648,68 +7976,12 @@ deployment.apps/deployment-1 created
    Run the command `kubectl get po -o yaml` and inspect serviceAccount.
 
    ```
-   controlplane ~ ➜  kubectl get po -o yaml
-   apiVersion: v1
-   items:
-   - apiVersion: v1
-     kind: Pod
-     metadata:
-       creationTimestamp: "2023-01-09T09:16:48Z"
-       generateName: web-dashboard-65b9cf6cbb-
-       labels:
-         name: web-dashboard
-         pod-template-hash: 65b9cf6cbb
-       name: web-dashboard-65b9cf6cbb-ll88s
-       namespace: default
-       ownerReferences:
-       - apiVersion: apps/v1
-         blockOwnerDeletion: true
-         controller: true
-         kind: ReplicaSet
-         name: web-dashboard-65b9cf6cbb
-         uid: be46a67f-1dfd-4843-876f-1dc40c788766
-       resourceVersion: "751"
-       uid: 68079556-ff6b-4e76-a2d1-6d4cddd0fd3d
-     spec:
-       containers:
-       - env:
-         - name: PYTHONUNBUFFERED
-           value: "1"
-         image: gcr.io/kodekloud/customimage/my-kubernetes-dashboard
-         imagePullPolicy: Always
-         name: web-dashboard
-         ports:
-         - containerPort: 8080
-           protocol: TCP
-         resources: {}
-         terminationMessagePath: /dev/termination-log
-         terminationMessagePolicy: File
-         volumeMounts:
-         - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-           name: kube-api-access-67zvl
-           readOnly: true
-       dnsPolicy: ClusterFirst
-       enableServiceLinks: true
-       nodeName: controlplane
-       preemptionPolicy: PreemptLowerPriority
-       priority: 0
-       restartPolicy: Always
-       schedulerName: default-scheduler
-       securityContext: {}
+   controlplane ~ ➜  kubectl get pods -o yaml | grep serviceAccount
        serviceAccount: default
        serviceAccountName: default
-       terminationGracePeriodSeconds: 30
-       tolerations:
-       - effect: NoExecute
-         key: node.kubernetes.io/not-ready
-         operator: Exists
-         tolerationSeconds: 300
-       - effect: NoExecute
-         key: node.kubernetes.io/unreachable
-         operator: Exists
-         tolerationSeconds: 300
+           - serviceAccountToken:
    ```
-
+   
 9. At what location is the ServiceAccount credentials available within the pod?
 
    - **/var/run/secrets**
@@ -7720,55 +7992,15 @@ deployment.apps/deployment-1 created
    Run the command `kubectl describe pod` and look for volume mount path.
 
    ```
-   controlplane ~ ➜  kubectl describe pod web-dashboard-65b9cf6cbb-ll88s 
-   Name:             web-dashboard-65b9cf6cbb-ll88s
-   Namespace:        default
-   Priority:         0
-   Service Account:  default
-   Node:             controlplane/172.25.0.108
-   Start Time:       Mon, 09 Jan 2023 09:16:48 +0000
-   Labels:           name=web-dashboard
-                     pod-template-hash=65b9cf6cbb
-   Annotations:      <none>
-   Status:           Running
-   IP:               10.42.0.9
-   IPs:
-     IP:           10.42.0.9
-   Controlled By:  ReplicaSet/web-dashboard-65b9cf6cbb
-   Containers:
-     web-dashboard:
-       Container ID:   containerd://ced2fc2098569aa51a5cfd2ce156ba8c5945dcac3947d4156ed9508cf19a81e9
-       Image:          gcr.io/kodekloud/customimage/my-kubernetes-dashboard
-       Image ID:       gcr.io/kodekloud/customimage/my-kubernetes-dashboard@sha256:7d70abe342b13ff1c4242dc83271ad73e4eedb04e2be0dd30ae7ac8852193069
-       Port:           8080/TCP
-       Host Port:      0/TCP
-       State:          Running
-         Started:      Mon, 09 Jan 2023 09:16:54 +0000
-       Ready:          True
-       Restart Count:  0
-       Environment:
-         PYTHONUNBUFFERED:  1
+   controlplane ~ ➜  kubectl describe pod web-dashboard-65b9cf6cbb-7fxv9 | grep -i mount -A 5
        Mounts:
-         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-67zvl (ro)
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fdhxl (ro)
    Conditions:
      Type              Status
      Initialized       True 
      Ready             True 
-     ContainersReady   True 
-     PodScheduled      True 
-   Volumes:
-     kube-api-access-67zvl:
-       Type:                    Projected (a volume that contains injected data from multiple sources)
-       TokenExpirationSeconds:  3607
-       ConfigMapName:           kube-root-ca.crt
-       ConfigMapOptional:       <nil>
-       DownwardAPI:             true
-   QoS Class:                   BestEffort
-   Node-Selectors:              <none>
-   Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                                node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
    ```
-
+   
 10. The application needs a ServiceAccount with the Right permissions to be created to authenticate to Kubernetes. The `default` ServiceAccount has limited access. Create a new ServiceAccount named `dashboard-sa`.
 
    Check
@@ -7778,6 +8010,12 @@ deployment.apps/deployment-1 created
    ```
    controlplane ~ ➜  kubectl create serviceaccount dashboard-sa
    serviceaccount/dashboard-sa created
+   
+   controlplane ~ ➜  kubectl get serviceaccounts 
+   NAME           SECRETS   AGE
+   default        0         17m
+   dev            0         15m
+   dashboard-sa   0         16s
    ```
 
 11. We just added additional permissions for the newly created `dashboard-sa` account using RBAC.
@@ -7880,3 +8118,1190 @@ deployment.apps/deployment-1 created
 
 
 
+## PRACTICE TEST IMAGE SECURITY
+
+
+
+1. What secret type must we choose for `docker registry`?
+
+   - generic
+   - docker-registry
+   - tls
+   - registry-docker
+   - registry
+
+   Run the command `kubectl create secret --help` and identify it.
+
+   ```
+   root@controlplane ~ ➜  kubectl create secret 
+   Create a secret using specified subcommand.
+   
+   Available Commands:
+     docker-registry   Create a secret for use with a Docker registry
+     generic           Create a secret from a local file, directory, or literal value
+     tls               Create a TLS secret
+   
+   Usage:
+     kubectl create secret [flags] [options]
+   
+   Use "kubectl <command> --help" for more information about a given command.
+   Use "kubectl options" for a list of global command-line options (applies to all
+   commands).
+   ```
+
+2. We have an application running on our cluster. Let us explore it first. What image is the application using?
+
+   - webapp
+   - busybox
+   - nginx:alpine
+   - nginx
+
+   ```
+   root@controlplane ~ ➜  kubectl describe deployments.apps web 
+   Name:                   web
+   Namespace:              default
+   CreationTimestamp:      Thu, 12 Jan 2023 08:36:13 +0000
+   Labels:                 app=web
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               app=web
+   Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  app=web
+     Containers:
+      nginx:
+       Image:        nginx:alpine
+       Port:         <none>
+       Host Port:    <none>
+       Environment:  <none>
+       Mounts:       <none>
+     Volumes:        <none>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   web-fd5cb786 (2/2 replicas created)
+   Events:
+     Type    Reason             Age   From                   Message
+     ----    ------             ----  ----                   -------
+     Normal  ScalingReplicaSet  4m9s  deployment-controller  Scaled up replica set web-fd5cb786 to 2
+   ```
+
+3. We decided to use a modified version of the application from an internal private registry. Update the image of the deployment to use a new image from `myprivateregistry.com:5000`
+
+   The registry is located at `myprivateregistry.com:5000`. Don't worry about the credentials for now. We will configure them in the upcoming steps.
+
+   Check
+
+   - Use Image from private registry
+
+   Use the `kubectl edit deployment` command to edit the image name to `myprivateregistry.com:5000/nginx:alpine`.
+
+   ```
+   root@controlplane ~ ➜  kubectl edit deployments.apps web 
+   ```
+
+4. Are the new PODs created with the new images successfully running?
+
+   - Yes
+   - **No**
+
+   ```
+   root@controlplane ~ ➜  kubectl get pods
+   NAME                  READY   STATUS             RESTARTS   AGE
+   web-87bb989dc-w6gzr   0/1     ImagePullBackOff   0          90s
+   web-fd5cb786-2wljg    1/1     Running            0          8m2s
+   web-fd5cb786-llxss    1/1     Running            0          8m2s
+   ```
+
+5. Create a secret object with the credentials required to access the registry.
+
+   Name: `private-reg-cred`
+   Username: `dock_user`
+   Password: `dock_password`
+   Server: `myprivateregistry.com:5000`
+   Email: `dock_user@myprivateregistry.com`
+
+   Check
+
+   - Secret: private-reg-cred
+   - Secret Type: docker-registry
+   - Secret Data
+
+   Run the command: `kubectl create secret docker-registry private-reg-cred --docker-username=dock_user --docker-password=dock_password --docker-server=myprivateregistry.com:5000 --docker-email=dock_user@myprivateregistry.com`
+
+   ```
+   root@controlplane ~ ➜  kubectl create secret docker-registry private-reg-cred --docker-username=dock_user --docker-password=dock_password --docker-server=myprivateregistry.com:5000 --docker-email=dock_user@myprivateregistry.com
+   secret/private-reg-cred created
+   
+   root@controlplane ~ ➜  kubectl get secrets 
+   NAME               TYPE                             DATA   AGE
+   private-reg-cred   kubernetes.io/dockerconfigjson   1      21s
+   
+   root@controlplane ~ ➜  kubectl describe secrets private-reg-cred 
+   Name:         private-reg-cred
+   Namespace:    default
+   Labels:       <none>
+   Annotations:  <none>
+   
+   Type:  kubernetes.io/dockerconfigjson
+   
+   Data
+   ====
+   .dockerconfigjson:  176 bytes
+   ```
+
+6. Configure the deployment to use credentials from the new secret to pull images from the private registry
+
+   Check
+
+   - Image Pull Secret: private-reg-cred
+
+   Edit deployment using `kubectl edit deploy web` command and add imagePullSecrets section. Use `private-reg-cred`.
+
+   ```
+   root@controlplane ~ ➜  kubectl edit deployments.apps web 
+   ```
+
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     annotations:
+       deployment.kubernetes.io/revision: "3"
+     creationTimestamp: "2023-01-12T08:36:13Z"
+     generation: 3
+     labels:
+       app: web
+     name: web
+     namespace: default
+     resourceVersion: "2037"
+     uid: 7ec0b184-5cca-4b83-9278-f8716212fd13
+   spec:
+     progressDeadlineSeconds: 600
+     replicas: 2
+     revisionHistoryLimit: 10
+     selector:
+       matchLabels:
+         app: web
+     strategy:
+       rollingUpdate:
+         maxSurge: 25%
+         maxUnavailable: 25%
+       type: RollingUpdate
+     template:
+       metadata:
+         creationTimestamp: null
+         labels:
+           app: web
+       spec:
+         containers:
+         - image: myprivateregistry.com:5000/nginx:alpine
+           imagePullPolicy: IfNotPresent
+           name: nginx
+           resources: {}
+           terminationMessagePath: /dev/termination-log
+           terminationMessagePolicy: File
+         dnsPolicy: ClusterFirst
+         imagePullSecrets:
+         - name: private-reg-cred
+         restartPolicy: Always
+         schedulerName: default-scheduler
+         securityContext: {}
+         terminationGracePeriodSeconds: 30
+   ```
+
+7. Check the status of PODs. Wait for them to be running. You have now successfully configured a Deployment to pull images from the private registry.
+
+   Ok
+
+   ```
+   root@controlplane ~ ➜  kubectl get pods
+   NAME                   READY   STATUS    RESTARTS   AGE
+   web-844574b8cd-5b7j5   1/1     Running   0          97s
+   web-844574b8cd-q2g94   1/1     Running   0          80s
+   ```
+
+
+
+## PRACTICE TEST SECURITY CONTEXTS
+
+
+
+1. What is the user used to execute the sleep process within the `ubuntu-sleeper` pod?
+
+   In the current(default) namespace.
+
+   - test-user
+   - my-user
+   - user2
+   - root
+   - user1
+
+   Run the command: `kubectl exec ubuntu-sleeper -- whoami` and check the user that is running the container.
+
+   ```
+   controlplane ~ ➜  kubectl get pods
+   NAME             READY   STATUS    RESTARTS   AGE
+   ubuntu-sleeper   1/1     Running   0          81s
+   
+   controlplane ~ ➜  kubectl exec ubuntu-sleeper -- whoami
+   root
+   ```
+
+   
+
+2. Edit the pod `ubuntu-sleeper` to run the sleep process with user ID `1010`.
+
+   Note: Only make the necessary changes. Do not modify the name or image of the pod.
+
+   Check
+
+   - Pod Name: ubuntu-sleeper
+   - Image Name: ubuntu
+   - SecurityContext: User 1010
+
+   ```
+   controlplane ~ ✖ kubectl edit pod ubuntu-sleeper 
+   ```
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: ubuntu-sleeper
+     namespace: default
+   spec:
+     securityContext:
+       runAsUser: 1010
+     containers:
+     - command:
+       - sleep
+       - "4800"
+       image: ubuntu
+       name: ubuntu-sleeper
+   ```
+
+   ```
+   kubectl apply -f <file-name>.yaml --force
+   ```
+
+3. A Pod definition file named `multi-pod.yaml` is given. With what user are the processes in the `web` container started?
+
+   The pod is created with multiple containers and security contexts defined at the `Pod` and `Container` level.
+
+   - root
+   - **1002**
+   - 1000
+   - 1001
+
+   The User ID defined in the securityContext of the container overrides the User ID in the POD.
+
+   multi-pod.yaml
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: multi-pod
+   spec:
+     securityContext:
+       runAsUser: 1001
+     containers:
+     -  image: ubuntu
+        name: web
+        command: ["sleep", "5000"]
+        securityContext:
+         runAsUser: 1002
+   
+     -  image: ubuntu
+        name: sidecar
+        command: ["sleep", "5000"]
+   ```
+
+4. With what user are the processes in the `sidecar` container started?
+
+   The pod is created with multiple containers and security contexts defined at the `Pod` and `Container` level.
+
+   - root
+   - **1001**
+   - 1000
+   - 1002
+
+   The User ID defined in the securityContext of the POD is carried over to all the containers in the Pod.
+
+   multi-pod.yaml
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: multi-pod
+   spec:
+     securityContext:
+       runAsUser: 1001
+     containers:
+     -  image: ubuntu
+        name: web
+        command: ["sleep", "5000"]
+        securityContext:
+         runAsUser: 1002
+   
+     -  image: ubuntu
+        name: sidecar
+        command: ["sleep", "5000"]
+   ```
+
+5. Update pod `ubuntu-sleeper` to run as Root user and with the `SYS_TIME` capability.
+
+   Note: Only make the necessary changes. Do not modify the name of the pod.
+
+   Check
+
+   - Pod Name: ubuntu-sleeper
+   - Image Name: ubuntu
+   - SecurityContext: Capability SYS_TIME
+
+   Add `SYS_TIME` capability to the container's Security Context.
+
+   To delete the existing pod:
+
+   ```sh
+   $ kubectl delete po ubuntu-sleeper
+   ```
+
+   After that apply solution manifest file to add capabilities in `ubuntu-sleeper` pod:
+
+   ubuntu-sleeper.yaml
+
+   ```yaml
+   ---
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: ubuntu-sleeper
+     namespace: default
+   spec:
+     containers:
+     - command:
+       - sleep
+       - "4800"
+       image: ubuntu
+       name: ubuntu-sleeper
+       securityContext:
+         capabilities:
+           add: ["SYS_TIME"]
+   ```
+
+   then run the command `kubectl apply -f ubuntu-sleeper.yaml` to create a pod from given definition file.
+
+6. Now update the pod to also make use of the `NET_ADMIN` capability.
+
+   Note: Only make the necessary changes. Do not modify the name of the pod.
+
+   Check
+
+   - Pod Name: ubuntu-sleeper
+   - Image Name: ubuntu
+   - SecurityContext: Capability SYS_TIME
+   - SecurityContext: Capability NET_ADMIN
+
+   Add `NET_ADMIN` capability to the container's Security Context.
+
+   To delete the existing pod:
+
+   ```sh
+   $ kubectl delete po ubuntu-sleeper
+   ```
+
+   After that apply solution manifest file to add capabilities in `ubuntu-sleeper` pod:
+
+   ubuntu-sleeper.yaml
+
+   ```yaml
+   ---
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: ubuntu-sleeper
+     namespace: default
+   spec:
+     containers:
+     - command:
+       - sleep
+       - "4800"
+       image: ubuntu
+       name: ubuntu-sleeper
+       securityContext:
+         capabilities:
+           add: ["SYS_TIME", "NET_ADMIN"]
+   ```
+
+   then run the command `kubectl apply -f <file-name>.yaml` to create a pod from given definition file.
+
+
+
+## PRACTICE TEST NETWORK POLICIES
+
+![image-20230112172302835](images/Certified Kubernetes Administrator Laboratory.md)
+
+1. How many network policies do you see in the environment?
+
+   We have deployed few web applications, services and network policies. Inspect the environment.
+
+   - 1
+   - 4
+   - 5
+   - 3
+
+   ```
+   controlplane ~ ➜  kubectl get networkpolicies
+   NAME             POD-SELECTOR   AGE
+   payroll-policy   name=payroll   4m15s
+   ```
+
+2. What is the name of the Network Policy?
+
+   - policy-1
+   - **payroll-policy**
+   - deny-policy
+   - network-policy
+
+   ```
+   controlplane ~ ➜  kubectl get networkpolicies
+   NAME             POD-SELECTOR   AGE
+   payroll-policy   name=payroll   4m15s
+   ```
+
+3. Which pod is the Network Policy applied on?
+
+   - payroll-service
+   - external
+   - internal
+   - **payroll**
+
+   ```
+   controlplane ~ ➜  kubectl get networkpolicies
+   NAME             POD-SELECTOR   AGE
+   payroll-policy   name=payroll   4m15s
+   ```
+
+4. What type of traffic is this Network Policy configured to handle?
+
+   - Egress
+   - None
+   - Both Ingress and Egress
+   - Ingress
+
+   Run the command: `kubectl describe networkpolicy` and look under the `Policy Types` section.
+
+   ```
+   controlplane ~ ➜  kubectl describe networkpolicies payroll-policy 
+   Name:         payroll-policy
+   Namespace:    default
+   Created on:   2023-01-12 04:20:34 -0500 EST
+   Labels:       <none>
+   Annotations:  <none>
+   Spec:
+     PodSelector:     name=payroll
+     Allowing ingress traffic:
+       To Port: 8080/TCP
+       From:
+         PodSelector: name=internal
+     Not affecting egress traffic
+     Policy Types: Ingress
+   ```
+
+5. What is the impact of the rule configured on this Network Policy?
+
+   - **Traffic From Internal to Payroll POD is allowed**
+   - Traffic To and From Internal POD is Blocked
+   - Traffic To and From Payroll POD is Blocked
+   - Traffic From Internal to Payroll POD is blocked
+
+6. What is the impact of the rule configured on this Network Policy?
+
+   - Internal POD can ping Payroll POD
+   - External POD can ping Payroll POD
+   - External POD can access port 8080 on Payroll POD
+   - **Internal POD can access port 8080 on Payroll POD**
+
+   Use the command `kubectl describe netpol`.
+
+   ```
+   controlplane ~ ➜  kubectl describe networkpolicies payroll-policy 
+   Name:         payroll-policy
+   Namespace:    default
+   Created on:   2023-01-12 04:20:34 -0500 EST
+   Labels:       <none>
+   Annotations:  <none>
+   Spec:
+     PodSelector:     name=payroll
+     Allowing ingress traffic:
+       To Port: 8080/TCP
+       From:
+         PodSelector: name=internal
+     Not affecting egress traffic
+     Policy Types: Ingress
+   ```
+
+7. Access the UI of these applications using the link given above the terminal.
+
+   Ok
+
+8. Perform a connectivity test using the User Interface in these Applications to access the payroll-service at port 8080.
+
+   - Both internal and external applications can access the payroll service
+   - **Only Internal application can access payroll service**
+
+9. Perform a connectivity test using the User Interface of the Internal Application to access the `external-service` at port `8080`.\
+
+   - **Successful**
+   - Failed
+
+10. Create a network policy to allow traffic from the `Internal` application only to the `payroll-service` and `db-service`.
+
+   Use the spec given below. You might want to enable ingress traffic to the pod to test your rules in the UI.
+
+   Check
+
+   - Policy Name: internal-policy
+   - Policy Type: Egress
+   - Egress Allow: payroll
+   - Payroll Port: 8080
+   - Egress Allow: mysql
+   - MySQL Port: 3306
+
+   ![image-20230112174814700](images/image-20230107093732549.png)
+
+   Solution manifest file for a network policy `internal-policy` as follows:
+
+   internal-policy.yaml
+
+   ```yaml
+   apiVersion: networking.k8s.io/v1
+   kind: NetworkPolicy
+   metadata:
+     name: internal-policy
+     namespace: default
+   spec:
+     podSelector:
+       matchLabels:
+         name: internal
+     policyTypes:
+     - Egress
+     - Ingress
+     ingress:
+       - {}
+     egress:
+     - to:
+       - podSelector:
+           matchLabels:
+             name: mysql
+       ports:
+       - protocol: TCP
+         port: 3306
+   
+     - to:
+       - podSelector:
+           matchLabels:
+             name: payroll
+       ports:
+       - protocol: TCP
+         port: 8080
+   
+     - ports:
+       - port: 53
+         protocol: UDP
+       - port: 53
+         protocol: TCP
+   ```
+
+   Note: We have also allowed Egress traffic to TCP and UDP port. This has been added to ensure that the internal DNS resolution works from the internal pod. Remember: The kube-dns service is exposed on port 53:
+
+   ```
+   root@controlplane:~# kubectl get svc -n kube-system 
+   NAME       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+   kube-dns   ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   93m
+   root@controlplane:~#
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get netpol
+   NAME              POD-SELECTOR    AGE
+   internal-policy   name=internal   13m
+   payroll-policy    name=payroll    57m
+   
+   controlplane ~ ➜  kubectl describe netpol internal-policy 
+   Name:         internal-policy
+   Namespace:    default
+   Created on:   2023-01-12 05:05:08 -0500 EST
+   Labels:       <none>
+   Annotations:  <none>
+   Spec:
+     PodSelector:     name=internal
+     Allowing ingress traffic:
+       To Port: <any> (traffic allowed to all ports)
+       From: <any> (traffic not restricted by source)
+     Allowing egress traffic:
+       To Port: 3306/TCP
+       To:
+         PodSelector: name=mysql
+       ----------
+       To Port: 8080/TCP
+       To:
+         PodSelector: name=payroll
+       ----------
+       To Port: 53/UDP
+       To Port: 53/TCP
+       To: <any> (traffic not restricted by destination)
+     Policy Types: Egress, Ingress
+   ```
+
+
+
+# STORAGE
+
+
+
+## PRACTICE TEST PERSISTENT VOLUME CLAIMS
+
+
+
+1. We have deployed a POD. Inspect the POD and wait for it to start running.
+
+   In the current(default) namespace.
+
+   Ok
+
+   ```
+   controlplane ~ ➜  kubectl get pods
+   NAME     READY   STATUS    RESTARTS   AGE
+   webapp   1/1     Running   0          24s
+   ```
+
+   
+
+2. The application stores logs at location `/log/app.log`. View the logs.
+
+   You can exec in to the container and open the file:
+   `kubectl exec webapp -- cat /log/app.log`
+
+   Ok
+
+   ```
+   controlplane ~ ✖ kubectl exec webapp -- cat /log/app.log
+   [2023-01-12 10:23:34,477] INFO in event-simulator: USER2 is viewing page2
+   [2023-01-12 10:23:35,478] INFO in event-simulator: USER3 logged out
+   [2023-01-12 10:23:36,478] INFO in event-simulator: USER1 is viewing page2
+   [2023-01-12 10:23:37,480] INFO in event-simulator: USER4 is viewing page3
+   [2023-01-12 10:23:38,481] INFO in event-simulator: USER3 is viewing page1
+   [2023-01-12 10:23:39,482] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:23:39,482] INFO in event-simulator: USER3 is viewing page2
+   [2023-01-12 10:23:40,483] INFO in event-simulator: USER3 is viewing page1
+   [2023-01-12 10:23:41,484] INFO in event-simulator: USER1 is viewing page2
+   [2023-01-12 10:23:42,485] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-12 10:23:42,485] INFO in event-simulator: USER2 logged in
+   [2023-01-12 10:23:43,486] INFO in event-simulator: USER4 is viewing page2
+   [2023-01-12 10:23:44,488] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:23:44,488] INFO in event-simulator: USER2 is viewing page3
+   [2023-01-12 10:23:45,489] INFO in event-simulator: USER2 is viewing page1
+   [2023-01-12 10:23:46,490] INFO in event-simulator: USER4 is viewing page3
+   [2023-01-12 10:23:47,491] INFO in event-simulator: USER1 is viewing page1
+   [2023-01-12 10:23:48,492] INFO in event-simulator: USER1 logged in
+   [2023-01-12 10:23:49,494] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:23:49,494] INFO in event-simulator: USER2 is viewing page1
+   [2023-01-12 10:23:50,495] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-12 10:23:50,495] INFO in event-simulator: USER4 logged out
+   [2023-01-12 10:23:51,497] INFO in event-simulator: USER1 is viewing page3
+   [2023-01-12 10:23:52,498] INFO in event-simulator: USER1 is viewing page3
+   [2023-01-12 10:23:53,499] INFO in event-simulator: USER3 logged in
+   [2023-01-12 10:23:54,499] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:23:54,499] INFO in event-simulator: USER3 is viewing page1
+   [2023-01-12 10:23:55,501] INFO in event-simulator: USER4 is viewing page2
+   [2023-01-12 10:23:56,502] INFO in event-simulator: USER3 is viewing page2
+   [2023-01-12 10:23:57,503] INFO in event-simulator: USER4 logged out
+   [2023-01-12 10:23:58,505] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-12 10:23:58,505] INFO in event-simulator: USER4 logged in
+   [2023-01-12 10:23:59,506] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:23:59,506] INFO in event-simulator: USER4 is viewing page2
+   [2023-01-12 10:24:00,508] INFO in event-simulator: USER1 is viewing page1
+   [2023-01-12 10:24:01,509] INFO in event-simulator: USER3 is viewing page3
+   [2023-01-12 10:24:02,509] INFO in event-simulator: USER1 is viewing page1
+   [2023-01-12 10:24:03,511] INFO in event-simulator: USER2 is viewing page3
+   [2023-01-12 10:24:04,512] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:24:04,512] INFO in event-simulator: USER2 is viewing page3
+   [2023-01-12 10:24:05,513] INFO in event-simulator: USER1 logged in
+   [2023-01-12 10:24:06,514] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-12 10:24:06,514] INFO in event-simulator: USER2 logged out
+   [2023-01-12 10:24:07,516] INFO in event-simulator: USER1 is viewing page1
+   [2023-01-12 10:24:08,517] INFO in event-simulator: USER3 is viewing page1
+   [2023-01-12 10:24:09,518] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:24:09,518] INFO in event-simulator: USER1 logged in
+   [2023-01-12 10:24:10,519] INFO in event-simulator: USER2 logged out
+   [2023-01-12 10:24:11,520] INFO in event-simulator: USER1 is viewing page3
+   [2023-01-12 10:24:12,522] INFO in event-simulator: USER1 is viewing page3
+   [2023-01-12 10:24:13,523] INFO in event-simulator: USER2 is viewing page2
+   [2023-01-12 10:24:14,524] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:24:14,524] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-12 10:24:14,525] INFO in event-simulator: USER2 is viewing page2
+   [2023-01-12 10:24:15,526] INFO in event-simulator: USER1 is viewing page3
+   [2023-01-12 10:24:16,527] INFO in event-simulator: USER1 logged out
+   [2023-01-12 10:24:17,528] INFO in event-simulator: USER2 is viewing page3
+   [2023-01-12 10:24:18,529] INFO in event-simulator: USER3 is viewing page1
+   [2023-01-12 10:24:19,530] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:24:19,530] INFO in event-simulator: USER2 is viewing page1
+   [2023-01-12 10:24:20,531] INFO in event-simulator: USER4 is viewing page3
+   [2023-01-12 10:24:21,532] INFO in event-simulator: USER2 is viewing page3
+   [2023-01-12 10:24:22,533] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-12 10:24:22,533] INFO in event-simulator: USER1 is viewing page1
+   [2023-01-12 10:24:23,533] INFO in event-simulator: USER4 is viewing page2
+   [2023-01-12 10:24:24,535] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:24:24,535] INFO in event-simulator: USER3 is viewing page1
+   [2023-01-12 10:24:25,536] INFO in event-simulator: USER4 logged in
+   [2023-01-12 10:24:26,537] INFO in event-simulator: USER1 logged out
+   [2023-01-12 10:24:27,538] INFO in event-simulator: USER3 is viewing page3
+   [2023-01-12 10:24:28,539] INFO in event-simulator: USER3 logged in
+   [2023-01-12 10:24:29,540] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:24:29,540] INFO in event-simulator: USER4 is viewing page3
+   [2023-01-12 10:24:30,541] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-12 10:24:30,541] INFO in event-simulator: USER4 logged out
+   [2023-01-12 10:24:31,542] INFO in event-simulator: USER3 is viewing page2
+   [2023-01-12 10:24:32,544] INFO in event-simulator: USER3 logged in
+   [2023-01-12 10:24:33,545] INFO in event-simulator: USER1 is viewing page3
+   [2023-01-12 10:24:34,545] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:24:34,545] INFO in event-simulator: USER1 is viewing page2
+   [2023-01-12 10:24:35,547] INFO in event-simulator: USER4 is viewing page2
+   [2023-01-12 10:24:36,548] INFO in event-simulator: USER2 is viewing page1
+   [2023-01-12 10:24:37,549] INFO in event-simulator: USER1 is viewing page1
+   [2023-01-12 10:24:38,550] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-12 10:24:38,550] INFO in event-simulator: USER3 logged out
+   [2023-01-12 10:24:39,552] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:24:39,552] INFO in event-simulator: USER2 logged out
+   [2023-01-12 10:24:40,553] INFO in event-simulator: USER1 logged in
+   [2023-01-12 10:24:41,554] INFO in event-simulator: USER1 logged in
+   [2023-01-12 10:24:42,555] INFO in event-simulator: USER1 logged out
+   [2023-01-12 10:24:43,557] INFO in event-simulator: USER1 logged out
+   ```
+
+3. If the POD was to get deleted now, would you be able to view these logs.
+
+   - **No**
+   - Yes
+
+   ```
+   controlplane ~ ➜  kubectl delete pod webapp 
+   pod "webapp" deleted
+   
+   controlplane ~ ➜  kubectl exec webapp -- cat /log/app.log
+   Error from server (NotFound): pods "webapp" not found
+   ```
+
+4. Configure a volume to store these logs at `/var/log/webapp` on the host.
+
+   Use the spec provided below.
+
+   Check
+
+   - Name: webapp
+   - Image Name: kodekloud/event-simulator
+   - Volume HostPath: /var/log/webapp
+   - Volume Mount: /log
+
+   First delete the existing pod by running the following command: -
+
+   ```shell
+   kubectl delete po webapp
+   ```
+
+   then use the below manifest file to create a `webapp` pod with given properties as follows:
+
+   webapp.yaml
+
+   ```yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: webapp
+   spec:
+     containers:
+     - name: event-simulator
+       image: kodekloud/event-simulator
+       env:
+       - name: LOG_HANDLERS
+         value: file
+       volumeMounts:
+       - mountPath: /log
+         name: log-volume
+   
+     volumes:
+     - name: log-volume
+       hostPath:
+         # directory location on host
+         path: /var/log/webapp
+         # this field is optional
+         type: Directory
+   ```
+
+   Check the log
+
+   ```
+   controlplane ~ ➜  ls -l /var/log/webapp/
+   total 112
+   -rw-r--r-- 1 root root 107084 Jan 12 05:45 app.log
+   ```
+
+   ```
+   controlplane ~ ➜  cat /var/log/webapp/app.log | tail
+   [2023-01-12 10:50:03,347] INFO in event-simulator: USER1 logged out
+   [2023-01-12 10:50:04,348] INFO in event-simulator: USER2 logged in
+   [2023-01-12 10:50:05,349] INFO in event-simulator: USER1 is viewing page3
+   [2023-01-12 10:50:06,350] INFO in event-simulator: USER2 logged in
+   [2023-01-12 10:50:07,352] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+   [2023-01-12 10:50:07,352] INFO in event-simulator: USER3 is viewing page2
+   [2023-01-12 10:50:08,353] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+   [2023-01-12 10:50:08,353] INFO in event-simulator: USER1 is viewing page1
+   [2023-01-12 10:50:09,354] INFO in event-simulator: USER2 logged out
+   [2023-01-12 10:50:10,356] INFO in event-simulator: USER2 is viewing page1
+   ```
+
+   
+
+   Then run the command `kubectl create -f webapp.yaml` to create a pod.
+
+   ```
+   controlplane ~ ➜  kubectl get pods
+   NAME     READY   STATUS    RESTARTS   AGE
+   webapp   1/1     Running   0          9s
+   
+   controlplane ~ ➜  kubectl describe pod webapp 
+   Name:             webapp
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/10.28.154.9
+   Start Time:       Thu, 12 Jan 2023 05:29:08 -0500
+   Labels:           <none>
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.0.5
+   IPs:
+     IP:  10.244.0.5
+   Containers:
+     event-simulator:
+       Container ID:   containerd://6a1db84dbffdb8a314e136d386726a25214bff480d4bbda190eda35c88749011
+       Image:          kodekloud/event-simulator
+       Image ID:       docker.io/kodekloud/event-simulator@sha256:1e3e9c72136bbc76c96dd98f29c04f298c3ae241c7d44e2bf70bcc209b030bf9
+       Port:           <none>
+       Host Port:      <none>
+       State:          Running
+         Started:      Thu, 12 Jan 2023 05:29:10 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:
+         LOG_HANDLERS:  file
+       Mounts:
+         /log from log-volume (rw)
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-k8qjj (ro)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:
+     log-volume:
+       Type:          HostPath (bare host directory volume)
+       Path:          /var/log/webapp
+       HostPathType:  Directory
+     kube-api-access-k8qjj:
+       Type:                    Projected (a volume that contains injected data from multiple sources)
+       TokenExpirationSeconds:  3607
+       ConfigMapName:           kube-root-ca.crt
+       ConfigMapOptional:       <nil>
+       DownwardAPI:             true
+   QoS Class:                   BestEffort
+   Node-Selectors:              <none>
+   Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                                node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+   Events:
+     Type    Reason     Age   From               Message
+     ----    ------     ----  ----               -------
+     Normal  Scheduled  20s   default-scheduler  Successfully assigned default/webapp to controlplane
+     Normal  Pulling    19s   kubelet            Pulling image "kodekloud/event-simulator"
+     Normal  Pulled     19s   kubelet            Successfully pulled image "kodekloud/event-simulator" in 321.812926ms (321.8237ms including waiting)
+     Normal  Created    19s   kubelet            Created container event-simulator
+     Normal  Started    18s   kubelet            Started container event-simulator
+   
+   ```
+
+5. Create a `Persistent Volume` with the given specification.
+
+   Check
+
+   - Volume Name: pv-log
+   - Storage: 100Mi
+   - Access Modes: ReadWriteMany
+   - Host Path: /pv/log
+   - Reclaim Policy: Retain
+
+   Use the following manifest file to create a `pv-log` persistent volume:
+
+   
+
+   ```yaml
+   apiVersion: v1
+   kind: PersistentVolume
+   metadata:
+     name: pv-log
+   spec:
+     persistentVolumeReclaimPolicy: Retain
+     accessModes:
+       - ReadWriteMany
+     capacity:
+       storage: 100Mi
+     hostPath:
+       path: /pv/log
+   ```
+
+   Then run the command `kubectl create -f <file-name>.yaml` to create a PV from manifest file.
+
+   ```
+   controlplane ~ ➜  kubectl get persistentvolume
+   NAME     CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+   pv-log   100Mi      RWX            Retain           Available                                   18s
+   
+   controlplane ~ ➜  kubectl describe persistentvolume pv-log 
+   Name:            pv-log
+   Labels:          <none>
+   Annotations:     <none>
+   Finalizers:      [kubernetes.io/pv-protection]
+   StorageClass:    
+   Status:          Available
+   Claim:           
+   Reclaim Policy:  Retain
+   Access Modes:    RWX
+   VolumeMode:      Filesystem
+   Capacity:        100Mi
+   Node Affinity:   <none>
+   Message:         
+   Source:
+       Type:          HostPath (bare host directory volume)
+       Path:          /pv/log
+       HostPathType:  
+   Events:            <none>
+   ```
+
+6. Let us claim some of that storage for our application. Create a `Persistent Volume Claim` with the given specification.
+
+   Check
+
+   - Volume Name: claim-log-1
+   - Storage Request: 50Mi
+   - Access Modes: ReadWriteOnce
+
+   Solution manifest file to create a `claim-log-1` PVC with given properties as follows:
+
+   pvc.yaml
+
+   ```yaml
+   kind: PersistentVolumeClaim
+   apiVersion: v1
+   metadata:
+     name: claim-log-1
+   spec:
+     accessModes:
+       - ReadWriteOnce
+     resources:
+       requests:
+         storage: 50Mi
+   ```
+
+   Then run `kubectl create -f <file-name>.yaml` to create a PVC from the manifest file.
+
+   ```
+   ontrolplane ~ ➜  kubectl create -f pvc.yaml 
+   persistentvolumeclaim/claim-log-1 created
+   
+   controlplane ~ ➜  kubectl get pvc
+   NAME          STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+   claim-log-1   Pending                                                     29s
+   
+   controlplane ~ ➜  kubectl describe pvc claim-log-1 
+   Name:          claim-log-1
+   Namespace:     default
+   StorageClass:  
+   Status:        Pending
+   Volume:        
+   Labels:        <none>
+   Annotations:   <none>
+   Finalizers:    [kubernetes.io/pvc-protection]
+   Capacity:      
+   Access Modes:  
+   VolumeMode:    Filesystem
+   Used By:       <none>
+   Events:
+     Type    Reason         Age               From                         Message
+     ----    ------         ----              ----                         -------
+     Normal  FailedBinding  5s (x4 over 41s)  persistentvolume-controller  no persistent volumes available for this claim and no storage class is set
+   ```
+
+7. What is the state of the `Persistent Volume Claim`?
+
+   - BOUND
+   - CREATED
+   - **PENDING**
+   - AVAILABLE
+
+   ```
+   controlplane ~ ➜  kubectl get pvc
+   NAME          STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+   claim-log-1   Pending                                                     29s
+   ```
+
+8. What is the state of the `Persistent Volume`?
+
+   - **AVAILABLE**
+   - BOUND
+   - PENDING
+   - CREATED
+
+   ```
+   controlplane ~ ➜  kubectl get pvAVAILABLE
+   NAME     CAPACITY   ACCESS MODES   RECLAIAVAILABLEM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+   pv-log   100Mi      RWX            Retain           Available                                   9m3s
+   ```
+
+9. Why is the claim not bound to the available `Persistent Volume`?
+
+   - Reclaim Policy not set correctly
+   - PV and PVC name mismatch
+   - **Access Modes Mismatch**
+   - Capacity Mismatch
+
+   Run the command: `kubectl get pv,pvc` and look under the `Access Modes` section. The Access Modes set on the PV and the PVC do not match.
+
+   ```
+   controlplane ~ ➜  kubectl get pv,pvc
+   NAME                      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+   persistentvolume/pv-log   100Mi      RWX            Retain           Available                                   10m
+   
+   NAME                                STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+   persistentvolumeclaim/claim-log-1   Pending                                                     4m52s
+   
+   ```
+
+10. Update the Access Mode on the claim to bind it to the PV.
+
+   Delete and recreate the `claim-log-1`.
+
+   Check
+
+   - Volume Name: claim-log-1
+   - Storage Request: 50Mi
+   - PVol: pv-log
+   - Status: Bound
+
+   To delete the existing pvc:
+
+   ```sh
+   $ kubectl delete pvc claim-log-1
+   ```
+
+   Solution manifest file to create a `claim-log-1` PVC with correct `Access Modes` as follows:
+
+   pvc.yaml
+
+   ```yaml
+   kind: PersistentVolumeClaim
+   apiVersion: v1
+   metadata:
+     name: claim-log-1
+   spec:
+     accessModes:
+       - ReadWriteMany
+     resources:
+       requests:
+         storage: 50Mi
+   ```
+
+   Then run `kubectl create -f <file-name>.yaml`
+
+   ```
+   controlplane ~ ➜  kubectl create -f pvc.yaml 
+   persistentvolumeclaim/claim-log-1 created
+   
+   controlplane ~ ➜  kubectl get pv,pvc
+   NAME                      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   REASON   AGE
+   persistentvolume/pv-log   100Mi      RWX            Retain           Bound    default/claim-log-1                           14m
+   
+   NAME                                STATUS   VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+   persistentvolumeclaim/claim-log-1   Bound    pv-log   100Mi      RWX                           16s
+   ```
+
+11. You requested for `50Mi`, how much capacity is now available to the PVC?
+
+    - 1Gi
+    - 0
+    - 50Mi
+    - **100Mi**
+
+    ```
+    controlplane ~ ➜  kubectl get pvc
+    NAME          STATUS   VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+    claim-log-1   Bound    pv-log   100Mi      RWX                           2m31s
+    ```
+
+12. Update the `webapp` pod to use the persistent volume claim as its storage.
+
+    Replace `hostPath` configured earlier with the newly created `PersistentVolumeClaim`.
+
+    Check
+
+    - Name: webapp
+    - Image Name: kodekloud/event-simulator
+    - Volume: PersistentVolumeClaim=claim-log-1
+    - Volume Mount: /log
+
+    To delete the `webapp` pod first:
+
+    ```sh
+    $ kubectl delete po webapp
+    ```
+
+    Add `--force` flag in above command, if you would like to delete the pod without any delay.
+
+    To create a new `webapp` pod with given properties as follows:
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: webapp
+    spec:
+      containers:
+      - name: event-simulator
+        image: kodekloud/event-simulator
+        env:
+        - name: LOG_HANDLERS
+          value: file
+        volumeMounts:
+        - mountPath: /log
+          name: log-volume
+    
+      volumes:
+      - name: log-volume
+        persistentVolumeClaim:
+          claimName: claim-log-1
+    ```
+
+13. What is the `Reclaim Policy` set on the Persistent Volume `pv-log`?
+
+    - Retain
+    - Recycle
+    - Delete
+    - Scrub

@@ -80,7 +80,13 @@ phpinfo();
 
 
 
-### Install Laravel
+### Install PHP and additional PHP extensions
+
+```
+sudo apt install php libapache2-mod-php php-mbstring php-cli php-bcmath php-json php-xml php-zip php-pdo php-common php-tokenizer php-mysql
+```
+
+
 
 Server Requirements
 
@@ -107,27 +113,142 @@ sudo apt install php7.4-xml
 
 ### Install Composer
 
+Composer is a dependency package manager for PHP. It provides a framework for managing libraries and dependencies and required dependencies. To use Laravel, first install composer.
+
+To download Composer, invoke the command shown.
+
 ```
-# Download composer-setup.php
-$ php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-
-# Verify if the composer-setup.php file is legit
-$ php -r "if (hash_file('sha384', 'composer-setup.php') === 'e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-Installer verified
-
-$ php composer-setup.php
-All settings correct for using Composer
-Downloading...
-
-Composer (version 1.10.7) successfully installed to: /home/sherwinowen/composer.phar
-Use it: php composer.phar
-
-$ php -r "unlink('composer-setup.php');"
-
-$ mv composer.phar /usr/local/bin/composer
+$ curl -sS https://getcomposer.org/installer | php
 ```
 
+This downloads the `composer.phar` file.
 
+Next, move the composer file to the` /usr/local/bin` path.
+
+```
+$ sudo mv composer.phar /usr/local/bin/composer
+```
+
+Assign execute permission:
+
+```
+$ sudo chmod +x /usr/local/bin/composer
+```
+
+Verify the Composer version installed:
+
+```
+$ composer --version
+Composer version 2.5.1 2022-12-22 15:33:54
+```
+
+### Laravel project folder permissions
+
+There are basically two ways to setup your ownership and permissions. Either you give yourself ownership or you make the webserver the owner of all files.
+
+**Webserver as owner (the way most people do it, and the Laravel doc's way):**
+
+assuming www-data (it could be something else) is your webserver user.
+
+```
+sudo chown -R www-data:www-data /path/to/your/laravel/root/directory
+```
+
+if you do that, the webserver owns all the files, and is also the group, and you will have some problems uploading files or working with files via FTP, because your FTP client will be logged in as you, not your webserver, so add your user to the webserver user group:
+
+```
+sudo usermod -a -G www-data ubuntu
+```
+
+Of course, this assumes your webserver is running as www-data (the Homestead default), and your user is ubuntu (it's vagrant if you are using Homestead).
+
+Then you set all your directories to 755 and your files to 644... SET file permissions
+
+```
+sudo find /path/to/your/laravel/root/directory -type f -exec chmod 644 {} \;    
+```
+
+SET directory permissions
+
+```
+sudo find /path/to/your/laravel/root/directory -type d -exec chmod 755 {} \;
+```
+
+**Your user as owner**
+
+I prefer to own all the directories and files (it makes working with everything much easier), so, go to your laravel root directory:
+
+```php
+cd /var/www/html/laravel >> assuming this is your current root directory
+sudo chown -R $USER:www-data .
+```
+
+Then I give both myself and the webserver permissions:
+
+```
+sudo find . -type f -exec chmod 664 {} \;   
+sudo find . -type d -exec chmod 775 {} \;
+```
+
+**Then give the webserver the rights to read and write to storage and cache**
+
+Whichever way you set it up, then you need to give read and write permissions to the webserver for storage, cache and any other directories the webserver needs to upload or write too (depending on your situation), so run the commands from bashy above :
+
+```
+sudo chgrp -R www-data storage bootstrap/cache
+sudo chmod -R ug+rwx storage bootstrap/cache
+```
+
+Now, you're secure and your website works, AND you can work with the files fairly easily
+
+### Migrating Project
+
+1. Make sure you copy all of the project files including the hidden ones(.env).
+
+2. Prepare your destination computer as in http://laravel.com/docs/
+
+3. Check you have all the necessary PHP extensions available in php.ini as in above link requirements. Also, watch your PHP version!
+
+4. Install composer https://getcomposer.org/doc/00-intro.md
+
+5. When copied, go to your destination folder and run `composer install`.
+
+6. Run php artisan key:generate from the command line.
+
+7. Run php artisan cache:clear from command line
+
+   ```php
+   http://php.net/manual/en/install.windows.commandline.php
+   ```
+
+8. Make sure your webserver is serving pages from project/public folder.
+
+   ```
+   <VirtualHost *:80>
+   
+   #    ServerAdmin admin@techvblogs.com
+   #    ServerName techvblogs.com
+       DocumentRoot /var/www/html/bcda-pams/public
+   
+       <Directory /var/www/html/bcda-pams/public>
+         Options +FollowSymlinks
+         AllowOverride All
+         Require all granted
+       </Directory>
+   
+       ErrorLog ${APACHE_LOG_DIR}/error.log
+       CustomLog ${APACHE_LOG_DIR}/access.log combined
+   
+   </VirtualHost>
+   ```
+
+   
+
+If laravel is failing, check the log file to see the cause
+
+```php
+your_project/storage/logs/laravel.log
+```
 
 ### Create Project via composer
 
