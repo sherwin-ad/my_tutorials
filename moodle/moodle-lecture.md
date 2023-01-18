@@ -1566,3 +1566,57 @@ php /moodle/admin/cli/purge_caches.php
 ```
 
 2. Remove all files and directories unde directory /moodledata/cache
+
+
+
+# Manually Generate a Certificate Signing Request (CSR) Using OpenSSL
+
+```
+$ openssl req -new -newkey rsa:2048 -nodes -keyout learndohgovph.key -out learndohgovph.csr
+```
+
+```
+Country Name (2 letter code) [AU]: PH
+
+State or Province Name (full name) [Some-State]: National Capital Region
+
+Locality Name (eg, city) []: Metro Manila
+
+Organization Name (eg, company) [Internet Widgits Pty Ltd]: Department of Health
+
+Organizational Unit Name (eg, section) []: learn.doh.gov.ph
+
+Common Name (e.g. server FQDN or YOUR name) []: *.doh.gov.ph
+
+Email Address []: elearning@doh.gov.ph
+```
+
+
+
+# Setup SSL certificate for apache
+
+```
+<VirtualHost *:443>
+
+#    ServerAdmin admin@techvblogs.com
+    ServerName pams.bcda.gov.ph
+    DocumentRoot /var/www/html/bcda-pams/public
+
+    <Directory /var/www/html/bcda-pams/public>
+      Options +FollowSymlinks
+      AllowOverride All
+      Require all granted
+    </Directory>
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/certs/pams/1171a4dbb34cfcdf.crt
+    SSLCertificateKeyFile /etc/ssl/certs/pams/bcda-pams.key
+    SSLCertificateChainFile /etc/ssl/certs/pams/1171a4dbb34cfcdf.pem
+    SSLCACertificateFile /etc/ssl/certs/pams/gd_bundle-g2-g1.crt
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
+```
+

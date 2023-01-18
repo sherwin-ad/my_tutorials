@@ -375,3 +375,29 @@ To enable HSTS in an Apache server, follow these steps:
    ```
 
 4. Restart Apache.
+
+
+
+## Redirect HTTP to HTTPS 
+
+```
+<VirtualHost *:80> 
+  ServerName example.com
+  ServerAlias www.example.com
+
+  Redirect permanent / https://example.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName example.com
+  ServerAlias www.example.com
+
+  Protocols h2 http/1.1
+
+  # SSL Configuration
+
+  # Other Apache Configuration
+
+</VirtualHost>
+```
+

@@ -9051,7 +9051,7 @@ deployment.apps/deployment-1 created
 
    Use the following manifest file to create a `pv-log` persistent volume:
 
-   
+   pv.yaml
 
    ```yaml
    apiVersion: v1
@@ -9068,7 +9068,7 @@ deployment.apps/deployment-1 created
        path: /pv/log
    ```
 
-   Then run the command `kubectl create -f <file-name>.yaml` to create a PV from manifest file.
+   Then run the command `kubectl create -f pv.yaml` to create a PV from manifest file.
 
    ```
    controlplane ~ ➜  kubectl get persistentvolume
@@ -9121,7 +9121,7 @@ deployment.apps/deployment-1 created
          storage: 50Mi
    ```
 
-   Then run `kubectl create -f <file-name>.yaml` to create a PVC from the manifest file.
+   Then run `kubectl create -f pvc.yaml` to create a PVC from the manifest file.
 
    ```
    ontrolplane ~ ➜  kubectl create -f pvc.yaml 
@@ -9229,7 +9229,7 @@ deployment.apps/deployment-1 created
          storage: 50Mi
    ```
 
-   Then run `kubectl create -f <file-name>.yaml`
+   Then run `kubectl create -f pvc.yaml`
 
    ```
    controlplane ~ ➜  kubectl create -f pvc.yaml 
@@ -9299,9 +9299,5142 @@ deployment.apps/deployment-1 created
           claimName: claim-log-1
     ```
 
+    ```
+    controlplane ~ ➜  ls -l /pv/log/
+    total 48
+    -rw-r--r-- 1 root root 43453 Jan 12 17:52 app.log
+    ```
+
+    ```
+    controlplane ~ ➜  cat /pv/log/app.log | tail -n 10
+    [2023-01-12 22:54:26,292] INFO in event-simulator: USER3 is viewing page1
+    [2023-01-12 22:54:27,293] INFO in event-simulator: USER3 is viewing page2
+    [2023-01-12 22:54:28,294] INFO in event-simulator: USER4 logged out
+    [2023-01-12 22:54:29,295] WARNING in event-simulator: USER5 Failed to Login as the account is locked due to MANY FAILED ATTEMPTS.
+    [2023-01-12 22:54:29,296] INFO in event-simulator: USER3 is viewing page2
+    [2023-01-12 22:54:30,297] INFO in event-simulator: USER4 is viewing page3
+    [2023-01-12 22:54:31,298] WARNING in event-simulator: USER7 Order failed as the item is OUT OF STOCK.
+    [2023-01-12 22:54:31,298] INFO in event-simulator: USER1 logged in
+    [2023-01-12 22:54:32,299] INFO in event-simulator: USER1 is viewing page2
+    [2023-01-12 22:54:33,300] INFO in event-simulator: USER2 is viewing page1
+    ```
+
+    
+
 13. What is the `Reclaim Policy` set on the Persistent Volume `pv-log`?
 
-    - Retain
+    - **Retain**
     - Recycle
     - Delete
     - Scrub
+
+    Run the command: `kubectl get pv` and look under the `Reclaim Policy` column.
+
+    ```
+    controlplane ~ ➜  kubectl get pv
+    NAME     CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   REASON   AGE
+    pv-log   100Mi      RWX            Retain           Bound    default/claim-log-1                           16m
+    ```
+
+14. What would happen to the PV if the PVC was destroyed?
+
+    - The PV is deleted as well
+    - **The PV is not deleted but not available**
+    - The PV is scrubbed
+    - The PV is made available again
+
+15. Try deleting the PVC and notice what happens.
+
+    If the command hangs, you can use CTRL + C to get back to the bash prompt OR check the status of the pvc from another terminal
+
+    - **The PVC is stuck in 'terminating' state**
+    - The PVC is deleted
+
+    Run the command: `kubectl delete pvc claim-log-1` and `kubectl get pvc`. If the command hangs, you can use CTRL + C to get back to the bash prompt OR check the status of the pvc from another terminal.
+
+    ```
+    controlplane ~ ➜  kubectl get pvc
+    NAME          STATUS   VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+    claim-log-1   Bound    pv-log   100Mi      RWX                           23m
+    
+    controlplane ~ ➜  kubectl delete pvc claim-log-1 
+    persistentvolumeclaim "claim-log-1" deleted
+    ^C
+    
+    controlplane ~ ✖ kubectl get pvc
+    NAME          STATUS        VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+    claim-log-1   Terminating   pv-log   100Mi      RWX                           23m
+    ```
+
+16. Why is the PVC stuck in `Terminating` state?
+
+    - The PVC is waiting for the PV to be deleted
+    - **The PVC is being used by a POD**
+    - The PVC is in the process of scrubbing
+
+    The PVC was still being used by the `webapp` pod when we issued the delete command. Until the pod is deleted, the PVC will remain in a `terminating` state.
+
+17. Let us now delete the `webapp` Pod.
+
+    Once deleted, wait for the pod to fully terminate.
+
+    Check
+
+    - Name: webapp
+
+    ```
+    controlplane ~ ➜  kubectl delete pod webapp --force 
+    Warning: Immediate deletion does not wait for confirmation that the running resource has been terminated. The resource may continue to run on the cluster indefinitely.
+    pod "webapp" force deleted
+    
+    controlplane ~ ➜  kubectl get pod
+    No resources found in default namespace.
+    ```
+
+18. What is the state of the PVC now?
+
+    - **Deleted**
+    - Pending
+    - Available
+    - Bound
+
+    ```
+    controlplane ~ ➜  kubectl get pvc
+    No resources found in default namespace.
+    ```
+
+19. What is the state of the Persistent Volume now?
+
+    - Deleted
+    - Available
+    - Bound
+    - Pending
+    - **Released**
+
+    ```
+    controlplane ~ ➜  kubectl get pv
+    NAME     CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                 STORAGECLASS   REASON   AGE
+    pv-log   100Mi      RWX            Retain           Released   default/claim-log-1                           32m
+    ```
+
+
+
+## PRACTICE TEST – STORAGE CLASS
+
+
+
+1. How many `StorageClasses` exist in the cluster right now?
+
+   - 2
+   - 3
+   - 4
+   - **1**
+   - 7
+
+   ```
+   controlplane ~ ➜  kubectl get sc
+   NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+   local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  7m55s
+   
+   ```
+
+2. How about now? How many Storage Classes exist in the cluster?
+
+   We just created a few new Storage Classes. Inspect them.
+
+   - 4
+   - 0
+   - 5
+   - **3**
+   - 1
+
+   ```
+   controlplane ~ ➜  kubectl get sc
+   NAME                        PROVISIONER                     RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+   local-path (default)        rancher.io/local-path           Delete          WaitForFirstConsumer   false                  9m13s
+   local-storage               kubernetes.io/no-provisioner    Delete          WaitForFirstConsumer   false                  59s
+   portworx-io-priority-high   kubernetes.io/portworx-volume   Delete          Immediate              false                  59s
+   ```
+
+3. What is the name of the `Storage Class` that does not support `dynamic` volume provisioning?
+
+   - local-storage
+   - nfs-sc
+   - portWorx-Storageclass
+   - glusterfs-sc'
+
+   Look for the storage class name that uses `no-provisioner`
+
+   ```
+   controlplane ~ ➜  kubectl get sc
+   NAME                        PROVISIONER                     RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+   local-path (default)        rancher.io/local-path           Delete          WaitForFirstConsumer   false                  9m13s
+   local-storage               kubernetes.io/no-provisioner    Delete          WaitForFirstConsumer   false                  59s
+   portworx-io-priority-high   kubernetes.io/portworx-volume   Delete          Immediate              false                  59s
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl describe sc local-storage 
+   Name:            local-storage
+   IsDefaultClass:  No
+   Annotations:     kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{},"name":"local-storage"},"provisioner":"kubernetes.io/no-provisioner","volumeBindingMode":"WaitForFirstConsumer"}
+   
+   Provisioner:           kubernetes.io/no-provisioner
+   Parameters:            <none>
+   AllowVolumeExpansion:  <unset>
+   MountOptions:          <none>
+   ReclaimPolicy:         Delete
+   VolumeBindingMode:     WaitForFirstConsumer
+   Events:                <none>
+   ```
+
+   
+
+4. What is the `Volume Binding Mode` used for this storage class (the one identified in the previous question)?
+
+   - **WaitForFirstConsumer**
+   - Immediate
+
+   Run the command: `kubectl describe sc local-storage` or `kubectl get sc` and look under the `Volume Binding Mode` section.
+
+   ```
+   controlplane ~ ➜  kubectl describe sc local-storage 
+   Name:            local-storage
+   IsDefaultClass:  No
+   Annotations:     kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{},"name":"local-storage"},"provisioner":"kubernetes.io/no-provisioner","volumeBindingMode":"WaitForFirstConsumer"}
+   
+   Provisioner:           kubernetes.io/no-provisioner
+   Parameters:            <none>
+   AllowVolumeExpansion:  <unset>
+   MountOptions:          <none>
+   ReclaimPolicy:         Delete
+   VolumeBindingMode:     WaitForFirstConsumer
+   Events:                <none>
+   ```
+
+5. What is the `Provisioner` used for the storage class called `portworx-io-priority-high`?
+
+   - local-volume
+   - no-provisioner
+   - ceph-volue
+   - **portworx-volume**
+
+   Run the command: `kubectl describe sc portworx-io-priority-high` or `kubectl get sc portworx-io-priority-high` and look under the `PROVISIONER` section.
+
+   ```
+   controlplane ~ ➜  kubectl get sc portworx-io-priority-high 
+   NAME                        PROVISIONER                     RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+   portworx-io-priority-high   kubernetes.io/portworx-volume   Delete          Immediate           false                  8m4s
+   
+   OR 
+   
+   controlplane ~ ➜  kubectl describe sc portworx-io-priority-high 
+   Name:            portworx-io-priority-high
+   IsDefaultClass:  No
+   Annotations:     kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{},"name":"portworx-io-priority-high"},"parameters":{"priority_io":"high","repl":"1","snap_interval":"70"},"provisioner":"kubernetes.io/portworx-volume"}
+   
+   Provisioner:           kubernetes.io/portworx-volume
+   Parameters:            priority_io=high,repl=1,snap_interval=70
+   AllowVolumeExpansion:  <unset>
+   MountOptions:          <none>
+   ReclaimPolicy:         Delete
+   VolumeBindingMode:     Immediate
+   Events:                <none>
+   ```
+
+6. Is there a `PersistentVolumeClaim` that is consuming the `PersistentVolume` called `local-pv`?
+
+   - YES
+   - **NO**
+
+   Run the command: `kubectl get pvc` and inspect it.
+
+   ```
+   controlplane ~ ➜  kubectl get pvc
+   No resources found in default namespace.
+   ```
+
+7. Let's fix that. Create a new `PersistentVolumeClaim` by the name of `local-pvc` that should bind to the volume `local-pv`.
+
+   Inspect the pv `local-pv` for the specs.
+
+   Check
+
+   - PVC: local-pvc
+   - Correct Access Mode?
+   - Correct StorageClass Used?
+   - PVC requests volume size = 500Mi?
+
+   Use the below YAML file to create the PersistentVolumeClaim **local-pvc**:
+
+   Inspect the pv `local-pv` for the specs.
+
+   ```
+   controlplane ~ ➜  kubectl get pv
+   NAME       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
+   local-pv   500Mi      RWO            Retain           Available           local-storage            11m
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl describe  pv local-pv 
+   Name:              local-pv
+   Labels:            <none>
+   Annotations:       <none>
+   Finalizers:        [kubernetes.io/pv-protection]
+   StorageClass:      local-storage
+   Status:            Available
+   Claim:             
+   Reclaim Policy:    Retain
+   Access Modes:      RWO
+   VolumeMode:        Filesystem
+   Capacity:          500Mi
+   Node Affinity:     
+     Required Terms:  
+       Term 0:        kubernetes.io/hostname in [controlplane]
+   Message:           
+   Source:
+       Type:  LocalVolume (a persistent volume backed by local storage on a node)
+       Path:  /opt/vol1
+   Events:    <none>
+   ```
+
+   local-pvc.yaml
+
+   ```yaml
+   kind: PersistentVolumeClaim
+   apiVersion: v1
+   metadata:
+     name: local-pvc
+   spec:
+     accessModes:
+     - ReadWriteOnce
+     storageClassName: local-storage
+     resources:
+       requests:
+         storage: 500Mi
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl create -f local-pvc.yaml 
+   persistentvolumeclaim/local-pvc created
+   
+   controlplane ~ ➜  kubectl get pv,pvc
+   NAME                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
+   persistentvolume/local-pv   500Mi      RWO            Retain           Available           local-storage            17m
+   
+   NAME                              STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS    AGE
+   persistentvolumeclaim/local-pvc   Pending                                      local-storage   2m20s
+   ```
+
+8. What is the status of the newly created Persistent Volume Claim?
+
+   - Available
+   - Error
+   - Bound
+   - **Pending**
+
+   Run the command: `kubectl get pvc local-pvc` and look under the `status` section.
+
+   ```
+   controlplane ~ ➜  kubectl get pvc local-pvc 
+   NAME        STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS    AGE
+   local-pvc   Pending                                      local-storage   3m36s
+   ```
+
+9. Why is the PVC in a pending state despite making a valid request to claim the volume called `local-pv`?
+
+   Inspect the PVC events.
+
+   - Persistent Volume and Claim mismatch
+   - PVC Specs are Incorrect
+   - **A Pod consuming the volume is not scheduled**
+   - Storage Class not found
+
+   Run the command: `kubectl describe pvc local-pvc` and look under the `Events` section.
+
+   ```
+   controlplane ~ ➜  kubectl describe pvc local-pvc | grep Events -A 3
+   Events:
+     Type    Reason                Age                   From                         Message
+     ----    ------                ----                  ----                         -------
+     Normal  WaitForFirstConsumer  27s (x26 over 6m33s)  persistentvolume-controller  waiting for first consumer to be created before binding
+   ```
+
+10. The Storage Class called `local-storage` makes use of `VolumeBindingMode` set to `WaitForFirstConsumer`. This will delay the binding and provisioning of a PersistentVolume until a Pod using the PersistentVolumeClaim is created.
+
+   Ok
+
+
+
+11. Create a new pod called `nginx` with the image `nginx:alpine`. The Pod should make use of the PVC `local-pvc` and mount the volume at the path `/var/www/html`.
+
+    The PV `local-pv` should in a bound state.
+
+    Check
+
+    - Pod created with the correct Image?
+    - Pod uses PVC called local-pvc?
+    - local-pv bound?
+    - nginx pod running?
+    - Volume mounted at the correct path?
+
+    Use the command `kubectl run` to create a pod definition file for `nginx` pod with image `nginx:alpine`. Add mount volume path `/var/www/html` and pvc given in the details.
+    Alternatively, run the command:
+    `kubectl run nginx --image=nginx:alpine --dry-run=client -o yaml > nginx.yaml`
+
+    Solution manifest file to create a pod called **nginx** is as follows:
+
+    ```yaml
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: nginx
+      labels:
+        name: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        volumeMounts:
+          - name: local-persistent-storage
+            mountPath: /var/www/html
+      volumes:
+        - name: local-persistent-storage
+          persistentVolumeClaim:
+            claimName: local-pvc
+    ```
+
+    ```
+    controlplane ~ ➜  kubectl create -f nginx.yaml 
+    pod/nginx created
+    ```
+
+12. What is the status of the `local-pvc` Persistent Volume Claim now?
+
+    - **BOUND**
+    - PENDING
+    - TERMINATING
+    - AVAILABLE
+    - ERROR
+
+    ```
+    controlplane ~ ➜  kubectl get pvc
+    NAME        STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS    AGE
+    local-pvc   Bound    local-pv   500Mi      RWO            local-storage   34m
+    ```
+
+13. Create a new Storage Class called `delayed-volume-sc` that makes use of the below specs:
+
+    `provisioner`: kubernetes.io/no-provisioner
+    `volumeBindingMode`: WaitForFirstConsumer
+
+    Check
+
+    - Storage Class uses: kubernetes.io/no-provisioner ?
+    - Storage Class volumeBindingMode set to WaitForFirstConsumer ?'
+
+    Solution manifest file to create a storage class **delayed-volume-sc** as follows:
+
+    delayed-volume-sc.yaml
+
+    ```yaml
+    apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+      name: delayed-volume-sc
+    provisioner: kubernetes.io/no-provisioner
+    volumeBindingMode: WaitForFirstConsumer
+    ```
+
+    ```
+    controlplane ~ ➜  kubectl create -f delayed-volume-sc.yaml 
+    storageclass.storage.k8s.io/delayed-volume-sc created
+    
+    controlplane ~ ➜  kubectl get sc delayed-volume-sc 
+    NAME                PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+    delayed-volume-sc   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  40s
+    ```
+
+
+
+# NETWORKING 
+
+
+
+## PRACTICE TEST – EXPLORE ENVIRONMENT
+
+1. How many nodes are part of this cluster?
+
+   Including the controlplane and worker nodes.
+
+   - **2**
+   - 3
+   - 1
+   - 4
+
+   ```
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS   ROLES           AGE     VERSION
+   controlplane   Ready    control-plane   8m7s    v1.26.0
+   node01         Ready    <none>          7m40s   v1.26.0
+   ```
+
+2. What is the Internal IP address of the `controlplane` node in this cluster?
+
+   - **10.80.205.3**
+   - 172.18.0.1
+   - 172.17.1.28
+   - 172.18.0.12
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o wide
+   NAME           STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+   controlplane   Ready    control-plane   8m57s   v1.26.0   10.80.205.3   <none>        Ubuntu 20.04.5 LTS   5.4.0-1093-gcp   containerd://1.6.6
+   node01         Ready    <none>          8m30s   v1.26.0   10.80.205.6   <none>        Ubuntu 20.04.5 LTS   5.4.0-1093-gcp   containerd://1.6.6
+   ```
+
+3. What is the network interface configured for cluster connectivity on the `controlplane` node?
+
+   node-to-node communication
+
+   - eth1
+   - weave
+   - **eth0**
+   - docker0
+   - ens3
+   - enp0s8
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o wide
+   NAME           STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+   controlplane   Ready    control-plane   8m57s   v1.26.0   10.80.205.3   <none>        Ubuntu 20.04.5 LTS   5.4.0-1093-gcp   containerd://1.6.6
+   node01         Ready    <none>          8m30s   v1.26.0   10.80.205.6   <none>        Ubuntu 20.04.5 LTS   5.4.0-1093-gcp   containerd://1.6.6
+   
+   controlplane ~ ➜  ip addr | grep 10.80.205.3 -B 2
+   21027: eth0@if21028: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+       link/ether 02:42:0a:50:cd:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+       inet 10.80.205.3/24 brd 10.80.205.255 scope global eth0
+   ```
+
+4. What is the MAC address of the interface on the `controlplane` node?
+
+   - ee:2c:5b:5b:af:b7
+   - 3e:6c:c4:2d:11:5a
+   - **02:42:0a:50:cd:03**
+   - 02:42:c2:46:1a:0f
+   - ce:13:79:1a:ed:6c
+
+   ```
+   controlplane ~ ➜  ip link show eth0
+   21027: eth0@if21028: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP mode DEFAULT group default 
+       link/ether 02:42:0a:50:cd:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+   ```
+
+5. What is the IP address assigned to `node01`?
+
+   - 255.255.255.0
+   - **10.80.205.6**
+   - 192.168.1.2
+   - 172.17.0.1
+   - 172.18.0.5
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o wide
+   NAME           STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+   controlplane   Ready    control-plane   15m   v1.26.0   10.80.205.3   <none>        Ubuntu 20.04.5 LTS   5.4.0-1093-gcp   containerd://1.6.6
+   node01         Ready    <none>          15m   v1.26.0   10.80.205.6   <none>        Ubuntu 20.04.5 LTS   5.4.0-1093-gcp   containerd://1.6.6
+   ```
+
+6. What is the MAC address assigned to `node01`?
+
+   - 02:42:ac:11:00:25
+   - 06:fe:89:17:1d:2c
+   - 02:42:ac:11:00:23
+   - fe:58:ad:aa:bb:dc
+   - **02:42:0a:50:cd:06**
+
+   `SSH` to the `node01` node and run the command: `ip link show eth0`.
+
+   ```
+   root@node01 ~ ➜  ip add | grep 10.80.205.6 -B 2
+   1675: eth0@if1676: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+       link/ether 02:42:0a:50:cd:06 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+       inet 10.80.205.6/24 brd 10.80.205.255 scope global eth0
+   
+   root@node01 ~ ➜  ip link show eth0
+   1675: eth0@if1676: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP mode DEFAULT group default 
+       link/ether 02:42:0a:50:cd:06 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+   ```
+
+7. We use `Containerd` as our container runtime. What is the interface/bridge created by `Containerd` on this host?
+
+   - bridge
+   - docker0
+   - ens3
+   - **cni0**
+   - eth0
+
+   Run the command: `ip link` and look for a bridge interface created by `containerd`.
+
+   ```
+   controlplane ~ ➜  ip link
+   1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+       link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+   2: flannel.1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN mode DEFAULT group default 
+       link/ether 0e:34:f5:90:54:71 brd ff:ff:ff:ff:ff:ff
+   3: cni0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+       link/ether ba:53:b3:3f:0b:b5 brd ff:ff:ff:ff:ff:ff
+   4: vethcdee35cb@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP mode DEFAULT group default 
+       link/ether b2:67:a4:62:91:98 brd ff:ff:ff:ff:ff:ff link-netns cni-b2a4c0ab-ef9e-8127-0db0-867cd255424a
+   5: vethdbcd56c5@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue master cni0 state UP mode DEFAULT group default 
+       link/ether 8a:fa:cd:6e:da:6e brd ff:ff:ff:ff:ff:ff link-netns cni-f24e706c-db6b-808d-2287-d7217c50e723
+   21027: eth0@if21028: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP mode DEFAULT group default 
+       link/ether 02:42:0a:50:cd:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+   21029: eth1@if21030: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+       link/ether 02:42:ac:19:00:19 brd ff:ff:ff:ff:ff:ff link-netnsid 1
+   ```
+
+8. What is the state of the interface `cni0`?
+
+   - **UP**
+   - DOWN
+   - UNKNOWN
+
+   ```
+   controlplane ~ ➜  ip link show cni0
+   3: cni0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+       link/ether ba:53:b3:3f:0b:b5 brd ff:ff:ff:ff:ff:ff
+   ```
+
+9. If you were to ping google from the `controlplane` node, which route does it take?
+
+   What is the IP address of the Default Gateway?
+
+   - 8.8.8.8
+   - 192.168.1.1
+   - **172.25.0.1**
+   - 255.255.255.0
+   - 172.18.0.1
+
+   ```
+   controlplane ~ ➜  ip route show default
+   default via 172.25.0.1 dev eth1 
+   ```
+
+10. What is the port the `kube-scheduler` is listening on in the `controlplane` node?
+
+   - 2380
+   - **10259**
+   - 6443
+   - 8080
+
+   ```
+   controlplane ~ ✖ netstat -nplt | grep scheduler
+   tcp        0      0 127.0.0.1:10259         0.0.0.0:*               LISTEN      2694/kube-scheduler 
+   
+   OR
+   
+   controlplane ~ ➜  netstat -nplt 
+   Active Internet connections (only servers)
+   Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+   tcp        0      0 127.0.0.1:10248         0.0.0.0:*               LISTEN      3704/kubelet        
+   tcp        0      0 127.0.0.1:10249         0.0.0.0:*               LISTEN      4273/kube-proxy     
+   tcp        0      0 127.0.0.1:2379          0.0.0.0:*               LISTEN      2687/etcd           
+   tcp        0      0 10.80.205.3:2379        0.0.0.0:*               LISTEN      2687/etcd           
+   tcp        0      0 10.80.205.3:2380        0.0.0.0:*               LISTEN      2687/etcd           
+   tcp        0      0 127.0.0.1:2381          0.0.0.0:*               LISTEN      2687/etcd           
+   tcp        0      0 0.0.0.0:8080            0.0.0.0:*               LISTEN      1014/ttyd           
+   tcp        0      0 127.0.0.1:10257         0.0.0.0:*               LISTEN      2696/kube-controlle 
+   tcp        0      0 127.0.0.1:44465         0.0.0.0:*               LISTEN      1015/containerd     
+   tcp        0      0 127.0.0.11:36625        0.0.0.0:*               LISTEN      -                   
+   tcp        0      0 127.0.0.1:10259         0.0.0.0:*               LISTEN      2694/kube-scheduler 
+   tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      621/systemd-resolve 
+   tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1018/sshd: /usr/sbi 
+   tcp6       0      0 :::10250                :::*                    LISTEN      3704/kubelet        
+   tcp6       0      0 :::6443                 :::*                    LISTEN      2692/kube-apiserver 
+   tcp6       0      0 :::10256                :::*                    LISTEN      4273/kube-proxy     
+   tcp6       0      0 :::22                   :::*                    LISTEN      1018/sshd: /usr/sbi 
+   tcp6       0      0 :::8888                 :::*                    LISTEN      3869/kubectl   
+   ```
+
+
+
+11. Notice that ETCD is listening on two ports. Which of these have more client connections established?
+
+    - 2350
+    - 2380
+    - 6443
+    - **2379**
+
+    ```
+    controlplane ~ ➜  netstat -apn | grep 2379 | wc -l
+    128
+    
+    controlplane ~ ➜  netstat -apn | grep 2380 | wc -l
+    1
+    ```
+
+12. Correct! That's because `2379` is the port of ETCD to which all control plane components connect to. `2380` is only for etcd peer-to-peer connectivity. When you have multiple controlplane nodes. In this case we don't.
+
+    Ok
+
+
+
+## PRACTICE TEST CNI
+
+1. Inspect the kubelet service and identify the container runtime endpoint value is set for Kubernetes.
+
+   - **unix:///var/run/containerd/containerd.sock**
+   - NONE
+   - unix:///var/run/runtime.sock
+   - unix:///var/run/cri-dockerd.sock
+
+   ```
+   controlplane ~ ➜  ps -aux | grep kubelet | grep --color container-runtime-endpoint
+   root        3699  0.0  0.0 3939144 92468 ?       Ssl  20:37   0:12 /usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock --pod-infra-container-image=registry.k8s.io/pause:3.9
+   ```
+
+2. What is the path configured with all binaries of CNI supported plugins?
+
+   - /var/lib/kubenet
+   - /etc/cni/bin
+   - /etc/cni/net.d
+   - **/opt/cni/bin**
+
+   The CNI binaries are located under `/opt/cni/bin` by default.
+
+3. Identify which of the below plugins is not available in the list of available CNI plugins on this host?
+
+   - dhcp
+   - vlan
+   - bridge
+   - **cisco**
+
+   Run the command: `ls /opt/cni/bin` and identify the one not present at that directory.
+
+   ```
+   controlplane ~ ➜  ls /opt/cni/bin/
+   bandwidth  dhcp      flannel      host-local  loopback  portmap  sbr     tuning
+   bridge     firewall  host-device  ipvlan      macvlan   ptp      static  vlan
+   ```
+
+4. What is the CNI plugin configured to be used on this kubernetes cluster?
+
+   - calico
+   - bridge
+   - **flannel**
+   - weave
+
+   Run the command: `ls /etc/cni/net.d/` and identify the name of the plugin.
+
+   ```
+   controlplane ~ ➜  ls /etc/cni/net.d/
+   10-flannel.conflist
+   ```
+
+5. What binary executable file will be run by kubelet after a container and its associated namespace are created?
+
+   - bridge
+   - calico
+   - weave-net
+   - **flannel**
+   - weave
+
+   Look at the `type` field in file `/etc/cni/net.d/10-flannel.conflist`.
+
+   ```
+   controlplane ~ ➜  cat /etc/cni/net.d/10-flannel.conflist 
+   {
+     "name": "cbr0",
+     "cniVersion": "0.3.1",
+     "plugins": [
+       {
+         "type": "flannel",
+         "delegate": {
+           "hairpinMode": true,
+           "isDefaultGateway": true
+         }
+       },
+       {
+         "type": "portmap",
+         "capabilities": {
+           "portMappings": true
+         }
+       }
+     ]
+   }
+   ```
+
+
+
+## PRACTICE TEST – DEPLOY NETWORK SOLUTION
+
+1. In this practice test we will install `weave-net` POD networking solution to the cluster. Let us first inspect the setup.
+
+   We have deployed an application called `app` in the default namespace. What is the state of the pod?
+
+   - NotRunning
+   - Running
+
+   ```
+   controlplane ~ ➜  kubectl get pod
+   NAME   READY   STATUS              RESTARTS   AGE
+   app    0/1     ContainerCreating   0          104s
+   ```
+
+2. Inspect why the POD is not running.
+
+   - **No Network Configured**
+   - Faulty start command
+   - Wrong image
+   - Node failed
+
+   ```
+   controlplane ~ ➜  kubectl describe pod app | grep Events -A 5
+   Events:
+     Type     Reason                  Age                 From               Message
+     ----     ------                  ----                ----               -------
+     Normal   Scheduled               3m41s               default-scheduler  Successfully assigned default/app to controlplane
+     Warning  FailedCreatePodSandBox  3m40s               kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to setup network for sandbox "fb8a58ccb4f666908a5773b48ea7c50e30767879ac7279eecb5862074aebb878": plugin type="weave-net" name="weave" failed (add): unable to allocate IP address: Post "http://127.0.0.1:6784/ip/fb8a58ccb4f666908a5773b48ea7c50e30767879ac7279eecb5862074aebb878": dial tcp 127.0.0.1:6784: connect: connection refused
+     Warning  FailedCreatePodSandBox  3m25s               kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to setup network for sandbox "f0882104fa855ad0618dc4c3107f108454408ad64af3e373b0c1a106d354882e": plugin type="weave-net" name="weave" failed (add): unable to allocate IP address: Post "http://127.0.0.1:6784/ip/f0882104fa855ad0618dc4c3107f108454408ad64af3e373b0c1a106d354882e": dial tcp 127.0.0.1:6784: connect: connection refused
+   ```
+
+3. Deploy `weave-net` networking solution to the cluster.
+
+   **NOTE: -** We already have provided a weave manifest file under the `/root/weave` directory.
+
+   Check
+
+   - Deploy weave
+   - Wait for the app to run
+
+   Run the below command to deploy the `weave` on the cluster: -
+
+   ```sh
+   kubectl apply -f /root/weave/weave-daemonset-k8s.yaml
+   ```
+
+   Now check if the weave pods are created **and** let's also check the status of our `app` pod now:
+
+   ```sh
+   controlplane ~ ➜  kubectl get pods
+   NAME   READY   STATUS    RESTARTS   AGE
+   app    1/1     Running   0          21m
+   
+   controlplane ~ ➜  kubectl get pods -A
+   NAMESPACE     NAME                                   READY   STATUS    RESTARTS   AGE
+   default       app                                    1/1     Running   0          21m
+   kube-system   coredns-787d4945fb-nddfq               1/1     Running   0          91m
+   kube-system   coredns-787d4945fb-qfjg4               1/1     Running   0          91m
+   kube-system   etcd-controlplane                      1/1     Running   0          92m
+   kube-system   kube-apiserver-controlplane            1/1     Running   0          92m
+   kube-system   kube-controller-manager-controlplane   1/1     Running   0          92m
+   kube-system   kube-proxy-rfn8t                       1/1     Running   0          91m
+   kube-system   kube-scheduler-controlplane            1/1     Running   0          92m
+   kube-system   weave-net-2fgk8                        2/2     Running   0          40s
+   ```
+
+   weave-daemonset-k8s.yaml
+
+   ```
+   apiVersion: v1
+   kind: List
+   items:
+     - apiVersion: v1
+       kind: ServiceAccount
+       metadata:
+         name: weave-net
+         labels:
+           name: weave-net
+         namespace: kube-system
+     - apiVersion: rbac.authorization.k8s.io/v1
+       kind: ClusterRole
+       metadata:
+         name: weave-net
+         labels:
+           name: weave-net
+       rules:
+         - apiGroups:
+             - ''
+           resources:
+             - pods
+             - namespaces
+             - nodes
+           verbs:
+             - get
+             - list
+             - watch
+         - apiGroups:
+             - extensions
+           resources:
+             - networkpolicies
+           verbs:
+             - get
+             - list
+             - watch
+         - apiGroups:
+             - 'networking.k8s.io'
+           resources:
+             - networkpolicies
+           verbs:
+             - get
+             - list
+             - watch
+         - apiGroups:
+           - ''
+           resources:
+           - nodes/status
+           verbs:
+           - patch
+           - update
+     - apiVersion: rbac.authorization.k8s.io/v1
+       kind: ClusterRoleBinding
+       metadata:
+         name: weave-net
+         labels:
+           name: weave-net
+       roleRef:
+         kind: ClusterRole
+         name: weave-net
+         apiGroup: rbac.authorization.k8s.io
+       subjects:
+         - kind: ServiceAccount
+           name: weave-net
+           namespace: kube-system
+     - apiVersion: rbac.authorization.k8s.io/v1
+       kind: Role
+       metadata:
+         name: weave-net
+         namespace: kube-system
+         labels:
+           name: weave-net
+       rules:
+         - apiGroups:
+             - ''
+           resources:
+             - configmaps
+           resourceNames:
+             - weave-net
+           verbs:
+             - get
+             - update
+         - apiGroups:
+             - ''
+           resources:
+             - configmaps
+           verbs:
+             - create
+     - apiVersion: rbac.authorization.k8s.io/v1
+       kind: RoleBinding
+       metadata:
+         name: weave-net
+         namespace: kube-system
+         labels:
+           name: weave-net
+       roleRef:
+         kind: Role
+         name: weave-net
+         apiGroup: rbac.authorization.k8s.io
+       subjects:
+         - kind: ServiceAccount
+           name: weave-net
+           namespace: kube-system
+     - apiVersion: apps/v1
+       kind: DaemonSet
+       metadata:
+         name: weave-net
+         labels:
+           name: weave-net
+         namespace: kube-system
+       spec:
+         # Wait 5 seconds to let pod connect before rolling next pod
+         selector:
+           matchLabels:
+             name: weave-net
+         minReadySeconds: 5
+         template:
+           metadata:
+             labels:
+               name: weave-net
+           spec:
+             initContainers:
+               - name: weave-init
+                 image: 'weaveworks/weave-kube:2.8.1'
+                 command:
+                   - /home/weave/init.sh
+                 env:
+                 securityContext:
+                   privileged: true
+                 volumeMounts:
+                   - name: cni-bin
+                     mountPath: /host/opt
+                   - name: cni-bin2
+                     mountPath: /host/home
+                   - name: cni-conf
+                     mountPath: /host/etc
+                   - name: lib-modules
+                     mountPath: /lib/modules
+                   - name: xtables-lock
+                     mountPath: /run/xtables.lock
+                     readOnly: false
+             containers:
+               - name: weave
+                 command:
+                   - /home/weave/launch.sh
+                 env:
+                   - name: IPALLOC_RANGE
+                     value: 10.32.1.0/24
+                   - name: INIT_CONTAINER
+                     value: "true"
+                   - name: HOSTNAME
+                     valueFrom:
+                       fieldRef:
+                         apiVersion: v1
+                         fieldPath: spec.nodeName
+                 image: 'weaveworks/weave-kube:2.8.1'
+                 readinessProbe:
+                   httpGet:
+                     host: 127.0.0.1
+                     path: /status
+                     port: 6784
+                 resources:
+                   requests:
+                     cpu: 50m
+                 securityContext:
+                   privileged: true
+                 volumeMounts:
+                   - name: weavedb
+                     mountPath: /weavedb
+                   - name: dbus
+                     mountPath: /host/var/lib/dbus
+                     readOnly: true
+                   - mountPath: /host/etc/machine-id
+                     name: cni-machine-id
+                     readOnly: true
+                   - name: xtables-lock
+                     mountPath: /run/xtables.lock
+                     readOnly: false
+               - name: weave-npc
+                 env:
+                   - name: HOSTNAME
+                     valueFrom:
+                       fieldRef:
+                         apiVersion: v1
+                         fieldPath: spec.nodeName
+                 image: 'weaveworks/weave-npc:2.8.1'
+   #npc-args
+                 resources:
+                   requests:
+                     cpu: 50m
+                 securityContext:
+                   privileged: true
+                 volumeMounts:
+                   - name: xtables-lock
+                     mountPath: /run/xtables.lock
+                     readOnly: false
+             hostNetwork: true
+             dnsPolicy: ClusterFirstWithHostNet
+             hostPID: false
+             restartPolicy: Always
+             securityContext:
+               seLinuxOptions: {}
+             serviceAccountName: weave-net
+             tolerations:
+               - effect: NoSchedule
+                 operator: Exists
+               - effect: NoExecute
+                 operator: Exists
+             volumes:
+               - name: weavedb
+                 hostPath:
+                   path: /var/lib/weave
+               - name: cni-bin
+                 hostPath:
+                   path: /opt
+               - name: cni-bin2
+                 hostPath:
+                   path: /home
+               - name: cni-conf
+                 hostPath:
+                   path: /etc
+               - name: cni-machine-id
+                 hostPath:
+                   path: /etc/machine-id
+               - name: dbus
+                 hostPath:
+                   path: /var/lib/dbus
+               - name: lib-modules
+                 hostPath:
+                   path: /lib/modules
+               - name: xtables-lock
+                 hostPath:
+                   path: /run/xtables.lock
+                   type: FileOrCreate
+             priorityClassName: system-node-critical
+         updateStrategy:
+           type: RollingUpdate
+   ```
+
+
+
+## PRACTICE TEST – NETWORKING WEAVE
+
+1. How many Nodes are part of this cluster?
+
+   Including master and worker nodes
+
+   - 3
+   - **2**
+   - 1
+
+   ```
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS   ROLES           AGE   VERSION
+   controlplane   Ready    control-plane   96m   v1.26.0
+   node01         Ready    <none>          95m   v1.26.0
+   ```
+
+2. What is the Networking Solution used by this cluster?
+
+   - calico
+   - **weave**
+   - flannel
+   - cilium
+
+   Check the config file located at `/etc/cni/net.d/`
+
+   ```
+   controlplane ~ ➜  ls -l /etc/cni/net.d/
+   total 4
+   -rw-r--r-- 1 root root 318 Jan 12 20:46 10-weave.conflist
+   
+   controlplane ~ ➜  cat /etc/cni/net.d/10-weave.conflist 
+   {
+       "cniVersion": "0.3.0",
+       "name": "weave",
+       "plugins": [
+           {
+               "name": "weave",
+               "type": "weave-net",
+               "hairpinMode": true
+           },
+           {
+               "type": "portmap",
+               "capabilities": {"portMappings": true},
+               "snat": true
+           }
+       ]
+   }
+   ```
+
+
+
+3. How many weave agents/peers are deployed in this cluster?
+
+   - 1
+   - 3
+   - **2**
+
+   Run the command `kubectl get pods -n kube-system` and count weave pods
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system
+   NAME                                   READY   STATUS    RESTARTS       AGE
+   coredns-787d4945fb-92sws               1/1     Running   0              104m
+   coredns-787d4945fb-c95bm               1/1     Running   0              104m
+   etcd-controlplane                      1/1     Running   0              104m
+   kube-apiserver-controlplane            1/1     Running   0              104m
+   kube-controller-manager-controlplane   1/1     Running   0              104m
+   kube-proxy-kztkz                       1/1     Running   0              104m
+   kube-proxy-n8vbb                       1/1     Running   0              104m
+   kube-scheduler-controlplane            1/1     Running   0              104m
+   weave-net-b27z9                        2/2     Running   1 (104m ago)   104m
+   weave-net-th5xw                        2/2     Running   1 (104m ago)   104m
+   ```
+
+4. On which nodes are the weave peers present?
+
+   - **One on every node**
+   - All on the master node
+   - All on node01
+   - On worker nodes only
+   - 2 on master 2 on worker
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system -o wide
+   NAME                                   READY   STATUS    RESTARTS       AGE    IP             NODE           NOMINATED NODE   READINESS GATES
+   coredns-787d4945fb-92sws               1/1     Running   0              125m   10.244.0.3     node01         <none>           <none>
+   coredns-787d4945fb-c95bm               1/1     Running   0              125m   10.244.0.2     node01         <none>           <none>
+   etcd-controlplane                      1/1     Running   0              125m   10.81.252.9    controlplane   <none>           <none>
+   kube-apiserver-controlplane            1/1     Running   0              125m   10.81.252.9    controlplane   <none>           <none>
+   kube-controller-manager-controlplane   1/1     Running   0              125m   10.81.252.9    controlplane   <none>           <none>
+   kube-proxy-kztkz                       1/1     Running   0              124m   10.81.252.12   node01         <none>           <none>
+   kube-proxy-n8vbb                       1/1     Running   0              125m   10.81.252.9    controlplane   <none>           <none>
+   kube-scheduler-controlplane            1/1     Running   0              125m   10.81.252.9    controlplane   <none>           <none>
+   weave-net-b27z9                        2/2     Running   1 (124m ago)   125m   10.81.252.9    controlplane   <none>           <none>
+   weave-net-th5xw                        2/2     Running   1 (124m ago)   124m   10.81.252.12   node01         <none>           <none>
+   ```
+
+   
+
+5. Identify the name of the bridge network/interface created by weave on each node.
+
+   - **weave**
+   - lo
+   - docker0
+   - ens3
+
+   Run the command `ip link`
+
+   ```
+   controlplane ~ ➜  ip link 
+   1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+       link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+   2: datapath: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1376 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+       link/ether 56:1f:0a:9f:2a:b4 brd ff:ff:ff:ff:ff:ff
+   4: weave: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1376 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+       link/ether 2e:0d:80:34:92:52 brd ff:ff:ff:ff:ff:ff
+   6: vethwe-datapath@vethwe-bridge: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1376 qdisc noqueue master datapath state UP mode DEFAULT group default 
+       link/ether 06:a3:52:de:e5:0a brd ff:ff:ff:ff:ff:ff
+   7: vethwe-bridge@vethwe-datapath: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1376 qdisc noqueue master weave state UP mode DEFAULT group default 
+       link/ether 46:b9:81:09:d3:b0 brd ff:ff:ff:ff:ff:ff
+   8: vxlan-6784: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 65535 qdisc noqueue master datapath state UNKNOWN mode DEFAULT group default qlen 1000
+       link/ether 5e:1c:ad:9f:67:96 brd ff:ff:ff:ff:ff:ff
+   22310: eth0@if22311: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP mode DEFAULT group default 
+       link/ether 02:42:0a:51:fc:09 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+   22312: eth1@if22313: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+       link/ether 02:42:ac:19:01:34 brd ff:ff:ff:ff:ff:ff link-netnsid 1
+   ```
+
+6. What is the POD IP address range configured by `weave`?
+
+   - **10.X.X.X**
+   - 192.68.X.X
+   - 172.17.X.X
+   - 172.18.X.X
+
+   ```
+   controlplane ~ ➜  ip addr show weave 
+   4: weave: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1376 qdisc noqueue state UP group default qlen 1000
+       link/ether 2e:0d:80:34:92:52 brd ff:ff:ff:ff:ff:ff
+       inet 10.244.192.0/16 brd 10.244.255.255 scope global weave
+          valid_lft forever preferred_lft forever
+   ```
+
+7. What is the default gateway configured on the PODs scheduled on `node01`?
+
+   Try scheduling a pod on `node01` and check `ip route` output
+
+   - 192.168.1.1
+   - 10.244.0.1
+   - 172.17.0.1
+   - 172.18.1.1
+
+   SSH to the `node01` by running the command: `ssh node01` and then run the `ip route` command and look at the `weave` line.
+
+   ```
+   controlplane ~ ➜  ssh node01
+   
+   root@node01 ~ ➜  ip route 
+   default via 172.25.0.1 dev eth1 
+   10.81.252.0/24 dev eth0 proto kernel scope link src 10.81.252.12 
+   10.244.0.0/16 dev weave proto kernel scope link src 10.244.0.1 
+   172.25.0.0/24 dev eth1 proto kernel scope link src 172.25.0.3 
+   ```
+
+
+
+## PRACTICE TEST SERVICE NETWORKING
+
+1. What network range are the nodes in the cluster part of?
+
+   - 10.0.0.0/24
+   - 10.32.0.0/12
+   - 172.17.0.0/16
+   - 192.168.0.0/16
+   - 10.96.0.0/12
+   - **10.81.253.0/24**
+   - 172.18.0.0/16
+
+   one way to do this is to make use of the `ipcalc` utility. If it is not installed, you can install it by running: `apt update` and the `apt install ipcalc`
+
+   Then use it to determine the network range as shown below:
+
+   First, find the Internal IP of the nodes.
+
+   
+
+   ```sh
+   controlplane ~ ➜  ip addr show eth0
+   1031: eth0@if1032: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+       link/ether 02:42:0a:51:fd:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+       inet 10.81.253.3/24 brd 10.81.253.255 scope global eth0
+          valid_lft forever preferred_lft forever
+   ```
+
+   
+
+   Next, use the `ipcalc` tool to see the network details:
+
+   ```sh
+   root@controlplane:~> ipcalc -b 10.33.39.8
+   Address:   10.33.39.8           
+   Netmask:   255.255.255.0 = 24   
+   Wildcard:  0.0.0.255            
+   =>
+   Network:   10.33.39.0/24        
+   HostMin:   10.33.39.1           
+   HostMax:   10.33.39.254         
+   Broadcast: 10.33.39.255         
+   Hosts/Net: 254                   Class A, Private Internet
+   
+   root@controlplane:~>
+   ```
+
+   In this example, the network is `10.33.39.0/24`. Note, this may vary for your lab so make sure to check for yourself.
+
+2. What is the range of IP addresses configured for PODs on this cluster?
+
+   - 10.0.0.0/12
+   - 172.18.0.0/24
+   - 172.17.0.0/16
+   - **10.244.0.0/16**
+
+   The network is configured with `weave`. Check the `weave` pods logs using the command `kubectl logs <weave-pod-name> weave -n kube-system` and look for `ipalloc-range`.
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS       AGE
+   coredns-787d4945fb-956dx               1/1     Running   0              155m
+   coredns-787d4945fb-vnrmk               1/1     Running   0              155m
+   etcd-controlplane                      1/1     Running   0              156m
+   kube-apiserver-controlplane            1/1     Running   0              156m
+   kube-controller-manager-controlplane   1/1     Running   0              156m
+   kube-proxy-jwfmq                       1/1     Running   0              155m
+   kube-proxy-nb9pl                       1/1     Running   0              155m
+   kube-scheduler-controlplane            1/1     Running   0              156m
+   weave-net-twmgf                        2/2     Running   1 (155m ago)   155m
+   weave-net-zrcpx                        2/2     Running   0              155m
+   ```
+
+   ```
+   controlplane ~ ✖ kubectl logs -n kube-system weave-net-twmgf weave | grep ipalloc-range
+   INFO: 2023/01/13 01:46:09.141664 Command line options: map[conn-limit:200 datapath:datapath db-prefix:/weavedb/weave-net docker-api: expect-npc:true http-addr:127.0.0.1:6784 ipalloc-init:consensus=0 ipalloc-range:10.244.0.0/16 metrics-addr:0.0.0.0:6782 name:52:c7:a5:11:80:0e nickname:controlplane no-dns:true no-masq-local:true port:6783]
+   ```
+
+3. What is the IP Range configured for the services within the cluster?
+
+   - **10.96.0.0/12**
+   - 10.96.0.0/24
+   - 10.32.0.0/12
+   - 172.17.0.0/16
+
+   Inspect the setting on kube-api server by running on command `cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep cluster-ip-range`
+
+   ```
+   controlplane ~ ➜  cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep cluster-ip-range
+       - --service-cluster-ip-range=10.96.0.0/12
+   ```
+
+4. How many kube-proxy pods are deployed in this cluster?
+
+   - 4
+   - 1
+   - **2**
+   - 3
+
+   Run the command: `kubectl get pods -n kube-system` and look for kube-proxy pods.
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS       AGE
+   coredns-787d4945fb-956dx               1/1     Running   0              163m
+   coredns-787d4945fb-vnrmk               1/1     Running   0              163m
+   etcd-controlplane                      1/1     Running   0              163m
+   kube-apiserver-controlplane            1/1     Running   0              163m
+   kube-controller-manager-controlplane   1/1     Running   0              163m
+   kube-proxy-jwfmq                       1/1     Running   0              163m
+   kube-proxy-nb9pl                       1/1     Running   0              163m
+   kube-scheduler-controlplane            1/1     Running   0              163m
+   weave-net-twmgf                        2/2     Running   1 (163m ago)   163m
+   weave-net-zrcpx                        2/2     Running   0              163m
+   ```
+
+5. What type of proxy is the `kube-proxy` configured to use?
+
+   - **iptables**
+   - firewalld
+   - ipvs
+   - userspace
+
+   Check the logs of the `kube-proxy` pods. Run the command: `kubectl logs <kube-proxy-pod-name> -n kube-system`
+
+   ```
+   controlplane ~ ➜  kubectl logs -n kube-system kube-proxy-wbqmn 
+   I0113 07:18:04.849557       1 node.go:163] Successfully retrieved node IP: 10.97.51.12
+   I0113 07:18:04.849681       1 server_others.go:109] "Detected node IP" address="10.97.51.12"
+   I0113 07:18:04.849703       1 server_others.go:535] "Using iptables proxy"
+   I0113 07:18:04.963093       1 server_others.go:176] "Using iptables Proxier"
+   I0113 07:18:04.963137       1 server_others.go:183] "kube-proxy running in dual-stack mode" ipFamily=IPv4
+   I0113 07:18:04.963148       1 server_others.go:184] "Creating dualStackProxier for iptables"
+   I0113 07:18:04.963180       1 server_others.go:465] "Detect-local-mode set to ClusterCIDR, but no IPv6 cluster CIDR defined, , defaulting to no-op detect-local for IPv6"
+   I0113 07:18:04.963223       1 proxier.go:242] "Setting route_localnet=1 to allow node-ports on localhost; to change this either disable iptables.localhostNodePorts (--iptables-localhost-nodeports) or set nodePortAddresses (--nodeport-addresses) to filter loopback addresses"
+   I0113 07:18:05.056361       1 server.go:655] "Version info" version="v1.26.0"
+   I0113 07:18:05.056384       1 server.go:657] "Golang settings" GOGC="" GOMAXPROCS="" GOTRACEBACK=""
+   I0113 07:18:05.131887       1 conntrack.go:52] "Setting nf_conntrack_max" nf_conntrack_max=1179648
+   I0113 07:18:05.135113       1 config.go:317] "Starting service config controller"
+   I0113 07:18:05.135144       1 shared_informer.go:273] Waiting for caches to sync for service config
+   I0113 07:18:05.135155       1 config.go:226] "Starting endpoint slice config controller"
+   I0113 07:18:05.135174       1 shared_informer.go:273] Waiting for caches to sync for endpoint slice config
+   I0113 07:18:05.135251       1 config.go:444] "Starting node config controller"
+   I0113 07:18:05.135266       1 shared_informer.go:273] Waiting for caches to sync for node config
+   I0113 07:18:05.235256       1 shared_informer.go:280] Caches are synced for endpoint slice config
+   I0113 07:18:05.235305       1 shared_informer.go:280] Caches are synced for service config
+   I0113 07:18:05.235340       1 shared_informer.go:280] Caches are synced for node config
+   ```
+
+6. How does this Kubernetes cluster ensure that a `kube-proxy` pod runs on all nodes in the cluster?
+
+   Inspect the `kube-proxy` pods and try to identify how they are deployed.
+
+   - Using deployments
+   - kubelet ensures this is done
+   - Using a custom script
+   - **using daemonset**
+
+   Run the command: `kubectl get ds -n kube-system`
+
+   ```
+   
+   controlplane ~ ➜  kubectl get ds -n kube-system 
+   NAME         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+   kube-proxy   2         2         2       2            2           kubernetes.io/os=linux   136m
+   weave-net    2         2         2       2            2           <none>                   136m
+   ```
+
+
+
+
+
+## PRACTICE TEST COREDNS IN KUBERNETES
+
+1. Identify the DNS solution implemented in this cluster.
+
+   - kube-dns
+   - **CoreDNS**
+   - OpenDNS
+   - google DNS
+   - bind
+
+   Run the command: `kubectl get pods -n kube-system` and look for the DNS pods.
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   coredns-787d4945fb-282ms               1/1     Running   0          3m22s
+   coredns-787d4945fb-5t8kr               1/1     Running   0          3m22s
+   etcd-controlplane                      1/1     Running   0          3m37s
+   kube-apiserver-controlplane            1/1     Running   0          3m37s
+   kube-controller-manager-controlplane   1/1     Running   0          3m34s
+   kube-proxy-mrbfx                       1/1     Running   0          3m22s
+   kube-scheduler-controlplane            1/1     Running   0          3m34s
+   ```
+
+2. How many pods of the DNS server are deployed?
+
+   - 3
+   - 4
+   - 1
+   - **2**
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   coredns-787d4945fb-282ms               1/1     Running   0          3m22s
+   coredns-787d4945fb-5t8kr               1/1     Running   0          3m22s
+   etcd-controlplane                      1/1     Running   0          3m37s
+   kube-apiserver-controlplane            1/1     Running   0          3m37s
+   kube-controller-manager-controlplane   1/1     Running   0          3m34s
+   kube-proxy-mrbfx                       1/1     Running   0          3m22s
+   kube-scheduler-controlplane            1/1     Running   0          3m34s
+   ```
+
+3. What is the name of the service created for accessing CoreDNS?
+
+   - core-service
+   - kube-service
+   - dns-service
+   - kubernetes
+   - **kube-dns**
+
+   ```
+   controlplane ~ ➜  kubectl get service -n kube-system 
+   NAME       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+   kube-dns   ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   5m46s
+   ```
+
+4. What is the IP of the CoreDNS server that should be configured on PODs to resolve services?
+
+   - 192.168.1.1
+   - 10.244.1.2
+   - **10.96.0.10**
+   - 8.8.8.8
+
+   Look for ClUSTER-IP addres
+
+   ```
+   controlplane ~ ➜  kubectl get service -n kube-system
+   NAME       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+   kube-dns   ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   7m2s
+   ```
+
+5. Where is the configuration file located for configuring the CoreDNS service?
+
+   - /var/coredns/Corefile
+   - /etc/Corefile
+   - /etc/kubedns/Corefile
+   - **/etc/coredns/Corefile**
+   - /root/Corefile
+
+   Run the command: `kubectl -n kube-system describe deployments.apps coredns | grep -A2 Args
+
+   ```
+   controlplane ~ ➜  kubectl -n kube-system describe deployments.apps coredns | grep -A 2 Args
+       Args:
+         -conf
+         /etc/coredns/Corefile
+   ```
+
+   
+
+6. How is the Corefile passed in to the CoreDNS POD?
+
+   - pulled from git
+   - **Configured as a ConfigMap object**
+   - Stored on the kube master
+   - Corefile comes built-in with CoreDNS pod
+
+   ```
+   controlplane ~ ➜  kubectl get cm -n kube-system 
+   NAME                                 DATA   AGE
+   coredns                              1      25m
+   extension-apiserver-authentication   6      25m
+   kube-proxy                           2      25m
+   kube-root-ca.crt                     1      25m
+   kubeadm-config                       1      25m
+   kubelet-config                       1      25m
+   ```
+
+7. What is the name of the ConfigMap object created for Corefile?
+
+   - corefile-config
+   - dns-config
+   - kube-proxy
+   - **coredns**
+
+   Run the command: `kubectl get configmap -n kube-system` and identify the name.
+
+   ```
+   controlplane ~ ✖ kubectl get configmap -n kube-system 
+   NAME                                 DATA   AGE
+   coredns                              1      27m
+   extension-apiserver-authentication   6      27m
+   kube-proxy                           2      27m
+   kube-root-ca.crt                     1      27m
+   kubeadm-config                       1      27m
+   kubelet-config                       1      27m
+   ```
+
+8. What is the root domain/zone configured for this kubernetes cluster?
+
+   - kubernetes
+   - root
+   - **cluster.local**
+   - cluster-a.local
+
+   Run the command: `kubectl describe configmap coredns -n kube-system` and look for the entry after kubernetes.
+
+   ```
+   controlplane ~ ➜  kubectl describe -n kube-system configmaps coredns 
+   Name:         coredns
+   Namespace:    kube-system
+   Labels:       <none>
+   Annotations:  <none>
+   
+   Data
+   ====
+   Corefile:
+   ----
+   .:53 {
+       errors
+       health {
+          lameduck 5s
+       }
+       ready
+       kubernetes cluster.local in-addr.arpa ip6.arpa {
+          pods insecure
+          fallthrough in-addr.arpa ip6.arpa
+          ttl 30
+       }
+       prometheus :9153
+       forward . /etc/resolv.conf {
+          max_concurrent 1000
+       }
+       cache 30
+       loop
+       reload
+       loadbalance
+   }
+   
+   
+   BinaryData
+   ====
+   
+   Events:  <none>
+   ```
+
+9. We have deployed a set of PODs and Services in the `default` and `payroll` namespaces. Inspect them and go to the next question.
+
+   Ok
+
+   ```
+   controlplane ~ ➜  kubectl get pods,svc
+   NAME                    READY   STATUS    RESTARTS   AGE
+   pod/hr                  1/1     Running   0          34m
+   pod/simple-webapp-1     1/1     Running   0          34m
+   pod/simple-webapp-122   1/1     Running   0          34m
+   pod/test                1/1     Running   0          34m
+   
+   NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+   service/kubernetes     ClusterIP   10.96.0.1        <none>        443/TCP        35m
+   service/test-service   NodePort    10.96.15.162     <none>        80:30080/TCP   34m
+   service/web-service    ClusterIP   10.102.110.143   <none>        80/TCP         34m
+   
+   controlplane ~ ➜  kubectl get pods,svc -n payroll 
+   NAME      READY   STATUS    RESTARTS   AGE
+   pod/web   1/1     Running   0          34m
+   
+   NAME                  TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
+   service/web-service   ClusterIP   10.99.28.79   <none>        80/TCP    34m
+   ```
+
+10. What name can be used to access the `hr` web server from the `test` Application?
+
+   You can execute a curl command on the `test` pod to test. Alternatively, the test Application also has a UI. Access it using the tab at the top of your terminal named `test-app`.
+
+   - web-service.payroll
+   - test-service
+   - **web-service**
+   - web
+
+   Use the command `kubectl get svc` after viewing the available services, write the correct service name and port.
+
+   ```
+   controlplane ~ ✖ kubectl get svc
+   NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+   kubernetes     ClusterIP   10.96.0.1        <none>        443/TCP        40m
+   test-service   NodePort    10.96.15.162     <none>        80:30080/TCP   39m
+   web-service    ClusterIP   10.102.110.143   <none>        80/TCP         39m
+   
+   controlplane ~ ➜  kubectl describe svc web-service 
+   Name:              web-service
+   Namespace:         default
+   Labels:            <none>
+   Annotations:       <none>
+   Selector:          name=hr
+   Type:              ClusterIP
+   IP Family Policy:  SingleStack
+   IP Families:       IPv4
+   IP:                10.102.110.143
+   IPs:               10.102.110.143
+   Port:              <unset>  80/TCP
+   TargetPort:        80/TCP
+   Endpoints:         10.244.0.5:80
+   Session Affinity:  None
+   Events:            <none>
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service
+     % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                    Dload  Upload   Total   Spent    Left  Speed
+   100    24    0    24    0     0  12000      0 --:--:-- --:--:-- --:--:-- 12000
+    This is the HR server!
+   ```
+
+   
+
+11. Which of the names CANNOT be used to access the HR service from the test pod?
+
+    - **web-service.default.pod**
+    - web-service.default
+    - web-service
+    - web-service.default.svc
+
+    ```
+    controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 This is the HR server!
+    100    24    0    24    0     0  24000      0 --:--:-- --:--:-- --:--:-- 24000
+    
+    controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service.default
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 This is the HR server!
+    100    24    0    24    0     0  24000      0 --:--:-- --:--:-- --:--:-- 24000
+    
+    controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service.default.svc
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+    100    24    0    24    0     0   4800      0 --:--:-- --:--:-- --:--:--  4800
+     This is the HR server!
+    
+    controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service.default.pod
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0curl: (6) Could not resolve host: web-service.default.pod
+    command terminated with exit code 6
+    ```
+
+    
+
+12. Which of the below name can be used to access the `payroll` service from the test application?
+
+    - web-service.default
+    - web
+    - web-service
+    - **web-service.payroll**
+
+    ```
+    controlplane ~ ➜  kubectl get pods -n payroll 
+    NAME   READY   STATUS    RESTARTS   AGE
+    web    1/1     Running   0          15m
+    
+    controlplane ~ ➜  kubectl get svc -n payroll 
+    NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+    web-service   ClusterIP   10.111.63.64   <none>        80/TCP    15m
+    
+    controlplane ~ ➜  kubectl describe svc web-service -n payroll 
+    Name:              web-service
+    Namespace:         payroll
+    Labels:            <none>
+    Annotations:       <none>
+    Selector:          name=web
+    Type:              ClusterIP
+    IP Family Policy:  SingleStack
+    IP Families:       IPv4
+    IP:                10.111.63.64
+    IPs:               10.111.63.64
+    Port:              <unset>  80/TCP
+    TargetPort:        80/TCP
+    Endpoints:         10.244.0.4:80
+    Session Affinity:  None
+    Events:            <none>
+    ```
+
+    ```
+    controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service.payroll
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 This is the PayRoll server!
+    100    29    0    29    0     0  29000      0 --:--:-- --:--:-- --:--:-- 29000
+    ```
+
+    
+
+    
+
+13. Which of the below name CANNOT be used to access the `payroll` service from the test application?
+
+    - web-service.payroll.svc.cluster
+    - web-service.payroll.svc
+    - web-service.payroll.svc.cluster.local
+    - web-service.payroll
+
+    ```
+    controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service.payroll
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 This is the PayRoll server!
+    100    29    0    29    0     0  14500      0 --:--:-- --:--:-- --:--:-- 14500
+    
+    controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service.payroll.svc
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 This is the PayRoll server!
+    100    29    0    29    0     0  14500      0 --:--:-- --:--:-- --:--:-- 14500
+    
+    controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service.payroll.svc.cluster.local
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+    100    29    0    29    0     0  14500      0 --:--:-- --:--:-- --:--:-- 14500
+     This is the PayRoll server!
+    
+    controlplane ~ ➜  kubectl exec pods/test -- curl http://web-service.payroll.svc.cluster  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0curl: (6) Could not resolve host: web-service.payroll.svc.cluster
+    command terminated with exit code 6
+    ```
+
+14. We just deployed a web server - `webapp` - that accesses a database `mysql` - server. However the web server is failing to connect to the database server. Troubleshoot and fix the issue.
+
+    They could be in different namespaces. First locate the applications. The web server interface can be seen by clicking the tab `Web Server` at the top of your terminal.
+
+    Check
+
+    - Web Server: webapp
+    - Uses the right DB_Host name
+
+    ```
+    controlplane ~ ✖ kubectl get pods -A
+    NAMESPACE      NAME                                   READY   STATUS    RESTARTS   AGE
+    default        hr                                     1/1     Running   0          6m10s
+    default        simple-webapp-1                        1/1     Running   0          5m52s
+    default        simple-webapp-122                      1/1     Running   0          5m52s
+    default        test                                   1/1     Running   0          6m10s
+    default        webapp-578c778d58-9wwrt                1/1     Running   0          2m24s
+    kube-flannel   kube-flannel-ds-zdxw7                  1/1     Running   0          8m24s
+    kube-system    coredns-787d4945fb-wmwtm               1/1     Running   0          8m24s
+    kube-system    coredns-787d4945fb-xvpmm               1/1     Running   0          8m24s
+    kube-system    etcd-controlplane                      1/1     Running   0          8m34s
+    kube-system    kube-apiserver-controlplane            1/1     Running   0          8m34s
+    kube-system    kube-controller-manager-controlplane   1/1     Running   0          8m34s
+    kube-system    kube-proxy-pcc6q                       1/1     Running   0          8m24s
+    kube-system    kube-scheduler-controlplane            1/1     Running   0          8m34s
+    payroll        mysql                                  1/1     Running   0          2m24s
+    payroll        web                                    1/1     Running   0          6m10
+    ```
+
+    ```
+    controlplane ~ ➜  kubectl get service -n payroll 
+    NAME          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+    mysql         ClusterIP   10.106.198.240   <none>        3306/TCP   5m10s
+    web-service   ClusterIP   10.107.235.40    <none>        80/TCP     8m56s
+    ```
+
+    ```
+    controlplane ~ ➜  kubectl edit deployment webapp
+    ```
+
+    Edit dbhost to "mysql.payroll"
+
+    ```
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        deployment.kubernetes.io/revision: "1"
+      creationTimestamp: "2023-01-13T11:57:11Z"
+      generation: 1
+      labels:
+        name: webapp
+      name: webapp
+      namespace: default
+      resourceVersion: "2426"
+      uid: cec455e3-29ab-4f7d-9a3c-f71dfc2bb96d
+    spec:
+      progressDeadlineSeconds: 600
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          name: webapp
+      strategy:
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
+        type: RollingUpdate
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            name: webapp
+        spec:
+          containers:
+          - env:
+            - name: DB_Host
+              value: mysql
+            - name: DB_User
+              value: root
+            - name: DB_Password
+              value: paswrd
+    ```
+
+    
+
+15. From the `hr` pod `nslookup` the `mysql` service and redirect the output to a file `/root/CKA/nslookup.out`
+
+    Check
+
+    - nslookup output redirected
+
+    ```
+    controlplane ~ ➜  kubectl exec hr -- nslookup mysql
+    Server:         10.96.0.10
+    Address:        10.96.0.10#53
+    
+    ** server can't find mysql: NXDOMAIN
+    
+    command terminated with exit code 1
+    
+    controlplane ~ ✖ kubectl exec hr -- nslookup mysql.payroll
+    Server:         10.96.0.10
+    Address:        10.96.0.10#53
+    
+    Name:   mysql.payroll.svc.cluster.local
+    Address: 10.106.198.240
+    
+    
+    controlplane ~ ➜  kubectl exec hr -- nslookup mysql.payroll > /root/CKA/nslookup.out
+    
+    controlplane ~ ➜  cat /root/CKA/nslookup.out
+    Server:         10.96.0.10
+    Address:        10.96.0.10#53
+    
+    Name:   mysql.payroll.svc.cluster.local
+    Address: 10.106.198.240
+    ```
+
+
+
+## PRACTICE TEST – CKA – INGRESS NETWORKING – 1
+
+1. We have deployed Ingress Controller, resources and applications. Explore the setup.
+
+   Note: They are in different namespaces.
+
+   Ok
+
+   ```
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS   ROLES           AGE     VERSION
+   controlplane   Ready    control-plane   9m18s   v1.26.0
+   
+   controlplane ~ ➜  kubectl get deployments -A
+   NAMESPACE       NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+   app-space       default-backend            1/1     1            1           4m20s
+   app-space       webapp-video               1/1     1            1           4m20s
+   app-space       webapp-wear                1/1     1            1           4m20s
+   ingress-nginx   ingress-nginx-controller   1/1     1            1           4m16s
+   kube-system     coredns                    2/2     2            2           10m
+   ```
+
+2. Which namespace is the `Ingress Controller` deployed in?
+
+   - kube-system
+   - nginx-ingress
+   - default
+   - **ingress-nginx**
+
+   ```
+   controlplane ~ ➜  kubectl get deployments -A
+   NAMESPACE       NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+   app-space       default-backend            1/1     1            1           4m20s
+   app-space       webapp-video               1/1     1            1           4m20s
+   app-space       webapp-wear                1/1     1            1           4m20s
+   ingress-nginx   ingress-nginx-controller   1/1     1            1           4m16s
+   kube-system     coredns                    2/2     2            2           10m
+   ```
+
+3. What is the name of the Ingress Controller Deployment?
+
+   - ingress-nginx
+   - nginx-ingress
+   - ingress-controller
+   - **ingress-nginx-controller**
+   - nginx-ingress-controller
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps -n ingress-nginx 
+   NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+   ingress-nginx-controller   1/1     1            1           30m
+   ```
+   
+4. Which namespace are the applications deployed in?
+
+   - **app-space**
+   - kube-system
+   - application
+   - default
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps -A
+   NAMESPACE       NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+   app-space       default-backend            1/1     1            1           8m29s
+   app-space       webapp-video               1/1     1            1           8m29s
+   app-space       webapp-wear                1/1     1            1           8m29s
+   ingress-nginx   ingress-nginx-controller   1/1     1            1           8m25s
+   kube-system     coredns                    2/2     2            2           14m
+   ```
+
+5. How many applications are deployed in the `app-space` namespace?
+
+   Count the number of deployments in this namespace.
+
+   - 2
+   - 1
+   - 4
+   - **3**
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps -A
+   NAMESPACE       NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+   app-space       default-backend            1/1     1            1           8m29s
+   app-space       webapp-video               1/1     1            1           8m29s
+   app-space       webapp-wear                1/1     1            1           8m29s
+   ingress-nginx   ingress-nginx-controller   1/1     1            1           8m25s
+   kube-system     coredns                    2/2     2            2           14m
+   ```
+
+6. Which namespace is the Ingress Resource deployed in?
+
+   - default
+   - kube-system
+   - **app-space**
+   - application
+
+   ```
+   controlplane ~ ➜  kubectl get ingress -A
+   NAMESPACE   NAME                 CLASS    HOSTS   ADDRESS         PORTS   AGE
+   app-space   ingress-wear-watch   <none>   *       10.111.99.161   80      11m
+   ```
+
+7. What is the name of the Ingress Resource?
+
+   - app-space
+   - default
+   - **ingress-wear-watch**
+   - ingress-wear
+
+   ```
+   controlplane ~ ➜  kubectl get ingress -A
+   NAMESPACE   NAME                 CLASS    HOSTS   ADDRESS         PORTS   AGE
+   app-space   ingress-wear-watch   <none>   *       10.111.99.161   80      11m
+   ```
+
+8. What is the `Host` configured on the `Ingress Resource`?
+
+   The host entry defines the domain name that users use to reach the application like `www.google.com`
+
+   - default
+   - my-online-store.com
+   - **All Hosts (*)**
+   - wear.app.com
+
+   Run the command: `kubectl describe ingress --namespace app-space` and look at `Host` under the `Rules` section.
+
+   ```
+   controlplane ~ ➜  kubectl get ingress -A
+   NAMESPACE   NAME                 CLASS    HOSTS   ADDRESS         PORTS   AGE
+   app-space   ingress-wear-watch   <none>   *       10.111.99.161   80      33m
+   
+   OR 
+   
+   controlplane ~ ➜  kubectl describe -n app-space ingress ingress-wear-watch 
+   Name:             ingress-wear-watch
+   Labels:           <none>
+   Namespace:        app-space
+   Address:          10.111.99.161
+   Ingress Class:    <none>
+   Default backend:  <default>
+   Rules:
+     Host        Path  Backends
+     ----        ----  --------
+     *           
+                 /wear    wear-service:8080 (10.244.0.4:8080)
+                 /watch   video-service:8080 (10.244.0.5:8080)
+   Annotations:  nginx.ingress.kubernetes.io/rewrite-target: /
+                 nginx.ingress.kubernetes.io/ssl-redirect: false
+   Events:
+     Type    Reason  Age                From                      Message
+     ----    ------  ----               ----                      -------
+     Normal  Sync    14m (x2 over 14m)  nginx-ingress-controller  Scheduled for sync
+   ```
+
+9. What backend is the `/wear` path on the Ingress configured with?
+
+   - default-backend
+   - **wear-service**
+   - apparel-service
+   - video-service
+
+   Run the command: `kubectl describe ingress --namespace app-space` and look under the `Rules` section.
+
+   ```
+   controlplane ~ ➜  kubectl describe -n app-space ingress ingress-wear-watch 
+   Name:             ingress-wear-watch
+   Labels:           <none>
+   Namespace:        app-space
+   Address:          10.111.99.161
+   Ingress Class:    <none>
+   Default backend:  <default>
+   Rules:
+     Host        Path  Backends
+     ----        ----  --------
+     *           
+                 /wear    wear-service:8080 (10.244.0.4:8080)
+                 /watch   video-service:8080 (10.244.0.5:8080)
+   Annotations:  nginx.ingress.kubernetes.io/rewrite-target: /
+                 nginx.ingress.kubernetes.io/ssl-redirect: false
+   Events:
+     Type    Reason  Age                From                      Message
+     ----    ------  ----               ----                      -------
+     Normal  Sync    14m (x2 over 14m)  nginx-ingress-controller  Scheduled for sync
+   ```
+
+10. At what path is the video streaming application made available on the `Ingress`?
+
+   - **/watch**
+   - /stream
+   - /video
+   - /
+
+   Run the command: `kubectl describe ingress --namespace app-space` and look under the `Rules` section.
+
+```
+   controlplane ~ ➜  kubectl describe -n app-space ingress ingress-wear-watch 
+   Name:             ingress-wear-watch
+   Labels:           <none>
+   Namespace:        app-space
+   Address:          10.111.99.161
+   Ingress Class:    <none>
+   Default backend:  <default>
+   Rules:
+     Host        Path  Backends
+     ----        ----  --------
+     *           
+                 /wear    wear-service:8080 (10.244.0.4:8080)
+                 /watch   video-service:8080 (10.244.0.5:8080)
+   Annotations:  nginx.ingress.kubernetes.io/rewrite-target: /
+                 nginx.ingress.kubernetes.io/ssl-redirect: false
+   Events:
+     Type    Reason  Age                From                      Message
+     ----    ------  ----               ----                      -------
+     Normal  Sync    14m (x2 over 14m)  nginx-ingress-controller  Scheduled for sync
+```
+
+
+
+11. If the requirement does not match any of the configured paths what service are the requests forwarded to?
+
+    - **No Service**
+    - The last service configured
+    - default-backend-service
+    - default-backend
+
+    Run the command: `kubectl describe ingress --namespace app-space` and look at the `Default` backend field.
+
+    ```
+    controlplane ~ ➜  kubectl describe -n app-space ingress ingress-wear-watch 
+    Name:             ingress-wear-watch
+    Labels:           <none>
+    Namespace:        app-space
+    Address:          10.111.99.161
+    Ingress Class:    <none>
+    Default backend:  <default>
+    Rules:
+      Host        Path  Backends
+      ----        ----  --------
+      *           
+                  /wear    wear-service:8080 (10.244.0.4:8080)
+                  /watch   video-service:8080 (10.244.0.5:8080)
+    Annotations:  nginx.ingress.kubernetes.io/rewrite-target: /
+                  nginx.ingress.kubernetes.io/ssl-redirect: false
+    Events:
+      Type    Reason  Age                From                      Message
+      ----    ------  ----               ----                      -------
+      Normal  Sync    14m (x2 over 14m)  nginx-ingress-controller  Scheduled for sync
+    ```
+
+12. Now view the Ingress Service using the tab at the top of the terminal. Which page do you see?
+
+    Click on the tab named `Ingress`.
+
+    - Video Service
+    - Apparel Service
+    - **404 Error page**
+    - Blank
+
+13. View the applications by appending `/wear` and `/watch` to the URL you opened in the previous step.
+
+    Ok
+
+14. You are requested to change the URLs at which the applications are made available.
+
+    Make the video application available at `/stream`.
+
+    Check
+
+    - Ingress: ingress-wear-watch
+    - Path: /stream
+    - Backend Service: video-service
+    - Backend Service Port: 8080
+
+    Run the command: `kubectl edit ingress --namespace app-space` and change the path to the video streaming application to `/stream`.
+
+    ```
+    controlplane ~ ➜  kubectl edit -n app-space ingress ingress-wear-watch
+    ```
+
+    Solution manifest file to change the path to the video streaming application to `/stream` as follows:
+
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+        nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      name: ingress-wear-watch
+      namespace: app-space
+    spec:
+      rules:
+      - http:
+          paths:
+          - backend:
+              service:
+                name: wear-service
+                port: 
+                  number: 8080
+            path: /wear
+            pathType: Prefix
+          - backend:
+              service:
+                name: video-service
+                port: 
+                  number: 8080
+            path: /stream
+            pathType: Prefix
+    ```
+
+15. View the Video application using the `/stream` URL in your browser.
+
+    Click on the `Ingress` tab above your terminal, if its not open already, and append `/stream` to the URL in the browser.
+
+    Ok
+
+16. A user is trying to view the `/eat` URL on the Ingress Service. Which page would he see?
+
+    If not open already, click on the `Ingress` tab above your terminal, and append `/eat` to the URL in the browser.
+
+    - Apparel Service
+    - Video Service
+    - Blank
+    - **404 Error page**
+
+17. Due to increased demand, your business decides to take on a new venture. You acquired a food delivery company. Their applications have been migrated over to your cluster.
+
+    Inspect the new deployments in the `app-space` namespace.
+
+    Ok
+
+    ```
+    controlplane ~ ➜  kubectl get deployments -n app-space 
+    NAME              READY   UP-TO-DATE   AVAILABLE   AGE
+    default-backend   1/1     1            1           15m
+    webapp-food       1/1     1            1           97s
+    webapp-video      1/1     1            1           15m
+    webapp-wear       1/1     1            1           15m
+    ```
+
+18. You are requested to add a new path to your ingress to make the food delivery application available to your customers.
+
+    Make the new application available at `/eat`.
+
+    Check
+
+    - Ingress: ingress-wear-watch
+    - Path: /eat
+    - Backend Service: food-service
+    - Backend Service Port: 8080
+
+    Run the command: `kubectl edit ingress --namespace app-space` and add a new Path entry for the new service.
+
+    ```
+    controlplane ~ ➜  kubectl edit -n app-space ingress ingress-wear-watch
+    ```
+
+    Solution manifest file to add a new path to our ingress service to make the application available at `/eat` as follows:
+
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+        nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      name: ingress-wear-watch
+      namespace: app-space
+    spec:
+      rules:
+      - http:
+          paths:
+          - backend:
+              service:
+                name: wear-service
+                port: 
+                  number: 8080
+            path: /wear
+            pathType: Prefix
+          - backend:
+              service:
+                name: video-service
+                port: 
+                  number: 8080
+            path: /stream
+            pathType: Prefix
+          - backend:
+              service:
+                name: food-service
+                port: 
+                  number: 8080
+            path: /eat
+            pathType: Prefix
+    ```
+
+19. View the Food delivery application using the `/eat` URL in your browser.
+
+    Click on the `Ingress` tab above your terminal, if its not open already, and append `/eat` to the URL in the browser.
+
+    Ok
+
+20. A new payment service has been introduced. Since it is critical, the new application is deployed in its own namespace.
+
+    Identify the namespace in which the new application is deployed.
+
+    - easy-pay
+    - **critical-space**
+    - pay-space
+    - kube-public
+    - default
+
+    Run the command: `kubectl get deploy --all-namespaces` and inspect the newly created namespace and deployment.
+
+    ```
+    controlplane ~ ➜  kubectl get deploy --all-namespaces
+    NAMESPACE        NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+    app-space        default-backend            1/1     1            1           22m
+    app-space        webapp-food                1/1     1            1           8m56s
+    app-space        webapp-video               1/1     1            1           22m
+    app-space        webapp-wear                1/1     1            1           22m
+    critical-space   webapp-pay                 1/1     1            1           112s
+    ingress-nginx    ingress-nginx-controller   1/1     1            1           22m
+    kube-system      coredns                    2/2     2            2           35m
+    ```
+
+21. What is the name of the deployment of the new application?
+
+    - **webapp-pay**
+    - easy-pay
+    - payment-gateway
+    - pay-service
+
+    ```
+    controlplane ~ ➜  kubectl get deploy --all-namespaces
+    NAMESPACE        NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+    app-space        default-backend            1/1     1            1           22m
+    app-space        webapp-food                1/1     1            1           8m56s
+    app-space        webapp-video               1/1     1            1           22m
+    app-space        webapp-wear                1/1     1            1           22m
+    critical-space   webapp-pay                 1/1     1            1           112s
+    ingress-nginx    ingress-nginx-controller   1/1     1            1           22m
+    kube-system      coredns                    2/2     2            2           35m
+    ```
+
+22. You are requested to make the new application available at `/pay`.
+
+    Identify and implement the best approach to making this application available on the ingress controller and test to make sure its working. Look into annotations: rewrite-target as well.
+
+    Check
+
+    - Ingress Created
+    - Path: /pay
+    - Configure correct backend service
+    - Configure correct backend port
+
+    Create a new Ingress for the new pay application in the `critical-space` namespace.
+    Use the command `kubectl get svc -n critical-space` to know the service and port details.
+
+    ```
+    controlplane ~ ➜  kubectl get svc -n critical-space 
+    NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+    pay-service   ClusterIP   10.111.27.144   <none>        8282/TCP   12m
+    ```
+
+    ```
+    controlplane ~ ➜  kubectl create ingress ingress-pay --namespace=critical-space --rule="/pay=pay-service:8282"
+    ingress.networking.k8s.io/ingress-pay created
+    ```
+
+    ```
+    controlplane ~ ➜  kubectl get ingress -n critical-space 
+    NAME          CLASS    HOSTS   ADDRESS   PORTS   AGE
+    ingress-pay   <none>   *                 80      16s
+    
+    controlplane ~ ➜  kubectl describe -n critical-space ingress ingress-pay Name:             ingress-pay
+    Labels:           <none>
+    Namespace:        critical-space
+    Address:          10.102.93.123
+    Ingress Class:    <none>
+    Default backend:  <default>
+    Rules:
+      Host        Path  Backends
+      ----        ----  --------
+      *           
+                  /pay   pay-service:8282 (10.244.0.11:8080)
+    Annotations:  <none>
+    Events:
+      Type    Reason  Age                 From                      Message
+      ----    ------  ----                ----                      -------
+      Normal  Sync    98s (x2 over 2m2s)  nginx-ingress-controller  Scheduled for sync
+    ```
+
+    **Check logs for error**
+
+    ```
+    controlplane ~ ➜  kubectl get pods -n critical-space 
+    NAME                          READY   STATUS    RESTARTS   AGE
+    webapp-pay-58cdc69889-f9t46   1/1     Running   0          27m
+    
+    controlplane ~ ➜  kubectl logs webapp-pay-58cdc69889-f9t46 -n critical-space 
+     * Serving Flask app 'app' (lazy loading)
+     * Environment: production
+       WARNING: This is a development server. Do not use it in a production deployment.
+       Use a production WSGI server instead.
+     * Debug mode: off
+     * Running on all addresses.
+       WARNING: This is a development server. Do not use it in a production deployment.
+     * Running on http://10.244.0.11:8080/ (Press CTRL+C to quit)
+    10.244.0.9 - - [16/Jan/2023 02:00:25] "GET /pay HTTP/1.1" 404 -
+    10.244.0.9 - - [16/Jan/2023 02:03:16] "GET /pay HTTP/1.1" 404 -
+    ```
+
+    
+
+    Solution manifest file to create a new ingress service to make the application available at `/pay` as follows:
+
+    ```
+    controlplane ~ ➜  kubectl edit -n critical-space ingress ingress-pay 
+    ```
+
+    Add annotations
+
+    ```yaml
+    ---
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: test-ingress
+      namespace: critical-space
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+        nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    spec:
+      rules:
+      - http:
+          paths:
+          - path: /pay
+            pathType: Prefix
+            backend:
+              service:
+               name: pay-service
+               port:
+                number: 8282
+    ```
+
+23. View the Payment application using the `/pay` URL in your browser.
+
+    Click on the `Ingress` tab above your terminal, if its not open already, and append `/pay` to the URL in the browser.
+
+    Ok
+
+
+
+## PRACTICE TEST – CKA – INGRESS NETWORKING – 2
+
+1. We have deployed two applications. Explore the setup.
+
+   Note: They are in a different namespace.
+
+   Ok
+
+   ```
+   root@controlplane ~ ➜  kubectl get pods -A
+   NAMESPACE     NAME                                   READY   STATUS    RESTARTS   AGE
+   app-space     default-backend-5cf9bfb9d-7hfx7        1/1     Running   0          9m8s
+   app-space     webapp-video-84f8655bd8-w7ltq          1/1     Running   0          9m8s
+   app-space     webapp-wear-6ff9445955-ht2lq           1/1     Running   0          9m8s
+   kube-system   coredns-74ff55c5b-pvklj                1/1     Running   0          69m
+   kube-system   coredns-74ff55c5b-r8wtk                1/1     Running   0          69m
+   kube-system   etcd-controlplane                      1/1     Running   0          70m
+   kube-system   kube-apiserver-controlplane            1/1     Running   0          70m
+   kube-system   kube-controller-manager-controlplane   1/1     Running   0          70m
+   kube-system   kube-flannel-ds-mcnlk                  1/1     Running   0          69m
+   kube-system   kube-proxy-vxj2t                       1/1     Running   0          69m
+   kube-system   kube-scheduler-controlplane            1/1     Running   0          70m
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl get deployments -A
+   NAMESPACE     NAME              READY   UP-TO-DATE   AVAILABLE   AGE
+   app-space     default-backend   1/1     1            1           9m23s
+   app-space     webapp-video      1/1     1            1           9m23s
+   app-space     webapp-wear       1/1     1            1           9m23s
+   kube-system   coredns           2/2     2            2           70m
+   ```
+
+2. Let us now deploy an Ingress Controller. First, create a namespace called `ingress-space`.
+
+   We will isolate all ingress related objects into its own namespace.
+
+   Check
+
+   - Name: ingress-space
+
+   ##### ![image-20230116103111877](images/image-20230116103111877.png)
+
+   ```
+   root@controlplane ~ ➜  kubectl create namespace ingress-space
+   namespace/ingress-space created
+   ```
+
+3. The NGINX Ingress Controller requires a ConfigMap object. Create a ConfigMap object in the `ingress-space`.
+
+   Use the spec given below. No data needs to be configured in the ConfigMap.
+
+   Check
+
+   - Name: nginx-configuration
+
+   ![image-20230116103347056](images/image-20230116103347056.png)
+
+   ```
+   root@controlplane ~ ➜  kubectl create configmap nginx-configuration -n ingress-space 
+   configmap/nginx-configuration created
+   ```
+
+4. The NGINX Ingress Controller requires a ServiceAccount. Create a ServiceAccount in the `ingress-space` namespace.
+
+   Use the spec provided below.
+
+   Check
+
+   - Name: ingress-serviceaccount
+
+   ```
+   root@controlplane ~ ➜  kubectl create serviceaccount ingress-serviceaccount -n ingress-space 
+   serviceaccount/ingress-serviceaccount created
+   ```
+
+5. We have created the Roles and RoleBindings for the ServiceAccount. Check it out!!
+
+   Ok
+
+   ```
+   root@controlplane ~ ➜  kubectl get role -n ingress-space 
+   NAME           CREATED AT
+   ingress-role   2023-01-16T02:43:42Z
+   
+   root@controlplane ~ ➜  kubectl get rolebindings -n ingress-space 
+   NAME                   ROLE                AGE
+   ingress-role-binding   Role/ingress-role   4m38s
+   
+   root@controlplane ~ ➜  kubectl describe -n ingress-space role ingress-role 
+   Name:         ingress-role
+   Labels:       app.kubernetes.io/name=ingress-nginx
+                 app.kubernetes.io/part-of=ingress-nginx
+   Annotations:  <none>
+   PolicyRule:
+     Resources   Non-Resource URLs  Resource Names                     Verbs
+     ---------   -----------------  --------------                     -----
+     configmaps  []                 []                                 [get create]
+     configmaps  []                 [ingress-controller-leader-nginx]  [get update]
+     endpoints   []                 []                                 [get]
+     namespaces  []                 []                                 [get]
+     pods        []                 []                                 [get]
+     secrets     []                 []                                 [get]
+   
+   root@controlplane ~ ➜  kubectl describe -n ingress-space rolebindings ingress-role-binding 
+   Name:         ingress-role-binding
+   Labels:       app.kubernetes.io/name=ingress-nginx
+                 app.kubernetes.io/part-of=ingress-nginx
+   Annotations:  <none>
+   Role:
+     Kind:  Role
+     Name:  ingress-role
+   Subjects:
+     Kind            Name                    Namespace
+     ----            ----                    ---------
+     ServiceAccount  ingress-serviceaccount  
+   ```
+
+6. Let us now deploy the Ingress Controller. Create a deployment using the file given.
+
+   The Deployment configuration is given at `/root/ingress-controller.yaml`. There are several issues with it. Try to fix them.
+
+   Check
+
+   - Deployed in the correct namespace.
+   - Replicas: 1
+   - Use the right image
+   - Namespace: ingress-space
+
+   ingress-controller.yaml
+
+   ```
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: ingress-controller
+     namespace: ingress-
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         name: nginx-ingress
+     template:
+       metadata:
+         labels:
+           name: nginx-ingress
+       spec:
+         serviceAccountName: ingress-serviceaccount
+         containers:
+           - name: nginx-ingress-controller
+             image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.21.0
+             args:
+               - /nginx-ingress-controller
+               - --configmap=$(POD_NAMESPACE)/nginx-configuration
+               - --default-backend-service=app-space/default-http-backend
+             env:
+               - name: POD_NAME
+                 valueFrom:
+                   fieldRef:
+                     fieldPath: metadata.name
+               - name: POD_NAMESPACE
+                 valueFrom:
+                   fieldRef:
+                     fieldPath: metadata.namespace
+             ports:
+               - name: http
+                   containerPort: 80
+               - name: https
+                 containerPort: 443
+   ```
+
+   Create the deployment
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f ingress-controller.yaml 
+   error: error parsing ingress-controller.yaml: error converting YAML to JSON: yaml: line 36: mapping values are not allowed in this context
+   ```
+
+   Edit ingress-controller.yaml 
+
+   ingress-controller.yaml 
+
+   ```
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: ingress-controller
+     namespace: ingress-space
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         name: nginx-ingress
+     template:
+       metadata:
+         labels:
+           name: nginx-ingress
+       spec:
+         serviceAccountName: ingress-serviceaccount
+         containers:
+           - name: nginx-ingress-controller
+             image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.21.0
+             args:
+               - /nginx-ingress-controller
+               - --configmap=$(POD_NAMESPACE)/nginx-configuration
+               - --default-backend-service=app-space/default-http-backend
+             env:
+               - name: POD_NAME
+                 valueFrom:
+                   fieldRef:
+                     fieldPath: metadata.name
+               - name: POD_NAMESPACE
+                 valueFrom:
+                   fieldRef:
+                     fieldPath: metadata.namespace
+             ports:
+               - name: http
+                 containerPort: 80
+               - name: https
+                 containerPort: 443
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f ingress-controller.yaml 
+   deployment.apps/ingress-controller created
+   ```
+
+7. Let us now create a service to make Ingress available to external users.
+
+   Create a service following the given specs.
+
+   Check
+
+   - Name: ingress
+   - Type: NodePort
+   - Port: 80
+   - TargetPort: 80
+   - NodePort: 30080
+   - Namespace: ingress-space
+   - Use the right selector
+
+   Use the command `kubectl expose -n ingress-space deployment ingress-controller --type=NodePort --port=80 --name=ingress --dry-run=client -o yaml > ingress.yaml` and manually add the given `node port` and `namespace`.
+
+   ```
+   root@controlplane ~ ➜  kubectl expose -n ingress-space deployment ingress-controller --name=ingress --port=80 --target-port=80 --type=NodePort  
+   service/ingress exposed
+   
+   root@controlplane ~ ➜  kubectl get svc -n ingress-space 
+   NAME      TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+   ingress   NodePort   10.102.106.213   <none>        80:30025/TCP   16s
+   
+   root@controlplane ~ ➜  kubectl describe -n ingress-space svc ingress 
+   Name:                     ingress
+   Namespace:                ingress-space
+   Labels:                   <none>
+   Annotations:              <none>
+   Selector:                 name=nginx-ingress
+   Type:                     NodePort
+   IP Families:              <none>
+   IP:                       10.102.106.213
+   IPs:                      10.102.106.213
+   Port:                     <unset>  80/TCP
+   TargetPort:               80/TCP
+   NodePort:                 <unset>  30025/TCP
+   Endpoints:                10.244.0.7:80
+   Session Affinity:         None
+   External Traffic Policy:  Cluster
+   Events:                   <none>
+   ```
+
+   Edit Nodeport number
+
+   ```
+   root@controlplane ~ ➜  kubectl edit -n ingress-space svc ingress 
+   ```
+
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     creationTimestamp: "2023-01-16T06:45:09Z"
+     name: ingress
+     namespace: ingress-space
+     resourceVersion: "5361"
+     uid: 509dcff0-b4f9-4bb5-82da-02f4a944e3f7
+   spec:
+     clusterIP: 10.102.106.213
+     clusterIPs:
+     - 10.102.106.213
+     externalTrafficPolicy: Cluster
+     ports:
+     - nodePort: 30080
+       port: 80
+       protocol: TCP
+       targetPort: 80
+     selector:
+       name: nginx-ingress
+     sessionAffinity: None
+     type: NodePort
+   status:
+     loadBalancer: {}
+   ```
+
+8. Create the ingress resource to make the applications available at `/wear` and `/watch` on the Ingress service.
+
+   Create the ingress in the `app-space` namespace.
+
+   Check
+
+   - Ingress Created
+   - Path: /wear
+   - Path: /watch
+   - Configure correct backend service for /wear
+   - Configure correct backend service for /watch
+   - Configure correct backend port for /wear service
+   - Configure correct backend port for /watch service
+
+   ```
+   root@controlplane ~ ➜  kubectl get svc -n app-space 
+   NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+   default-http-backend   ClusterIP   10.107.178.167   <none>        80/TCP     30m
+   video-service          ClusterIP   10.110.144.189   <none>        8080/TCP   30m
+   wear-service           ClusterIP   10.109.5.71      <none>        8080/TCP   30m
+   ```
+
+   Edit ingress "ingres-wear-watch" and add annotations
+
+   ```
+   root@controlplane ~ ➜  kubectl edit -n app-space ingress ingres-wear-watch 
+   ```
+
+   ```
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: ingress-wear-watch
+     namespace: app-space
+     annotations:
+       nginx.ingress.kubernetes.io/rewrite-target: /
+       nginx.ingress.kubernetes.io/ssl-redirect: "false"
+   spec:
+     rules:
+     - http:
+         paths:
+         - path: /wear
+           pathType: Prefix
+           backend:
+             service:
+              name: wear-service
+              port: 
+               number: 8080
+         - path: /watch
+           pathType: Prefix
+           backend:
+             service:
+              name: video-service
+              port:
+               number: 8080
+   ```
+
+9. Access the application using the `Ingress` tab on top of your terminal.
+
+   Make sure you can access the right applications at `/wear` and `/watch` paths.
+
+   Ok
+
+
+
+# INSTALL “KUBERNETES THE KUBEADM WAY”, PRACTICE TEST – DEPLOY A KUBERNETES CLUSTER USING KUBEADM
+
+1. Install the `kubeadm` and `kubelet` packages on the `controlplane` and `node01`.
+
+   Use the exact version of `1.26.0-00` for both.
+
+   Check
+
+   - kubeadm installed on controlplane ?
+   - kubelet installed on controlplane?
+   - Kubeadm installed on worker node01 ?
+   - Kubelet installed on worker node01 ?
+
+   Refer to the official k8s documentation - `https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/`
+   and follow the installation steps.
+
+   **Do it on botn the Controlplane and Node01**
+
+   1. Verify the MAC address and product_uuid are unique for every node 
+
+      **Controlplane**
+
+      ```
+      controlplane ~ ➜  ip addr
+      1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+          link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+          inet 127.0.0.1/8 scope host lo
+             valid_lft forever preferred_lft forever
+      2: flannel.1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
+          link/ether 52:41:28:8e:4c:42 brd ff:ff:ff:ff:ff:ff
+          inet 10.244.0.0/32 scope global flannel.1
+             valid_lft forever preferred_lft forever
+      3: cni0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+          link/ether f6:95:da:af:a8:c0 brd ff:ff:ff:ff:ff:ff
+          inet 10.244.0.1/24 brd 10.244.0.255 scope global cni0
+             valid_lft forever preferred_lft forever
+      6491: eth0@if6492: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+          link/ether 02:42:0a:21:d9:09 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+          inet 10.33.217.9/24 brd 10.33.217.255 scope global eth0
+             valid_lft forever preferred_lft forever
+      6493: eth1@if6494: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+          link/ether 02:42:ac:19:00:42 brd ff:ff:ff:ff:ff:ff link-netnsid 1
+          inet 172.25.0.66/24 brd 172.25.0.255 scope global eth1
+             valid_lft forever preferred_lft forever
+      ```
+
+      ```
+      controlplane ~ ➜  cat /sys/class/dmi/id/product_uuid
+      47c0ebaa-a153-fb7f-9dd2-5e3a7bd0e4ce
+      ```
+
+      **Node01**
+
+      ```
+      root@node01 ~ ➜  ip add
+      1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+          link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+          inet 127.0.0.1/8 scope host lo
+             valid_lft forever preferred_lft forever
+      2: flannel.1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default 
+          link/ether 0e:c8:ee:63:2d:8a brd ff:ff:ff:ff:ff:ff
+          inet 10.244.1.0/32 scope global flannel.1
+             valid_lft forever preferred_lft forever
+      9914: eth0@if9915: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default 
+          link/ether 02:42:0a:21:d9:0c brd ff:ff:ff:ff:ff:ff link-netnsid 0
+          inet 10.33.217.12/24 brd 10.33.217.255 scope global eth0
+             valid_lft forever preferred_lft forever
+      9916: eth1@if9917: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+          link/ether 02:42:ac:19:00:44 brd ff:ff:ff:ff:ff:ff link-netnsid 1
+          inet 172.25.0.68/24 brd 172.25.0.255 scope global eth1
+             valid_lft forever preferred_lft forever
+      ```
+
+      ```
+      root@node01 ~ ➜  cat /sys/class/dmi/id/product_uuid
+      dc79c641-18a0-2e2b-0ab4-a3e11a52c0ac
+      ```
+
+   2. Forwarding IPv4 and letting iptables see bridged traffic
+
+      Execute the below mentioned instructions:
+
+      ```bash
+      cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+      overlay
+      br_netfilter
+      EOF
+      
+      sudo modprobe overlay
+      sudo modprobe br_netfilter
+      
+      # sysctl params required by setup, params persist across reboots
+      cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+      net.bridge.bridge-nf-call-iptables  = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.ipv4.ip_forward                 = 1
+      EOF
+      
+      # Apply sysctl params without reboot
+      sudo sysctl --system
+      ```
+
+   3. Check required ports 
+      These required ports need to be open in order for Kubernetes components to communicate with each other. You can use tools like netcat to check if a port is open. For example:
+
+      ```
+      nc 127.0.0.1 6443
+      ```
+
+   4. Installing a container runtime
+
+      - Install docker
+
+   5. Installing kubeadm, kubelet and kubectl
+
+      1. Update the `apt` package index and install packages needed to use the Kubernetes `apt` repository:
+
+         ```shell
+         sudo apt-get update
+         sudo apt-get install -y apt-transport-https ca-certificates curl
+         ```
+
+      2. Download the Google Cloud public signing key:
+
+         ```shell
+         sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+         ```
+
+      3. Add the Kubernetes `apt` repository:
+
+         ```shell
+         echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+         ```
+
+      4. Update `apt` package index, install kubelet, kubeadm and kubectl, and pin their version:
+
+         ```shell
+         sudo apt-get update
+         sudo apt-get install -y kubelet=1.26.0-00 kubeadm=1.26.0-00 kubectl=1.26.0-00
+         sudo apt-mark hold kubelet kubeadm kubectl
+         ```
+
+2. What is the version of `kubelet` installed?
+
+   - 1.20
+   - 1.22.5
+   - **1.26.0**
+   - 1.23
+
+   ```
+   controlplane ~ ➜  kubelet --version
+   Kubernetes v1.26.0
+   ```
+
+3. How many nodes are part of kubernetes cluster currently?
+
+   Are you able to run `kubectl get nodes`?
+
+   - 2
+   - 4
+   - 1
+   - **0**
+
+   ```
+   controlplane ~ ➜  kubectl get nodes
+   E0116 04:36:50.215388   30328 memcache.go:238] couldn't get current server API group list: <nil>
+   E0116 04:36:50.217399   30328 memcache.go:238] couldn't get current server API group list: <nil>
+   E0116 04:36:50.219167   30328 memcache.go:238] couldn't get current server API group list: <nil>
+   E0116 04:36:50.220607   30328 memcache.go:238] couldn't get current server API group list: <nil>
+   error: the server doesn't have a resource type "nodes"
+   ```
+
+4. Lets now bootstrap a `kubernetes` cluster using `kubeadm`.
+
+   The latest version of Kubernetes will be installed.
+
+   Ok
+
+5. Initialize `Control Plane Node (Master Node)`. Use the following options:
+
+   
+
+   1. `apiserver-advertise-address` - Use the IP address allocated to eth0 on the controlplane node
+
+      
+
+   2. `apiserver-cert-extra-sans` - Set it to `controlplane`
+
+      
+
+   3. `pod-network-cidr` - Set to `10.244.0.0/16`
+
+   Once done, set up the `default kubeconfig` file and wait for node to be part of the cluster.
+
+   Check
+
+   - Controlplane node initialized
+
+   Kubernetes Documentation
+
+   https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/
+
+   ```
+   controlplane ~ ➜  kubeadm init --apiserver-advertise-address 10.38.99.9 --apiserver-cert-extra-sans=controlplane --pod-network-cidr=10.244.0.0/16
+   
+   Your Kubernetes control-plane has initialized successfully!
+   
+   To start using your cluster, you need to run the following as a regular user:
+   
+     mkdir -p $HOME/.kube
+     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+     sudo chown $(id -u):$(id -g) $HOME/.kube/config
+   
+   Alternatively, if you are the root user, you can run:
+   
+     export KUBECONFIG=/etc/kubernetes/admin.conf
+   
+   You should now deploy a pod network to the cluster.
+   Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+     https://kubernetes.io/docs/concepts/cluster-administration/addons/
+   
+   Then you can join any number of worker nodes by running the following on each as root:
+   
+   kubeadm join 10.38.99.9:6443 --token kfxidw.4aqakvucc58sjhit \
+           --discovery-token-ca-cert-hash sha256:bec7ee658363620b3c92cc6d23c643511eb6a9b50ba9719660ffc754d2ac389b 
+   ```
+
+   ```
+   controlplane ~ ➜  mkdir -p $HOME/.kube
+   
+   controlplane ~ ➜    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+   
+   controlplane ~ ➜    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+   ```
+
+6. Generate a kubeadm join token
+
+   Or copy the one that was generated by `kubeadm init` command
+
+   Ok
+
+   ```
+   controlplane ~ ➜  kubeadm token create --print-join-command
+   kubeadm join 10.38.99.9:6443 --token p51dhw.gj4a8kqap6262865 --discovery-token-ca-cert-hash sha256:bec7ee658363620b3c92cc6d23c643511eb6a9b50ba9719660ffc754d2ac389b 
+   ```
+
+7. Join `node01` to the cluster using the join token
+
+   Check
+
+   - Node01 joined the cluster?
+
+   ```
+   controlplane ~ ➜  ssh node01
+   Last login: Mon Jan 16 04:28:48 2023 from 10.38.99.10
+   
+   root@node01 ~ ➜  kubeadm join 10.38.99.9:6443 --token p51dhw.gj4a8kqap6262865 --discovery-token-ca-cert-hash sha256:bec7ee658363620b3c92cc6d23c643511eb6a9b50ba9719660ffc754d2ac389b 
+   [preflight] Running pre-flight checks
+   [preflight] Reading configuration from the cluster...
+   [preflight] FYI: You can look at this config file with 'kubectl -n kube-system get cm kubeadm-config -o yaml'
+   [kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+   [kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+   [kubelet-start] Starting the kubelet
+   [kubelet-start] Waiting for the kubelet to perform the TLS Bootstrap...
+   
+   This node has joined the cluster:
+   * Certificate signing request was sent to apiserver and a response was received.
+   * The Kubelet was informed of the new secure connection details.
+   
+   Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
+   ```
+
+   ```
+   
+   ```
+
+   
+
+8. Install a Network Plugin. As a default, we will go with `flannel`
+
+   Refer to the official documentation for the procedure.
+
+   Check
+
+   - Network Plugin deployed?
+
+   ```
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS     ROLES           AGE    VERSION
+   controlplane   NotReady   control-plane   15m    v1.26.0
+   node01         NotReady   <none>          105s   v1.26.0
+   ```
+
+   Kubernetes Documentation
+
+   https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+   On the `controlplane` node, run the following command to deploy the network plugin: 
+
+   ```
+   controlplane ~ ➜  kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/v0.20.2/Documentation/kube-flannel.yml
+   
+   namespace/kube-flannel created
+   clusterrole.rbac.authorization.k8s.io/flannel created
+   clusterrolebinding.rbac.authorization.k8s.io/flannel created
+   serviceaccount/flannel created
+   configmap/kube-flannel-cfg created
+   daemonset.apps/kube-flannel-ds created
+   ```
+
+   ```
+   controlplane ~ ✖ kubectl get pods -A
+   NAMESPACE      NAME                                   READY   STATUS    RESTARTS   AGE
+   kube-flannel   kube-flannel-ds-btcsq                  1/1     Running   0          90s
+   kube-flannel   kube-flannel-ds-kw7jd                  1/1     Running   0          90s
+   kube-system    coredns-787d4945fb-n6cng               1/1     Running   0          20m
+   kube-system    coredns-787d4945fb-zsk6w               1/1     Running   0          20m
+   kube-system    etcd-controlplane                      1/1     Running   1          20m
+   kube-system    kube-apiserver-controlplane            1/1     Running   1          20m
+   kube-system    kube-controller-manager-controlplane   1/1     Running   1          20m
+   kube-system    kube-proxy-ft8mk                       1/1     Running   0          20m
+   kube-system    kube-proxy-qtqng                       1/1     Running   0          6m49s
+   kube-system    kube-scheduler-controlplane            1/1     Running   1          20m
+   ```
+
+   ```
+   controlplane ~ ✖ kubectl get nodes 
+   NAME           STATUS   ROLES           AGE     VERSION
+   controlplane   Ready    control-plane   20m     v1.26.0
+   node01         Ready    <none>          7m14s   v1.26.0
+   ```
+
+   
+
+   
+# TROUBLESHOOTING
+
+
+
+## PRACTICE TEST APPLICATION FAILURE
+
+### Troubleshooting Test 1
+
+1. **Troubleshooting Test 1:** A simple 2 tier application is deployed in the `alpha` namespace. It must display a green web page on success. Click on the `App` tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
+
+   Stick to the given architecture. Use the same names and port numbers as given in the below architecture diagram. Feel free to edit, delete or recreate objects as necessary.
+
+   Check
+
+   - Fix Issue
+
+   ![image-20230116181650653](images/image-20230116181650653-1673864213647-4.png)
+
+   **Set the default namespace to alpha**
+
+   ```
+   controlplane ~ ➜  kubectl config set-context --current --namespace alpha
+   Context "default" modified.
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get pods
+   NAME                            READY   STATUS    RESTARTS   AGE
+   webapp-mysql-7cc9dcdffd-r5zml   1/1     Running   0          10m
+   mysql                           1/1     Running   0          10m
+   
+   controlplane ~ ➜  kubectl get deploy
+   NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+   webapp-mysql   1/1     1            1           11m
+   
+   controlplane ~ ➜  kubectl get svc
+   NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+   mysql         ClusterIP   10.43.239.228   <none>        3306/TCP         11m
+   web-service   NodePort    10.43.150.222   <none>        8080:30081/TCP   11m
+   
+   controlplane ~ ➜  curl http://localhost:30081
+   <!doctype html>
+   <title>Hello from Flask</title>
+   <body style="background: #ff3f3f;"></body>
+   <div style="color: #e4e4e4;
+       text-align:  center;
+       height: 90px;
+       vertical-align:  middle;">
+   
+     
+       <img src="/static/img/failed.png">
+       <!-- <h1> DATABASE CONNECTION FAILED !!</h1> -->
+     
+   
+     
+       <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=root; DB_Password=paswrd; 2003: Can&#39;t connect to MySQL server on &#39;mysql-service:3306&#39; (-2 Name does not resolve) </h2>
+     
+   
+     
+       <p> From webapp-mysql-7cc9dcdffd-r5zml!</p>
+     
+   
+     
+   
+   </div>
+   ```
+
+   **Check if the dbhost name is correct**
+
+   ```
+   controlplane ~ ➜  kubectl describe deployments.apps webapp-mysql 
+   Name:                   webapp-mysql
+   Namespace:              alpha
+   CreationTimestamp:      Mon, 16 Jan 2023 10:15:53 +0000
+   Labels:                 name=webapp-mysql
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               name=webapp-mysql
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  name=webapp-mysql
+     Containers:
+      webapp-mysql:
+       Image:      mmumshad/simple-webapp-mysql
+       Port:       8080/TCP
+       Host Port:  0/TCP
+       Environment:
+         DB_Host:      mysql-service
+         DB_User:      root
+         DB_Password:  paswrd
+       Mounts:         <none>
+     Volumes:          <none>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   webapp-mysql-7cc9dcdffd (1/1 replicas created)
+   Events:
+     Type    Reason             Age   From                   Message
+     ----    ------             ----  ----                   -------
+     Normal  ScalingReplicaSet  16m   deployment-controller  Scaled up replica set webapp-mysql-7cc9dcdffd to 1
+   
+   controlplane ~ ➜  kubectl get svc
+   NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+   mysql         ClusterIP   10.43.239.228   <none>        3306/TCP         16m
+   web-service   NodePort    10.43.150.222   <none>        8080:30081/TCP   16m
+   ```
+
+   **Change the service name to mysql-service**
+
+   ```
+   controlplane ~ ➜  kubectl edit svc mysql 
+   ```
+
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     creationTimestamp: "2023-01-16T10:15:53Z"
+     name: mysql-service
+     namespace: alpha
+     resourceVersion: "681"
+     uid: d0dd58e2-490e-4418-8ec4-7eb057b44a2a
+   spec:
+     clusterIP: 10.43.239.228
+     clusterIPs:
+     - 10.43.239.228
+     internalTrafficPolicy: Cluster
+     ipFamilies:
+     - IPv4
+     ipFamilyPolicy: SingleStack
+     ports:
+     - port: 3306
+       protocol: TCP
+       targetPort: 3306
+     selector:
+       name: mysql
+     sessionAffinity: None
+     type: ClusterIP
+   status:
+     loadBalancer: {}
+   ```
+
+   ```
+   controlplane ~ ✖ kubectl delete svc 
+   mysql        web-service  
+   
+   controlplane ~ ✖ kubectl delete svc mysql 
+   service "mysql" deleted
+   
+   controlplane ~ ➜  kubectl create -f /tmp/kubectl-edit-4276134165.yaml
+   service/mysql-service created
+   
+   controlplane ~ ➜  kubectl get svc
+   NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+   web-service     NodePort    10.43.150.222   <none>        8080:30081/TCP   20m
+   mysql-service   ClusterIP   10.43.239.228   <none>        3306/TCP         9s
+   ```
+
+   **Check if connection is successful**
+
+   ```
+   controlplane ~ ➜  curl http://localhost:30081
+   <!doctype html>
+   <title>Hello from Flask</title>
+   <body style="background: #39b54b;"></body>
+   <div style="color: #e4e4e4;
+       text-align:  center;
+       height: 90px;
+       vertical-align:  middle;">
+   
+     
+       <!-- <h1> DATABASE CONNECTION SUCCESSFUL !</h1> -->
+       <img src="/static/img/success.jpg">
+     
+   
+     
+       <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=root; DB_Password=paswrd;  </h2>
+     
+   
+     
+       <p> From webapp-mysql-7cc9dcdffd-r5zml!</p>
+     
+   
+     
+   
+   </div>
+   ```
+
+### Troubleshooting Test 2
+
+2. **Troubleshooting Test 2:** The same 2 tier application is deployed in the `beta` namespace. It must display a green web page on success. Click on the `App` tab at the top of your terminal to view your 
+
+​	application. It is currently failed. Troubleshoot and fix the issue.
+
+​	Stick to the given architecture. Use the same names and port numbers as given in the below 
+
+​	architecture diagram. Feel free to edit, delete or recreate objects as necessary.
+
+​	Check
+
+- Fix Issue
+
+**Set the default namespace to beta**
+
+```
+controlplane ~ ➜  kubectl config set-context --current --namespace=beta
+Context "default" modified.
+```
+
+```
+controlplane ~ ➜  kubectl get pods
+NAME                            READY   STATUS    RESTARTS   AGE
+mysql                           1/1     Running   0          5m18s
+webapp-mysql-7cc9dcdffd-98cp2   1/1     Running   0          5m18s
+
+controlplane ~ ➜  kubectl get svc
+NAME            TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+mysql-service   ClusterIP   10.43.5.176    <none>        3306/TCP         6m54s
+web-service     NodePort    10.43.93.131   <none>        8080:30081/TCP   6m54s
+```
+
+**Browse web service**
+
+```
+controlplane ~ ➜  curl http://localhost:30081
+<!doctype html>
+<title>Hello from Flask</title>
+<body style="background: #ff3f3f;"></body>
+<div style="color: #e4e4e4;
+    text-align:  center;
+    height: 90px;
+    vertical-align:  middle;">
+
+  
+    <img src="/static/img/failed.png">
+    <!-- <h1> DATABASE CONNECTION FAILED !!</h1> -->
+  
+
+  
+    <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=root; DB_Password=paswrd; 2003: Can&#39;t connect to MySQL server on &#39;mysql-service:3306&#39; (111 Connection refused) </h2>
+  
+
+  
+    <p> From webapp-mysql-7cc9dcdffd-98cp2!</p>
+  
+
+  
+
+</div>
+```
+
+**Check if the port of the service is correct** (check the Endpoints)
+
+```
+controlplane ~ ➜  kubectl describe svc mysql-service 
+Name:              mysql-service
+Namespace:         beta
+Labels:            <none>
+Annotations:       <none>
+Selector:          name=mysql
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.43.5.176
+IPs:               10.43.5.176
+Port:              <unset>  3306/TCP
+TargetPort:        8080/TCP
+Endpoints:         10.42.0.11:8080
+Session Affinity:  None
+Events:            <none>
+
+controlplane ~ ➜  kubectl get pods -o wide
+NAME                            READY   STATUS    RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+mysql                           1/1     Running   0          12m   10.42.0.11   controlplane   <none>           <none>
+webapp-mysql-7cc9dcdffd-98cp2   1/1     Running   0          12m   10.42.0.12   controlplane   <none>           <none>
+```
+
+**Edit service "mysql-service" TargetPort from "8080" to "3306"**
+
+```
+controlplane ~ ➜  kubectl edit svc mysql-service
+```
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2023-01-16T10:38:35Z"
+  name: mysql-service
+  namespace: beta
+  resourceVersion: "1184"
+  uid: be9c75ec-3e0c-4132-9eef-a9069618c6ac
+spec:
+  clusterIP: 10.43.5.176
+  clusterIPs:
+  - 10.43.5.176
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    name: mysql
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+```
+
+**Check service**
+
+```
+controlplane ~ ➜  kubectl describe svc mysql-service 
+Name:              mysql-service
+Namespace:         beta
+Labels:            <none>
+Annotations:       <none>
+Selector:          name=mysql
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.43.5.176
+IPs:               10.43.5.176
+Port:              <unset>  3306/TCP
+TargetPort:        3306/TCP
+Endpoints:         10.42.0.11:3306
+Session Affinity:  None
+Events:            <none>
+```
+
+**Browse web service**
+
+```
+controlplane ~ ➜  curl http://localhost:30081
+<!doctype html>
+<title>Hello from Flask</title>
+<body style="background: #39b54b;"></body>
+<div style="color: #e4e4e4;
+    text-align:  center;
+    height: 90px;
+    vertical-align:  middle;">
+
+  
+    <!-- <h1> DATABASE CONNECTION SUCCESSFUL !<Browse web service/h1> -->
+    <img src="/static/img/success.jpg">
+  
+
+  
+    <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=root; DB_Password=paswrd;  </h2>
+  
+
+  
+    <p> From webapp-mysql-7cc9dcdffd-98cp2!</p>
+  
+
+  
+
+</div>
+```
+
+### Troubleshooting Test 3
+
+3. **Troubleshooting Test 3:** The same 2 tier application is deployed in the `gamma` namespace. It must display a green web page on success. Click on the `App` tab at the top of your terminal to view your application. It is currently failed or unresponsive. Troubleshoot and fix the issue.
+
+Stick to the given architecture. Use the same names and port numbers as given in the below architecture diagram. Feel free to edit, delete or recreate objects as necessary.
+
+Check
+
+- Fix Issue
+
+**Set the default namespace to gamma**
+
+```
+controlplane ~ ➜  kubectl config set-context --current --namespace=gamma
+Context "default" modified.
+```
+
+```
+controlplane ~ ➜  kubectl get pods
+NAME                            READY   STATUS    RESTARTS   AGE
+mysql                           1/1     Running   0          8m41s
+webapp-mysql-7cc9dcdffd-mt4tr   1/1     Running   0          8m41s
+
+controlplane ~ ➜  kubectl get svc
+NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+mysql-service   ClusterIP   10.43.158.242   <none>        3306/TCP         8m47s
+web-service     NodePort    10.43.196.180   <none>        8080:30081/TCP   8m46s
+```
+
+**Check Endpoint of web-service**
+
+```
+controlplane ~ ➜  kubectl describe svc web-service 
+Name:                     web-service
+Namespace:                gamma
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 name=webapp-mysql
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.43.226.145
+IPs:                      10.43.226.145
+Port:                     <unset>  8080/TCP
+TargetPort:               8080/TCP
+NodePort:                 <unset>  30081/TCP
+Endpoints:                10.42.0.14:8080
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+```
+
+```
+controlplane ~ ➜  kubectl describe deployments webapp-mysql 
+Name:                   webapp-mysql
+Namespace:              gamma
+CreationTimestamp:      Mon, 16 Jan 2023 13:20:07 +0000
+Labels:                 name=webapp-mysql
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               name=webapp-mysql
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  name=webapp-mysql
+  Containers:
+   webapp-mysql:
+    Image:      mmumshad/simple-webapp-mysql
+    Port:       8080/TCP
+    Host Port:  0/TCP
+    Environment:
+      DB_Host:      mysql-service
+      DB_User:      root
+      DB_Password:  paswrd
+    Mounts:         <none>
+  Volumes:          <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   webapp-mysql-7cc9dcdffd (1/1 replicas created)
+Events:
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  5m51s  deployment-controller  Scaled up replica set webapp-mysql-7cc9dcdffd to 1
+
+```
+
+**Check Endpoint of mysql-service**
+
+- no endpoints
+- Selector name is wrong
+
+```
+controlplane ~ ➜  kubectl get svc
+NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+mysql-service   ClusterIP   10.43.185.132   <none>        3306/TCP         9m24s
+web-service     NodePort    10.43.226.145   <none>        8080:30081/TCP   9m24s
+
+controlplane ~ ➜  kubectl describe svc mysql-service 
+Name:              mysql-service
+Namespace:         gamma
+Labels:            <none>
+Annotations:       <none>
+Selector:          name=sql00001
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.43.185.132
+IPs:               10.43.185.132
+Port:              <unset>  3306/TCP
+TargetPort:        3306/TCP
+Endpoints:         <none>
+Session Affinity:  None
+Events:            <none>
+
+controlplane ~ ➜  kubectl get pods
+NAME                            READY   STATUS    RESTARTS   AGE
+mysql                           1/1     Running   0          10m
+webapp-mysql-7cc9dcdffd-lb5fc   1/1     Running   0          10m
+```
+
+Edit mysql-service
+
+- Change the selector name to "mysql" from "sql00001"
+
+```
+controlplane ~ ➜  kubectl edit svc mysql-service 
+```
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2023-01-16T13:20:07Z"
+  name: mysql-service
+  namespace: gamma
+  resourceVersion: "870"
+  uid: b596f25a-d8b6-4f2f-857c-07ab47c94fe8
+spec:
+  clusterIP: 10.43.185.132
+  clusterIPs:
+  - 10.43.185.132
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    name: mysql
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+```
+
+```
+controlplane ~ ➜  kubectl describe svc mysql-service 
+Name:              mysql-service
+Namespace:         gamma
+Labels:            <none>
+Annotations:       <none>
+Selector:          name=mysql
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.43.185.132
+IPs:               10.43.185.132
+Port:              <unset>  3306/TCP
+TargetPort:        3306/TCP
+Endpoints:         10.42.0.13:3306
+Session Affinity:  None
+Events:            <none>
+```
+
+```
+controlplane ~ ➜  curl http://localhost:30081
+<!doctype html>
+<title>Hello from Flask</title>
+<body style="background: #39b54b;"></body>
+<div style="color: #e4e4e4;
+    text-align:  center;
+    height: 90px;
+    vertical-align:  middle;">
+
+  
+    <!-- <h1> DATABASE CONNECTION SUCCESSFUL !</h1> -->
+    <img src="/static/img/success.jpg">
+  
+
+  
+    <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=root; DB_Password=paswrd;  </h2>
+  
+
+  
+    <p> From webapp-mysql-7cc9dcdffd-lb5fc!</p>
+  
+
+  
+
+</div>
+```
+
+
+
+### Troubleshooting Test 4
+
+4. **Troubleshooting Test 4:** The same 2 tier application is deployed in the `delta` namespace. It must display a green web page on success. Click on the `App` tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
+
+Stick to the given architecture. Use the same names and port numbers as given in the below architecture diagram. Feel free to edit, delete or recreate objects as necessary.
+
+​	Check
+
+- Fix Issue
+
+![image-20230116214258460](images/image-20230116214258460.png)
+
+```
+controlplane ~ ➜  curl http://localhost:30081
+<!doctype html>
+<title>Hello from Flask</title>
+<body style="background: #ff3f3f;"></body>
+<div style="color: #e4e4e4;
+    text-align:  center;
+    height: 90px;
+    vertical-align:  middle;">
+
+  
+    <img src="/static/img/failed.png">
+    <!-- <h1> DATABASE CONNECTION FAILED !!</h1> -->
+  
+
+  
+    <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=sql-user; DB_Password=paswrd; 1045 (28000): Access denied for user &#39;sql-user&#39;@&#39;10.42.0.16&#39; (using password: YES) </h2>
+  
+
+  
+    <p> From webapp-mysql-78c8f7998b-qvf6d!</p>
+  
+
+  
+
+</div>
+```
+
+**Set the default namespace to delta**
+
+```
+controlplane ~ ➜  kubectl config set-context --current --namespace delta
+Context "default" modified.
+```
+
+```
+controlplane ~ ➜  kubectl describe deployment webapp-mysql 
+Name:                   webapp-mysql
+Namespace:              delta
+CreationTimestamp:      Mon, 16 Jan 2023 13:40:21 +0000
+Labels:                 name=webapp-mysql
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               name=webapp-mysql
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  name=webapp-mysql
+  Containers:
+   webapp-mysql:
+    Image:      mmumshad/simple-webapp-mysql
+    Port:       8080/TCP
+    Host Port:  0/TCP
+    Environment:
+      DB_Host:      mysql-service
+      DB_User:      sql-user
+      DB_Password:  paswrd
+    Mounts:         <none>
+  Volumes:          <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   webapp-mysql-78c8f7998b (1/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  11m   deployment-controller  Scaled up replica set webapp-mysql-78c8f7998b to 1
+```
+
+**Edit deployment webapp-mysql**
+
+- Change DB_USER to "root" from "sql-user"
+
+```
+controlplane ~ ➜  kubectl edit deployment webapp-mysql 
+```
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: "2023-01-16T13:40:21Z"
+  generation: 1
+  labels:
+    name: webapp-mysql
+  name: webapp-mysql
+  namespace: delta
+  resourceVersion: "1360"
+  uid: 9f96c46d-757e-4e63-b4ac-dcfcb14a2dfd
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: webapp-mysql
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: webapp-mysql
+      name: webapp-mysql
+    spec:
+      containers:
+      - env:
+        - name: DB_Host
+          value: mysql-service
+        - name: DB_User
+          value: root
+        - name: DB_Password
+          value: paswrd
+```
+
+
+
+### Troubleshooting Test 5
+
+5. **Troubleshooting Test 5:** The same 2 tier application is deployed in the `epsilon` namespace. It must display a green web page on success. Click on the `App` tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
+
+   Stick to the given architecture. Use the same names and port numbers as given in the below architecture diagram. Feel free to edit, delete or recreate objects as necessary.
+
+   Check
+
+   - Fix Issue
+   - Fix Issue
+
+   ![image-20230116215811963](images/image-20230116215811963.png)
+
+   ```
+   controlplane ~ ➜  curl http://localhost:30081
+   <!doctype html>
+   <title>Hello from Flask</title>
+   <body style="background: #ff3f3f;"></body>
+   <div style="color: #e4e4e4;
+       text-align:  center;
+       height: 90px;
+       vertical-align:  middle;">
+   
+     
+       <img src="/static/img/failed.png">
+       <!-- <h1> DATABASE CONNECTION FAILED !!</h1> -->
+     
+   
+     
+       <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=sql-user; DB_Password=paswrd; 1045 (28000): Access denied for user &#39;sql-user&#39;@&#39;10.42.0.18&#39; (using password: YES) </h2>
+     
+   
+     
+       <p> From webapp-mysql-78c8f7998b-rgmjn!</p>
+     
+   
+     
+   
+   </div>
+   ```
+
+   **Set the default namespace to epsilon**
+
+   ```
+   controlplane ~ ➜  kubectl config set-context --current --namespace epsilon
+   Context "default" modified.
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get pods
+   NAME                            READY   STATUS    RESTARTS   AGE
+   mysql                           1/1     Running   0          6m29s
+   webapp-mysql-78c8f7998b-rgmjn   1/1     Running   0          6m29s
+   
+   controlplane ~ ➜  kubectl get deployments.apps 
+   NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+   webapp-mysql   1/1     1            1           7m21s
+   ```
+
+   **Edit deployment "webapp-mysql"**
+
+   - **Change DB_User from "sql-user" to "root"**
+
+   ```
+   controlplane ~ ➜  kubectl edit deployment webapp-mysql 
+   ```
+
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     annotations:
+       deployment.kubernetes.io/revision: "1"
+     creationTimestamp: "2023-01-17T07:41:16Z"
+     generation: 1
+     labels:
+       name: webapp-mysql
+     name: webapp-mysql
+     namespace: epsilon
+     resourceVersion: "1041"
+     uid: 13a4c834-62f2-4e76-b5ba-03c183df302c
+   spec:
+     progressDeadlineSeconds: 600
+     replicas: 1
+     revisionHistoryLimit: 10
+     selector:
+       matchLabels:
+         name: webapp-mysql
+     strategy:
+       rollingUpdate:
+         maxSurge: 25%
+         maxUnavailable: 25%
+       type: RollingUpdate
+     template:
+       metadata:
+         creationTimestamp: null
+         labels:
+           name: webapp-mysql
+         name: webapp-mysql
+       spec:
+         containers:
+         - env:
+           - name: DB_Host
+             value: mysql-service
+           - name: DB_User
+             value: root
+           - name: DB_Password
+             value: paswrd
+   ```
+
+   **Check pod "mysql"**
+
+   ```
+   controlplane ~ ➜  kubectl describe pod mysql 
+   Name:             mysql
+   Namespace:        epsilon
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/172.25.0.73
+   Start Time:       Tue, 17 Jan 2023 07:41:16 +0000
+   Labels:           name=mysql
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.42.0.17
+   IPs:
+     IP:  10.42.0.17
+   Containers:
+     mysql:
+       Container ID:   containerd://5646fa321258503390bbe4500487bc03d99422065a9f7d41f37cab0ad7ae2791
+       Image:          mysql:5.6
+       Image ID:       docker.io/library/mysql@sha256:20575ecebe6216036d25dab5903808211f1e9ba63dc7825ac20cb975e34cfcae
+       Port:           3306/TCP
+       Host Port:      0/TCP
+       State:          Running
+         Started:      Tue, 17 Jan 2023 07:41:20 +0000
+       Ready:          True
+       Restart Count:  0
+       Environment:
+         MYSQL_ROOT_PASSWORD:  passwooooorrddd
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-zzthf (ro)
+   ```
+
+   **Edit pod "mysql"**
+
+   - **Change Environment "MYSQL_ROOT_PASSWORD" from "passwooooorrddd" to "paswrd"**
+
+   ```
+   controlplane ~ ➜  kubectl edit pod mysql 
+   ```
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: "2023-01-17T07:41:16Z"
+     labels:
+       name: mysql
+     name: mysql
+     namespace: epsilon
+     resourceVersion: "1032"
+     uid: 96e2da4a-70f5-4020-bab8-989c3fc232a7
+   spec:
+     containers:
+     - env:
+       - name: MYSQL_ROOT_PASSWORD
+         value: paswrd
+   ```
+
+   ```
+   controlplane ~ ✖ kubectl replace --force -f /tmp/kubectl-edit-1473806788.yaml
+   pod "mysql" deleted
+   pod/mysql replaced
+   ```
+
+   **Check web application**
+
+   ```
+   controlplane ~ ➜  curl http://localhost:30081
+   <!doctype html>
+   <title>Hello from Flask</title>
+   <body style="background: #39b54b;"></body>
+   <div style="color: #e4e4e4;
+       text-align:  center;
+       height: 90px;
+       vertical-align:  middle;">
+   
+     
+       <!-- <h1> DATABASE CONNECTION SUCCESSFUL !</h1> -->
+       <img src="/static/img/success.jpg">
+     
+   
+     
+       <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=root; DB_Password=paswrd;  </h2>
+     
+   
+     
+       <p> From webapp-mysql-7cc9dcdffd-8fphn!</p>
+     
+   
+     
+   
+   </div>
+   ```
+
+### Troubleshooting Test 6
+
+6. **Troubleshooting Test 6:** The same 2 tier application is deployed in the `zeta` namespace. It must display a green web page on success. Click on the `App` tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
+
+   Stick to the given architecture. Use the same names and port numbers as given in the below architecture diagram. Feel free to edit, delete or recreate objects as necessary.
+
+   CheckCompleteIncomplete
+
+   - Fix Issue
+   - Fix Issue
+   - Fix Issue
+   
+   ![image-20230117160444272](images/image-20230117160444272.png)
+   
+   **Set the default namespace to epsilon**
+   
+   ```
+   controlplane ~ ➜  kubectl config set-context --current --namespace zeta
+   Context "default" modified.
+   ```
+   
+   **Check web application**
+   
+   ```
+   controlplane ~ ➜  curl http://localhost:30081
+   curl: (7) Failed to connect to localhost port 30081 after 0 ms: Connection refused
+   ```
+   
+   ```
+   kubectl get svc
+   NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+   mysql-service   ClusterIP   10.43.220.39    <none>        3306/TCP         4m53s
+   web-service     NodePort    10.43.116.130   <none>        8080:30088/TCP   4m53s
+   ```
+   
+   **Edit service "web-service"**
+   
+   - **Change nodePort from "30088" to "30081"**
+   
+   ```
+   controlplane ~ ➜  kubectl edit svc web-service 
+   ```
+   
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     creationTimestamp: "2023-01-17T08:03:32Z"
+     name: web-service
+     namespace: zeta
+     resourceVersion: "1108"
+     uid: df787569-5a81-48ff-b7ef-9cd4b82f9e66
+   spec:
+     clusterIP: 10.43.116.130
+     clusterIPs:
+     - 10.43.116.130
+     externalTrafficPolicy: Cluster
+     internalTrafficPolicy: Cluster
+     ipFamilies:
+     - IPv4
+     ipFamilyPolicy: SingleStack
+     ports:
+     - nodePort: 30088
+       port: 8080
+       protocol: TCP
+       targetPort: 8080
+     selector:
+       name: webapp-mysql
+     sessionAffinity: None
+     type: NodePort
+   status:
+     loadBalancer: {}
+   ```
+   
+   **Check web application**
+   
+   ```
+   controlplane ~ ✖ curl http://localhost:30081
+   <!doctype html>
+   <title>Hello from Flask</title>
+   <body style="background: #ff3f3f;"></body>
+   <div style="color: #e4e4e4;
+       text-align:  center;
+       height: 90px;
+       vertical-align:  middle;">
+   
+     
+       <img src="/static/img/failed.png">
+       <!-- <h1> DATABASE CONNECTION FAILED !!</h1> -->
+     
+   
+     
+       <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=sql-user; DB_Password=paswrd; 1045 (28000): Access denied for user &#39;sql-user&#39;@&#39;10.42.0.21&#39; (using password: YES) </h2>
+     
+   
+     
+       <p> From webapp-mysql-78c8f7998b-2qc5m!</p>
+     
+   
+     
+   
+   </div>
+   ```
+   
+   **Edit deployment "webapp-mysql"**
+   
+   - **Change DB_User from "sql-user" to "root"**
+   
+   ```
+   controlplane ~ ➜  kubectl edit deployment webapp-mysql 
+   ```
+   
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     annotations:
+       deployment.kubernetes.io/revision: "1"
+     creationTimestamp: "2023-01-17T07:41:16Z"
+     generation: 1
+     labels:
+       name: webapp-mysql
+     name: webapp-mysql
+     namespace: epsilon
+     resourceVersion: "1041"
+     uid: 13a4c834-62f2-4e76-b5ba-03c183df302c
+   spec:
+     progressDeadlineSeconds: 600
+     replicas: 1
+     revisionHistoryLimit: 10
+     selector:
+       matchLabels:
+         name: webapp-mysql
+     strategy:
+       rollingUpdate:
+         maxSurge: 25%
+         maxUnavailable: 25%
+       type: RollingUpdate
+     template:
+       metadata:
+         creationTimestamp: null
+         labels:
+           name: webapp-mysql
+         name: webapp-mysql
+       spec:
+         containers:
+         - env:
+           - name: DB_Host
+             value: mysql-service
+           - name: DB_User
+             value: root
+           - name: DB_Password
+             value: paswrd
+   ```
+   
+   **Check pod "mysql"**
+   
+   - **Change Environment "MYSQL_ROOT_PASSWORD" from "passwooooorrddd" to "paswrd"**
+   
+   ```
+   controlplane ~ ➜  kubectl edit pod mysql 
+   ```
+   
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: "2023-01-17T07:41:16Z"
+     labels:
+       name: mysql
+     name: mysql
+     namespace: epsilon
+     resourceVersion: "1032"
+     uid: 96e2da4a-70f5-4020-bab8-989c3fc232a7
+   spec:
+     containers:
+     - env:
+       - name: MYSQL_ROOT_PASSWORD
+         value: paswrd
+   ```
+   
+   ```
+   controlplane ~ ✖ kubectl replace --force -f /tmp/kubectl-edit-1473806788.yaml
+   pod "mysql" deleted
+   pod/mysql replaced
+   ```
+   
+   **Check web application**
+   
+   ```
+   controlplane ~ ➜  curl http://localhost:30081
+   <!doctype html>
+   <title>Hello from Flask</title>
+   <body style="background: #39b54b;"></body>
+   <div style="color: #e4e4e4;
+       text-align:  center;
+       height: 90px;
+       vertical-align:  middle;">
+   
+     
+       <!-- <h1> DATABASE CONNECTION SUCCESSFUL !</h1> -->
+       <img src="/static/img/success.jpg">
+     
+   
+     
+       <h2> Environment Variables: DB_Host=mysql-service; DB_Database=Not Set; DB_User=root; DB_Password=paswrd;  </h2>
+     
+   
+     
+       <p> From webapp-mysql-7cc9dcdffd-qchw6!</p>
+     
+   
+     
+   
+   </div>
+   ```
+
+
+
+## PRACTICE TEST CONTROL PLANE FAILURE
+
+
+
+1. The cluster is broken. We tried deploying an application but it's not working. Troubleshoot and fix the issue.
+
+   Start looking at the deployments.
+
+   Check
+
+   - Fix the cluster
+
+   ```
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS   ROLES           AGE     VERSION
+   controlplane   Ready    control-plane   5m53s   v1.26.0
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get deployments
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   app    0/1     1            0           2m46s
+   ```
+
+   **Check the pod "app"**
+
+   - **Status is "Pending" and it is not assigned to any node**
+   - **Scheduler job is to assign pods to nodes**
+
+   ```
+   controlplane ~ ➜  kubectl describe pod app-865fdf7bbf-prbmc 
+   Name:             app-865fdf7bbf-prbmc
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             <none>
+   Labels:           app=app
+                     pod-template-hash=865fdf7bbf
+   Annotations:      <none>
+   Status:           Pending
+   IP:               
+   IPs:              <none>
+   Controlled By:    ReplicaSet/app-865fdf7bbf
+   Containers:
+     nginx:
+       Image:        nginx:alpine
+       Port:         <none>
+       Host Port:    <none>
+       Environment:  <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-25vgq (ro)
+   Volumes:
+     kube-api-access-25vgq:
+       Type:                    Projected (a volume that contains injected data from multiple sources)
+       TokenExpirationSeconds:  3607
+       ConfigMapName:           kube-root-ca.crt
+       ConfigMapOptional:       <nil>
+       DownwardAPI:             true
+   QoS Class:                   BestEffort
+   Node-Selectors:              <none>
+   Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                                node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+   Events:                      <none>
+   ```
+
+   **Check scheduler status**
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS             RESTARTS        AGE
+   coredns-787d4945fb-blk8g               1/1     Running            0               22m
+   coredns-787d4945fb-z4gh6               1/1     Running            0               22m
+   etcd-controlplane                      1/1     Running            0               23m
+   kube-apiserver-controlplane            1/1     Running            0               23m
+   kube-controller-manager-controlplane   1/1     Running            0               23m
+   kube-proxy-m5ljc                       1/1     Running            0               22m
+   kube-scheduler-controlplane            0/1     CrashLoopBackOff   8 (3m57s ago)   19m
+   ```
+
+   **Check the "events" and "commands part"**
+
+   - The command is misspelled to "kube-schedulerrrr" 
+
+   ```
+   controlplane ~ ➜  kubectl describe -n kube-system pods kube-scheduler-controlplane 
+   Name:                 kube-scheduler-controlplane
+   Namespace:            kube-system
+   Priority:             2000001000
+   Priority Class Name:  system-node-critical
+   Node:                 controlplane/10.35.231.6
+   Start Time:           Tue, 17 Jan 2023 03:19:20 -0500
+   Labels:               component=kube-scheduler
+                         tier=control-plane
+   Annotations:          kubernetes.io/config.hash: ba87dfc82718067f5aa1792d603e49fb
+                         kubernetes.io/config.mirror: ba87dfc82718067f5aa1792d603e49fb
+                         kubernetes.io/config.seen: 2023-01-17T03:22:13.408231849-05:00
+                         kubernetes.io/config.source: file
+   Status:               Running
+   IP:                   10.35.231.6
+   IPs:
+     IP:           10.35.231.6
+   Controlled By:  Node/controlplane
+   Containers:
+     kube-scheduler:
+       Container ID:  containerd://00d75c769de7b53b0fb1f0ac82171245052e66e840c01db557414dc967e6968f
+       Image:         registry.k8s.io/kube-scheduler:v1.26.0
+       Image ID:      registry.k8s.io/kube-scheduler@sha256:34a142549f94312b41d4a6cd98e7fddabff484767a199333acb7503bf46d7410
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         kube-schedulerrrr
+         --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
+         --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
+         --bind-address=127.0.0.1
+         --kubeconfig=/etc/kubernetes/scheduler.conf
+         --leader-elect=true
+       State:          Waiting
+         Reason:       CrashLoopBackOff
+       Last State:     Terminated
+         Reason:       StartError
+         Message:      failed to create containerd task: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: exec: "kube-schedulerrrr": executable file not found in $PATH: unknown
+         Exit Code:    128
+         Started:      Wed, 31 Dec 1969 19:00:00 -0500
+         Finished:     Tue, 17 Jan 2023 03:38:27 -0500
+       Ready:          False
+       Restart Count:  8
+       Requests:
+         cpu:        100m
+       Liveness:     http-get https://127.0.0.1:10259/healthz delay=10s timeout=15s period=10s #success=1 #failure=8
+       Startup:      http-get https://127.0.0.1:10259/healthz delay=10s timeout=15s period=10s #success=1 #failure=24
+       Environment:  <none>
+       Mounts:
+         /etc/kubernetes/scheduler.conf from kubeconfig (ro)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             False 
+     ContainersReady   False 
+     PodScheduled      True 
+   Volumes:
+     kubeconfig:
+       Type:          HostPath (bare host directory volume)
+       Path:          /etc/kubernetes/scheduler.conf
+       HostPathType:  FileOrCreate
+   QoS Class:         Burstable
+   Node-Selectors:    <none>
+   Tolerations:       :NoExecute op=Exists
+   Events:
+     Type     Reason   Age                  From     Message
+     ----     ------   ----                 ----     -------
+     Normal   Created  19m (x4 over 20m)    kubelet  Created container kube-scheduler
+     Warning  Failed   19m (x4 over 20m)    kubelet  Error: failed to create containerd task: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: exec: "kube-schedulerrrr": executable file not found in $PATH: unknown
+     Normal   Pulled   19m (x5 over 20m)    kubelet  Container image "registry.k8s.io/kube-scheduler:v1.26.0" already present on machine
+     Warning  BackOff  40s (x106 over 20m)  kubelet  Back-off restarting failed container kube-scheduler in pod kube-scheduler-controlplane_kube-system(ba87dfc82718067f5aa1792d603e49fb)
+   ```
+
+   **Edit the kube-sheduler yaml manifest file**
+
+   - edit the command from "kube-schedulerrrr" to  "kube-scheduler"
+
+   ```
+   controlplane ~ ➜  vi /etc/kubernetes/manifests/kube-scheduler.yaml 
+   ```
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       component: kube-scheduler
+       tier: control-plane
+     name: kube-scheduler
+     namespace: kube-system
+   spec:
+     containers:
+     - command:
+       - kube-scheduler
+       - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
+       - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
+       - --bind-address=127.0.0.1
+       - --kubeconfig=/etc/kubernetes/scheduler.conf
+       - --leader-elect=true
+       image: registry.k8s.io/kube-scheduler:v1.26.0
+       imagePullPolicy: IfNotPresent
+       livenessProbe:
+         failureThreshold: 8
+         httpGet:
+           host: 127.0.0.1
+           path: /healthz
+           port: 10259
+           scheme: HTTPS
+         initialDelaySeconds: 10
+         periodSeconds: 10
+         timeoutSeconds: 15
+       name: kube-scheduler
+       resources:
+         requests:
+           cpu: 100m
+       startupProbe:
+         failureThreshold: 24
+         httpGet:
+           host: 127.0.0.1
+           path: /healthz
+           port: 10259
+           scheme: HTTPS
+         initialDelaySeconds: 10
+         periodSeconds: 10
+         timeoutSeconds: 15
+       volumeMounts:
+       - mountPath: /etc/kubernetes/scheduler.conf
+         name: kubeconfig
+         readOnly: true
+     hostNetwork: true
+     priorityClassName: system-node-critical
+     securityContext:
+       seccompProfile:
+         type: RuntimeDefault
+     volumes:
+     - hostPath:
+         path: /etc/kubernetes/scheduler.conf
+         type: FileOrCreate
+       name: kubeconfig
+   status: {}
+   ```
+
+   **Check kube-scheduler pod status**
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   coredns-787d4945fb-blk8g               1/1     Running   0          30m
+   coredns-787d4945fb-z4gh6               1/1     Running   0          30m
+   etcd-controlplane                      1/1     Running   0          30m
+   kube-apiserver-controlplane            1/1     Running   0          30m
+   kube-controller-manager-controlplane   1/1     Running   0          30m
+   kube-proxy-m5ljc                       1/1     Running   0          30m
+   kube-scheduler-controlplane            1/1     Running   0          85s
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get pods 
+   NAME                   READY   STATUS    RESTARTS   AGE
+   app-865fdf7bbf-prbmc   1/1     Running   0          29m
+   ```
+
+2. Scale the deployment `app` to 2 pods.
+
+   Check
+
+   - Scale Deployment to 2 PODs
+
+   ```
+   controlplane ~ ➜  kubectl get deployment
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   app    1/1     1            1           31m
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl scale deployment app --replicas=2
+   deployment.apps/app scaled
+   ```
+
+3. Even though the deployment was scaled to 2, the number of `PODs` does not seem to increase. Investigate and fix the issue.
+
+   Inspect the component responsible for managing `deployments` and `replicasets`.
+
+   Check
+
+   - Fix issue
+   - Wait for deployment to actually scale
+
+   Check the status of all control plane components and identify the component's pod which has an issue.
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS             RESTARTS      AGE
+   coredns-787d4945fb-blk8g               1/1     Running            0             37m
+   coredns-787d4945fb-z4gh6               1/1     Running            0             37m
+   etcd-controlplane                      1/1     Running            0             37m
+   kube-apiserver-controlplane            1/1     Running            0             37m
+   kube-controller-manager-controlplane   0/1     CrashLoopBackOff   5 (57s ago)   4m21s
+   kube-proxy-m5ljc                       1/1     Running            0             37m
+   kube-scheduler-controlplane            1/1     Running            0             7m58s
+   ```
+
+   Check the logs of `kube-controller-manager` pod to know the failure reason
+
+   ```
+   controlplane ~ ➜  kubectl logs -n kube-system kube-controller-manager-controlplane 
+   I0117 08:55:43.025320       1 serving.go:348] Generated self-signed cert in-memory
+   E0117 08:55:43.025490       1 run.go:74] "command failed" err="stat /etc/kubernetes/controller-manager-XXXX.conf: no such file or directory"
+   ```
+
+   Check the kube-controller-manager configuration file
+
+   - Edit "--kubeconfig=/etc/kubernetes/controller-manager-XXXX.conf" to ""--kubeconfig=/etc/kubernetes/controller-manager.conf"
+
+   ```
+   controlplane ~ ➜  vim /etc/kubernetes/manifests/kube-controller-manager.yaml 
+   ```
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       component: kube-controller-manager
+       tier: control-plane
+     name: kube-controller-manager
+     namespace: kube-system
+   spec:
+     containers:
+     - command:
+       - kube-controller-manager
+       - --allocate-node-cidrs=true
+       - --authentication-kubeconfig=/etc/kubernetes/controller-manager.conf
+       - --authorization-kubeconfig=/etc/kubernetes/controller-manager.conf
+       - --bind-address=127.0.0.1
+       - --client-ca-file=/etc/kubernetes/pki/ca.crt
+       - --cluster-cidr=10.244.0.0/16
+       - --cluster-name=kubernetes
+       - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
+       - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
+       - --controllers=*,bootstrapsigner,tokencleaner
+       - --kubeconfig=/etc/kubernetes/controller-manager.conf
+       - --leader-elect=true
+       - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
+       - --root-ca-file=/etc/kubernetes/pki/ca.crt
+       - --service-account-private-key-file=/etc/kubernetes/pki/sa.key
+       - --service-cluster-ip-range=10.96.0.0/12
+       - --use-service-account-credentials=true
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   coredns-787d4945fb-blk8g               1/1     Running   0          44m
+   coredns-787d4945fb-z4gh6               1/1     Running   0          44m
+   etcd-controlplane                      1/1     Running   0          44m
+   kube-apiserver-controlplane            1/1     Running   0          44m
+   kube-controller-manager-controlplane   1/1     Running   0          23s
+   kube-proxy-m5ljc                       1/1     Running   0          44m
+   kube-scheduler-controlplane            1/1     Running   0          15m
+   ```
+
+   Check the deployments
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps 
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   app    2/2     2            2           41m
+   ```
+
+4. Something is wrong with scaling again. We just tried scaling the deployment to 3 replicas. But it's not happening.
+
+   Investigate and fix the issue.
+
+   Check
+
+   - Fix Issue
+   - Wait for deployment to actually scale
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps 
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   app    2/3     2            2           44m
+   ```
+
+   Check the status of all control plane components and identify the component's pod which has an issue.
+
+   ```
+   controlplane ~ ➜  kubectl get pod -n kube-system 
+   NAME                                   READY   STATUS             RESTARTS        AGE
+   coredns-787d4945fb-blk8g               1/1     Running            0               51m
+   coredns-787d4945fb-z4gh6               1/1     Running            0               51m
+   etcd-controlplane                      1/1     Running            0               51m
+   kube-apiserver-controlplane            1/1     Running            0               51m
+   kube-controller-manager-controlplane   0/1     CrashLoopBackOff   5 (2m32s ago)   5m47s
+   kube-proxy-m5ljc                       1/1     Running            0               51m
+   kube-scheduler-controlplane            1/1     Running            0               22m
+   ```
+
+   Check the logs of `kube-controller-manager` pod to know the failure reason
+
+   ```
+   controlplane ~ ✖ kubectl logs -n kube-system kube-controller-manager-controlplane
+   I0117 09:11:23.382065       1 serving.go:348] Generated self-signed cert in-memory
+   E0117 09:11:23.909007       1 run.go:74] "command failed" err="unable to load client CA provider: open /etc/kubernetes/pki/ca.crt: no such file or directory"
+   ```
+
+   Inspect the pod manifest file, we can see that the incorrect hostPath is used for the volume:
+
+   `WRONG`:
+
+   ```yaml
+   - hostPath:
+         path: /etc/kubernetes/WRONG-PKI-DIRECTORY
+         type: DirectoryOrCreate
+   ```
+
+   `CORRECT`:
+
+   ```yaml
+   - hostPath: 
+       path: /etc/kubernetes/pki 
+       type: DirectoryOrCreate 
+   ```
+
+   Edit kube-controller-manager manifest file
+
+   ```
+   controlplane ~ ➜  vim /etc/kubernetes/manifests/kube-controller-manager.yaml 
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   coredns-787d4945fb-blk8g               1/1     Running   0          58m
+   coredns-787d4945fb-z4gh6               1/1     Running   0          58m
+   etcd-controlplane                      1/1     Running   0          58m
+   kube-apiserver-controlplane            1/1     Running   0          58m
+   kube-controller-manager-controlplane   1/1     Running   0          43s
+   kube-proxy-m5ljc                       1/1     Running   0          58m
+   kube-scheduler-controlplane            1/1     Running   0          29m
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps 
+   NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+   app    3/3     3            3           55m
+   ```
+
+
+
+## PRACTICE TEST WORKER NODE FAILURE
+
+1. Fix the broken cluster
+
+   Check
+
+   - Fix node01
+
+   **Step1:** Check the status of the nodes:
+
+   ```sh
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS     ROLES           AGE   VERSION
+   controlplane   Ready      control-plane   12m   v1.26.0
+   node01         NotReady   <none>          11m   v1.26.0
+   ```
+
+   **Step 2:** SSH to `node01` and check the status of the `kubelet` service.
+
+   ```sh
+   root@node01 ~ ➜  systemctl status kubelet.service 
+   ● kubelet.service - kubelet: The Kubernetes Node Agent
+        Loaded: loaded (/lib/systemd/system/kubelet.service; enabled; vendor preset: enabled)
+       Drop-In: /etc/systemd/system/kubelet.service.d
+                └─10-kubeadm.conf
+        Active: inactive (dead) since Tue 2023-01-17 04:54:20 EST; 7min ago
+          Docs: https://kubernetes.io/docs/home/
+       Process: 2048 ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBEL>
+      Main PID: 2048 (code=exited, status=0/SUCCESS)
+   
+   Jan 17 04:46:54 node01 kubelet[2048]: I0117 04:46:54.027920    2048 reconciler_common.go:253] "op>
+   Jan 17 04:46:54 node01 kubelet[2048]: I0117 04:46:54.027958    2048 reconciler.go:41] "Reconciler>
+   Jan 17 04:46:55 node01 kubelet[2048]: I0117 04:46:55.208930    2048 request.go:682] Waited for 1.>
+   Jan 17 04:46:56 node01 kubelet[2048]: E0117 04:46:56.536426    2048 gcpcredential.go:74] while re>
+   Jan 17 04:46:59 node01 kubelet[2048]: I0117 04:46:59.556949    2048 pod_startup_latency_tracker.g>
+   Jan 17 04:47:02 node01 kubelet[2048]: I0117 04:47:02.855807    2048 transport.go:135] "Certificat>
+   Jan 17 04:47:03 node01 kubelet[2048]: I0117 04:47:03.218478    2048 kubelet_node_status.go:493] ">
+   Jan 17 04:47:04 node01 kubelet[2048]: E0117 04:47:04.441334    2048 cadvisor_stats_provider.go:44>
+   Jan 17 04:47:04 node01 kubelet[2048]: I0117 04:47:04.936550    2048 pod_startup_latency_tracker.g>
+   Jan 17 04:54:20 node01 kubelet[2048]: I0117 04:54:20.287375    2048 dynamic_cafile_content.go:171>
+   ```
+
+   Since the `kubelet` is not running, attempt to start it by running the following command:
+
+   ```sh
+   root@node01 ~ ✖ systemctl start kubelet.service 
+   
+   root@node01 ~ ➜  systemctl status kubelet.service 
+   ● kubelet.service - kubelet: The Kubernetes Node Agent
+        Loaded: loaded (/lib/systemd/system/kubelet.service; enabled; vendor preset: enabled)
+       Drop-In: /etc/systemd/system/kubelet.service.d
+                └─10-kubeadm.conf
+        Active: active (running) since Tue 2023-01-17 05:03:26 EST; 8s ago
+          Docs: https://kubernetes.io/docs/home/
+      Main PID: 5449 (kubelet)
+         Tasks: 24 (limit: 541680)
+        Memory: 43.7M
+        CGroup: /system.slice/kubelet.service
+                └─5449 /usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.con>
+   ```
+
+   `node01` should go back to ready state now.
+
+   ```
+   controlplane ~ ✖ kubectl get nodes
+   NAME           STATUS   ROLES           AGE   VERSION
+   controlplane   Ready    control-plane   18m   v1.26.0
+   node01         Ready    <none>          17m   v1.26.0
+   ```
+
+2. The cluster is broken again. Investigate and fix the issue.
+
+   Check
+
+   - Fix cluster
+
+   ```
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS     ROLES           AGE   VERSION
+   controlplane   Ready      control-plane   20m   v1.26.0
+   node01         NotReady   <none>          20m   v1.26.0
+   ```
+
+   ```
+   controlplane ~ ➜  ssh node01
+   Last login: Tue Jan 17 05:01:25 2023 from 10.42.184.12
+   
+   root@node01 ~ ➜  systemctl status kubelet.service 
+   ● kubelet.service - kubelet: The Kubernetes Node Agent
+        Loaded: loaded (/lib/systemd/system/kubelet.service; enabled; vendor preset: enabled)
+       Drop-In: /etc/systemd/system/kubelet.service.d
+                └─10-kubeadm.conf
+        Active: activating (auto-restart) (Result: exit-code) since Tue 2023-01-17 05:09:53 EST; 8s >
+          Docs: https://kubernetes.io/docs/home/
+       Process: 7230 ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBEL>
+      Main PID: 7230 (code=exited, status=1/FAILURE)
+   lines 1-8/8 (END)
+   ```
+
+   
+
+   `kubelet` has stopped running on `node01` again. Since this is a systemd managed system, we can check the `kubelet` log by running `journalctl` command. Here is a snippet showing the error with `kubelet`:
+
+   ```sh
+   root@node01 ~ ➜  journalctl -u kubelet
+   -- Logs begin at Tue 2023-01-17 04:45:57 EST, end at Tue 2023-01-17 05:10:44 EST. --
+   Jan 17 04:45:59 node01 kubelet[969]: E0117 04:45:59.832554     969 run.go:74] "command failed" err="failed to validate kubelet flags: the c>
+   ...
+   Jan 17 05:05:25 node01 kubelet[6046]: E0117 05:05:25.257368    6046 run.go:74] "command failed" err="failed to construct kubelet dependencies: unable to load client CA file /etc/kubernetes/pki/WRONG-CA-FILE.crt: open /etc>
+   
+   ```
+
+   There appears to be a mistake path used for the CA certificate in the `kubelet` configuration. This can be corrected by updating the file `/var/lib/kubelet/config.yaml`.
+
+   Once this is fixed, restart the `kubelet` service, (like we did in the previous question) and `node01` should return back to a working state.
+
+   ```
+   root@node01 ~ ➜  vim /var/lib/kubelet/config.yaml 
+   ```
+
+   ```
+   apiVersion: kubelet.config.k8s.io/v1beta1
+   authentication:
+     anonymous:
+       enabled: false
+     webhook:
+       cacheTTL: 0s
+       enabled: true
+     x509:
+       clientCAFile: /etc/kubernetes/pki/ca.crt
+   ```
+
+   ```
+   root@node01 ~ ➜  systemctl status kubelet.service 
+   ● kubelet.service - kubelet: The Kubernetes Node Agent
+        Loaded: loaded (/lib/systemd/system/kubelet.service; enabled; vendor preset: enabled)
+       Drop-In: /etc/systemd/system/kubelet.service.d
+                └─10-kubeadm.conf
+        Active: active (running) since Tue 2023-01-17 05:24:12 EST; 21s ago
+          Docs: https://kubernetes.io/docs/home/
+      Main PID: 10832 (kubelet)
+         Tasks: 25 (limit: 541680)
+        Memory: 44.8M
+        CGroup: /system.slice/kubelet.service
+                └─10832 /usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubern>
+   ```
+
+   ```
+   controlplane ~ ✖ kubectl get nodes
+   NAME           STATUS   ROLES           AGE   VERSION
+   controlplane   Ready    control-plane   38m   v1.26.0
+   node01         Ready    <none>          38m   v1.26.0
+   ```
+
+3. The cluster is broken again. Investigate and fix the issue.
+
+   Check
+
+   - Fix Cluster
+
+     
+
+   ```
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS     ROLES           AGE   VERSION
+   controlplane   Ready      control-plane   41m   v1.26.0
+   node01         NotReady   <none>          40m   v1.26.0
+   ```
+
+   Once again the `kubelet` service has stopped working. Checking the logs, we can see that this time, it is not able to reach the `kube-apiserver`.
+
+   ```
+   root@node01 ~ ➜  systemctl status kubelet.service 
+   ● kubelet.service - kubelet: The Kubernetes Node Agent
+        Loaded: loaded (/lib/systemd/system/kubelet.service; enabled; vendor preset: enabled)
+       Drop-In: /etc/systemd/system/kubelet.service.d
+                └─10-kubeadm.conf
+        Active: active (running) since Tue 2023-01-17 05:25:48 EST; 5min ago
+          Docs: https://kubernetes.io/docs/home/
+      Main PID: 11337 (kubelet)
+         Tasks: 37 (limit: 541680)
+        Memory: 59.9M
+        CGroup: /system.slice/kubelet.service
+                └─11337 /usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubern>
+   ```
+
+   Check the logs of kubelet
+
+   ```sh
+   root@node01:~# journalctl -u kubelet 
+   .
+   .
+   .
+   Jan 17 05:42:01 node01 kubelet[11337]: E0117 05:42:01.676726   11337 reflector.go:140] vendor/k8s.io/client-go/informers/factory.go:150: Failed to watch *v1.Node: failed to list *v1.Node: Get "https://controlplane:6553/api/v1/nodes?fieldSelector=metadata.name%3Dnode01&limit=500&resourceVersion=0": dial tcp 10.42.184.12:6553: connect: connection refused
+   .
+   .
+   .
+   ```
+
+   As we can clearly see, `kubelet` is trying to connect to the API server on the `controlplane` node on port `6553`. This is incorrect. To fix, correct the port on the `kubeconfig` file used by the `kubelet`. 
+
+   Chage port to 6443
+
+   ```
+   root@node01 ~ ➜  vi /etc/kubernetes/kubelet.conf 
+   ```
+
+   ```sh
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJek1ERXhOekE1TkRVME9Gb1hEVE16TURFeE5EQTVORFUwT0Zvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTnl0Ck4rTmQvcmVBR1hsMDYyM3FkNndhZnkvMEQwVXZGeXU5endvM1dlaC8rMC9Nd2R2VGsycVFLMW5DVmpzV2RYTjcKbk01U3ltZ1FKeG8zU2t6VW9CSW0wb3IxemlCMzF1VzlCVThEZ3RBbVNmZFFzUHBTblo1cFA1cmc4amFXMzU0LwplR2tXaWg2OFpXeDF6QmtlVFlqYW52K1BhUUlRZkhRSWhacnB2ZU00dTFkUWREN1dFMlFXU3NnZCtiMHJidmJYClZva2xjY1I1ODFQelVTVFBid0ZjZkc5QjFMOERwV3pEWE5CemtYSmdkQlJ6R1JkYjh0Q3BuclBKemgrRFduWXMKYUZXMEJTWE1lVEloaTRGcDNUZUp4cDhEUTNFSFJXdm9yRityMHF0KzR1QWpVUEw5OCs1K0EvZWVlc3k1NmJwVwpCdWF0cEtmSUlVMXROaThGWmZNQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZJcnZYQkhaZW15YjdSMC9PSmZNRHY5T2xXRGhNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBR1Zud0lIeDZJZlpHSHlNT1Q1egp1c2p3UGUwTU92aDVESXBiZFF1M1dJNlhiZVhWSXcvSS9VbXB1R0R0VVl6RlpiNnhIbEF2bTh6c1ZoSHNlOC82CmFlOXYrMDdxMElWMGxTNEdQRGhRZDk3aC9ZVk1LcXVLeGI3aEUzSHFNWTRLQjNBZXZCazd3bGlnZTdoTUk4c24KOWRIaThsc1o5NHN5blRWTWtTUE5TVTRLa29ocXlaVE1WUi9HRWNOc1NxWCtwUjgvMVFpTEhrL2M3eVI5Ykl4QgpEQTRKVVJON21oeWVVakRrWEZGVm50eGVqMVNuUnlEckkwMjJsOXozQ2VseEpZUmxiSFJWUExhREE5WXIrbFZHCkI3VU13K21nRG5GaWpSMWUrVVVib05ITFNXUjRXMWJUQnEzdjNyVlQwMVd0dXlVQVl3NEpVdDdQUFZ5N2c1QlYKYS9vPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+       server: https://controlplane:6443
+   ```
+
+   Restart the `kubelet` service after this change.
+
+   ```sh
+   root@node01 ~ ➜  systemctl restart kubelet.service 
+   ```
+
+   ```\
+   controlplane ~ ✖ kubectl get nodes
+   NAME           STATUS   ROLES           AGE   VERSION
+   controlplane   Ready    control-plane   60m   v1.26.0
+   node01         Ready    <none>          60m   v1.26.0
+   ```
+
+
+
+## PRACTICE TEST – TROUBLESHOOT NETWORK
+
+1. `**Troubleshooting Test 1:**` A simple 2 tier application is deployed in the `triton` namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
+
+   Stick to the given architecture. Use the same names and port numbers as given in the below architecture diagram. Feel free to edit, delete or recreate objects as necessary.
+
+   Check
+
+   - DB Service working?
+   - WebApp Service working?
+
+   ![image-20230117195740131](images/image-20230117195740131.png)
+
+   **Set the default namespace to triton**
+
+   ```
+   root@controlplane ~ ➜  kubectl config set-context --current --namespace=triton
+   Context "kubernetes-admin@kubernetes" modified.
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   coredns-787d4945fb-dnvsw               1/1     Running   0          72m
+   coredns-787d4945fb-hnnzv               1/1     Running   0          72m
+   etcd-controlplane                      1/1     Running   0          73m
+   kube-apiserver-controlplane            1/1     Running   0          73m
+   kube-controller-manager-controlplane   1/1     Running   0          73m
+   kube-proxy-r89d4                       1/1     Running   0          72m
+   kube-scheduler-controlplane            1/1     Running   0          73m
+   ```
+
+   
+
+   Do the services in `triton` namespace have a valid endpoint? If they do, check the `kube-proxy` and the `weave` logs.
+   Does the cluster have a Network Addon installed?
+
+   Install Weave using the link: `https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network`
+
+   For example: `curl -L https://github.com/weaveworks/weave/releases/download/latest_release/weave-daemonset-k8s-1.11.yaml | kubectl apply -f -`
+
+   ```
+   root@controlplane ~ ➜  wget https://github.com/weaveworks/weave/releases/download/latest_release/weave-daemonset-k8s-1.11.yaml
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl apply -f weave-daemonset-k8s-1.11.yaml 
+   serviceaccount/weave-net created
+   clusterrole.rbac.authorization.k8s.io/weave-net created
+   clusterrolebinding.rbac.authorization.k8s.io/weave-net created
+   role.rbac.authorization.k8s.io/weave-net created
+   rolebinding.rbac.authorization.k8s.io/weave-net created
+   daemonset.apps/weave-net created
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl get pods -n kube-system NAME                                   READY   STATUS    RESTARTS   AGE
+   coredns-787d4945fb-dnvsw               1/1     Running   0          80m
+   coredns-787d4945fb-hnnzv               1/1     Running   0          80m
+   etcd-controlplane                      1/1     Running   0          80m
+   kube-apiserver-controlplane            1/1     Running   0          80m
+   kube-controller-manager-controlplane   1/1     Running   0          80m
+   kube-proxy-r89d4                       1/1     Running   0          80m
+   kube-scheduler-controlplane            1/1     Running   0          80m
+   weave-net-tgvbw                        2/2     Running   0          20s
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl get pods -o wideNAME                            READY   STATUS    RESTARTS   AGE   IP          NODE           NOMINATED NODE   READINESS GATES
+   mysql                           1/1     Running   0          20m   10.32.0.2   controlplane   <none>           <none>
+   webapp-mysql-74fc8f4448-tzklj   1/1     Running   0          20m   10.32.0.3   controlplane   <none>           <none>
+   
+   root@controlplane ~ ➜  kubectl get svc
+   NAME          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+   mysql         ClusterIP   10.109.53.116    <none>        3306/TCP         20m
+   web-service   NodePort    10.105.194.170   <none>        8080:30081/TCP   20m
+   
+   root@controlplane ~ ➜  kubectl describe svc web-service 
+   Name:                     web-service
+   Namespace:                triton
+   Labels:                   <none>
+   Annotations:              <none>
+   Selector:                 name=webapp-mysql
+   Type:                     NodePort
+   IP Family Policy:         SingleStack
+   IP Families:              IPv4
+   IP:                       10.105.194.170
+   IPs:                      10.105.194.170
+   Port:                     <unset>  8080/TCP
+   TargetPort:               8080/TCP
+   NodePort:                 <unset>  30081/TCP
+   Endpoints:                10.32.0.3:8080
+   Session Affinity:         None
+   External Traffic Policy:  Cluster
+   Events:                   <none>
+   ```
+
+2. `**Troubleshooting Test 2:**` The same 2 tier application is having issues again. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
+
+   Stick to the given architecture. Use the same names and port numbers as given in the below architecture diagram. Feel free to edit, delete or recreate objects as necessary.
+
+   Check
+
+   - Fixed Issue?
+
+   The `kube-proxy` pod is not running. As a result the rules needed to allow connectivity to the services have not been created.
+
+   Check the logs of the `kube-proxy` pod as follows: -
+
+   ```
+   root@controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS             RESTARTS      AGE
+   coredns-787d4945fb-dnvsw               1/1     Running            0             87m
+   coredns-787d4945fb-hnnzv               1/1     Running            0             87m
+   etcd-controlplane                      1/1     Running            0             87m
+   kube-apiserver-controlplane            1/1     Running            0             88m
+   kube-controller-manager-controlplane   1/1     Running            0             87m
+   kube-proxy-p7bf6                       0/1     CrashLoopBackOff   4 (34s ago)   2m12s
+   kube-scheduler-controlplane            1/1     Running            0             88m
+   weave-net-tgvbw                        2/2     Running            0             7m36s
+   ```
+
+   ```sh
+   root@controlplane ~ ➜  kubectl logs -n kube-system kube-proxy-p7bf6 
+   E0117 12:21:39.228283       1 run.go:74] "command failed" err="failed complete: open /var/lib/kube-proxy/configuration.conf: no such file or directory"
+   ```
+
+   
+
+   The configuration file `/var/lib/kube-proxy/configuration.conf` is not valid. The configuration path does not match the data in the ConfigMap.
+
+   `kubectl -n kube-system describe configmap kube-proxy` shows that the file name used is `config.conf` which is mounted in the `kube-proxy` **daemonset pod** at the path `/var/lib/kube-proxy/config.conf`.
+   However in the DaemonSet, for kube-proxy, the command used to start the `kube-proxy` pod makes use of the path `/var/lib/kube-proxy/configuration.conf`.
+
+   Correct this path to `/var/lib/kube-proxy/config.conf` as per the ConfigMap and recreate the `kube-proxy` pod.
+
+   Here is the snippet of the correct command to be run by the `kube-proxy` pod:
+
+   ```
+   root@controlplane ~ ➜  kubectl edit daemonsets.apps -n kube-system kube-proxy 
+   daemonset.apps/kube-proxy edited
+   ```
+
+   ```yaml
+   spec:
+       containers:
+       - command:
+           - /usr/local/bin/kube-proxy
+           - --config=/var/lib/kube-proxy/config.conf
+           - --hostname-override=$(NODE_NAME)
+   ```
+
+   This should get the `kube-proxy` pod back in a running state.
+
+   ```
+   root@controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS   AGE
+   coredns-787d4945fb-dnvsw               1/1     Running   0          114m
+   coredns-787d4945fb-hnnzv               1/1     Running   0          114m
+   etcd-controlplane                      1/1     Running   0          114m
+   kube-apiserver-controlplane            1/1     Running   0          114m
+   kube-controller-manager-controlplane   1/1     Running   0          114m
+   kube-proxy-mtdpb                       1/1     Running   0          5s
+   kube-scheduler-controlplane            1/1     Running   0          114m
+   weave-net-tgvbw                        2/2     Running   0          34m
+   ```
+
+   You can list the config file within a `kube-proxy` pod as follows: -
+
+   ```sh
+   kubectl exec -n kube-system -it kube-proxy-hb7n9 -- ls  /var/lib/kube-proxy/
+   ```
+
+   > Note: - In your lab, the kube-proxy pod name could be different.
