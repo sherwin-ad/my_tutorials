@@ -1620,3 +1620,36 @@ Email Address []: elearning@doh.gov.ph
 </VirtualHost>
 ```
 
+
+
+
+
+## Check a certificate:
+
+Check a certificate and return information about it (signing authority, expiration date, etc.)
+
+```
+openssl x509 -in server.crt -text -noout
+```
+
+
+
+## Check a key:
+
+Check the SSL key and verify the consistency
+
+```
+openssl rsa -in server.key -check
+```
+
+
+
+## Check a CSR
+
+Verify the CSR and print CSR data filled in when generating the CSR
+
+```
+openssl req -text -noout -verify -in server.csr
+```
+
+#### Verify a certificate and key matches

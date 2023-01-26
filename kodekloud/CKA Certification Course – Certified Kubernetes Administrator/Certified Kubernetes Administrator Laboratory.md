@@ -14438,3 +14438,3272 @@ spec:
    ```
 
    > Note: - In your lab, the kube-proxy pod name could be different.
+
+
+
+# OTHER TOPICS, PRACTICE TEST – ADVANCED KUBECTL COMMANDS
+
+
+
+1. Get the list of nodes in JSON format and store it in a file at `/opt/outputs/nodes.json`.
+
+   Check
+
+   - Task completed
+
+   ```
+   kubectl get nodes -o json > /opt/outputs/nodes.json
+   ```
+
+   ```
+   controlplane ~ ➜  cat /opt/outputs/nodes.json
+   {
+       "apiVersion": "v1",
+       "items": [
+           {
+               "apiVersion": "v1",
+               "kind": "Node",
+               "metadata": {
+                   "annotations": {
+                       "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"b6:e1:37:9c:b9:e1\"}",
+                       "flannel.alpha.coreos.com/backend-type": "vxlan",
+                       "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                       "flannel.alpha.coreos.com/public-ip": "172.25.0.79",
+                       "kubeadm.alpha.kubernetes.io/cri-socket": "unix:///var/run/containerd/containerd.sock",
+                       "node.alpha.kubernetes.io/ttl": "0",
+                       "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                   },
+                   "creationTimestamp": "2023-01-19T06:45:00Z",
+                   "labels": {
+                       "beta.kubernetes.io/arch": "amd64",
+                       "beta.kubernetes.io/os": "linux",
+                       "kubernetes.io/arch": "amd64",
+                       "kubernetes.io/hostname": "controlplane",
+                       "kubernetes.io/os": "linux",
+                       "node-role.kubernetes.io/control-plane": "",
+                       "node.kubernetes.io/exclude-from-external-load-balancers": ""
+                   },
+                   "name": "controlplane",
+                   "resourceVersion": "969",
+                   "uid": "d67eb644-3f14-4776-9143-06cd06304695"
+               },
+               "spec": {
+                   "podCIDR": "10.244.0.0/24",
+                   "podCIDRs": [
+                       "10.244.0.0/24"
+                   ],
+                   "taints": [
+                       {
+                           "effect": "NoSchedule",
+                           "key": "node-role.kubernetes.io/control-plane"
+                       }
+                   ]
+               },
+               "status": {
+                   "addresses": [
+                       {
+                           "address": "10.22.18.9",
+                           "type": "InternalIP"
+                       },
+                       {
+                           "address": "controlplane",
+                           "type": "Hostname"
+                       }
+                   ],
+                   "allocatable": {
+                       "cpu": "56",
+                       "ephemeral-storage": "936398358207",
+                       "hugepages-1Gi": "0",
+                       "hugepages-2Mi": "0",
+                       "memory": "462205808Ki",
+                       "pods": "110"
+                   },
+                   "capacity": {
+                       "cpu": "56",
+                       "ephemeral-storage": "1016057248Ki",
+                       "hugepages-1Gi": "0",
+                       "hugepages-2Mi": "0",
+                       "memory": "462308208Ki",
+                       "pods": "110"
+                   },
+                   "conditions": [
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:45:36Z",
+                           "lastTransitionTime": "2023-01-19T06:45:36Z",
+                           "message": "Flannel is running on this node",
+                           "reason": "FlannelIsUp",
+                           "status": "False",
+                           "type": "NetworkUnavailable"
+                       },
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:50:45Z",
+                           "lastTransitionTime": "2023-01-19T06:44:53Z",
+                           "message": "kubelet has sufficient memory available",
+                           "reason": "KubeletHasSufficientMemory",
+                           "status": "False",
+                           "type": "MemoryPressure"
+                       },
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:50:45Z",
+                           "lastTransitionTime": "2023-01-19T06:44:53Z",
+                           "message": "kubelet has no disk pressure",
+                           "reason": "KubeletHasNoDiskPressure",
+                           "status": "False",
+                           "type": "DiskPressure"
+                       },
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:50:45Z",
+                           "lastTransitionTime": "2023-01-19T06:44:53Z",
+                           "message": "kubelet has sufficient PID available",
+                           "reason": "KubeletHasSufficientPID",
+                           "status": "False",
+                           "type": "PIDPressure"
+                       },
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:50:45Z",
+                           "lastTransitionTime": "2023-01-19T06:45:32Z",
+                           "message": "kubelet is posting ready status",
+                           "reason": "KubeletReady",
+                           "status": "True",
+                           "type": "Ready"
+                       }
+                   ],
+                   "daemonEndpoints": {
+                       "kubeletEndpoint": {
+                           "Port": 10250
+                       }
+                   },
+                   "images": [
+                       {
+                           "names": [
+                               "docker.io/kodekloud/fluent-ui-running@sha256:78fd68ba8a79adcd3e58897a933492886200be513076ba37f843008cc0168f81",
+                               "docker.io/kodekloud/fluent-ui-running:latest"
+                           ],
+                           "sizeBytes": 389734636
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/etcd@sha256:dd75ec974b0a2a6f6bb47001ba09207976e625db898d1b16735528c009cb171c",
+                               "registry.k8s.io/etcd:3.5.6-0"
+                           ],
+                           "sizeBytes": 102542580
+                       },
+                       {
+                           "names": [
+                               "docker.io/library/nginx@sha256:0047b729188a15da49380d9506d65959cce6d40291ccfb4e039f5dc7efd33286",
+                               "docker.io/library/nginx:latest"
+                           ],
+                           "sizeBytes": 56882284
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/kube-apiserver@sha256:d230a0b88a3daf14e4cce03b906b992c8153f37da878677f434b1af8c4e8cc75",
+                               "registry.k8s.io/kube-apiserver:v1.26.0"
+                           ],
+                           "sizeBytes": 35317868
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/kube-controller-manager@sha256:26e260b50ec46bd1da7352565cb8b34b6dd2cb006cebbd2f35170d50935fb9ec",
+                               "registry.k8s.io/kube-controller-manager:v1.26.0"
+                           ],
+                           "sizeBytes": 32244989
+                       },
+                       {
+                           "names": [
+                               "docker.io/weaveworks/weave-kube@sha256:d797338e7beb17222e10757b71400d8471bdbd9be13b5da38ce2ebf597fb4e63",
+                               "docker.io/weaveworks/weave-kube:2.8.1"
+                           ],
+                           "sizeBytes": 30924173
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/kube-proxy@sha256:1e9bbe429e4e2b2ad32681c91deb98a334f1bf4135137df5f84f9d03689060fe",
+                               "registry.k8s.io/kube-proxy:v1.26.0"
+                           ],
+                           "sizeBytes": 21536465
+                       },
+                       {
+                           "names": [
+                               "quay.io/coreos/flannel@sha256:51223d328b2f85d8fe9ad35db82d564b45b03fd1002728efcf14011aff02de78",
+                               "quay.io/coreos/flannel:v0.13.1-rc1"
+                           ],
+                           "sizeBytes": 20688989
+                       },
+                       {
+                           "names": [
+                               "docker.io/rancher/mirrored-flannelcni-flannel@sha256:c9786f434d4663c924aeca1a2e479786d63df0d56c5d6bd62a64915f81d62ff0",
+                               "docker.io/rancher/mirrored-flannelcni-flannel:v0.19.2"
+                           ],
+                           "sizeBytes": 20503771
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/kube-scheduler@sha256:34a142549f94312b41d4a6cd98e7fddabff484767a199333acb7503bf46d7410",
+                               "registry.k8s.io/kube-scheduler:v1.26.0"
+                           ],
+                           "sizeBytes": 17484038
+                       },
+                       {
+                           "names": [
+                               "quay.io/coreos/flannel@sha256:6d451d92c921f14bfb38196aacb6e506d4593c5b3c9d40a8b8a2506010dc3e10",
+                               "quay.io/coreos/flannel:v0.12.0-amd64"
+                           ],
+                           "sizeBytes": 17124093
+                       },
+                       {
+                           "names": [
+                               "docker.io/library/nginx@sha256:659610aadb34b7967dea7686926fdcf08d588a71c5121edb094ce0e4cdbc45e6",
+                               "docker.io/library/nginx:alpine"
+                           ],
+                           "sizeBytes": 16683089
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/coredns/coredns@sha256:8e352a029d304ca7431c6507b56800636c321cb52289686a581ab70aaa8a2e2a",
+                               "registry.k8s.io/coredns/coredns:v1.9.3"
+                           ],
+                           "sizeBytes": 14837849
+                       },
+                       {
+                           "names": [
+                               "docker.io/weaveworks/weave-npc@sha256:38d3e30a97a2260558f8deb0fc4c079442f7347f27c86660dbfc8ca91674f14c",
+                               "docker.io/weaveworks/weave-npc:2.8.1"
+                           ],
+                           "sizeBytes": 12814131
+                       },
+                       {
+                           "names": [
+                               "docker.io/rancher/mirrored-flannelcni-flannel-cni-plugin@sha256:28d3a6be9f450282bf42e4dad143d41da23e3d91f66f19c01ee7fd21fd17cb2b",
+                               "docker.io/rancher/mirrored-flannelcni-flannel-cni-plugin:v1.1.0"
+                           ],
+                           "sizeBytes": 3821285
+                       },
+                       {
+                           "names": [
+                               "docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c",
+                               "docker.io/library/busybox:latest"
+                           ],
+                           "sizeBytes": 2597143
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/pause@sha256:7031c1b283388d2c2e09b57badb803c05ebed362dc88d84b480cc47f72a21097",
+                               "registry.k8s.io/pause:3.9"
+                           ],
+                           "sizeBytes": 321520
+                       },
+                       {
+                           "names": [
+                               "k8s.gcr.io/pause@sha256:3d380ca8864549e74af4b29c10f9cb0956236dfb01c40ca076fb6c37253234db",
+                               "k8s.gcr.io/pause:3.6"
+                           ],
+                           "sizeBytes": 301773
+                       }
+                   ],
+                   "nodeInfo": {
+                       "architecture": "amd64",
+                       "bootID": "8d5df3dd-f171-4427-b92c-bc62b596b082",
+                       "containerRuntimeVersion": "containerd://1.6.6",
+                       "kernelVersion": "5.4.0-1098-gcp",
+                       "kubeProxyVersion": "v1.26.0",
+                       "kubeletVersion": "v1.26.0",
+                       "machineID": "166b69f8b5924043bd791d22c57602e9",
+                       "operatingSystem": "linux",
+                       "osImage": "Ubuntu 20.04.5 LTS",
+                       "systemUUID": "20200e9f-d940-dab1-8624-89d91d370e04"
+                   }
+               }
+           },
+           {
+               "apiVersion": "v1",
+               "kind": "Node",
+               "metadata": {
+                   "annotations": {
+                       "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"3a:11:bf:f0:52:7c\"}",
+                       "flannel.alpha.coreos.com/backend-type": "vxlan",
+                       "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                       "flannel.alpha.coreos.com/public-ip": "172.25.0.34",
+                       "kubeadm.alpha.kubernetes.io/cri-socket": "unix:///var/run/containerd/containerd.sock",
+                       "node.alpha.kubernetes.io/ttl": "0",
+                       "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                   },
+                   "creationTimestamp": "2023-01-19T06:45:39Z",
+                   "labels": {
+                       "beta.kubernetes.io/arch": "amd64",
+                       "beta.kubernetes.io/os": "linux",
+                       "kubernetes.io/arch": "amd64",
+                       "kubernetes.io/hostname": "node01",
+                       "kubernetes.io/os": "linux"
+                   },
+                   "name": "node01",
+                   "resourceVersion": "1013",
+                   "uid": "b393a83c-a828-4498-b67b-d514766806c1"
+               },
+               "spec": {
+                   "podCIDR": "10.244.1.0/24",
+                   "podCIDRs": [
+                       "10.244.1.0/24"
+                   ]
+               },
+               "status": {
+                   "addresses": [
+                       {
+                           "address": "10.22.18.12",
+                           "type": "InternalIP"
+                       },
+                       {
+                           "address": "node01",
+                           "type": "Hostname"
+                       }
+                   ],
+                   "allocatable": {
+                       "cpu": "56",
+                       "ephemeral-storage": "936398358207",
+                       "hugepages-1Gi": "0",
+                       "hugepages-2Mi": "0",
+                       "memory": "462205816Ki",
+                       "pods": "110"
+                   },
+                   "capacity": {
+                       "cpu": "56",
+                       "ephemeral-storage": "1016057248Ki",
+                       "hugepages-1Gi": "0",
+                       "hugepages-2Mi": "0",
+                       "memory": "462308216Ki",
+                       "pods": "110"
+                   },
+                   "conditions": [
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:45:54Z",
+                           "lastTransitionTime": "2023-01-19T06:45:54Z",
+                           "message": "Flannel is running on this node",
+                           "reason": "FlannelIsUp",
+                           "status": "False",
+                           "type": "NetworkUnavailable"
+                       },
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:51:17Z",
+                           "lastTransitionTime": "2023-01-19T06:45:39Z",
+                           "message": "kubelet has sufficient memory available",
+                           "reason": "KubeletHasSufficientMemory",
+                           "status": "False",
+                           "type": "MemoryPressure"
+                       },
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:51:17Z",
+                           "lastTransitionTime": "2023-01-19T06:45:39Z",
+                           "message": "kubelet has no disk pressure",
+                           "reason": "KubeletHasNoDiskPressure",
+                           "status": "False",
+                           "type": "DiskPressure"
+                       },
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:51:17Z",
+                           "lastTransitionTime": "2023-01-19T06:45:39Z",
+                           "message": "kubelet has sufficient PID available",
+                           "reason": "KubeletHasSufficientPID",
+                           "status": "False",
+                           "type": "PIDPressure"
+                       },
+                       {
+                           "lastHeartbeatTime": "2023-01-19T06:51:17Z",
+                           "lastTransitionTime": "2023-01-19T06:45:51Z",
+                           "message": "kubelet is posting ready status",
+                           "reason": "KubeletReady",
+                           "status": "True",
+                           "type": "Ready"
+                       }
+                   ],
+                   "daemonEndpoints": {
+                       "kubeletEndpoint": {
+                           "Port": 10250
+                       }
+                   },
+                   "images": [
+                       {
+                           "names": [
+                               "docker.io/kodekloud/fluent-ui-running@sha256:78fd68ba8a79adcd3e58897a933492886200be513076ba37f843008cc0168f81",
+                               "docker.io/kodekloud/fluent-ui-running:latest"
+                           ],
+                           "sizeBytes": 389734636
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/etcd@sha256:dd75ec974b0a2a6f6bb47001ba09207976e625db898d1b16735528c009cb171c",
+                               "registry.k8s.io/etcd:3.5.6-0"
+                           ],
+                           "sizeBytes": 102542580
+                       },
+                       {
+                           "names": [
+                               "docker.io/library/nginx@sha256:0047b729188a15da49380d9506d65959cce6d40291ccfb4e039f5dc7efd33286",
+                               "docker.io/library/nginx:latest"
+                           ],
+                           "sizeBytes": 56882284
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/kube-apiserver@sha256:d230a0b88a3daf14e4cce03b906b992c8153f37da878677f434b1af8c4e8cc75",
+                               "registry.k8s.io/kube-apiserver:v1.26.0"
+                           ],
+                           "sizeBytes": 35317868
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/kube-controller-manager@sha256:26e260b50ec46bd1da7352565cb8b34b6dd2cb006cebbd2f35170d50935fb9ec",
+                               "registry.k8s.io/kube-controller-manager:v1.26.0"
+                           ],
+                           "sizeBytes": 32244989
+                       },
+                       {
+                           "names": [
+                               "docker.io/weaveworks/weave-kube@sha256:d797338e7beb17222e10757b71400d8471bdbd9be13b5da38ce2ebf597fb4e63",
+                               "docker.io/weaveworks/weave-kube:2.8.1"
+                           ],
+                           "sizeBytes": 30924173
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/kube-proxy@sha256:1e9bbe429e4e2b2ad32681c91deb98a334f1bf4135137df5f84f9d03689060fe",
+                               "registry.k8s.io/kube-proxy:v1.26.0"
+                           ],
+                           "sizeBytes": 21536465
+                       },
+                       {
+                           "names": [
+                               "quay.io/coreos/flannel@sha256:51223d328b2f85d8fe9ad35db82d564b45b03fd1002728efcf14011aff02de78",
+                               "quay.io/coreos/flannel:v0.13.1-rc1"
+                           ],
+                           "sizeBytes": 20688989
+                       },
+                       {
+                           "names": [
+                               "docker.io/rancher/mirrored-flannelcni-flannel@sha256:c9786f434d4663c924aeca1a2e479786d63df0d56c5d6bd62a64915f81d62ff0",
+                               "docker.io/rancher/mirrored-flannelcni-flannel:v0.19.2"
+                           ],
+                           "sizeBytes": 20503771
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/kube-scheduler@sha256:34a142549f94312b41d4a6cd98e7fddabff484767a199333acb7503bf46d7410",
+                               "registry.k8s.io/kube-scheduler:v1.26.0"
+                           ],
+                           "sizeBytes": 17484038
+                       },
+                       {
+                           "names": [
+                               "quay.io/coreos/flannel@sha256:6d451d92c921f14bfb38196aacb6e506d4593c5b3c9d40a8b8a2506010dc3e10",
+                               "quay.io/coreos/flannel:v0.12.0-amd64"
+                           ],
+                           "sizeBytes": 17124093
+                       },
+                       {
+                           "names": [
+                               "docker.io/library/nginx@sha256:dd8a054d7ef030e94a6449783605d6c306c1f69c10c2fa06b66a030e0d1db793",
+                               "docker.io/library/nginx:alpine"
+                           ],
+                           "sizeBytes": 16678454
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/coredns/coredns@sha256:8e352a029d304ca7431c6507b56800636c321cb52289686a581ab70aaa8a2e2a",
+                               "registry.k8s.io/coredns/coredns:v1.9.3"
+                           ],
+                           "sizeBytes": 14837849
+                       },
+                       {
+                           "names": [
+                               "docker.io/weaveworks/weave-npc@sha256:38d3e30a97a2260558f8deb0fc4c079442f7347f27c86660dbfc8ca91674f14c",
+                               "docker.io/weaveworks/weave-npc:2.8.1"
+                           ],
+                           "sizeBytes": 12814131
+                       },
+                       {
+                           "names": [
+                               "docker.io/rancher/mirrored-flannelcni-flannel-cni-plugin@sha256:28d3a6be9f450282bf42e4dad143d41da23e3d91f66f19c01ee7fd21fd17cb2b",
+                               "docker.io/rancher/mirrored-flannelcni-flannel-cni-plugin:v1.1.0"
+                           ],
+                           "sizeBytes": 3821285
+                       },
+                       {
+                           "names": [
+                               "docker.io/library/busybox@sha256:05a79c7279f71f86a2a0d05eb72fcb56ea36139150f0a75cd87e80a4272e4e39",
+                               "docker.io/library/busybox:latest"
+                           ],
+                           "sizeBytes": 2592108
+                       },
+                       {
+                           "names": [
+                               "registry.k8s.io/pause@sha256:7031c1b283388d2c2e09b57badb803c05ebed362dc88d84b480cc47f72a21097",
+                               "registry.k8s.io/pause:3.9"
+                           ],
+                           "sizeBytes": 321520
+                       },
+                       {
+                           "names": [
+                               "k8s.gcr.io/pause@sha256:3d380ca8864549e74af4b29c10f9cb0956236dfb01c40ca076fb6c37253234db",
+                               "k8s.gcr.io/pause:3.6"
+                           ],
+                           "sizeBytes": 301773
+                       }
+                   ],
+                   "nodeInfo": {
+                       "architecture": "amd64",
+                       "bootID": "2fbae0b8-9d71-49c1-8bcc-fc2cd0375b09",
+                       "containerRuntimeVersion": "containerd://1.6.6",
+                       "kernelVersion": "5.4.0-1093-gcp",
+                       "kubeProxyVersion": "v1.26.0",
+                       "kubeletVersion": "v1.26.0",
+                       "machineID": "3107027b90944bf39a83cff0cb1006fe",
+                       "operatingSystem": "linux",
+                       "osImage": "Ubuntu 20.04.5 LTS",
+                       "systemUUID": "47c0ebaa-a153-fb7f-9dd2-ba46d5fbcdf6"
+                   }
+               }
+           }
+       ],
+       "kind": "List",
+       "metadata": {
+           "resourceVersion": ""
+       }
+   }
+   ```
+
+2. Get the details of the node `node01` in json format and store it in the file `/opt/outputs/node01.json`.
+
+   Check
+
+   - Task completed
+
+   ```
+   controlplane ~ ➜  kubectl get node node01 -o json > /opt/outputs/node01.json
+   ```
+
+3. Use JSON PATH query to fetch node names and store them in `/opt/outputs/node_names.txt`.
+
+   Remember the file should only have node names.
+
+   Check
+
+   - Task completed!
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o=jsonpath='{.items[*].metadata.name}' > /opt/outputs/node_names.txt
+   ```
+
+   ```
+   controlplane ~ ➜  cat /opt/outputs/node_names.txt
+   controlplane node01
+   ```
+
+4. Use JSON PATH query to retrieve the `osImages` of all the nodes and store it in a file `/opt/outputs/nodes_os.txt`.
+
+   The `osImages` are under the `nodeInfo` section under `status` of each node.
+
+   Check
+
+   - Task Completed
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o jsonpath='{.items[*].status.nodeInfo.osImage}' > /opt/outputs/nodes_os.txt
+   
+   controlplane ~ ➜  cat /opt/outputs/nodes_os.txt
+   Ubuntu 20.04.5 LTS Ubuntu 20.04.5 LTS
+   ```
+
+5. A kube-config file is present at `/root/my-kube-config`. Get the user names from it and store it in a file `/opt/outputs/users.txt`.
+
+   Use the command `kubectl config view --kubeconfig=/root/my-kube-config` to view the custom kube-config.
+
+   Check
+
+   - Task Completed!
+
+   ```
+   controlplane ~ ➜  kubectl config view --kubeconfig=my-kube-config -o json
+   {
+       "kind": "Config",
+       "apiVersion": "v1",
+       "preferences": {},
+       "clusters": [
+           {
+               "name": "development",
+               "cluster": {
+                   "server": "KUBE_ADDRESS",
+                   "certificate-authority": "/etc/kubernetes/pki/ca.crt"
+               }
+           },
+           {
+               "name": "kubernetes-on-aws",
+               "cluster": {
+                   "server": "KUBE_ADDRESS",
+                   "certificate-authority": "/etc/kubernetes/pki/ca.crt"
+               }
+           },
+           {
+               "name": "production",
+               "cluster": {
+                   "server": "KUBE_ADDRESS",
+                   "certificate-authority": "/etc/kubernetes/pki/ca.crt"
+               }
+           },
+           {
+               "name": "test-cluster-1",
+               "cluster": {
+                   "server": "KUBE_ADDRESS",
+                   "certificate-authority": "/etc/kubernetes/pki/ca.crt"
+               }
+           }
+       ],
+       "users": [
+           {
+               "name": "aws-user",
+               "user": {
+                   "client-certificate": "/etc/kubernetes/pki/users/aws-user/aws-user.crt",
+                   "client-key": "/etc/kubernetes/pki/users/aws-user/aws-user.key"
+               }
+           },
+           {
+               "name": "dev-user",
+               "user": {
+                   "client-certificate": "/etc/kubernetes/pki/users/dev-user/developer-user.crt",
+                   "client-key": "/etc/kubernetes/pki/users/dev-user/dev-user.key"
+               }
+           },
+           {
+               "name": "test-user",
+               "user": {
+                   "client-certificate": "/etc/kubernetes/pki/users/test-user/test-user.crt",
+                   "client-key": "/etc/kubernetes/pki/users/test-user/test-user.key"
+               }
+           }
+       ],
+       "contexts": [
+           {
+               "name": "aws-user@kubernetes-on-aws",
+               "context": {
+                   "cluster": "kubernetes-on-aws",
+                   "user": "aws-user"
+               }
+           },
+           {
+               "name": "research",
+               "context": {
+                   "cluster": "test-cluster-1",
+                   "user": "dev-user"
+               }
+           },
+           {
+               "name": "test-user@development",
+               "context": {
+                   "cluster": "development",
+                   "user": "test-user"
+               }
+           },
+           {
+               "name": "test-user@production",
+               "context": {
+                   "cluster": "production",
+                   "user": "test-user"
+               }
+           }
+       ],
+       "current-context": "test-user@development"
+   }
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl config view --kubeconfig=my-kube-config -o jsonpath="{.users[*].name}" > /opt/outputs/users.txt 
+   
+   controlplane ~ ➜  cat /opt/outputs/users.txt
+   aws-user dev-user test-user
+   ```
+
+6. A set of Persistent Volumes are available. Sort them based on their capacity and store the result in the file `/opt/outputs/storage-capacity-sorted.txt`.
+
+   Check
+
+   - Task Completed
+
+   ```
+   controlplane ~ ➜  kubectl get pv -o json
+   {
+       "apiVersion": "v1",
+       "items": [
+           {
+               "apiVersion": "v1",
+               "kind": "PersistentVolume",
+               "metadata": {
+                   "creationTimestamp": "2023-01-19T06:48:09Z",
+                   "finalizers": [
+                       "kubernetes.io/pv-protection"
+                   ],
+                   "name": "pv-log-1",
+                   "resourceVersion": "745",
+                   "uid": "e3e24c18-24c0-4110-99bb-9fefb49b4329"
+               },
+               "spec": {
+                   "accessModes": [
+                       "ReadWriteMany"
+                   ],
+                   "capacity": {
+                       "storage": "100Mi"
+                   },
+                   "hostPath": {
+                       "path": "/pv/log",
+                       "type": ""
+                   },
+                   "persistentVolumeReclaimPolicy": "Retain",
+                   "volumeMode": "Filesystem"
+               },
+               "status": {
+                   "phase": "Available"
+               }
+           },
+           {
+               "apiVersion": "v1",
+               "kind": "PersistentVolume",
+               "metadata": {
+                   "creationTimestamp": "2023-01-19T06:48:09Z",
+                   "finalizers": [
+                       "kubernetes.io/pv-protection"
+                   ],
+                   "name": "pv-log-2",
+                   "resourceVersion": "747",
+                   "uid": "b5f31d7c-fd28-40ab-a329-6e9410570111"
+               },
+               "spec": {
+                   "accessModes": [
+                       "ReadWriteMany"
+                   ],
+                   "capacity": {
+                       "storage": "200Mi"
+                   },
+                   "hostPath": {
+                       "path": "/pv/log",
+                       "type": ""
+                   },
+                   "persistentVolumeReclaimPolicy": "Retain",
+                   "volumeMode": "Filesystem"
+               },
+               "status": {
+                   "phase": "Available"
+               }
+           },
+           {
+               "apiVersion": "v1",
+               "kind": "PersistentVolume",
+               "metadata": {
+                   "creationTimestamp": "2023-01-19T06:48:09Z",
+                   "finalizers": [
+                       "kubernetes.io/pv-protection"
+                   ],
+                   "name": "pv-log-3",
+                   "resourceVersion": "748",
+                   "uid": "cfb00271-2bb2-466d-b286-4733d857e775"
+               },
+               "spec": {
+                   "accessModes": [
+                       "ReadWriteMany"
+                   ],
+                   "capacity": {
+                       "storage": "300Mi"
+                   },
+                   "hostPath": {
+                       "path": "/pv/log",
+                       "type": ""
+                   },
+                   "persistentVolumeReclaimPolicy": "Retain",
+                   "volumeMode": "Filesystem"
+               },
+               "status": {
+                   "phase": "Available"
+               }
+           },
+           {
+               "apiVersion": "v1",
+               "kind": "PersistentVolume",
+               "metadata": {
+                   "creationTimestamp": "2023-01-19T06:48:09Z",
+                   "finalizers": [
+                       "kubernetes.io/pv-protection"
+                   ],
+                   "name": "pv-log-4",
+                   "resourceVersion": "749",
+                   "uid": "0caa73bc-78c1-403e-9743-f51bda4ef00d"
+               },
+               "spec": {
+                   "accessModes": [
+                       "ReadWriteMany"
+                   ],
+                   "capacity": {
+                       "storage": "40Mi"
+                   },
+                   "hostPath": {
+                       "path": "/pv/log",
+                       "type": ""
+                   },
+                   "persistentVolumeReclaimPolicy": "Retain",
+                   "volumeMode": "Filesystem"
+               },
+               "status": {
+                   "phase": "Available"
+               }
+           }
+       ],
+       "kind": "List",
+       "metadata": {
+           "resourceVersion": ""
+       }
+   }
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get pv --sort-by=.spec.capacity.storage > /opt/outputs/storage-capacity-sorted.txt
+   
+   controlplane ~ ➜  cat /opt/outputs/storage-capacity-sorted.txt
+   NAME       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+   pv-log-4   40Mi       RWX            Retain           Available                                   45m
+   pv-log-1   100Mi      RWX            Retain           Available                                   45m
+   pv-log-2   200Mi      RWX            Retain           Available                                   45m
+   pv-log-3   300Mi      RWX            Retain           Available                                   45m
+   ```
+
+7. That was good, but we don't need all the extra details. Retrieve just the first 2 columns of output and store it in `/opt/outputs/pv-and-capacity-sorted.txt`.
+
+   The columns should be named `NAME` and `CAPACITY`. Use the `custom-columns` option and remember, it should still be sorted as in the previous question.
+
+   Check
+
+   - Task Completed
+
+   ```
+   controlplane ~ ➜  kubectl get pv --sort-by=.spec.capacity.storage -o=custom-columns=NAME:.metadata.name,CAPACITY:.spec.capacity.storage > /opt/outputs/pv-and-capacity-sorted.txt
+   
+   controlplane ~ ➜  cat /opt/outputs/pv-and-capacity-sorted.txt
+   NAME       CAPACITY
+   pv-log-4   40Mi
+   pv-log-1   100Mi
+   pv-log-2   200Mi
+   pv-log-3   300Mi
+   ```
+
+8. Use a JSON PATH query to identify the context configured for the `aws-user` in the `my-kube-config` context file and store the result in `/opt/outputs/aws-context-name`.
+
+   Check
+
+   - Task Completed
+
+   ```
+   controlplane ~ ➜  kubectl config view --kubeconfig=my-kube-config -o json
+   {
+       "kind": "Config",
+       "apiVersion": "v1",
+       "preferences": {},
+       "clusters": [
+           {
+               "name": "development",
+               "cluster": {
+                   "server": "KUBE_ADDRESS",
+                   "certificate-authority": "/etc/kubernetes/pki/ca.crt"
+               }
+           },
+           {
+               "name": "kubernetes-on-aws",
+               "cluster": {
+                   "server": "KUBE_ADDRESS",
+                   "certificate-authority": "/etc/kubernetes/pki/ca.crt"
+               }
+           },
+           {
+               "name": "production",
+               "cluster": {
+                   "server": "KUBE_ADDRESS",
+                   "certificate-authority": "/etc/kubernetes/pki/ca.crt"
+               }
+           },
+           {
+               "name": "test-cluster-1",
+               "cluster": {
+                   "server": "KUBE_ADDRESS",
+                   "certificate-authority": "/etc/kubernetes/pki/ca.crt"
+               }
+           }
+       ],
+       "users": [
+           {
+               "name": "aws-user",
+               "user": {
+                   "client-certificate": "/etc/kubernetes/pki/users/aws-user/aws-user.crt",
+                   "client-key": "/etc/kubernetes/pki/users/aws-user/aws-user.key"
+               }
+           },
+           {
+               "name": "dev-user",
+               "user": {
+                   "client-certificate": "/etc/kubernetes/pki/users/dev-user/developer-user.crt",
+                   "client-key": "/etc/kubernetes/pki/users/dev-user/dev-user.key"
+               }
+           },
+           {
+               "name": "test-user",
+               "user": {
+                   "client-certificate": "/etc/kubernetes/pki/users/test-user/test-user.crt",
+                   "client-key": "/etc/kubernetes/pki/users/test-user/test-user.key"
+               }
+           }
+       ],
+       "contexts": [
+           {
+               "name": "aws-user@kubernetes-on-aws",
+               "context": {
+                   "cluster": "kubernetes-on-aws",
+                   "user": "aws-user"
+               }
+           },
+           {
+               "name": "research",
+               "context": {
+                   "cluster": "test-cluster-1",
+                   "user": "dev-user"
+               }
+           },
+           {
+               "name": "test-user@development",
+               "context": {
+                   "cluster": "development",
+                   "user": "test-user"
+               }
+           },
+           {
+               "name": "test-user@production",
+               "context": {
+                   "cluster": "production",
+                   "user": "test-user"
+               }
+           }
+       ],
+       "current-context": "test-user@development"
+   }
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl config view --kubeconfig=my-kube-config -o jsonpath="{.contexts[?(@.context.user=='aws-user')].name}" > /opt/outputs/aws-context-name
+   
+   controlplane ~ ✖ cat /opt/outputs/aws-context-name
+   aws-user@kubernetes-on-aws
+   ```
+
+
+
+# MOCK EXAMS
+
+## MOCK EXAM – 1
+
+1. Deploy a pod named `nginx-pod` using the `nginx:alpine` image.
+
+   Once done, click on the `Next Question` button in the top right corner of this panel. You may navigate back and forth freely between all questions. Once done with all questions, click on `End Exam`. Your work will be validated at the end and score shown. Good Luck!
+
+   - Name: nginx-pod
+   - Image: nginx:alpine
+
+   ```
+   controlplane ~ ➜  kubectl run nginx-pod --image nginx:alpine
+   pod/nginx-pod created
+   
+   controlplane ~ ➜  kubectl get pod
+   NAME        READY   STATUS    RESTARTS   AGE
+   nginx-pod   1/1     Running   0          19s
+   
+   controlplane ~ ➜  kubectl describe pod nginx-pod 
+   Name:             nginx-pod
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/10.79.167.6
+   Start Time:       Thu, 19 Jan 2023 18:08:08 -0500
+   Labels:           run=nginx-pod
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.0.4
+   IPs:
+     IP:  10.244.0.4
+   Containers:
+     nginx-pod:
+       Container ID:   containerd://8df4d9b4972ccdce9f8b3dfe0986384d65922c1bcc16647e3ba7bd7e3f7e60f3
+       Image:          nginx:alpine
+       Image ID:       docker.io/library/nginx@sha256:659610aadb34b7967dea7686926fdcf08d588a71c5121edb
+   ```
+
+2. Deploy a `messaging` pod using the `redis:alpine` image with the labels set to `tier=msg`.
+
+   - Pod Name: messaging
+   - Image: redis:alpine
+   - Labels: tier=msg
+
+   ```
+   controlplane ~ ➜  kubectl run messaging --image=redis:alpine --labels=tier=msg
+   pod/messaging created
+   
+   controlplane ~ ✖ kubectl get pod
+   NAME        READY   STATUS    RESTARTS   AGE
+   messaging   1/1     Running   0          17s
+   nginx-pod   1/1     Running   0          10m
+   
+   controlplane ~ ➜  kubectl describe pod messaging 
+   Name:             messaging
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/10.79.167.6
+   Start Time:       Thu, 19 Jan 2023 18:18:04 -0500
+   Labels:           tier=msg
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.0.6
+   IPs:
+     IP:  10.244.0.6
+   Containers:
+     messaging:
+       Container ID:   containerd://9368710286a84997975fe5ba97f0e22e41402a66f48ea2e57bb529c51cb2fc30
+       Image:          redis:alpine
+       Image ID:       docker.io/library/redis@sha256:5ae5799117d680a13dd35184f26db66549605e220f1af52f4b7557f77830aa17
+   ```
+
+3. Create a namespace named `apx-x9984574`.
+
+   - Namespace: apx-x9984574
+
+   ```
+   controlplane ~ ➜  kubectl create namespace apx-x9984574
+   namespace/apx-x9984574 created
+   
+   controlplane ~ ➜  kubectl get ns
+   NAME              STATUS   AGE
+   apx-x9984574      Active   6s
+   default           Active   80m
+   kube-flannel      Active   80m
+   kube-node-lease   Active   80m
+   kube-public       Active   80m
+   kube-system       Active   80m
+   ```
+
+4. Get the list of nodes in JSON format and store it in a file at `/opt/outputs/nodes-z3444kd9.json`.
+
+   - Task completed
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o jsonpath='{.items[*].status.nodeInfo.osImage}' > /opt/outputs/nodes_os_x43kj56.txt
+   
+   controlplane ~ ➜  cat /opt/outputs/nodes_os_x43kj56.txt
+   Ubuntu 20.04.5 LTS
+   ```
+
+5. Create a service `messaging-service` to expose the `messaging` application within the cluster on port `6379`.
+
+   Use imperative commands.
+
+   - Service: messaging-service
+   - Port: 6379
+   - Type: ClusterIp
+   - Use the right labels
+
+   ```
+   controlplane ~ ➜  kubectl expose pod messaging --name messaging-service --port=6379
+   service/messaging-service exposed
+   
+   controlplane ~ ✖ kubectl get svc
+   NAME                TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+   kubernetes          ClusterIP   10.96.0.1      <none>        443/TCP    88m
+   messaging-service   ClusterIP   10.98.108.28   <none>        6379/TCP   17s
+   
+   controlplane ~ ➜  kubectl describe svc messaging-service 
+   Name:              messaging-service
+   Namespace:         default
+   Labels:            tier=msg
+   Annotations:       <none>
+   Selector:          tier=msg
+   Type:              ClusterIP
+   IP Family Policy:  SingleStack
+   IP Families:       IPv4
+   IP:                10.98.108.28
+   IPs:               10.98.108.28
+   Port:              <unset>  6379/TCP
+   TargetPort:        6379/TCP
+   Endpoints:         10.244.0.6:6379
+   Session Affinity:  None
+   Events:            <none>
+   ```
+
+6. Create a deployment named `hr-web-app` using the image `kodekloud/webapp-color` with `2` replicas.
+
+   - Name: hr-web-app
+   - Image: kodekloud/webapp-color
+   - Replicas: 2
+
+   ```
+   controlplane ~ ➜  kubectl create deployment hr-web-app --image=kodekloud/webapp-color --replicas=2
+   deployment.apps/hr-web-app created
+   
+   controlplane ~ ➜  kubectl get deployments
+   NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+   hr-web-app   2/2     2            2           10s
+   
+   controlplane ~ ➜  kubectl describe deployments hr-web-app 
+   Name:                   hr-web-app
+   Namespace:              default
+   CreationTimestamp:      Thu, 19 Jan 2023 20:20:49 -0500
+   Labels:                 app=hr-web-app
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               app=hr-web-app
+   Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  app=hr-web-app
+     Containers:
+      webapp-color:
+       Image:        kodekloud/webapp-color
+       Port:         <none>
+       Host Port:    <none>
+       Environment:  <none>
+       Mounts:       <none>
+     Volumes:        <none>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   hr-web-app-5d67dbb499 (2/2 replicas created)
+   Events:
+     Type    Reason             Age   From                   Message
+     ----    ------             ----  ----                   -------
+     Normal  ScalingReplicaSet  24s   deployment-controller  Scaled up replica set hr-web-app-5d67dbb499 to 2
+   ```
+
+   
+
+7. Create a static pod named `static-busybox` on the controlplane node that uses the `busybox` image and the command `sleep 1000`.
+
+   - Name: static-busybox
+   - Image: busybox
+
+   ```
+   controlplane ~ ➜  kubectl run static-busybox --image=busybox --dry-run=client -o yaml --command -- sleep 1000 > static-busybox.yaml
+   
+   controlplane ~ ➜  cat static-busybox.yaml 
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: static-busybox
+     name: static-busybox
+   spec:
+     containers:
+     - command:
+       - sleep
+       - "1000"
+       image: busybox
+       name: static-busybox
+       resources: {}
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}
+   
+   controlplane ~ ➜  mv static-busybox.yaml /etc/kubernetes/manifests/
+   
+   controlplane ~ ➜  kubectl get pods
+   NAME                          READY   STATUS    RESTARTS   AGE
+   hr-web-app-5d67dbb499-9dg6m   1/1     Running   0          9m47s
+   hr-web-app-5d67dbb499-g7scx   1/1     Running   0          9m47s
+   messaging                     1/1     Running   0          16m
+   nginx-pod                     1/1     Running   0          17m
+   static-busybox-controlplane   1/1     Running   0          21s
+   
+   controlplane ~ ➜  kubectl describe pod static-busybox-controlplane 
+   Name:         static-busybox-controlplane
+   Namespace:    default
+   Priority:     0
+   Node:         controlplane/10.4.179.9
+   Start Time:   Thu, 19 Jan 2023 20:30:16 -0500
+   Labels:       run=static-busybox
+   Annotations:  kubernetes.io/config.hash: 75aaaf713702fe24502af97d8411c2c3
+                 kubernetes.io/config.mirror: 75aaaf713702fe24502af97d8411c2c3
+                 kubernetes.io/config.seen: 2023-01-19T20:30:16.907477066-05:00
+                 kubernetes.io/config.source: file
+   Status:       Running
+   IP:           10.244.0.8
+   IPs:
+     IP:           10.244.0.8
+   Controlled By:  Node/controlplane
+   Containers:
+     static-busybox:
+       Container ID:  containerd://7b54c8f2f6cbb5c75ae5cc35a0dbe7506911675a282481d52072533df88b01e3
+       Image:         busybox
+       Image ID:      docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sleep
+         1000
+       State:          Running
+         Started:      Thu, 19 Jan 2023 20:30:18 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:         <none>
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:            <none>
+   QoS Class:          BestEffort
+   Node-Selectors:     <none>
+   Tolerations:        :NoExecute op=Exists
+   Events:
+     Type    Reason   Age   From     Message
+     ----    ------   ----  ----     -------
+     Normal  Pulling  37s   kubelet  Pulling image "busybox"
+     Normal  Pulled   37s   kubelet  Successfully pulled image "busybox" in 299.409968ms (299.419599ms including waiting)
+     Normal  Created  37s   kubelet  Created container static-busybox
+     Normal  Started  36s   kubelet  Started container static-busybox
+   ```
+
+   
+
+8. Create a POD in the `finance` namespace named `temp-bus` with the image `redis:alpine`.
+
+   - Name: temp-bus
+   - Image Name: redis:alpine
+
+   ```
+   controlplane ~ ➜  kubectl run temp-bus --image=redis:alpine -n finance
+   pod/temp-bus created
+   
+   controlplane ~ ➜  kubectl get pods -n finance 
+   NAME       READY   STATUS    RESTARTS   AGE
+   temp-bus   1/1     Running   0          16s
+   
+   controlplane ~ ➜  kubectl describe -n finance pod temp-bus 
+   Name:             temp-bus
+   Namespace:        finance
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/10.4.179.9
+   Start Time:       Thu, 19 Jan 2023 20:34:06 -0500
+   Labels:           run=temp-bus
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.0.9
+   IPs:
+     IP:  10.244.0.9
+   Containers:
+     temp-bus:
+       Container ID:   containerd://d74124d4630f811883a451d137d07c36816ee552f69ee3dc15b27dfcf8406c97
+       Image:          redis:alpine
+       Image ID:       docker.io/library/redis@sha256:5ae5799117d680a13dd35184f26db66549605e220f1af52f
+   ```
+
+   
+
+9. A new application `orange` is deployed. There is something wrong with it. Identify and fix the issue.
+
+   - Issue fixed
+
+   ```
+   controlplane ~ ➜  kubectl get pods
+   NAME                          READY   STATUS       RESTARTS       AGE
+   hr-web-app-5d67dbb499-9dg6m   1/1     Running      0              20m
+   hr-web-app-5d67dbb499-g7scx   1/1     Running      0              20m
+   messaging                     1/1     Running      0              27m
+   nginx-pod                     1/1     Running      0              27m
+   orange                        0/1     Init:Error   6 (3m3s ago)   5m58s
+   static-busybox-controlplane   1/1     Running      0              10m
+   ```
+
+   Check the init-containiner in the pod "orange"
+
+   ```
+   controlplane ~ ➜  kubectl describe pod orange 
+   Name:             orange
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             controlplane/10.4.179.9
+   Start Time:       Thu, 19 Jan 2023 20:35:12 -0500
+   Labels:           <none>
+   Annotations:      <none>
+   Status:           Pending
+   IP:               10.244.0.10
+   IPs:
+     IP:  10.244.0.10
+   Init Containers:
+     init-myservice:
+       Container ID:  containerd://c305c5f92303f21b5bc3015c5f3314ceba1705ec670bc0fc0c238abefc7bf5b7
+       Image:         busybox
+       Image ID:      docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sh
+         -c
+         sleeeep 2;
+       State:          Waiting
+         Reason:       CrashLoopBackOff
+       Last State:     Terminated
+         Reason:       Error
+         Exit Code:    127
+         Started:      Thu, 19 Jan 2023 20:40:59 -0500
+         Finished:     Thu, 19 Jan 2023 20:40:59 -0500
+       Ready:          False
+       Restart Count:  6
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-jnkwh (ro)
+   ```
+
+   Check the logs of the init contaner "init-myservice"
+
+   ```
+   controlplane ~ ➜  kubectl logs orange init-myservice 
+   sh: sleeeep: not found
+   ```
+
+   Edit the "orange" pod and change the "sleeeep" command to "sleep"
+
+   ```
+   controlplane ~ ➜  kubectl edit pod orange
+   ```
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: "2023-01-20T01:35:12Z"
+     name: orange
+     namespace: default
+     resourceVersion: "9003"
+     uid: a3fc1747-6dae-4113-acc1-e494d4dd6b12
+   spec:
+     containers:
+     - command:
+       - sh
+       - -c
+       - echo The app is running! && sleep 3600
+       image: busybox:1.28
+       imagePullPolicy: IfNotPresent
+       name: orange-container
+       resources: {}
+       terminationMessagePath: /dev/termination-log
+       terminationMessagePolicy: File
+       volumeMounts:
+       - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+         name: kube-api-access-jnkwh
+         readOnly: true
+     dnsPolicy: ClusterFirst
+     enableServiceLinks: true
+     initContainers:
+     - command:
+       - sh
+       - -c
+       - sleep 2;
+   ```
+
+   Replace the "orange" pod
+
+   ```
+   controlplane ~ ✖ kubectl replace --force -f /tmp/kubectl-edit-421012058.yaml
+   pod "orange" deleted
+   pod/orange replaced
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get pods
+   NAME                          READY   STATUS    RESTARTS      AGE
+   hr-web-app-5d67dbb499-9dg6m   1/1     Running   0             27m
+   hr-web-app-5d67dbb499-g7scx   1/1     Running   0             27m
+   messaging                     1/1     Running   0             33m
+   nginx-pod                     1/1     Running   0             34m
+   orange                        1/1     Running   0             45s
+   static-busybox-controlplane   1/1     Running   1 (57s ago)   17m
+   ```
+
+   
+
+10. Expose the `hr-web-app` as service `hr-web-app-service` application on port `30082` on the nodes on the cluster.
+
+   The web application listens on port `8080`.
+
+   - Name: hr-web-app-service
+   - Type: NodePort
+   - Endpoints: 2
+   - Port: 8080
+   - NodePort: 30082
+
+   ```
+   controlplane ~ ➜  kubectl expose deployment hr-web-app --name=hr-web-app-service --type NodePort --port=8080
+   service/hr-web-app-service exposed
+   
+   controlplane ~ ➜  kubectl get svc
+   NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+   hr-web-app-service   NodePort    10.99.0.81       <none>        8080:30864/TCP   6s
+   kubernetes           ClusterIP   10.96.0.1        <none>        443/TCP          120m
+   messaging-service    ClusterIP   10.109.247.111   <none>        6379/TCP         36m
+   
+   controlplane ~ ➜  kubectl describe svc hr-web-app-service 
+   Name:                     hr-web-app-service
+   Namespace:                default
+   Labels:                   app=hr-web-app
+   Annotations:              <none>
+   Selector:                 app=hr-web-app
+   Type:                     NodePort
+   IP Family Policy:         SingleStack
+   IP Families:              IPv4
+   IP:                       10.99.0.81
+   IPs:                      10.99.0.81
+   Port:                     <unset>  8080/TCP
+   TargetPort:               8080/TCP
+   NodePort:                 <unset>  30864/TCP
+   Endpoints:                10.244.0.6:8080,10.244.0.7:8080
+   Session Affinity:         None
+   External Traffic Policy:  Cluster
+   Events:                   <none>
+   ```
+
+   Edit the "hr-web-app-service" servicee and change the Nodeport to "30082"
+
+   ```
+   controlplane ~ ➜  kubectl edit svc hr-web-app-service 
+   ```
+
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     creationTimestamp: "2023-01-20T01:53:12Z"
+     labels:
+       app: hr-web-app
+     name: hr-web-app-service
+     namespace: default
+     resourceVersion: "9967"
+     uid: f935cbbf-d43e-47c7-8d47-d22df2e4a19f
+   spec:
+     clusterIP: 10.99.0.81
+     clusterIPs:
+     - 10.99.0.81
+     externalTrafficPolicy: Cluster
+     internalTrafficPolicy: Cluster
+     ipFamilies:
+     - IPv4
+     ipFamilyPolicy: SingleStack
+     ports:
+     - nodePort: 30082
+       port: 8080
+       protocol: TCP
+       targetPort: 8080
+     selector:
+       app: hr-web-app
+     sessionAffinity: None
+     type: NodePort
+   status:
+     loadBalancer: {}
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get svc
+   NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+   hr-web-app-service   NodePort    10.99.0.81       <none>        8080:30082/TCP   4m
+   kubernetes           ClusterIP   10.96.0.1        <none>        443/TCP          124m
+   messaging-service    ClusterIP   10.109.247.111   <none>        6379/TCP         39m
+   ```
+
+   
+
+11. Use JSON PATH query to retrieve the `osImage`s of all the nodes and store it in a file `/opt/outputs/nodes_os_x43kj56.txt`.
+
+    The `osImages` are under the `nodeInfo` section under `status` of each node.
+
+    - Task Completed
+
+    ```
+    kubectl get nodes -o jsonpath='{.items[*].status.nodeInfo.osImage}' > /opt/outputs/nodes_os_x43kj56.txt
+    ```
+
+    
+
+12. Create a `Persistent Volume` with the given specification.
+
+    - Volume Name: pv-analytics
+    - Storage: 100Mi
+    - Access modes: ReadWriteMany
+    - Host Path: /pv/data-analytics
+
+    Check the persistent volumes in kubernetes documentation and look for a template creating persistent volume 
+
+    https://kubernetes.io/docs/concepts/storage/persistent-volumes/#using
+
+    pv.yaml
+
+    ```
+    apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: pv-analytics
+    spec:
+      capacity:
+        storage: 100Mi
+      accessModes:
+        - ReadWriteMany
+      hostPath:
+          path: /pv/data-analytics
+    ```
+
+    ```
+    controlplane ~ ➜  kubectl create -f pv.yaml 
+    persistentvolume/pv-analytics created
+    
+    controlplane ~ ➜  kubectl get pv
+    NAME           CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+    pv-analytics   100Mi      RWX            Retain           Available                                   25s
+    
+    controlplane ~ ➜  kubectl describe pv pv-analytics 
+    Name:            pv-analytics
+    Labels:          <none>
+    Annotations:     <none>
+    Finalizers:      [kubernetes.io/pv-protection]
+    StorageClass:    
+    Status:          Available
+    Claim:           
+    Reclaim Policy:  Retain
+    Access Modes:    RWX
+    VolumeMode:      Filesystem
+    Capacity:        100Mi
+    Node Affinity:   <none>
+    Message:         
+    Source:
+        Type:          HostPath (bare host directory volume)
+        Path:          /pv/data-analytics
+        HostPathType:  
+    Events:            <none>
+    ```
+
+
+
+## MOCK EXAM - 2
+
+
+
+1. Take a backup of the etcd cluster and save it to `/opt/etcd-backup.db`.
+
+   - Backup Completed
+
+     
+
+   Search "etcdctl backup" in kubernetes documentation and look for "Backing up an etcd cluster"
+
+   Check "etcdctl snapshot" help
+
+   ```
+   root@controlplane ~ ✖ ETCDCTL_API=3 etcdctl snapshot -h
+   NAME:
+           snapshot - Manages etcd node snapshots
+   
+   USAGE:
+           etcdctl snapshot <subcommand>
+   
+   API VERSION:
+           3.3
+   
+   
+   COMMANDS:
+           save    Stores an etcd node backend snapshot to a given file
+           restore Restores an etcd member snapshot to an etcd directory
+           status  Gets backend snapshot status of a given file
+   
+   GLOBAL OPTIONS:
+         --cacert=""                               verify certificates of TLS-enabled secure servers using this CA bundle
+         --cert=""                                 identify secure client using this TLS certificate file
+         --command-timeout=5s                      timeout for short running command (excluding dial timeout)
+         --debug[=false]                           enable client-side debug logging
+         --dial-timeout=2s                         dial timeout for client connections
+     -d, --discovery-srv=""                        domain name to query for SRV records describing cluster endpoints
+         --endpoints=[127.0.0.1:2379]              gRPC endpoints
+         --hex[=false]                             print byte strings as hex encoded strings
+         --insecure-discovery[=true]               accept insecure SRV records describing cluster endpoints
+         --insecure-skip-tls-verify[=false]        skip server certificate verification
+         --insecure-transport[=true]               disable transport security for client connections
+         --keepalive-time=2s                       keepalive time for client connections
+         --keepalive-timeout=6s                    keepalive timeout for client connections
+         --key=""                                  identify secure client using this TLS key file
+         --user=""                                 username[:password] for authentication (prompt if password is not supplied)
+     -w, --write-out="simple"                      set the output format (fields, json, protobuf, simple, table)
+   ```
+
+   Here is were you will get the values in the ectdtl command parameters
+
+   ```
+   root@controlplane ~ ➜  cat /etc/kubernetes/manifests/etcd.yaml | grep file
+       - --cert-file=/etc/kubernetes/pki/etcd/server.crt
+       - --key-file=/etc/kubernetes/pki/etcd/server.key
+       - --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt
+       - --peer-key-file=/etc/kubernetes/pki/etcd/peer.key
+       - --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+       - --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+   ```
+
+   Backup etcd  cluster
+
+   ```
+   root@controlplane ~ ➜  ETCDCTL_API=3 etcdctl --endpoints 127.0.0.1:2379 snapshot save /opt/etcd-backup.db \
+   > --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+   > --cert=/etc/kubernetes/pki/etcd/server.crt \
+   > --key=/etc/kubernetes/pki/etcd/server.key
+   Snapshot saved at /opt/etcd-backup.db
+   
+   root@controlplane ~ ➜  ls -l /opt/
+   total 2332
+   drwxr-xr-x 1 root root    4096 May 13  2022 cni
+   drwx--x--x 4 root root    4096 May 13  2022 containerd
+   -rw-r--r-- 1 root root 2371616 Jan 20 04:35 etcd-backup.db
+   ```
+
+   Verify the snapshot
+
+   ```
+   root@controlplane ~ ✖ ETCDCTL_API=3 etcdctl --write-out=table snapshot status /opt/etcd-backup.db 
+   +----------+----------+------------+------------+
+   |   HASH   | REVISION | TOTAL KEYS | TOTAL SIZE |
+   +----------+----------+------------+------------+
+   | 8b723b3d |    11534 |        749 |     2.4 MB |
+   +----------+----------+------------+------------+kubect	
+   ```
+
+   
+
+2. Create a Pod called `redis-storage` with image: `redis:alpine` with a Volume of type `emptyDir` that lasts for the life of the Pod.
+
+   Specs on the below.
+
+   - Pod named 'redis-storage' created
+   - Pod 'redis-storage' uses Volume type of emptyDir
+   - Pod 'redis-storage' uses volumeMount with mountPath = /data/redis
+
+   Create redis-storage.yaml 
+
+   ```
+   root@controlplane ~ ➜  kubectl run redis-storage --image=redis:alpine --dry-run=client -o yaml > redis-storage.yaml
+   ```
+
+   Seach "pod volumes" in kubernetes documentation and look for "emptyDir" configuration sample
+
+   Edit redis-storage.yaml according to the "emptyDir"  sample configuration
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: redis-storage
+     name: redis-storage
+   spec:
+     containers:
+     - image: redis:alpine
+       name: redis-storage
+       volumeMounts:
+       - mountPath: /data/redis
+         name: cache-volume
+       resources: {}
+     volumes:
+     - name: cache-volume
+       emptyDir: {}
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f redis-storage.yaml 
+   pod/redis-storage created
+   
+   root@controlplane ~ ➜  kubectl get pods
+   NAME            READY   STATUS    RESTARTS   AGE
+   redis-storage   1/1     Running   0          111s
+   
+   root@controlplane ~ ➜  kubectl describe pod redis-storage 
+   Name:         redis-storage
+   Namespace:    default
+   Priority:     0
+   Node:         node01/10.13.53.12
+   Start Time:   Fri, 20 Jan 2023 07:08:04 +0000
+   Labels:       run=redis-storage
+   Annotations:  <none>
+   Status:       Running
+   IP:           10.50.192.1
+   IPs:
+     IP:  10.50.192.1
+   Containers:
+     redis-storage:
+       Container ID:   docker://17b864100f6c2f78dad358d6d66e800dd43c5df216971bc696e4d7a6e4aff75b
+       Image:          redis:alpine
+       Image ID:       docker-pullable://redis@sha256:5ae5799117d680a13dd35184f26db66549605e220f1af52f4b7557f77830aa17
+       Port:           <none>
+       Host Port:      <none>
+       State:          Running
+         Started:      Fri, 20 Jan 2023 07:08:09 +0000
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /data/redis from cache-volume (rw)
+         /var/run/secrets/kubernetes.io/serviceaccount from default-token-ff5pm (ro)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:
+     cache-volume:
+       Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:     
+       SizeLimit:  <unset>
+   ```
+
+   
+
+3. Create a new pod called `super-user-pod` with image `busybox:1.28`. Allow the pod to be able to set `system_time`.
+
+   The container should sleep for 4800 seconds.
+
+   - Pod: super-user-pod
+   - Container Image: busybox:1.28
+   - SYS_TIME capabilities for the conatiner?
+
+   ```
+   root@controlplane ~ ➜  kubectl run super-user-pod --image=busybox:1.28 --dry-run=client -o yaml --command -- sleep 4800 > super-user-pod.yaml
+   ```
+
+   Seach "security capabilities" in kubernetes documentation and look for "Set capabilities for a Container" 
+
+   Edit super-user-pod.yaml and add the following:
+
+   ````
+   securityContext:
+         capabilities:
+           add: ["SYS_TIME"]
+   ````
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: super-user-pod
+     name: super-user-pod
+   spec:
+     containers:
+     - command:
+       - sleep
+       - "4800"
+       image: busybox:1.28
+       name: super-user-pod
+       securityContext:
+         capabilities:
+           add: ["SYS_TIME"]
+       resources: {}
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}                                                     
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f super-user-pod.yaml 
+   pod/super-user-pod created
+   
+   root@controlplane ~ ➜  kubectl get pods
+   NAME             READY   STATUS    RESTARTS   AGE
+   redis-storage    1/1     Running   0          15m
+   super-user-pod   1/1     Running   0          7s
+   
+   root@controlplane ~ ➜  kubectl describe pod super-user-pod 
+   Name:         super-user-pod
+   Namespace:    default
+   Priority:     0
+   Node:         node01/10.13.53.12
+   Start Time:   Fri, 20 Jan 2023 07:23:29 +0000
+   Labels:       run=super-user-pod
+   Annotations:  <none>
+   Status:       Running
+   IP:           10.50.192.2
+   IPs:
+     IP:  10.50.192.2
+   Containers:
+     super-user-pod:
+       Container ID:  docker://c119733181976bae1d31fc4125c8088b602b106b32eb14fd542a3d18e67f9458
+       Image:         busybox:1.28
+       Image ID:      docker-pullable://busybox@sha256:141c253bc4c3fd0a201d32dc1f493bcf3fff003b6df416dea4f41046e0f37d47
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sleep
+         4800
+       State:          Running
+         Started:      Fri, 20 Jan 2023 07:23:33 +0000
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from default-token-ff5pm (ro)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:
+     default-token-ff5pm:
+       Type:        Secret (a volume populated by a Secret)
+       SecretName:  default-token-ff5pm
+       Optional:    false
+   QoS Class:       BestEffort
+   Node-Selectors:  <none>
+   Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                    node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+   Events:
+     Type    Reason     Age   From               Message
+     ----    ------     ----  ----               -------
+     Normal  Scheduled  16s   default-scheduler  Successfully assigned default/super-user-pod to node01
+     Normal  Pulling    13s   kubelet            Pulling image "busybox:1.28"
+     Normal  Pulled     12s   kubelet            Successfully pulled image "busybox:1.28" in 1.310172812s
+     Normal  Created    12s   kubelet            Created container super-user-pod
+     Normal  Started    12s   kubelet            Started container super-user-pod
+   ```
+
+   
+
+4. A pod definition file is created at `/root/CKA/use-pv.yaml`. Make use of this manifest file and mount the persistent volume called `pv-1`. Ensure the pod is running and the PV is bound.
+
+   mountPath: `/data`
+   persistentVolumeClaim Name: `my-pvc`
+
+   - persistentVolume Claim configured correctly
+   - pod using the correct mountPath
+   - pod using the persistent volume claim?
+
+   Seach "persistent volume claims" in kubernetes documentation and look for configuration sample
+
+   ```
+   apiVersion: v1
+   kind: PersistentVolumeClaim
+   metadata:
+     name: myclaim
+   spec:
+     accessModes:
+       - ReadWriteOnce
+     volumeMode: Filesystem
+     resources:
+       requests:
+         storage: 8Gi
+     storageClassName: slow
+     selector:
+       matchLabels:
+         release: "stable"
+       matchExpressions:
+         - {key: environment, operator: In, values: [dev]}
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl get pv
+   NAME   CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+   pv-1   10Mi       RWO            Retain           Available                                   6m22s
+   ```
+
+   Create persistent volume claims
+
+   pvc.yaml
+
+   ```
+   apiVersion: v1
+   kind: PersistentVolumeClaim
+   metadata:
+     name: my-pvc
+   spec:
+     accessModes:
+       - ReadWriteOnce
+     resources:
+       requests:
+         storage: 10Mi
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f pvc.yaml 
+   persistentvolumeclaim/my-pvc created
+   
+   root@controlplane ~ ➜  kubectl get pvc
+   NAME     STATUS   VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+   my-pvc   Bound    pv-1     10Mi       RWO                           9s
+   ```
+
+   Edit /root/CKA/use-pv.yaml
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: use-pv
+     name: use-pv
+   spec:
+     containers:
+     - image: nginx
+       name: use-pv
+       volumeMounts:
+         - mountPath: "/data"
+           name: mypd
+       resources: {}
+     volumes:
+       - name: mypd
+         persistentVolumeClaim:
+           claimName: my-pvc
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}
+   ```
+
+   Create pod
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f /root/CKA/use-pv.yaml
+   
+   root@controlplane ~ ➜  kubectl get pods
+   NAME             READY   STATUS    RESTARTS   AGE
+   redis-storage    1/1     Running   0          8m21s
+   super-user-pod   1/1     Running   0          7m15s
+   use-pv           1/1     Running   0          13s
+   
+   root@controlplane ~ ➜  kubectl describe pod use-pv 
+   Name:         use-pv
+   Namespace:    default
+   Priority:     0
+   Node:         node01/10.13.131.3
+   Start Time:   Fri, 20 Jan 2023 07:56:49 +0000
+   Labels:       run=use-pv
+   Annotations:  <none>
+   Status:       Running
+   IP:           10.50.192.3
+   IPs:
+     IP:  10.50.192.3
+   Containers:
+     use-pv:
+       Container ID:   docker://0b457ef460a8357a79b1736cdc9dec41d1cdf7cadbcf06887e7652dd7ba4cf45
+       Image:          nginx
+       Image ID:       docker-pullable://nginx@sha256:b8f2383a95879e1ae064940d9a200f67a6c79e710ed82ac42263397367e7cc4e
+       Port:           <none>
+       Host Port:      <none>
+       State:          Running
+         Started:      Fri, 20 Jan 2023 07:56:58 +0000
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /data from mypd (rw)
+         /var/run/secrets/kubernetes.io/serviceaccount from default-token-wmrnq (ro)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:
+     mypd:
+       Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+       ClaimName:  my-pvc
+   ```
+
+   
+
+5. Create a new deployment called `nginx-deploy`, with image `nginx:1.16` and `1` replica. Next upgrade the deployment to version `1.17` using rolling update.
+
+   - Deployment : nginx-deploy. Image: nginx:1.16
+   - Image: nginx:1.16
+   - Task: Upgrade the version of the deployment to 1:17
+   - Task: Record the changes for the image upgrade
+
+   Create deployment
+
+   ```
+   root@controlplane ~ ➜  kubectl create deployment nginx-deploy --image=nginx:1.16 --replicas=1
+   deployment.apps/nginx-deploy created
+   
+   root@controlplane ~ ➜  kubectl get deployments.apps 
+   NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+   nginx-deploy   1/1     1            1           10s
+   
+   root@controlplane ~ ➜  kubectl describe deployments nginx-deploy 
+   Name:                   nginx-deploy
+   Namespace:              default
+   CreationTimestamp:      Fri, 20 Jan 2023 08:02:38 +0000
+   Labels:                 app=nginx-deploy
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               app=nginx-deploy
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  app=nginx-deploy
+     Containers:
+      nginx:
+       Image:        nginx:1.16
+       Port:         <none>
+       Host Port:    <none>
+       Environment:  <none>
+       Mounts:       <none>
+     Volumes:        <none>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   nginx-deploy-6c858c4486 (1/1 replicas created)
+   Events:
+     Type    Reason             Age   From                   Message
+     ----    ------             ----  ----                   -------
+     Normal  ScalingReplicaSet  54s   deployment-controller  Scaled up replica set nginx-deploy-6c858c4486 to 1
+   ```
+
+   Update the image to "nginx:1.17"
+
+   ```
+   root@controlplane ~ ➜  kubectl set image deployment/nginx-deploy nginx=nginx:1.17
+   deployment.apps/nginx-deploy image updated
+   
+   root@controlplane ~ ➜  kubectl describe deployments nginx-deploy 
+   Name:                   nginx-deploy
+   Namespace:              default
+   CreationTimestamp:      Fri, 20 Jan 2023 08:02:38 +0000
+   Labels:                 app=nginx-deploy
+   Annotations:            deployment.kubernetes.io/revision: 2
+   Selector:               app=nginx-deploy
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  app=nginx-deploy
+     Containers:
+      nginx:
+       Image:        nginx:1.17
+       Port:         <none>
+       Host Port:    <none>
+       Environment:  <none>
+       Mounts:       <none>
+     Volumes:        <none>
+   ```
+
+   
+
+6. Create a new user called `john`. Grant him access to the cluster. John should have permission to `create, list, get, update and delete pods` in the `development` namespace . The private key exists in the location: `/root/CKA/john.key` and csr at `/root/CKA/john.csr`.
+
+   `Important Note`: As of kubernetes 1.19, the CertificateSigningRequest object expects a `signerName`.
+
+   Please refer the documentation to see an example. The documentation tab is available at the top right of terminal.
+
+   - CSR: `john-developer`; Status: Approved
+   - Role Name: `developer`; namespace: `development`; Resource: `Pods`
+   - Access: User 'john' has appropriate permissions
+
+   1. Create Certificate Signing Request
+
+   - Search "Certificate Signing Request" in kubernetes documentation
+
+   Convert john.csr to base64
+
+   ```
+   root@controlplane ~/CKA ➜  cat john.csr | base64 | tr -d "\n"
+   LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1ZEQ0NBVHdDQVFBd0R6RU5NQXNHQTFVRUF3d0VhbTlvYmpDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRApnZ0VQQURDQ0FRb0NnZ0VCQUx4TEFCVkRnSGRrR3BHeWRJUVJQYTdPNjBXVlRIbmdremlFdE12NWQ4RzJaQTFTCjk4ZE1aMDE2MDE4L2xKSDVYd0tzWU1VdzY5djBpNUVZNkNMZFVVSFl1TW0yN29CbWR5elFoSDRPTXE2a1dYY24KMmJFQ3l6Vno2bFdPZDJ4aTZmTDlWblZOUG14Y3UvVHVFZ011RHlTamFvK08vKzFFVUhTQzZSc3orYkcxOVRHZAp4WXpmMzcrOWxoQ2pCc2RuUmp5Q3F6Z0czNy9KYnYrM2podk1aM1ZTZW1XQ1l0Z0RjTTMyeitaWnQwUlNsQjhIClVqRDJPYkdXc2dlQzAvdjlRZHhZdnRHMS9DUE9pa0pzcy9SU0draEE3anZKN2h2NHp6S2pmTngzZ3pNUEdieG4KQ1pJTjVGalVEWVNSR0ZSK3VHanFNeUNPSCsxbVNiY1FKWXhQQVVzQ0F3RUFBYUFBTUEwR0NTcUdTSWIzRFFFQgpDd1VBQTRJQkFRQ0VicXVIekQxWXdBYUxhd3Nnc0VMMUJhMTZTdGRXOWM3UjNlQi9mSHI3aG5YME02WU9KNk4zCllBZlp6OFdFRXRDZS9MOGpSL3NvSFlwZ0Q2Z1UrSnNNSFFOSUVQSVJDN21ZblBCMVlkelBFVTNhendReG9wN0cKV0kzZjFmeWdZV0d3Wk5HZ0tLeFBZWnZ3UEVSS1FvbTNjMzhMNWNrbUpaR3lRcmxhQzRaaTQ1UTBpbG1SSWM2UgpoL21rM1FnZnkzR1JscTdiRStRZ3UzaDdXaEViTjVMVEtuTUFtai9xZkttOUhVN0F4bVlOMUsxeGpueXFoQWpqCmJzZGhhNzZpdENhaytWcERUcHJRdW1lTSt2RHhReGhGV29SWDR6MGUrUmtaY3pqSVRBTmg3WTlwaFpvNWtucTIKT3c5YTBVdjBHdjBpWmhnRWJWTWY3dTBsZmQvSjlyRzYKLS0tLS1FTkQgQ0VSVElGSUNBVEUgUkVRVUVTVC0tLS0tCg==
+   ```
+
+   john-csr.yaml
+
+   ```
+   apiVersion: certificates.k8s.io/v1
+   kind: CertificateSigningRequest
+   metadata:
+     name: john-developer
+   spec:
+     request: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1ZEQ0NBVHdDQVFBd0R6RU5NQXNHQTFVRUF3d0VhbTlvYmpDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRApnZ0VQQURDQ0FRb0NnZ0VCQUx4TEFCVkRnSGRrR3BHeWRJUVJQYTdPNjBXVlRIbmdremlFdE12NWQ4RzJaQTFTCjk4ZE1aMDE2MDE4L2xKSDVYd0tzWU1VdzY5djBpNUVZNkNMZFVVSFl1TW0yN29CbWR5elFoSDRPTXE2a1dYY24KMmJFQ3l6Vno2bFdPZDJ4aTZmTDlWblZOUG14Y3UvVHVFZ011RHlTamFvK08vKzFFVUhTQzZSc3orYkcxOVRHZAp4WXpmMzcrOWxoQ2pCc2RuUmp5Q3F6Z0czNy9KYnYrM2podk1aM1ZTZW1XQ1l0Z0RjTTMyeitaWnQwUlNsQjhIClVqRDJPYkdXc2dlQzAvdjlRZHhZdnRHMS9DUE9pa0pzcy9SU0draEE3anZKN2h2NHp6S2pmTngzZ3pNUEdieG4KQ1pJTjVGalVEWVNSR0ZSK3VHanFNeUNPSCsxbVNiY1FKWXhQQVVzQ0F3RUFBYUFBTUEwR0NTcUdTSWIzRFFFQgpDd1VBQTRJQkFRQ0VicXVIekQxWXdBYUxhd3Nnc0VMMUJhMTZTdGRXOWM3UjNlQi9mSHI3aG5YME02WU9KNk4zCllBZlp6OFdFRXRDZS9MOGpSL3NvSFlwZ0Q2Z1UrSnNNSFFOSUVQSVJDN21ZblBCMVlkelBFVTNhendReG9wN0cKV0kzZjFmeWdZV0d3Wk5HZ0tLeFBZWnZ3UEVSS1FvbTNjMzhMNWNrbUpaR3lRcmxhQzRaaTQ1UTBpbG1SSWM2UgpoL21rM1FnZnkzR1JscTdiRStRZ3UzaDdXaEViTjVMVEtuTUFtai9xZkttOUhVN0F4bVlOMUsxeGpueXFoQWpqCmJzZGhhNzZpdENhaytWcERUcHJRdW1lTSt2RHhReGhGV29SWDR6MGUrUmtaY3pqSVRBTmg3WTlwaFpvNWtucTIKT3c5YTBVdjBHdjBpWmhnRWJWTWY3dTBsZmQvSjlyRzYKLS0tLS1FTkQgQ0VSVElGSUNBVEUgUkVRVUVTVC0tLS0tCg==
+     signerName: kubernetes.io/kube-apiserver-client
+     usages:
+     - client auth
+   ```
+
+   ```
+   root@controlplane ~/CKA ➜  kubectl create -f john-csr.yaml 
+   certificatesigningrequest.certificates.k8s.io/john-developer created
+   
+   root@controlplane ~/CKA ➜  kubectl get csr
+   NAME             AGE   SIGNERNAME                            REQUESTOR          CONDITION
+   john-developer   47s   kubernetes.io/kube-apiserver-client   kubernetes-admin   Pending
+   ```
+
+   Approve the  certificate signing request
+
+   ```
+   root@controlplane ~/CKA ➜  kubectl certificate approve john-developer
+   certificatesigningrequest.certificates.k8s.io/john-developer approved
+   
+   root@controlplane ~/CKA ➜  kubectl get csr
+   NAME             AGE     SIGNERNAME                            REQUESTOR          CONDITION
+   john-developer   3m37s   kubernetes.io/kube-apiserver-client   kubernetes-admin   Approved,Issued
+   ```
+
+   2. Create role
+
+   ```
+   root@controlplane ~/CKA ✖ kubectl create role developer --verb=get,list,create,update,delete --resource=pods --namespace=development
+   role.rbac.authorization.k8s.io/developer created
+   
+   root@controlplane ~/CKA ➜  kubectl get role -n development 
+   NAME        CREATED AT
+   developer   2023-01-20T08:34:09Z
+   
+   root@controlplane ~/CKA ➜  kubectl describe -n development role developer 
+   Name:         developer
+   Labels:       <none>
+   Annotations:  <none>
+   PolicyRule:
+     Resources  Non-Resource URLs  Resource Names  Verbs
+     ---------  -----------------  --------------  -----
+     pods       []                 []              [get list create update delete]
+   ```
+
+   Check if john get pods in namespace "developer"
+
+   ```
+   root@controlplane ~/CKA ➜  kubectl auth can-i get pods --namespace=development --as john
+   no
+   
+   root@controlplane ~/CKA ✖ kubectl auth can-i list pods --namespace=development --as john
+   no
+   ```
+   
+   3. Create role bindings
+   
+   ```
+   root@controlplane ~/CKA ➜  kubectl create rolebinding john-developer --role=developer --user=john --namespace=development 
+   rolebinding.rbac.authorization.k8s.io/john-developer created
+   
+   root@controlplane ~/CKA ➜  kubectl get rolebindings -n development 
+   NAME             ROLE             AGE
+   john-developer   Role/developer   28s
+   
+   root@controlplane ~/CKA ➜  kubectl describe -n development rolebindings.rbac.authorization.k8s.io john-developer 
+   Name:         john-developer
+   Labels:       <none>
+   Annotations:  <none>
+   Role:
+     Kind:  Role
+     Name:  developer
+   Subjects:
+     Kind  Name  Namespace
+     ----  ----  ---------
+     User  john  
+   ```
+   
+   Check if john get pods in namespace "developer"
+   
+   ```
+   root@controlplane ~/CKA ➜  kubectl auth can-i get pods --namespace=development --as=john
+   yes
+   
+   root@controlplane ~/CKA ➜  kubectl auth can-i list pods --namespace=development --as=john
+   yes
+   ```
+   
+   
+   
+7. Create a nginx pod called `nginx-resolver` using image `nginx`, expose it internally with a service called `nginx-resolver-service`.
+
+   Test that you are able to look up the service and pod names from within the cluster. Use the image `busybox:1.28` to create a pod for dns lookup. Record results in `/root/CKA/nginx.svc` and `/root/CKA/nginx.pod` for service and pod name resolutions respectively
+
+   - Pod: nginx-resolver created
+   - Service DNS Resolution recorded correctly
+   - Pod DNS resolution recorded correctly
+
+   ```
+   root@controlplane ~/CKA ➜  kubectl run nginx-resolver --image=nginx
+   pod/nginx-resolver created
+   
+   root@controlplane ~/CKA ➜  kubectl get pods
+   NAME                            READY   STATUS    RESTARTS   AGE
+   nginx-deploy-7c8d8c76bf-6gzpk   1/1     Running   0          15m
+   nginx-resolver                  1/1     Running   0          7s
+   redis-storage                   1/1     Running   0          23m
+   super-user-pod                  1/1     Running   0          22m
+   use-pv                          1/1     Running   0          17m
+   ```
+
+   ```
+   root@controlplane ~/CKA ➜  kubectl expose pod nginx-resolver --name=nginx-resolver-service --port=80
+   service/nginx-resolver-service exposed
+   
+   root@controlplane ~/CKA ➜  kubectl get svc
+   NAME                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+   kubernetes               ClusterIP   10.96.0.1      <none>        443/TCP   3h52m
+   nginx-resolver-service   ClusterIP   10.98.76.116   <none>        80/TCP    8s
+   
+   root@controlplane ~/CKA ➜  kubectl describe svc nginx-resolver-service 
+   Name:              nginx-resolver-service
+   Namespace:         default
+   Labels:            run=nginx-resolver
+   Annotations:       <none>
+   Selector:          run=nginx-resolver
+   Type:              ClusterIP
+   IP Families:       <none>
+   IP:                10.98.76.116
+   IPs:               10.98.76.116
+   Port:              <unset>  80/TCP
+   TargetPort:        80/TCP
+   Endpoints:         10.50.192.4:80
+   Session Affinity:  None
+   Events:            <none>
+   ```
+
+   ```
+   root@controlplane ~/CKA ➜  kubectl run busybox --image=busybox:1.28 -- sleep 5000
+   pod/busybox created
+   
+   root@controlplane ~/CKA ➜  kubectl get pods
+   NAME                            READY   STATUS    RESTARTS   AGE
+   busybox                         1/1     Running   0          5s
+   nginx-deploy-7c8d8c76bf-6gzpk   1/1     Running   0          22m
+   nginx-resolver                  1/1     Running   0          7m32s
+   redis-storage                   1/1     Running   0          30m
+   super-user-pod                  1/1     Running   0          29m
+   use-pv                          1/1     Running   0          25m
+   ```
+
+   Check if resolve the "nginx-resolver-service" service hostname
+
+   ```
+   root@controlplane ~/CKA ➜  kubectl exec busybox -- nslookup nginx-resolver-service
+   Server:    10.96.0.10
+   Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
+   
+   Name:      nginx-resolver-service
+   Address 1: 10.98.76.116 nginx-resolver-service.default.svc.cluster.local
+   
+   root@controlplane ~/CKA ➜  kubectl exec busybox -- nslookup nginx-resolver-service > /root/CKA/nginx.svc
+   ```
+
+   Check if resolve the "nginx-resolver" pod hostname
+
+   ```
+   oot@controlplane ~/CKA ➜  kubectl get pods -o wideNAME                            READY   STATUS    RESTARTS   AGE    IP            NODE     NOMINATED NODE   READINESS GATES
+   busybox                         1/1     Running   0          4m4s   10.50.192.6   node01   <none>           <none>
+   nginx-deploy-7c8d8c76bf-6gzpk   1/1     Running   0          26m    10.50.192.5   node01   <none>           <none>
+   nginx-resolver                  1/1     Running   0          11m    10.50.192.4   node01   <none>           <none>
+   redis-storage                   1/1     Running   0          34m    10.50.192.1   node01   <none>           <none>
+   super-user-pod                  1/1     Running   0          33m    10.50.192.2   node01   <none>           <none>
+   use-pv                          1/1     Running   0          29m    10.50.192.3   node01   <none>           <none>
+   
+   root@controlplane ~/CKA ➜  kubectl exec busybox -- nslookup 10-50-192-4.default.pod.cluster.localServer:    10.96.0.10
+   Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
+   
+   Name:      10-50-192-4.default.pod.cluster.local
+   Address 1: 10.50.192.4 10-50-192-4.nginx-resolver-service.default.svc.cluster.local
+   
+   root@controlplane ~/CKA ➜  kubectl exec busybox -- nslookup 10-50-192-4.default.pod.cluster.local > /root/CKA/nginx.pod
+   ```
+
+   
+
+8. Create a static pod on `node01` called `nginx-critical` with image `nginx` and make sure that it is recreated/restarted automatically in case of a failure.
+
+   Use `/etc/kubernetes/manifests` as the Static Pod path for example.
+
+   - static pod configured under /etc/kubernetes/manifests ?
+   - Pod nginx-critical-node01 is up and running
+   
+   ```
+   root@controlplane ~ ➜  kubectl run nginx-critical --image=nginx --restart=Always --dry-run=client -o yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: nginx-critical
+     name: nginx-critical
+   spec:
+     containers:
+     - image: nginx
+       name: nginx-critical
+       resources: {}
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}
+   ```
+   
+   ```
+   root@controlplane ~/CKA via 🐪 v5.26.1 ➜  ssh node01
+   root@node01:~# vim /etc/kubernetes/manifests/nginx-critical.yaml
+   ```
+   
+   nginx-critical.yaml
+   
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: nginx-critical
+     name: nginx-critical
+   spec:
+     containers:
+     - image: nginx
+       name: nginx-critical
+       resources: {}
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}
+   ```
+   
+   Check if the static pod is created
+   
+   ```
+   root@controlplane ~ ➜  kubectl get pods
+   NAME                            READY   STATUS    RESTARTS   AGE
+   busybox                         1/1     Running   0          13m
+   nginx-critical-node01           1/1     Running   0          19s
+   nginx-deploy-7c8d8c76bf-6gzpk   1/1     Running   0          35m
+   nginx-resolver                  1/1     Running   0          20m
+   redis-storage                   1/1     Running   0          44m
+   super-user-pod                  1/1     Running   0          43m
+   use-pv                          1/1     Running   0          38m
+   ```
+   
+
+
+
+## MOCK EXAM - 3
+
+1. Create a new service account with the name `pvviewer`. Grant this Service account access to `list` all PersistentVolumes in the cluster by creating an appropriate cluster role called `pvviewer-role` and ClusterRoleBinding called `pvviewer-role-binding`.
+   Next, create a pod called `pvviewer` with the image: `redis` and serviceAccount: `pvviewer` in the default namespace.
+
+   - ServiceAccount: pvviewer
+   - ClusterRole: pvviewer-role
+   - ClusterRoleBinding: pvviewer-role-binding
+   - Pod: pvviewer
+   - Pod configured to use ServiceAccount pvviewer ?
+
+   **Create serviceaccount**
+
+   ```
+   controlplane ~ ➜  kubectl create serviceaccount pvviewer
+   serviceaccount/pvviewer created
+   
+   controlplane ~ ➜  kubectl get serviceaccounts 
+   NAME       SECRETS   AGE
+   default    0         52m
+   pvviewer   0         34s
+   ```
+
+   **Create clusterrole**
+
+   ```
+   controlplane ~ ➜  kubectl create clusterrole pvviewer-role --verb=list --resource=persistentvolumes
+   
+   controlplane ~ ➜  kubectl get clusterrole | grep pvviewer-rolepvviewer-role                                                          2023-01-23T01:19:44Z
+   
+   controlplane ~ ➜  kubectl describe clusterrole pvviewer-role
+   Name:         pvviewer-role
+   Labels:       <none>
+   Annotations:  <none>
+   PolicyRule:
+     Resources          Non-Resource URLs  Resource Names  Verbs
+     ---------          -----------------  --------------  -----
+     persistentvolumes  []                 []              [list]
+   ```
+
+   **Create clusterrolebinding**
+
+   ```
+   controlplane ~ ✖ kubectl create clusterrolebinding pvviewer-role-binding --clusterrole=pvviewer-role --serviceaccount=default:pvviewer
+   
+   
+   controlplane ~ ➜  kubectl describe clusterrolebindings.rbac.authorization.k8s.io pvviewer-role-binding 
+   Name:         pvviewer-role-binding
+   Labels:       <none>
+   Annotations:  <none>
+   Role:
+     Kind:  ClusterRole
+     Name:  pvviewer-role
+   Subjects:
+     Kind            Name      Namespace
+     ----            ----      ---------
+     ServiceAccount  pvviewer  default
+   ```
+
+   ````
+   controlplane ~ ➜  kubectl run pvviewer --image=redis --dry-run=client -o yaml > pvviewer_pod.yaml
+   ````
+
+   Edit pvviewer_pod.yaml 
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: pvviewer
+     name: pvviewer
+   spec:
+     serviceAccountName: pvviewer
+     containers:
+     - image: redis
+       name: pvviewer
+       resources: {}
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}
+   ```
+
+   
+
+   ```
+   controlplane ~ ➜  kubectl create -f pvviewer_pod.yaml 
+   pod/pvviewer created
+   
+   controlplane ~ ➜  kubectl get pods
+   NAME                            READY   STATUS    RESTARTS   AGE
+   nginx-deploy-5f6bb8887f-xlx4z   1/1     Running   0          48m
+   np-test-1                       1/1     Running   0          49m
+   pvviewer                        1/1     Running   0          10s
+   
+   controlplane ~ ➜  kubectl describe pods pvviewer 
+   Name:             pvviewer
+   Namespace:        default
+   Priority:         0
+   Service Account:  pvviewer
+   Node:             node01/10.4.249.6
+   Start Time:       Sun, 22 Jan 2023 20:41:38 -0500
+   Labels:           run=pvviewer
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.192.3
+   IPs:
+     IP:  10.244.192.3
+   Containers:
+     pvviewer:
+       Container ID:   containerd://f24d274c5b540ddc1f3e60e8986edf58c9db45a331ed5b8cf9131a6c9870d3c7
+       Image:          redis
+       Image ID:       docker.io/library/redis@sha256:325d5a448d8f6c1d30a0a0fb26090343279d4cf23258b26b1745862f332e9479
+       Port:           <none>
+       Host Port:      <none>
+       State:          Running
+         Started:      Sun, 22 Jan 2023 20:41:40 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-zplsz (ro)
+   ```
+
+   
+
+2. List the `InternalIP` of all nodes of the cluster. Save the result to a file `/root/CKA/node_ips`.
+
+   Answer should be in the format: `InternalIP of controlplane`<space>`InternalIP of node01` (in a single line)
+
+   - Task Completed
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o wide
+   NAME           STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+   controlplane   Ready    control-plane   28m   v1.26.0   10.8.123.9    <none>        Ubuntu 20.04.5 LTS   5.4.0-1093-gcp   containerd://1.6.6
+   node01         Ready    <none>          28m   v1.26.0   10.8.123.12   <none>        Ubuntu 20.04.5 LTS   5.4.0-1093-gcp   containerd://1.6.6
+   ```
+
+   **Identify the path we want to retrieve**
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o wide -o json | grep InternalIP -B 5 -A 5
+               },
+               "status": {
+                   "addresses": [
+                       {
+                           "address": "10.8.123.9",
+                           "type": "InternalIP"
+                       },
+                       {
+                           "address": "controlplane",
+                           "type": "Hostname"
+                       }
+   --
+               },
+               "status": {
+                   "addresses": [
+                       {
+                           "address": "10.8.123.12",
+                           "type": "InternalIP"
+                       },
+                       {
+                           "address": "node01",
+                           "type": "Hostname"
+                       }
+   
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o json | jq -c 'paths' | grep type
+   ["items",0,"status","addresses",0,"type"]
+   ["items",0,"status","addresses",1,"type"]
+   ["items",0,"status","conditions",0,"type"]
+   ["items",0,"status","conditions",1,"type"]
+   ["items",0,"status","conditions",2,"type"]
+   ["items",0,"status","conditions",3,"type"]
+   ["items",0,"status","conditions",4,"type"]
+   ["items",1,"status","addresses",0,"type"]
+   ["items",1,"status","addresses",1,"type"]
+   ["items",1,"status","conditions",0,"type"]
+   ["items",1,"status","conditions",1,"type"]
+   ["items",1,"status","conditions",2,"type"]
+   ["items",1,"status","conditions",3,"type"]
+   ["items",1,"status","conditions",4,"type"]
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o json | jq -c 'paths' | grep type | grep address
+   ["items",0,"status","addresses",0,"type"]
+   ["items",0,"status","addresses",1,"type"]
+   ["items",1,"status","addresses",0,"type"]
+   ["items",1,"status","addresses",1,"type"]
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o jsonpath='{.items[*].status.addresses[*]}' |jq
+   {
+     "address": "10.8.123.9",
+     "type": "InternalIP"
+   }
+   {
+     "address": "controlplane",
+     "type": "Hostname"
+   }
+   {
+     "address": "10.8.123.12",
+     "type": "InternalIP"
+   }
+   {
+     "address": "node01",
+     "type": "Hostname"
+   }
+   ```
+
+   Add filter "?(@.type=="InternalIP"" in the addresses array 
+
+   ```
+   controlplane ~ ➜  kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}' > /root/CKA/node_ips
+   ```
+
+   
+
+3. Create a pod called `multi-pod` with two containers.
+   Container 1, name: `alpha`, image: `nginx`
+   Container 2: name: `beta`, image: `busybox`, command: `sleep 4800`
+
+   Environment Variables:
+   container 1:
+   `name: alpha`
+
+   Container 2:
+   `name: beta`
+
+   - Pod Name: multi-pod
+   - Container 1: alpha
+   - Container 2: beta
+   - Container beta commands set correctly?
+   - Container 1 Environment Value Set
+   - Container 2 Environment Value Set
+
+   ```
+   controlplane ~ ➜  kubectl run multi-pod --image busybox --dry-run=client -o yaml --command -- sleep 4800 > multi-pod.yaml
+   ```
+
+   Edit multi-pod.yaml
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: multi-pod
+     name: multi-pod
+   spec:
+     containers:
+     - name: alpha
+       image: nginx
+       env:
+       - name: name
+         value: "alpha"
+     - command:
+       - sleep
+       - "4800"
+       image: busybox
+       name: beta
+       env:
+       - name: name
+         value: "beta"
+       resources: {}
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl create -f multi-pod.yaml 
+   pod/multi-pod created
+   
+   controlplane ~ ➜  kubectl get pods
+   NAME        READY   STATUS    RESTARTS   AGE
+   multi-pod   2/2     Running   0          21s
+   pvviewer    1/1     Running   0          10m
+   
+   controlplane ~ ➜  kubectl describe pod multi-pod 
+   Name:             multi-pod
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             node01/10.10.150.8
+   Start Time:       Sun, 22 Jan 2023 22:25:11 -0500
+   Labels:           run=multi-pod
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.192.2
+   IPs:
+     IP:  10.244.192.2
+   Containers:
+     alpha:
+       Container ID:   containerd://f5e9cf0ff3ab0f553495cb626ac472fcadf89bb96eccc591e8ce87a87908b5c6
+       Image:          nginx
+       Image ID:       docker.io/library/nginx@sha256:b8f2383a95879e1ae064940d9a200f67a6c79e710ed82ac42263397367e7cc4e
+       Port:           <none>
+       Host Port:      <none>
+       State:          Running
+         Started:      Sun, 22 Jan 2023 22:25:13 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:
+         name:  alpha
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-l2qp5 (ro)
+     beta:
+       Container ID:  containerd://17b3e7afb5bb25bd1e2aa9062b8d229216bbfc2eb891b11c3644960d5e7735b8
+       Image:         busybox
+       Image ID:      docker.io/library/busybox@sha256:7b3ccabffc97de872a30dfd234fd972a66d247c8cfc69b0550f276481852627c
+       Port:          <none>
+       Host Port:     <none>
+       Command:
+         sleep
+         4800
+       State:          Running
+         Started:      Sun, 22 Jan 2023 22:25:13 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:
+         name:  beta
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-l2qp5 (ro)
+   ```
+
+   
+
+   
+
+4. Create a Pod called `non-root-pod` , image: `redis:alpine`
+   runAsUser: 1000
+   fsGroup: 2000
+
+   - Pod non-root-pod fsGroup configured
+   - Pod non-root-pod runAsUser configured
+
+   ```
+   controlplane ~ ➜  kubectl run non-root-pod --image=redis:alpine --dry-run=client -o yaml > non-root-pod.yaml
+   ```
+
+   Search "security context" in kubernetes documentation
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: security-context-demo
+   spec:
+     securityContext:
+       runAsUser: 1000
+       runAsGroup: 3000
+       fsGroup: 2000
+     volumes:
+     - name: sec-ctx-vol
+       emptyDir: {}
+   ```
+
+   Edit non-root-pod.yaml
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: non-root-pod
+     name: non-root-pod
+   spec:
+     securityContext:
+       runAsUser: 1000
+       fsGroup: 2000
+     containers:
+     - image: redis:alpine
+       name: non-root-pod
+       resources: {}
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl create -f non-root-pod.yaml 
+   
+   controlplane ~ ➜  kubectl get pods
+   NAME           READY   STATUS    RESTARTS   AGE
+   multi-pod      2/2     Running   0          3m49s
+   non-root-pod   1/1     Running   0          80s
+   pvviewer       1/1     Running   0          5m51s
+   ```
+
+   ```
+   controlplane ~ ✖ kubectl get pod non-root-pod -o yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: "2023-01-23T04:40:39Z"
+     labels:
+       run: non-root-pod
+     name: non-root-pod
+     namespace: default
+     resourceVersion: "4458"
+     uid: 3dcde49d-063d-4aeb-beec-2ae372df8a84
+   spec:
+     containers:
+     - image: redis:alpine
+       imagePullPolicy: IfNotPresent
+       name: non-root-pod
+       resources: {}
+       terminationMessagePath: /dev/termination-log
+       terminationMessagePolicy: File
+       volumeMounts:
+       - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+         name: kube-api-access-8zbtz
+         readOnly: true
+     dnsPolicy: ClusterFirst
+     enableServiceLinks: true
+     nodeName: node01
+     preemptionPolicy: PreemptLowerPriority
+     priority: 0
+     restartPolicy: Always
+     schedulerName: default-scheduler
+     securityContext:
+       fsGroup: 2000
+       runAsUser: 1000
+   ```
+
+   
+
+5. We have deployed a new pod called `np-test-1` and a service called `np-test-service`. Incoming connections to this service are not working. Troubleshoot and fix it.
+   Create NetworkPolicy, by the name `ingress-to-nptest` that allows incoming connections to the service over port `80`.
+
+   Important: Don't delete any current objects deployed.
+
+   - Important: Don't Alter Existing Objects!
+   - NetworkPolicy: Applied to All sources (Incoming traffic from all pods)?
+   - NetWorkPolicy: Correct Port?
+   - NetWorkPolicy: Applied to correct Pod?
+
+   List pods and services
+
+   ```
+   controlplane ~ ➜  kubectl get pods
+   NAME           READY   STATUS    RESTARTS   AGE
+   multi-pod      2/2     Running   0          17m
+   non-root-pod   1/1     Running   0          4m14s
+   np-test-1      1/1     Running   0          87s
+   pvviewer       1/1     Running   0          22m
+   
+   controlplane ~ ➜  kubectl get svc
+   NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+   kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP   58m
+   np-test-service   ClusterIP   10.111.248.155   <none>        80/TCP    93s
+   ```
+
+   Create a temporary pod to use curl command to test connecting to the service
+
+   ```
+   controlplane ~ ➜  kubectl run curl --image=alpine/curl --rm -it -- sh
+   If you don't see a command prompt, try pressing enter.
+   / # curl np-test-service
+   ```
+
+   Open new terminal and create network policy
+
+   - Search "network policy" in kubernetes 
+
+   Check for the label used in the pod "np-test-1"
+
+   ```
+   controlplane ~ ➜  kubectl describe pod np-test-1 
+   Name:             np-test-1
+   Namespace:        default
+   Priority:         0
+   Service Account:  default
+   Node:             node01/10.3.157.3
+   Start Time:       Mon, 23 Jan 2023 19:16:38 -0500
+   Labels:           run=np-test-1
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.192.3
+   IPs:
+     IP:  10.244.192.3
+   Containers:
+     np-test-1:
+       Container ID:   containerd://c837a2c44079981fb4160126ef43d525a7cf453ab469854613b2202a863a8685
+       Image:          nginx
+       Image ID:       docker.io/library/nginx@sha256:b8f2383a95879e1ae064940d9a200f67a6c79e710ed82ac42263397367e7cc4e
+       Port:           <none>
+       Host Port:      <none>
+       State:          Running
+         Started:      Mon, 23 Jan 2023 19:16:40 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8gxgb (ro)
+   ```
+
+   network_policy.yaml
+
+   ```
+   apiVersion: networking.k8s.io/v1
+   kind: NetworkPolicy
+   metadata:
+     name: ingress-to-nptest
+     namespace: default
+   spec:
+     podSelector:
+       matchLabels:
+         run: np-test-1
+     policyTypes:
+       - Ingress
+     ingress:
+       - ports:
+           - protocol: TCP
+             port: 80
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl create -f network_policy.yaml
+   
+   controlplane ~ ✖ kubectl get networkpolicies
+   NAME                POD-SELECTOR    AGE
+   default-deny        <none>          3m37s
+   ingress-to-nptest   run=np-test-1   27s
+   
+   controlplane ~ ➜  kubectl describe networkpolicies.networking.k8s.io ingress-to-nptest 
+   Name:         ingress-to-nptest
+   Namespace:    default
+   Created on:   2023-01-23 20:50:27 -0500 EST
+   Labels:       <none>
+   Annotations:  <none>
+   Spec:
+     PodSelector:     run=np-test-1
+     Allowing ingress traffic:
+       To Port: 80/TCP
+       From: <any> (traffic not restricted by source)
+     Not affecting egress traffic
+     Policy Types: Ingress
+   ```
+
+   **Test curl  np-test-service**
+
+   ```
+   curl np-test-service
+   <!DOCTYPE html>
+   <html>
+   <head>
+   <title>Welcome to nginx!</title>
+   <style>
+   html { color-scheme: light dark; }
+   body { width: 35em; margin: 0 auto;
+   font-family: Tahoma, Verdana, Arial, sans-serif; }
+   </style>
+   </head>
+   <body>
+   <h1>Welcome to nginx!</h1>
+   <p>If you see this page, the nginx web server is successfully installed and
+   working. Further configuration is required.</p>
+   
+   <p>For online documentation and support please refer to
+   <a href="http://nginx.org/">nginx.org</a>.<br/>
+   Commercial support is available at
+   <a href="http://nginx.com/">nginx.com</a>.</p>
+   
+   <p><em>Thank you for using nginx.</em></p>
+   </body>
+   </html>
+   ```
+
+   
+
+6. Taint the worker node `node01` to be Unschedulable. Once done, create a pod called `dev-redis`, image `redis:alpine`, to ensure workloads are not scheduled to this worker node. Finally, create a new pod called `prod-redis` and image: `redis:alpine` with toleration to be scheduled on `node01`.
+
+   key: `env_type`, value: `production`, operator: `Equal` and effect: `NoSchedule`
+
+   - Key = env_type
+   - Value = production
+   - Effect = NoSchedule
+   - pod 'dev-redis' (no tolerations) is not scheduled on node01?
+   - Create a pod 'prod-redis' to run on node01
+
+   ```
+   controlplane ~ ➜  kubectl taint nodes node01 env_type=production:NoSchedule
+   node/node01 tainted
+   
+   controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS   ROLES           AGE   VERSION
+   controlplane   Ready    control-plane   79m   v1.26.0
+   node01         Ready    <none>          78m   v1.26.0
+   
+   controlplane ~ ➜  kubectl describe nodes node01 
+   Name:               node01
+   Roles:              <none>
+   Labels:             beta.kubernetes.io/arch=amd64
+                       beta.kubernetes.io/os=linux
+                       kubernetes.io/arch=amd64
+                       kubernetes.io/hostname=node01
+                       kubernetes.io/os=linux
+   Annotations:        kubeadm.alpha.kubernetes.io/cri-socket: unix:///var/run/containerd/containerd.sock
+                       node.alpha.kubernetes.io/ttl: 0
+                       volumes.kubernetes.io/controller-managed-attach-detach: true
+   CreationTimestamp:  Mon, 23 Jan 2023 20:12:18 -0500
+   Taints:             env_type=production:NoSchedule
+   Unschedulable:      false
+   Lease:
+     HolderIdentity:  node01
+     AcquireTime:     <unset>
+     RenewTime:       Mon, 23 Jan 2023 21:31:00 -0500
+   ```
+
+   Create "dev-redis" pod and check the node where it is created
+
+   ```
+   controlplane ~ ➜  kubectl run dev-redis --image=redis:alpine
+   pod/dev-redis created
+   
+   controlplane ~ ➜  kubectl get pods -o wide
+   NAME        READY   STATUS    RESTARTS   AGE   IP             NODE           NOMINATED NODE   READINESS GATES
+   dev-redis   1/1     Running   0          15s   10.244.0.4     controlplane   <none>           <none>
+   np-test-1   1/1     Running   0          45m   10.244.192.1   node01         <none>           <none>
+   ```
+
+   
+
+   ```
+   controlplane ~ ➜  kubectl run prod-redis --image=redis:alpine --dry-run=client -o yaml > prod-redis.yaml
+   ```
+
+   prod-redis.yaml
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     creationTimestamp: null
+     labels:
+       run: prod-redis
+     name: prod-redis
+   spec:
+     containers:
+     - image: redis:alpine
+       name: prod-redis
+       resources: {}
+     tolerations:
+     - key: "env_type"
+       operator: "Equal"
+       value: "production"
+       effect: "NoSchedule"
+     dnsPolicy: ClusterFirst
+     restartPolicy: Always
+   status: {}
+   ```
+
+   Create "prod-redis" pod and check the pod where it is created
+
+   ```
+   controlplane ~ ➜  kubectl create -f prod-redis.yaml 
+   pod/prod-redis created
+   
+   controlplane ~ ➜  kubectl get pods -o wide
+   NAME         READY   STATUS    RESTARTS   AGE     IP             NODE           NOMINATED NODE   READINESS GATES
+   dev-redis    1/1     Running   0          8m26s   10.244.0.4     controlplane   <none>           <none>
+   np-test-1    1/1     Running   0          53m     10.244.192.1   node01         <none>           <none>
+   prod-redis   1/1     Running   0          48s     10.244.192.2   node01         <none>           <none>
+   ```
+
+   
+
+7. Create a pod called `hr-pod` in `hr` namespace belonging to the `production` environment and `frontend` tier .
+   image: `redis:alpine`
+
+   Use appropriate labels and create all the required objects if it does not exist in the system already.
+
+   - hr-pod labeled with environment production?
+   - hr-pod labeled with tier frontend?
+
+   Create namaspace
+
+   ```
+   controlplane ~ ➜  kubectl create namespace hr
+   namespace/hr created
+   
+   controlplane ~ ➜  kubectl get namespaces 
+   NAME              STATUS   AGE
+   default           Active   34m
+   hr                Active   2s
+   kube-node-lease   Active   34m
+   kube-public       Active   34m
+   kube-system       Active   34m
+   ```
+
+   Create pod
+
+   ```
+   controlplane ~ ✖ kubectl run hr-pod --namespace=hr --image=redis:alpine --labels="environment=production,tier=frontend" 
+   pod/hr-pod created
+   
+   controlplane ~ ➜  kubectl get pod -n hr NAME     READY   STATUS    RESTARTS   AGE
+   hr-pod   1/1     Running   0          17s
+   
+   controlplane ~ ➜  kubectl describe -n hr pod hr-pod  
+   Name:             hr-pod
+   Namespace:        hr
+   Priority:         0
+   Service Account:  default
+   Node:             node01/10.10.111.11
+   Start Time:       Mon, 23 Jan 2023 21:53:35 -0500
+   Labels:           environment=production
+                     tier=frontend
+   Annotations:      <none>
+   Status:           Running
+   IP:               10.244.192.3
+   IPs:
+     IP:  10.244.192.3
+   Containers:
+     hr-pod:
+       Container ID:   containerd://b1f754adc8de43de8f12558901006a3f6106a39da600ada8d18577e8ac974cc7
+       Image:          redis:alpine
+       Image ID:       docker.io/library/redis@sha256:5ae5799117d680a13dd35184f26db66549605e220f1af52f4b7557f77830aa17
+       Port:           <none>
+       Host Port:      <none>
+       State:          Running
+         Started:      Mon, 23 Jan 2023 21:53:38 -0500
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wxz7r (ro)
+   ```
+
+8. A kubeconfig file called `super.kubeconfig` has been created under `/root/CKA`. There is something wrong with the configuration. Troubleshoot and fix it.
+
+   - Fix /root/CKA/super.kubeconfig
+
+   super.kubeconfig
+
+   ```
+   super.kubeconfig 
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJek1ERXlOREF5TVRReU5sb1hEVE16TURFeU1UQXlNVFF5Tmxvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTEs0CkwzeGhQWEdUM1hGWUxXZTZOYjVLbUYwL284UHQxaElhNEdEcWZOZndzUTZLU2FDeWtDeDcwT3pFMFZDaGU4SDMKdEdIbHczT3RaMjdta2xwYThteHFFd0ZJK0djaHU3UVVNaS9nemluSWJrMGRVTThCUjBsRGo4YTk0Z20yUTU2Two1aHZqSTNqdVJ0RWFkRFpFL1Qzb3FLdUxUSTNmTThoWjVLZmpEdDliOWJHbjJ0NmR4V0Q2YVJjZEdmSWRJNFVSCnd4NlJhbFpIZWFMRmFzR3NENHVLd2RPRzVzVjN5RkJEbjFlbkRIeDNJWmRjaVJtZ3NLc1RXUE16MEQ5ZFFBaGUKK1hTalhWeTZnTXNyV3ViYXRhVlBhbXM5cjI5WG45WDdhOWlDcHpwbjU3OEljUG9Hd0xPSy9FMG5PdGdTMnBUcgpkdiszNlJiMEdwWFB1Y2wyRmhzQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZHcTlPK3cvb0hWV2l2Y1JCbkRYVXFjc0h2NUVNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBQ0Vwd01YRFFINVNiVFNRZm9zcApCaTFQL21VbWsrbVV4TEYrYmZDVFpvT0ZsaGRqWXZoQzhKZmVEejBHUVBCWG0xbDNlZVBjSXNJdzU5WXFITUdxCm5EdVU4YWh2T3crbHVBY1VwSXc4QWJMa3FmdmRnVm0wenJLRTZxWm5ybTZya0dOZzBVeUtPMS9ZbWh3UmFZT28KUjFLK2doSlF4SDArUVA1ZE9KaCtEVnRnczlUVW5LQ0pWUFdUVUJCOXdsV2dLeXE4RFlkamppSWZoNmRHeVVVWQpNWVZFakh4Y2ZkUWh1TjhMV2g2L0hEUWdJWUZmZnhBZzRWayt1clBYWVI3L0ZwaGZNWmtRdnpvUWY1Zi9NcWFsCnBrcDZZRDlZTnU0TzcwWHorbzBEdjlxRmJkaldRdW1qQWIvUHlhR3VSS1NGREoxdGRNM2FweVo0TlZ2ZFBZcloKTWZvPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+       server: https://controlplane:9999
+     name: kubernetes
+   contexts:
+   - context:
+       cluster: kubernetes
+       user: kubernetes-admin
+     name: kubernetes-admin@kubernetes
+   current-context: kubernetes-admin@kubernetes
+   kind: Config
+   preferences: {}
+   users:
+   - name: kubernetes-admin
+     user:
+       client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURJVENDQWdtZ0F3SUJBZ0lJV280cFJWZVFoZHd3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TXpBeE1qUXdNakUwTWpaYUZ3MHlOREF4TWpRd01qRTBNamhhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXhFTkRJTkJqOWZxbEM0ajAKdlJtQlJFTFJpZ2IxQlpZdVJJaTVmY0hrUFd1ZW5oSUdYUHhBN1pMblZ6MkZGM0lOeEVsMnpEakNMQVoxRUNVTQpXSGUzZXBONUo3UWpnWnd3Kyt6RExYVG4rNzRUTWxRUTRlbHNqMWhrZ3BoYmlDVkN3dXIxZHRJelVoWWNjRjlUCklrb2dUV3BScWNMUnlrU0dId0RZMlY5MWFaMXZWR3ZVRUlLSTRPSzY0K3dzQ2kyRXg0ZjU3SW1NSWlidTdSQlkKWFBkajJxZmR4UGVBVU52OHJabUI2YXpURXhrYkg5SHFJcVRERjlPVGRCdjdEZHo0cjJHQ0dzU1FpZzFYdnV4KwpzYnFUb21oNDdQMyswNGx0aDNtRXlaZFBvOU5WYlVjMTVoK1g4MWwwdGtBUkl1WHhtRHExc0wyTjUxOXp6SEhXClFGU2dld0lEQVFBQm8xWXdWREFPQmdOVkhROEJBZjhFQkFNQ0JhQXdFd1lEVlIwbEJBd3dDZ1lJS3dZQkJRVUgKQXdJd0RBWURWUjBUQVFIL0JBSXdBREFmQmdOVkhTTUVHREFXZ0JScXZUdnNQNkIxVm9yM0VRWncxMUtuTEI3KwpSREFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBSHlWODVERFlLSXFadTNDVkJKclRQMmNVYlMrR1ovMTB4MUVYCjFmUmZYNmJyb1QzeTdxaDdGV0lxZkVDbzdiSC9rdnZDeXNTS0p0bm5nVlJ6WFc5NjJLOE5ObnBZOWhoMWhrZzUKNW5NSjZsOFF1THlJSGFFNDFBR2VwNGNyRkJzYjc5LzV2VjRIODlrditER2c3dUFmaE9sZlRQTHdyd3F1eFJ5cwpHb2liUFRTdnlNUk5Zb0QxYW1CRngwblB1Ky9tZHZzT1NraXhZV0kzbTR1UHczRG93QlFXOG91SE9meFpOZldCCjBHa2pXK1d3eUNQNkxxd2hncWthREFGMVBYQ2JmSExMMXV0UVM2dDBuazE1dURwYnBxQkpKVFBFV0ZLa0ROVy8KdTVLM1FIZUdsMGRPQ3pGa2lUWEtjcjVMenVKTmZNOUtBZlFJZVQ3dE1TKzBkZkR4VXc9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+       client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBeEVORElOQmo5ZnFsQzRqMHZSbUJSRUxSaWdiMUJaWXVSSWk1ZmNIa1BXdWVuaElHClhQeEE3WkxuVnoyRkYzSU54RWwyekRqQ0xBWjFFQ1VNV0hlM2VwTjVKN1FqZ1p3dysrekRMWFRuKzc0VE1sUVEKNGVsc2oxaGtncGhiaUNWQ3d1cjFkdEl6VWhZY2NGOVRJa29nVFdwUnFjTFJ5a1NHSHdEWTJWOTFhWjF2Vkd2VQpFSUtJNE9LNjQrd3NDaTJFeDRmNTdJbU1JaWJ1N1JCWVhQZGoycWZkeFBlQVVOdjhyWm1CNmF6VEV4a2JIOUhxCklxVERGOU9UZEJ2N0RkejRyMkdDR3NTUWlnMVh2dXgrc2JxVG9taDQ3UDMrMDRsdGgzbUV5WmRQbzlOVmJVYzEKNWgrWDgxbDB0a0FSSXVYeG1EcTFzTDJONTE5enpISFdRRlNnZXdJREFRQUJBb0lCQVFDR2FGSUduUEI0T3FqaApGM0FVT08xUUpEcUFQbmQ2MWZqbHNvVGwzTzFFS3ZtNzR6ZzhZZnpOTnJmOEJRT3FwTTlNeDhyMTNVRU5DWGNPCkVYRTgvTy9Jb0VwdXFHMVFpL2ozN3BOVUJDWURQNDdCL3RSNUFuVDRUbDYzR1VSR0hzNXowcGs4UUlRcENUOTgKcmF1dlpmaHRUQXlWSi9pb2Z2a2pMbDlUcm80b1B4Z2tGREhxWkpmQ1ZxTExqMXdMRzJLQzRoVDB5RzBkc0tGUAprTEF0ek4wNTNlYjR3ZXZxSFEyRFFxUHVZNmFhLzdnMC8zQUpXalJvdmdTc0x3dzZRZzg2WjNUaC9SRjdkU0c4CmVjRlovQUhqNk1TM2FHd0VsWnZMQ1lrWGJ3MVJRN1RvZk90QTVCOWZHQlNJNmYzZ0MxUm9QeHpjZnpmUUlxcVMKU29PcTJ0M2hBb0dCQU9hL1ZvNXMvUUo2bjdGTTJFMEZaOGM2Q1pTbk9qZEhJZFZ0azl3MkFsSWZXdXhUaXlMOQp6ZCt0a0pPK3RuTlRMS2ZZSDJTbHpoVHJNMXRNNkY2enpZSk9hS3VES1h1WFIxTkozMk5tOHhSa1QvcnZLMUJiCmhNbkg5VXdCdkdaSmJvQlRrU29pdU9VbDFuTm1vcHN3N0RMZThMQUZtWnhxM1MzYnlCTzBBTFFUQW9HQkFObTkKeTVRUU15TkYwTzVualdOZU5rU2hNUUc0NkZUOTVRbk14ZngyamVGKzZjaGZJYlZ5MnJDRnlnaHZFWlpNTGVtRQpSak1TOElyL3Z0MGVYTHV1YUVCY1dSYkpWUXFuMVRlUTRLRUdwUkhBaEJ2V3RmNlVUTWVjTnFrQkI1ZFhaak5LCjZkbUpTMEFDKzVNN2hld1NWLzRuS012dnVSWHdDQ1picnhPQUw5NzVBb0dBUzhscVQyc2lpbTdtQm1DNzVrZ3gKTnJFc05tUGFiZzl4NEZ5V0pNeWtaSDZoNlY3akl3SURYVVR2YUdkS0c0U2s5UmU1NzkrNVdRdUxHYUNmN1lMVwpxOGEvQUI0YlFObUY5cWdiczlVN1gyWTNFcTc5SmU1NUphRUVRd3VLNm5tUnpwb2o0cGYyN0dSS0ZDc1Ftekl0ClVlUUJYMzduWGdXSFVhbVBCRkdwclhzQ2dZQlRUbXcvSDl1UTJUdFFtMG5iQk1hYWgxbHFvVVl5amxrODRKMjMKTTl5Z3M1L2FTNXRvQXFOcytpTU1Dd0tka0ZQWWpnVVZzVjlhcnZKbFF5S1RvK3k3QXhvS3Y4akxwTjdNdlo5VAp2R2tYVzZLdnkvd2hoTGZEZng3aWxrUkRRT3NYSU1oTHRGMllCZ3dlanAxMGJxZy8wdGVtL3ZhL1QvQ3VURkcxCmtrdStjUUtCZ0I5b1ZMdTh3d1A0Z1Jhdm5CVW5ZYS9qbUd2UTdaRWw0ZXRkUGluYUNNOU9vcUtjejJyeFNFZW4KbFdNajZUczh3TUlod1IyWVd5WG9nZThraW9KNFpqYWVnWUNaMkZNbnpSYjhtMTE3ZlFlSkFsLzZZenk4aU8zcwo1cEg4TDF6L041bmlIV0VVQVpSeDlxTW9ldjlEanlkRjd4WHc2Q3JZS0c0Q0ZNK3VGUE5uCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+   ```
+
+   Note: By default kubeconfig is in ~/.kube/config
+
+   Test kubeconfig file super.kubeconfig
+
+   ```
+   controlplane ~ ➜  kubectl get nodes --kubeconfig /root/CKA/super.kubeconfig 
+   E0123 22:03:07.512589   12992 memcache.go:238] couldn't get current server API group list: Get "https://controlplane:9999/api?timeout=32s": dial tcp 10.10.111.9:9999: connect: connection refused
+   ```
+
+   Edit super.kubeconfig and change the port to 6443
+
+   ```
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJek1ERXlOREF5TVRReU5sb1hEVE16TURFeU1UQXlNVFF5Tmxvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTEs0CkwzeGhQWEdUM1hGWUxXZTZOYjVLbUYwL284UHQxaElhNEdEcWZOZndzUTZLU2FDeWtDeDcwT3pFMFZDaGU4SDMKdEdIbHczT3RaMjdta2xwYThteHFFd0ZJK0djaHU3UVVNaS9nemluSWJrMGRVTThCUjBsRGo4YTk0Z20yUTU2Two1aHZqSTNqdVJ0RWFkRFpFL1Qzb3FLdUxUSTNmTThoWjVLZmpEdDliOWJHbjJ0NmR4V0Q2YVJjZEdmSWRJNFVSCnd4NlJhbFpIZWFMRmFzR3NENHVLd2RPRzVzVjN5RkJEbjFlbkRIeDNJWmRjaVJtZ3NLc1RXUE16MEQ5ZFFBaGUKK1hTalhWeTZnTXNyV3ViYXRhVlBhbXM5cjI5WG45WDdhOWlDcHpwbjU3OEljUG9Hd0xPSy9FMG5PdGdTMnBUcgpkdiszNlJiMEdwWFB1Y2wyRmhzQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZHcTlPK3cvb0hWV2l2Y1JCbkRYVXFjc0h2NUVNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBQ0Vwd01YRFFINVNiVFNRZm9zcApCaTFQL21VbWsrbVV4TEYrYmZDVFpvT0ZsaGRqWXZoQzhKZmVEejBHUVBCWG0xbDNlZVBjSXNJdzU5WXFITUdxCm5EdVU4YWh2T3crbHVBY1VwSXc4QWJMa3FmdmRnVm0wenJLRTZxWm5ybTZya0dOZzBVeUtPMS9ZbWh3UmFZT28KUjFLK2doSlF4SDArUVA1ZE9KaCtEVnRnczlUVW5LQ0pWUFdUVUJCOXdsV2dLeXE4RFlkamppSWZoNmRHeVVVWQpNWVZFakh4Y2ZkUWh1TjhMV2g2L0hEUWdJWUZmZnhBZzRWayt1clBYWVI3L0ZwaGZNWmtRdnpvUWY1Zi9NcWFsCnBrcDZZRDlZTnU0TzcwWHorbzBEdjlxRmJkaldRdW1qQWIvUHlhR3VSS1NGREoxdGRNM2FweVo0TlZ2ZFBZcloKTWZvPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+       server: https://controlplane:6443
+   ```
+
+   Test kubeconfig file super.kubeconfig
+
+   ```
+   controlplane ~ ➜  kubectl get nodes --kubeconfig /root/CKA/super.kubeconfig 
+   NAME           STATUS   ROLES           AGE   VERSION
+   controlplane   Ready    control-plane   55m   v1.26.0
+   node01         Ready    <none>          54m   v1.26.0
+   ```
+
+   
+
+9. We have created a new deployment called `nginx-deploy`. scale the deployment to 3 replicas. Has the replica's increased? Troubleshoot the issue and fix it.
+
+   - deployment has 3 replicas
+
+   ```
+   controlplane ~ ➜  kubectl scale deployment nginx-deploy --replicas=3
+   deployment.apps/nginx-deploy scaled
+   
+   controlplane ~ ➜  kubectl get deployments.apps 
+   NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+   nginx-deploy   1/3     1            1           14m
+   
+   controlplane ~ ➜  kubectl describe deployments.apps nginx-deploy 
+   Name:                   nginx-deploy
+   Namespace:              default
+   CreationTimestamp:      Mon, 23 Jan 2023 21:59:32 -0500
+   Labels:                 app=nginx-deploy
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               app=nginx-deploy
+   Replicas:               3 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  app=nginx-deploy
+     Containers:
+      nginx:
+       Image:        nginx
+       Port:         <none>
+       Host Port:    <none>
+       Environment:  <none>
+       Mounts:       <none>
+     Volumes:        <none>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   nginx-deploy-5f6bb8887f (1/1 replicas created)
+   Events:
+     Type    Reason             Age   From                   Message
+     ----    ------             ----  ----                   -------
+     Normal  ScalingReplicaSet  15m   deployment-controller  Scaled up replica set nginx-deploy-5f6bb8887f to 1
+   ```
+
+   Check the kube-contro1ler-manager-controlplane 
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS         RESTARTS      AGE
+   coredns-787d4945fb-cm45h               1/1     Running        0             61m
+   coredns-787d4945fb-zs8g9               1/1     Running        0             61m
+   etcd-controlplane                      1/1     Running        0             62m
+   kube-apiserver-controlplane            1/1     Running        0             61m
+   kube-contro1ler-manager-controlplane   0/1     ErrImagePull   0             6m8s
+   kube-proxy-g46b7                       1/1     Running        0             61m
+   kube-proxy-k2x5l                       1/1     Running        0             61m
+   kube-scheduler-controlplane            1/1     Running        0             61m
+   weave-net-8t9wk                        2/2     Running        0             61m
+   weave-net-xl69s                        2/2     Running        1 (61m ago)   61m
+   ```
+
+   Check the events in the describe results
+
+   - Notice the image name is wrong "registry.k8s.io/kube-contro1ler-manager:v1.26.0" instead of "l" in the controller it is "1"
+
+   ```
+   controlplane ~ ✖ kubectl describe -n kube-system pod kube-contro1ler-manager-controlplane
+   ....
+   Events:
+     Type     Reason   Age                     From     Message
+     ----     ------   ----                    ----     -------
+     Warning  Failed   7m23s (x6 over 8m41s)   kubelet  Error: ImagePullBackOff
+     Normal   Pulling  7m10s (x4 over 8m41s)   kubelet  Pulling image "registry.k8s.io/kube-contro1ler-manager:v1.26.0"
+     Warning  Failed   7m10s (x4 over 8m41s)   kubelet  Failed to pull image "registry.k8s.io/kube-contro1ler-manager:v1.26.0": rpc error: code = NotFound desc = failed to pull and unpack image "registry.k8s.io/kube-contro1ler-manager:v1.26.0": failed to resolve reference "registry.k8s.io/kube-contro1ler-manager:v1.26.0": registry.k8s.io/kube-contro1ler-manager:v1.26.0: not found
+     Warning  Failed   7m10s (x4 over 8m41s)   kubelet  Error: ErrImagePull
+     Normal   BackOff  3m26s (x22 over 8m41s)  kubelet  Back-off pulling image "registry.k8s.io/kube-contro1ler-manager:v1.26.0"
+   ```
+
+   Edit /etc/kubernetes/manifests/kube-controller-manager.yaml
+
+   - search for "contro1" and replace it with "control"
+
+   ```
+   vi /etc/kubernetes/manifests/kube-controller-manager.yaml
+    
+   :%s/contro1/control/g
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get pods -n kube-system 
+   NAME                                   READY   STATUS    RESTARTS      AGE
+   coredns-787d4945fb-cm45h               1/1     Running   0             74m
+   coredns-787d4945fb-zs8g9               1/1     Running   0             74m
+   etcd-controlplane                      1/1     Running   0             74m
+   kube-apiserver-controlplane            1/1     Running   0             74m
+   kube-controller-manager-controlplane   1/1     Running   0             21s
+   kube-proxy-g46b7                       1/1     Running   0             74m
+   kube-proxy-k2x5l                       1/1     Running   0             74m
+   kube-scheduler-controlplane            1/1     Running   0             74m
+   weave-net-8t9wk                        2/2     Running   0             74m
+   weave-net-xl69s                        2/2     Running   1 (74m ago)   74m
+   ```
+
+   ```
+   controlplane ~ ➜  kubectl get deployments.apps 
+   NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+   nginx-deploy   3/3     3            3           30m
+   ```
+
+   
