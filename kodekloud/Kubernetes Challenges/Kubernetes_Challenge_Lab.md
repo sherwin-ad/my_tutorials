@@ -557,13 +557,22 @@ Click on each icon to see more details. Once done click on `Check` button to tes
    node01 is ready and can schedule pods? Run the following:
 
    ```
-   kubectl get nodes
+   root@controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS                     ROLES                  AGE   VERSION
+   controlplane   Ready                      control-plane,master   24m   v1.23.0
+   node01         Ready,SchedulingDisabled   <none>                 23m   v1.23.0
    ```
 
    We can see that `node01` is in state `Ready,SchedulingDisabled`. This usually means that it is cordoned, so...
 
    ```
-   kubectl uncordon node01
+   root@controlplane ~ ➜  kubectl uncordon node01 
+   node/node01 uncordoned
+   
+   root@controlplane ~ ➜  kubectl get nodes
+   NAME           STATUS   ROLES                  AGE   VERSION
+   controlplane   Ready    control-plane,master   25m   v1.23.0
+   node01         Ready    <none>                 24m   v1.23.0
    ```
 
 3. web
@@ -573,7 +582,10 @@ Click on each icon to see more details. Once done click on `Check` button to tes
    Copy all images from the directory '/media' on the controlplane node to '/web' directory on node01. Here we are setting up the content of the directory on `node01` which will ultimately be served as a hostpath persistent volume. It's a straght forward copy with ssh (scp).
 
    ```
-   scp /media/* node01:/web
+   root@controlplane ~ ➜  scp /media/* node01:/web
+   kodekloud-ckad.png                                                                                                                              100%   58KB  24.0MB/s   00:00    
+   kodekloud-cka.png                                                                                                                               100%   57KB  42.1MB/s   00:00    
+   kodekloud-cks.png                                                                                                                               100%   61KB  39.1MB/s   00:00  
    ```
 
 4. data-pv
@@ -586,7 +598,7 @@ Click on each icon to see more details. Once done click on `Check` button to tes
    Create new PersistentVolume = 'data-pv'.
    Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-2/fileserver-pv.yaml) with `kubectl apply -f`
 
-   fileserver-pv.yaml
+   data-pv.yaml
 
    ```
    kind: PersistentVolume
@@ -602,6 +614,17 @@ Click on each icon to see more details. Once done click on `Check` button to tes
          type: DirectoryOrCreate
    ```
 
+   ```
+   root@controlplane ~ ➜  kubectl create -f data-pv.yaml 
+   persistentvolume/data-pv created
+   
+   root@controlplane ~ ➜  kubectl get pv
+   NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+   data-pv   1Gi        RWX            Retain           Available                                   7s
+   ```
+
+   
+
 5. data-pvc
 
    - Create new PersistentVolumeClaim = 'data-pvc'
@@ -612,7 +635,7 @@ Click on each icon to see more details. Once done click on `Check` button to tes
    Create new PersistentVolumeClaim = 'data-pvc'
    Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-2/fileserver-pvc.yaml)
 
-   fileserver-pvc.yaml
+   data-pvc.yaml
 
    ```
    kind: PersistentVolumeClaim
@@ -627,6 +650,21 @@ Click on each icon to see more details. Once done click on `Check` button to tes
       volumeName: data-pv
    ```
 
+   ```
+   root@controlplane ~ ➜  kubectl create -f data-pvc.yaml 
+   persistentvolumeclaim/data-pvc created
+   
+   root@controlplane ~ ➜  kubectl get pvc
+   NAME       STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+   data-pvc   Bound    data-pv   1Gi        RWX                           7s
+   
+   root@controlplane ~ ➜  kubectl get pv
+   NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM              STORAGECLASS   REASON   AGE
+   data-pv   1Gi        RWX            Retain           Bound    default/data-pvc                           6m4s
+   ```
+
+   
+
 6. gop-fileserver
 
    - Create a pod for fileserver, name: 'gop-fileserver'
@@ -639,7 +677,17 @@ Click on each icon to see more details. Once done click on `Check` button to tes
    Create a pod for fileserver, name: 'gop-fileserver'
    Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-2/fileserver-pod.yaml)
 
-   fileserver-pod.yaml
+   ```
+   root@controlplane ~ ➜  kubectl run gop-fileserver --image=kodekloud/fileserver --dry-run=client -o yaml > gop-fileserver.yaml
+   ```
+
+   Edit manifest file
+
+   ```
+   root@controlplane ~ ➜ vi gop-fileserver.yaml
+   ```
+
+   gop-fileserver.yaml
 
    ```
    ---
@@ -651,20 +699,71 @@ Click on each icon to see more details. Once done click on `Check` button to tes
        run: gop-fileserver
      name: gop-fileserver
    spec:
-     volumes:
-     - name: data-store
-       persistentVolumeClaim:
-         claimName: data-pvc
      containers:
      - image: kodekloud/fileserver
-       imagePullPolicy: IfNotPresent
        name: gop-fileserver
        volumeMounts:
-          - name: data-store
-            mountPath: /web
+         - mountPath: "/web"
+           name: data-store
+       resources: {}
+     volumes:
+       - name: data-store
+         persistentVolumeClaim:
+           claimName: data-pvc
      dnsPolicy: ClusterFirst
-     restartPolicy: Never
+     restartPolicy: Always
+   status: {}
    ```
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f gop-fileserver.yaml 
+   pod/gop-fileserver created
+   
+   root@controlplane ~ ➜  kubectl get pods
+   NAME             READY   STATUS    RESTARTS   AGE
+   gop-fileserver   1/1     Running   0          2m7s
+   
+   root@controlplane ~ ➜  kubectl describe pod gop-fileserver 
+   Name:         gop-fileserver
+   Namespace:    default
+   Priority:     0
+   Node:         node01/10.13.85.3
+   Start Time:   Thu, 26 Jan 2023 04:16:16 +0000
+   Labels:       run=gop-fileserver
+   Annotations:  <none>
+   Status:       Running
+   IP:           10.244.192.1
+   IPs:
+     IP:  10.244.192.1
+   Containers:
+     gop-fileserver:
+       Container ID:   docker://f831ce358f321bc6db5a550d6a0a4ceaf2d9657d2565efebfd6917ec1adc4eb6
+       Image:          kodekloud/fileserver
+       Image ID:       docker-pullable://kodekloud/fileserver@sha256:df043b6743e477e921a20846252ea7d2df51c1a6076921a1c242f3cf0824ab33
+       Port:           <none>
+       Host Port:      <none>
+       State:          Running
+         Started:      Thu, 26 Jan 2023 04:16:20 +0000
+       Ready:          True
+       Restart Count:  0
+       Environment:    <none>
+       Mounts:
+         /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-jpf92 (ro)
+         /web from data-store (rw)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:
+     data-store:
+       Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+       ClaimName:  data-pvc
+       ReadOnly:   false
+   ```
+
+   
 
 7. gop-fs-service
 
@@ -672,11 +771,47 @@ Click on each icon to see more details. Once done click on `Check` button to tes
    - Service name: gop-fs-service, port: '8080'
    - Service name: gop-fs-service, targetPort: '8080'
 
+   ```
+   root@controlplane ~ ➜  kubectl expose pod gop-fileserver --name=gop-fs-service --target-port=8080 --port=8080
+   service/gop-fs-service exposed
+   
+   root@controlplane ~ ➜  kubectl get svc
+   NAME             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+   gop-fs-service   ClusterIP   10.96.239.164   <none>        8080/TCP   7s
+   kubernetes       ClusterIP   10.96.0.1       <none>        443/TCP    57m
+   
+   root@controlplane ~ ➜  kubectl describe svc gop-fs-service 
+   Name:              gop-fs-service
+   Namespace:         default
+   Labels:            run=gop-fileserver
+   Annotations:       <none>
+   Selector:          run=gop-fileserver
+   Type:              ClusterIP
+   IP Family Policy:  SingleStack
+   IP Families:       IPv4
+   IP:                10.96.239.164
+   IPs:               10.96.239.164
+   Port:              <unset>  8080/TCP
+   TargetPort:        8080/TCP
+   Endpoints:         10.244.192.1:8080
+   Session Affinity:  None
+   Events:            <none>
+   
+   root@controlplane ~ ➜  curl http://10.244.192.1:8080
+   <pre>
+   <a href="kodekloud-cka.png">kodekloud-cka.png</a>
+   <a href="kodekloud-ckad.png">kodekloud-ckad.png</a>
+   <a href="kodekloud-cks.png">kodekloud-cks.png</a>
+   </pre>
+   ```
+   
+   OR
+   
    New Service, name: 'gop-fs-service'
    Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-2/fileserver-svc.yaml)
-
+   
    fileserver-svc.yaml
-
+   
    ```
    ---
    apiVersion: v1
@@ -697,6 +832,941 @@ Click on each icon to see more details. Once done click on `Check` button to tes
        run: gop-fileserver
      type: NodePort
    ```
+   
+
+
+
+## Challenge 3
+
+
+
+![image-20230126123010953](images/image-20230126123010953.png)
+
+
+
+Deploy the given architecture to `vote` namespace.
+
+Click on each icon to see more details. Once done click on `Check` button to test your work.
+
+1. vote (namespace)
+
+   - Create a new namespace: name = 'vote'
+
+   Create a new namespace: name = 'vote'
+
+   ```
+   root@controlplane ~ ➜  kubectl create namespace vote
+   namespace/vote created
+   
+   root@controlplane ~ ➜  kubectl get namespaces 
+   NAME              STATUS   AGE
+   default           Active   35m
+   kube-node-lease   Active   35m
+   kube-public       Active   35m
+   kube-system       Active   35m
+   vote              Active   10s
+   ```
+
+2. db-deployment
+
+   - Create new deployment. name: 'db-deployment'
+   - image: 'postgres:9.4' and add the env: 'POSTGRES_HOST_AUTH_METHOD=trust'
+   - Volume Type: 'EmptyDir'
+   - Volume Name: 'db-data'
+   - mountPath: '/var/lib/postgresql/data'
+   - status: 'Running'
+
+   Create new deployment. name: 'db-deployment'
+
+   Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-3/db-deployment.yml)
+
+   db-deployment.yml
+
+   ```
+   root@controlplane ~ ➜  kubectl run db-deployment --image=postgres:9.4 --dry-run=client  -o yaml --namespace=vote --env="POSTGRES_HOST_AUTH_METHOD=trust" > db-deployment.yaml
+   ```
+
+   db-deployment.yaml
+
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     labels:
+       app: db-deployment
+     name: db-deployment
+     namespace: vote
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: db-deployment
+     template:
+       metadata:
+         labels:
+           app: db-deployment
+       spec:
+         containers:
+         - image: postgres:9.4
+           name: postgres
+           env:
+             - name: POSTGRES_HOST_AUTH_METHOD
+               value: trust
+           volumeMounts:
+             - mountPath: /var/lib/postgresql/data
+               name: db-data
+         volumes:
+           - name: db-data
+             emptyDir: {}
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f db-deployment.yaml 
+   deployment.apps/db-deployment created
+   
+   root@controlplane ~ ➜  kubectl get deployments.apps -n vote
+   NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+   db-deployment   1/1     1            1           17s
+   
+   root@controlplane ~ ➜  kubectl describe --namespace=vote deployments.apps db-deployment 
+   Name:                   db-deployment
+   Namespace:              vote
+   CreationTimestamp:      Thu, 26 Jan 2023 05:30:17 +0000
+   Labels:                 app=db-deployment
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               app=db-deployment
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  app=db-deployment
+     Containers:
+      postgres:
+       Image:      postgres:9.4
+       Port:       <none>
+       Host Port:  <none>
+       Environment:
+         POSTGRES_HOST_AUTH_METHOD:  trust
+       Mounts:
+         /var/lib/postgresql/data from db-data (rw)
+     Volumes:
+      db-data:
+       Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:     
+       SizeLimit:  <unset>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   db-deployment-7f94c7d956 (1/1 replicas created)
+   Events:
+     Type    Reason             Age   From                   Message
+     ----    ------             ----  ----                   -------
+     Normal  ScalingReplicaSet  48s   deployment-controller  Scaled up replica set db-deployment-7f94c7d956 to 1
+   ```
 
    
 
+3. db-service
+
+   - Create new service: 'db'
+   - port: '5432'
+   - targetPort: '5432'
+   - type: 'ClusterIP'
+
+   ```
+   root@controlplane ~ ➜  kubectl expose deployment --namespace=vote db-deployment --name=db --target-port=5432 --port=5432 --type=ClusterIP
+   service/db exposed
+   
+   root@controlplane ~ ➜  kubectl get svc -n vote 
+   NAME   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+   db     ClusterIP   10.111.8.134   <none>        5432/TCP   21s
+   
+   root@controlplane ~ ✖ kubectl describe svc db -n vote 
+   Name:              db
+   Namespace:         vote
+   Labels:            app=db-deployment
+   Annotations:       <none>
+   Selector:          app=db-deployment
+   Type:              ClusterIP
+   IP Family Policy:  SingleStack
+   IP Families:       IPv4
+   IP:                10.111.8.134
+   IPs:               10.111.8.134
+   Port:              <unset>  5432/TCP
+   TargetPort:        5432/TCP
+   Endpoints:         10.244.192.1:5432
+   Session Affinity:  None
+   Events:            <none>
+   ```
+
+   
+
+   Create new service: 'db'
+
+   Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-3/db-service.yml)
+
+   db-service.yml
+
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: db
+     namespace: vote
+   spec:
+      type: ClusterIP
+      ports:
+        - port: 5432
+          targetPort: 5432
+      selector:
+          app: db-deployment
+   ```
+
+   
+
+4. redis-deployment
+
+   - Create new deployment, name: 'redis-deployment'
+   - image: 'redis:alpine'
+   - Volume Type: 'EmptyDir'
+   - Volume Name: 'redis-data'
+   - mountPath: '/data'
+   - status: 'Running'
+
+   Create new deployment, name: 'redis-deployment'
+
+   Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-3/redis-deployment.yml)
+
+   ```
+   root@controlplane ~ ➜  kubectl create deployment redis-deployment --image=redis:alpine --dry-run=client -o yaml -n vote > redis-deployment.yaml
+   ```
+
+   redis-deployment.yaml
+
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     labels:
+       app: redis-deployment
+     name: redis-deployment
+     namespace: vote
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: redis-deployment
+     template:
+       metadata:
+         labels:
+           app: redis-deployment
+       spec:
+         containers:
+         - image: redis:alpine
+           name: redis-deployment
+           volumeMounts:
+           - mountPath: /data
+             name: redis-data
+         volumes:
+         - name: redis-data
+           emptyDir: {}
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f redis-deployment.yaml 
+   deployment.apps/redis-deployment created
+   
+   root@controlplane ~ ➜  kubectl get deployments.apps -n vote 
+   NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+   db-deployment      1/1     1            1           8m7s
+   redis-deployment   1/1     1            1           13s
+   
+   root@controlplane ~ ➜  kubectl describe deployment redis-deployment  -n vote 
+   Name:                   redis-deployment
+   Namespace:              vote
+   CreationTimestamp:      Thu, 26 Jan 2023 05:47:53 +0000
+   Labels:                 app=redis-deployment
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               app=redis-deployment
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  app=redis-deployment
+     Containers:
+      redis:
+       Image:        redis:alpine
+       Port:         <none>
+       Host Port:    <none>
+       Environment:  <none>
+       Mounts:
+         /data from redis-data (rw)
+     Volumes:
+      redis-data:
+       Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:     
+       SizeLimit:  <unset>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   redis-deployment-87ff856d7 (1/1 replicas created)
+   Events:
+     Type    Reason             Age   From                   Message
+     ----    ------             ----  ----                   -------
+     Normal  ScalingReplicaSet  60s   deployment-controller  Scaled up replica set redis-deployment-87ff856d7 to 1
+   ```
+
+   
+
+5. redis-service
+
+   - New Service, name = 'redis'
+   - port: '6379'
+   - targetPort: '6379'
+   - type: 'ClusterIP'
+   - service endpoint exposes deployment 'redis-deployment'
+
+   ```
+   root@controlplane ~ ➜  kubectl expose --namespace=vote deployment redis-deployment --name=redis --target-port=6379 --port=6379 --type=ClusterIP
+   service/redis exposed
+   
+   root@controlplane ~ ➜  kubectl get svc -n vote 
+   NAME    TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+   db      ClusterIP   10.111.157.233   <none>        5432/TCP   11m
+   redis   ClusterIP   10.106.207.236   <none>        6379/TCP   13s
+   
+   root@controlplane ~ ➜  kubectl describe --namespace=vote svc redis 
+   Name:              redis
+   Namespace:         vote
+   Labels:            app=redis-deployment
+   Annotations:       <none>
+   Selector:          app=redis-deployment
+   Type:              ClusterIP
+   IP Family Policy:  SingleStack
+   IP Families:       IPv4
+   IP:                10.106.207.236
+   IPs:               10.106.207.236
+   Port:              <unset>  6379/TCP
+   TargetPort:        6379/TCP
+   Endpoints:         10.244.192.2:6379
+   Session Affinity:  None
+   Events:            <none>
+   ```
+
+   
+
+   New Service, name = 'redis'
+
+   Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-3/redis-service.yml)
+
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+       name: redis
+       namespace: vote
+   spec:
+       type: ClusterIP
+       ports:
+         - port: 6379
+           targetPort: 6379
+       selector:
+         app: redis-deployment
+   ```
+
+   
+
+6. worker
+
+   - Create new deployment. name: 'worker'
+   - image: 'kodekloud/examplevotingapp_worker'
+   - status: 'Running'
+
+   Create new deployment. name: 'worker'
+
+   Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-3/worker.yml)
+
+   ```
+   root@controlplane ~ ➜  kubectl create deployment worker --image=kodekloud/examplevotingapp_worker --namespace=vote
+   deployment.apps/worker created
+   
+   root@controlplane ~ ➜  kubectl get deployments.apps -n vote 
+   NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+   db-deployment      1/1     1            1           17m
+   redis-deployment   1/1     1            1           9m40s
+   worker             1/1     1            1           52s
+   
+   root@controlplane ~ ➜  kubectl describe deployments worker -n vote
+   Name:                   worker
+   Namespace:              vote
+   CreationTimestamp:      Thu, 26 Jan 2023 05:56:41 +0000
+   Labels:                 app=worker
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               app=worker
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  app=worker
+     Containers:
+      examplevotingapp-worker-98btz:
+       Image:        kodekloud/examplevotingapp_worker
+       Port:         <none>
+       Host Port:    <none>
+       Environment:  <none>
+       Mounts:       <none>
+     Volumes:        <none>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   worker-7c87946c7c (1/1 replicas created)
+   Events:
+     Type    Reason             Age   From                   Message
+     ----    ------             ----  ----                   -------
+     Normal  ScalingReplicaSet  99s   deployment-controller  Scaled up replica set worker-7c87946c7c to 1
+   ```
+
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     creationTimestamp: null
+     labels:
+       app: worker
+     name: worker
+     namespace: vote
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: worker
+     strategy: {}
+     template:
+       metadata:
+         creationTimestamp: null
+         labels:
+           app: worker
+       spec:
+         containers:
+         - image: kodekloud/examplevotingapp_worker
+           name: examplevotingapp-worker-s7cwx
+   ```
+
+   
+
+7. vote-deployment
+
+   - Create a deployment: name = 'vote-deployment'
+   - image = 'kodekloud/examplevotingapp_vote:before'
+   - status: 'Running'
+
+   ```
+   root@controlplane ~ ➜  kubectl create deployment vote-deployment --image=kodekloud/examplevotingapp_vote:before --namespace=vote
+   deployment.apps/vote-deployment created
+   
+   root@controlplane ~ ➜  kubectl get deployments.apps -n vote 
+   NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+   db-deployment      1/1     1            1           23m
+   redis-deployment   1/1     1            1           15m
+   vote-deployment    1/1     1            1           64s
+   worker             1/1     1            1           6m21s
+   
+   root@controlplane ~ ✖ kubectl describe deployment vote-deployment -n vote 
+   Name:                   vote-deployment
+   Namespace:              vote
+   CreationTimestamp:      Thu, 26 Jan 2023 06:01:58 +0000
+   Labels:                 app=vote-deployment
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               app=vote-deployment
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  app=vote-deployment
+     Containers:
+      examplevotingapp-vote-fzkzl:
+       Image:        kodekloud/examplevotingapp_vote:before
+       Port:         <none>
+       Host Port:    <none>
+       Environment:  <none>
+       Mounts:       <none>
+     Volumes:        <none>
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   vote-deployment-57f984ffb4 (1/1 replicas created)
+   Events:
+     Type    Reason             Age    From                   Message
+     ----    ------             ----   ----                   -------
+     Normal  ScalingReplicaSet  2m47s  deployment-controller  Scaled up replica set vote-deployment-57f984ffb4 to 1
+   ```
+
+   
+
+   Create a deployment: name = 'vote-deployment'
+
+   Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-3/vote-deployment.yml)
+
+   ```
+   # kubectl create deployment vote-deployment --image=kodekloud/examplevotingapp_vote:before -n vote --dry-run=client -o yaml > deploy.yaml
+   ```
+
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     creationTimestamp: null
+     labels:
+       app: vote-deployment
+     name: vote-deployment
+     namespace: vote
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: vote-deployment
+     strategy: {}
+     template:
+       metadata:
+         creationTimestamp: null
+         labels:
+           app: vote-deployment
+       spec:
+         containers:
+         - image: kodekloud/examplevotingapp_vote:before
+           name: vote
+           resources: {}
+   ```
+
+   
+
+8. vote-service
+
+   - Create a new service: name = vote-service
+   - port = '5000'
+   - targetPort = '80'
+   - nodePort= '31000'
+   - service endpoint exposes deployment 'vote-deployment'
+
+   
+
+   Create a new service: name = vote-service
+
+   Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-3/vote-service.yml)
+
+   ```
+   root@controlplane ~ ➜  kubectl expose deployment  vote-deployment --name=vote-service --target-port=80 --port=5000 --type=NodePort --dry-run=client -o yaml -n vote > vote-service.yaml
+   ```
+
+   vote-service.yaml
+
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+      name: vote-service
+      namespace: vote
+   spec:
+      type: NodePort
+      ports:
+       - port: 5000
+         targetPort: 80
+         nodePort: 31000
+      selector:
+       app: vote-deployment
+   ```
+
+   ```
+   root@controlplane ~ ➜  kubectl get svc -n vote 
+   NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+   db             ClusterIP   10.111.157.233   <none>        5432/TCP   28m
+   redis          ClusterIP   10.106.207.236   <none>        6379/TCP   17m
+   vote-service   ClusterIP   10.98.58.165     <none>        5000/TCP   18s
+   
+   rroot@controlplane ~ ➜  kubectl describe --namespace vote svc vote-service 
+   Name:                     vote-service
+   Namespace:                vote
+   Labels:                   app=vote-deployment
+   Annotations:              <none>
+   Selector:                 app=vote-deployment
+   Type:                     NodePort
+   IP Family Policy:         SingleStack
+   IP Families:              IPv4
+   IP:                       10.106.44.186
+   IPs:                      10.106.44.186
+   Port:                     <unset>  5000/TCP
+   TargetPort:               80/TCP
+   NodePort:                 <unset>  31000/TCP
+   Endpoints:                10.244.192.4:80
+   Session Affinity:         None
+   External Traffic Policy:  Cluster
+   Events:                   <none>
+   ```
+
+   
+
+9. result-deployment
+
+   - Create new deployment, name: 'result-deployment'
+   - image: 'kodekloud/examplevotingapp_result:before'
+   - status: 'Running'
+
+   ```
+   root@controlplane ~ ➜  kubectl create deployment result-deployment --image=kodekloud/examplevotingapp_result:before -n vote
+   deployment.apps/result-deployment created
+   
+   root@controlplane ~ ➜  kubectl get deployments.apps -n vote 
+   NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+   db-deployment       1/1     1            1           45m
+   redis-deployment    1/1     1            1           37m
+   result-deployment   1/1     1            1           70s
+   vote-deployment     1/1     1            1           23m
+   worker              1/1     1            1           28m
+   ```
+
+   
+
+   Create a new service: name = result-deployment
+
+   Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-3/result-deployment.yml)
+
+   ```
+   # kubectl create deployment result-deployment --image=kodekloud/examplevotingapp_result:before --dry-run=client -oyaml -n vote > result-deployment.yaml
+   ```
+
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     creationTimestamp: null
+     labels:
+       app: result-deployment
+     name: result-deployment
+     namespace: vote
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: result-deployment
+     strategy: {}
+     template:
+       metadata:
+         creationTimestamp: null
+         labels:
+           app: result-deployment
+       spec:
+         containers:
+         - image: kodekloud/examplevotingapp_result:before
+           name: examplevotingapp-result-shxrp
+   ```
+
+   
+
+10. result-service
+
+    - 
+      port: '5001'
+    - targetPort: '80'
+    - NodePort: '31001'
+
+    Create a new service: name = result-service
+
+    Apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-3/result-service.yml)
+
+    ```
+    root@controlplane ~ ➜  kubectl expose -n vote deployment result-deployment --name=result-service --target-port=80 --port=5001 --type=NodePort --dry-run=client -o yaml > result-service.yaml
+    ```
+
+    result-service.yaml
+
+    ```
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: result-service
+      namespace: vote
+    spec:
+      type: NodePort
+      ports:
+        - port: 5001
+          targetPort: 80
+          nodePort: 31001
+      selector:
+        app: result-deployment
+    ```
+
+    ```
+    root@controlplane ~ ➜  kubectl create -f result-service.yaml 
+    service/result-deployment created
+    
+    
+    root@controlplane ~ ➜  kubectl get svc -n vote 
+    NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+    db               ClusterIP   10.111.157.233   <none>        5432/TCP         53m
+    redis            ClusterIP   10.106.207.236   <none>        6379/TCP         41m
+    result-service   NodePort    10.102.1.117     <none>        5001:31001/TCP   12s
+    vote-service     NodePort    10.106.44.186    <none>        5000:31000/TCP   13m
+    
+    root@controlplane ~ ✖ kubectl describe svc result-service -n vote 
+    Name:                     result-service
+    Namespace:                vote
+    Labels:                   app=result-deployment
+    Annotations:              <none>
+    Selector:                 app=result-deployment
+    Type:                     NodePort
+    IP Family Policy:         SingleStack
+    IP Families:              IPv4
+    IP:                       10.102.1.117
+    IPs:                      10.102.1.117
+    Port:                     <unset>  5001/TCP
+    TargetPort:               80/TCP
+    NodePort:                 <unset>  31001/TCP
+    Endpoints:                10.244.192.5:80
+    Session Affinity:         None
+    External Traffic Policy:  Cluster
+    Events:                   <none>
+    ```
+
+
+
+## Challenge 4
+
+![image-20230126144001513](images/image-20230126144001513.png)
+
+
+
+Build a highly available `Redis Cluster` based on the given architecture diagram.
+
+Click on each `icon` to see more details. Once done click on the `Check` button to test your work.
+
+
+
+1. redis01 thru redis06 - create directories
+
+   - PersistentVolume - Name: redis01
+   - Access modes: ReadWriteOnce
+   - Size: 1Gi
+   - hostPath: /redis01, directory should be created on worker node
+
+   Using a shell for loop, we can create all of these at once.
+
+   i. Determine the name of the worker node
+
+   ```
+   kubectl get nodes
+   ```
+
+   ii. ssh to the worker node
+
+   ```
+   ssh node01
+   ```
+
+   iii. Create the required directories
+
+   ```
+   for i in $(seq 1 6) ; do mkdir "/redis0$i" ; done
+   ```
+
+   Now exit ther worker node with `CTRL-D` or `exit`
+
+2. redis01 thru redis06 - create persistent volumes
+
+   You could create a manifest for each persistent volume individually, but that's repetetive and time consuming, so let's instead use the power of Linux for loops, [heredocs](https://linuxize.com/post/bash-heredoc/) and variable substitution!
+
+   The manifest will be generated once for each value 1 thru 6 and each one piped into `kubectl` which will apply it.
+
+   ```
+   for i in $(seq 1 6)
+   do
+   cat <<EOF | kubectl apply -f -
+   apiVersion: v1
+   kind: PersistentVolume
+   metadata:
+     name: redis0$i
+   spec:
+     capacity:
+       storage: 1Gi
+     volumeMode: Filesystem
+     accessModes:
+       - ReadWriteOnce
+     hostPath:
+       path: /redis0$i
+   EOF
+   done
+   ```
+
+   Or, you could apply the [manifest](https://github.com/kodekloudhub/kubernetes-challenges/blob/master/challenge-4/pv-cluster.yaml) provided which demonstrates the use of `list` when applying multiple resources, however it is a lot of repetition!
+
+3. redis-cluster-service
+
+   - Ports - service name 'redis-cluster-service', port name: 'client', port: '6379'
+   - Ports - service name 'redis-cluster-service', port name: 'gossip', port: '16379'
+   - Ports - service name 'redis-cluster-service', port name: 'client', targetPort: '6379'
+   - Ports - service name 'redis-cluster-service', port name: 'gossip', targetPort: '16379'
+
+   Because the redis cluster is a StatefulSet, it is necessay for a service to exist first, as the StatefulSet manifest refers to it by name.
+
+   redis-cluster-service.yaml
+
+   ````
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: redis-cluster-service
+   spec:
+     ports:
+       - port: 6379
+         name: client
+         targetPort: 6379
+       - port: 16379
+         name: gossip
+         targetPort: 16379
+     selector:
+       app: redis-cluster
+   ````
+
+   ```
+   root@controlplane ~ ➜  kubectl create -f redis-cluster-service.yaml 
+   service/redis-cluster-service created
+   
+   root@controlplane ~ ➜  kubectl get svc
+   NAME                    TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)              AGE
+   kubernetes              ClusterIP   10.96.0.1        <none>        443/TCP              66m
+   redis-cluster-service   ClusterIP   10.101.128.162   <none>        6379/TCP,16379/TCP   14s
+   
+   root@controlplane ~ ➜  kubectl describe svc redis-cluster-service 
+   Name:              redis-cluster-service
+   Namespace:         default
+   Labels:            <none>
+   Annotations:       <none>
+   Selector:          app=redis-cluster
+   Type:              ClusterIP
+   IP Family Policy:  SingleStack
+   IP Families:       IPv4
+   IP:                10.101.128.162
+   IPs:               10.101.128.162
+   Port:              client  6379/TCP
+   TargetPort:        6379/TCP
+   Endpoints:         <none>
+   Port:              gossip  16379/TCP
+   TargetPort:        16379/TCP
+   Endpoints:         <none>
+   Session Affinity:  None
+   Events:            <none>
+   ```
+
+   
+
+4. redis-cluster
+
+   - StatefulSet - Name: redis-cluster
+   - Replicas: 6
+   - Pods status: Running (All 6 replicas)
+   - Image: redis:5.0.1-alpine, Label = app: redis-cluster
+   - container name: redis, command: ["/conf/update-node.sh", "redis-server", "/conf/redis.conf"]
+   - Env: name: 'POD_IP', valueFrom: 'fieldRef', fieldPath: 'status.podIP' (apiVersion: v1)
+   - Ports - name: 'client', containerPort: '6379'
+   - Ports - name: 'gossip', containerPort: '16379'
+   - Volume Mount - name: 'conf', mountPath: '/conf', readOnly:'false' (ConfigMap Mount)
+   - Volume Mount - name: 'data', mountPath: '/data', readOnly:'false' (volumeClaim)
+   - volumes - name: 'conf', Type: 'ConfigMap', ConfigMap Name: 'redis-cluster-configmap',
+   - Volumes - name: 'conf', ConfigMap Name: 'redis-cluster-configmap', defaultMode = '0755'
+   - volumeClaimTemplates - name: 'data'
+   - volumeClaimTemplates - accessModes: 'ReadWriteOnce'
+   - volumeClaimTemplates - Storage Request: '1Gi'
+
+   redis-statefulset.yaml
+
+   ```
+   apiVersion: apps/v1
+   kind: StatefulSet
+   metadata:
+     name: redis-cluster
+     labels:
+       run: redis-cluster
+   spec:
+     serviceName: redis-cluster-service
+     replicas: 6
+     selector:
+       matchLabels:
+         app: redis-cluster
+     template:
+       metadata:
+         name: redis-cluster
+         labels:
+           app: redis-cluster
+       spec:
+         volumes:
+           - name: conf
+             configMap:
+               name: redis-cluster-configmap
+               defaultMode: 0755
+         containers:
+           - image: redis:5.0.1-alpine
+             name: redis
+             command:
+               - "/conf/update-node.sh"
+               - "redis-server"
+               - "/conf/redis.conf"
+             env:
+             - name: POD_IP
+               valueFrom:
+                 fieldRef:
+                   fieldPath: status.podIP
+                   apiVersion: v1
+             ports:
+               - containerPort: 6379
+                 name: client
+               - name: gossip
+                 containerPort: 16379
+             volumeMounts:
+               - name: conf
+                 mountPath: /conf
+                 readOnly: false
+               - name: data
+                 mountPath: /data
+                 readOnly: false
+     volumeClaimTemplates:
+       - metadata:
+           name: data
+         spec:
+           accessModes: ["ReadWriteOnce"]
+           resources:
+             requests:
+               storage: 1Gi
+   ```
+
+   
+
+5. redis-cluster-config
+
+   - 
+     Command: kubectl exec -it redis-cluster-0 -- redis-cli --cluster create --cluster-replicas 1 $(kubectl get pods -l app=redis-cluster -o jsonpath='{range.items[*]}{.status.podIP}:6379 {end}')
+
+   Now we boot the redis cluster. We have to execute a command at the first replica in the StatefulSet, i.e. `redis-cluster-0`. The command to run is provided in the question, however what it does is to get the IPs of all the cluster member pods using jsonpath and provides it as arguments to the cluster initialization tool.
+
+   It will ask you if you want to proceeed. Type `yes`
+
+   ```
+   kubectl exec -it redis-cluster-0 -- redis-cli --cluster create --cluster-replicas 1 \
+       $(kubectl get pods -l app=redis-cluster -o jsonpath='{range.items[*]}{.status.podIP}:6379 {end}')
+   ```
+
+   
