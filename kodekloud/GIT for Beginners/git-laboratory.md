@@ -1265,3 +1265,622 @@
 
 
 
+1. Let's proceed with where we left off in the previous lab. Sarah's local repository should be available at `/home/sarah/story-blog`
+
+   How many stories are currently available in the `master` branch?
+
+   - 2
+   - **1**
+   - 3
+   - 4
+
+   Run `cd /home/sarah/story-blog; git checkout master` and then list the files `ls`
+
+   ```
+   sarah $ cd story-blog/
+   
+   sarah (story/frogs-and-ox)$ git checkout master
+   Switched to branch 'master'
+   
+   sarah (master)$ ls
+   lion-and-mouse.txt
+   ```
+
+2. What's the name of the story in the `master` branch?
+
+   - The Frogs 🐸 and the Ox 🐂
+   - The Fox 🦊 and the Grapes 🍇
+   - **The Lion 🦁 and the Mouse 🐭**
+
+   ```
+   sarah (master)$ ls
+   lion-and-mouse.txt
+   ```
+
+3. How many branches does the repository currently have?
+
+   - 1
+   - 3
+   - 4
+   - **2**
+
+   ```
+   sarah (master)$ git branch
+   * master
+     story/frogs-and-ox
+   ```
+
+4. The new story Sarah wrote is in the `story/frogs-and-ox` branch. It's time to merge the branch and bring it to the master branch.
+
+   But before that look at the `log` of the `master` and `story/frogs-and-ox` branches and identify how many commits there have been in the past on each branch.
+
+   - Master: 2 story/frogs-and-ox: 1
+   - **Master: 2 story/frogs-and-ox: 3**
+   - Master: 1 story/frogs-and-ox: 1
+   - Master: 1 story/frogs-and-ox: 2
+
+   Run `git log`
+
+   ```
+   sarah (master)$ git log
+   commit 139db45d2416643c49281f6e26662e5326b396ba (HEAD -> master)
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 00:35:37 2023 +0000
+   
+       Fix typo in story title
+   
+   commit ab6e55ea015f0a467489f4439c050eea3d264363
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 00:35:37 2023 +0000
+   
+       Added the lion and mouse story
+   
+   
+   sarah (master)$ git checkout story/frogs-and-ox
+   Switched to branch 'story/frogs-and-ox'
+   
+   
+   sarah (story/frogs-and-ox)$ git log
+   commit 509b5cf6be1837b3058393dd2fed19131736cc23 (HEAD -> story/frogs-and-ox)
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 00:35:37 2023 +0000
+   
+       Completed frogs-and-ox story
+   
+   commit 03f9428162fc0c6be808b6bfd7389ad22b10c8be
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 00:35:37 2023 +0000
+   
+       Add incomplete frogs-and-ox story
+   
+   commit ab6e55ea015f0a467489f4439c050eea3d264363
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 00:35:37 2023 +0000
+   
+       Added the lion and mouse story
+   ```
+
+5. Correct! First sarah committed the 🦁 Lion and Mouse 🐭 story in the master branch and then created a new branch for the 🐸 Frogs and ox 🐂 story, then went back and fixed typo in the 🦁 Lion and Mouse 🐭 story and then went back and finished the 🐸 Frogs and ox 🐂 story.
+
+   Next we will merge the new story into the master to have all stories in the master branch.
+
+   Ok
+
+6. While in the `master` branch `merge` the `story/frogs-and-ox` branch. If prompted for a commit message leave it to the default and quit the editor.
+
+   Check
+
+   - Check merge
+
+   Run `git merge story/frogs-and-ox`
+
+   Check `git log` now and it should show commit message as `Merge branch 'story/frogs-and-ox'`
+
+   ```
+   arah (master)$ git merge story/frogs-and-ox
+   Merge made by the 'recursive' strategy.
+    frogs-and-ox.txt | 19 +++++++++++++++++++
+    1 file changed, 19 insertions(+)
+    create mode 100644 frogs-and-ox.txt
+   sarah (master)$ git log
+   commit e0b6b29903c8964f960dc0c5b0e114f830f7dfd3 (HEAD -> master)
+   Merge: 139db45 509b5cf
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 00:53:55 2023 +0000
+   
+       Merge branch 'story/frogs-and-ox'
+   ```
+
+7. Check the log of the master branch and see how many commits are seen now
+
+   - 4
+   - 1
+   - **5**
+   - 3
+   - 2
+
+   Run `git log --oneline`
+
+   ```
+   sarah (master)$ git log --oneline
+   e0b6b29 (HEAD -> master) Merge branch 'story/frogs-and-ox'
+   139db45 Fix typo in story title
+   509b5cf (story/frogs-and-ox) Completed frogs-and-ox story
+   ab6e55e Added the lion and mouse story
+   03f9428 Add incomplete frogs-and-ox story
+   ```
+
+8. Git merged all the commits we made in the `story/frogs-and-ox` branch to the `master` branch. But since we made an additional commit on the master (fixing the typo from `LIOON` to `LION`) git created a new `merge commit`
+
+   Ok
+
+9. List the files in the master branch and make sure both the stories are visible.
+
+   Ok
+
+   ```
+   sarah (master)$ ls
+   frogs-and-ox.txt    lion-and-mouse.txt
+   ```
+
+
+
+## INITIALIZE REMOTE REPOSITORIES, LAB: REMOTE REPOSITORIES
+
+1. Explore the local repository that Sarah has been working on at `/home/sarah/story-blog` and check the `log` to see the number of commits.
+
+   - 2
+   - 3
+   - 1
+   - **5**
+   - 4
+
+   Run `cd /home/sarah/story-blog; git log`
+
+   ```
+   sarah $ cd /home/sarah/story-blog
+   
+   sarah (master)$ git log
+   commit c16da1bea7c249c85ba2ce398748dbe11fb042d9 (HEAD -> master)
+   Merge: c2b080f f29b04f
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Merge branch 'story/frogs-and-ox'
+   
+   commit c2b080f9ba85b1248a5ab39ff0621986a798a9ce
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Fix typo in story title
+   
+   commit f29b04fb81bd98cdf9de7396fb9e7be5b2b2bfc0 (story/frogs-and-ox)
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Completed frogs-and-ox story
+   
+   commit 7c240d6d0d88da6b2459ff87fee6b784a4aacd9e
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Added the lion and mouse story
+   
+   commit be55d8242a9ae138d7908258f96a6e39707220c0
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Add incomplete frogs-and-ox story
+   ```
+
+2. How many stories has Sarah written so far?
+
+   Count the number of stories in the `master` branch
+
+   - 3
+   - 1
+   - **2**
+   - 5
+   - 4
+
+   ```
+   sarah (master)$ git log
+   commit c16da1bea7c249c85ba2ce398748dbe11fb042d9 (HEAD -> master)
+   Merge: c2b080f f29b04f
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Merge branch 'story/frogs-and-ox'
+   
+   commit c2b080f9ba85b1248a5ab39ff0621986a798a9ce
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Fix typo in story title
+   
+   commit f29b04fb81bd98cdf9de7396fb9e7be5b2b2bfc0 (story/frogs-and-ox)
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Completed frogs-and-ox story
+   
+   commit 7c240d6d0d88da6b2459ff87fee6b784a4aacd9e
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Added the lion and mouse story
+   
+   commit be55d8242a9ae138d7908258f96a6e39707220c0
+   Author: sarah <sarah@example.com>
+   Date:   Tue Jan 31 01:02:12 2023 +0000
+   
+       Add incomplete frogs-and-ox story
+   ```
+
+3. Great going Sarah 👏 ! So far Sarah has been working by herself in her own local repository on her laptop. It's time to share her work with the team. Let's push the code to the remote git repository.
+
+   Ok
+
+4. `Github` is awesome! But for the purpose of our lab exercises we will be using the `Gitea` platform. It is a lighter version of `Github`. However a lot of basic functions are the same. So it should suffice our needs for practice.
+
+   You may access the Gitea web portal by clicking on the `Git Portal UI` link at the top of your terminal
+
+   Ok
+
+5. No one in Sarah's team has created a remote repository yet for this project. So Sarah decides to create one so everyone in the team can collaborate. Let's now create a remote git repository named `story-blog` in `Gitea` using the GUI. Click on `Git Portal UI` to access the UI, login with the below details and create a new repository.
+
+   UI login info:
+
+   Username: `sarah`
+
+   Password: `Sarah_pass123`
+
+   Repository Name: `story-blog`
+
+   Keep other options default when creating repo
+
+   Check
+
+   - Verify remote repo
+
+   Login to UI with given credentials. Click on `+` sign to create new repository.
+
+   Add Repository Name:`story-blog` and keep other options default. Then click on `Create repository`
+
+6. From within the lab environment (terminal) the remote repository is accessible at the URL `http://git.example.com`. Let's now configure the remote repository for the local repository at `/home/sarah/story-blog`
+
+   Target remote repo URL : `http://git.example.com/sarah/story-blog.git`
+
+   remote repo alias : `origin`
+
+   Note: This URL won't be accessible from your personal laptop as it is only available within the lab environment.
+
+   Check
+
+   - Verify remote repo
+
+   Run `cd /home/sarah/story-blog; git remote add origin http://git.example.com/sarah/story-blog.git`Run `cd /home/sarah/story-blog; git remote add origin http://git.example.com/sarah/story-blog.git`
+
+   ```
+   sarah (master)$ git remote add origin http://git.example.com/sarah/story-blog.git
+   
+   
+   sarah (master)$ git config -l
+   user.email=sarah@example.com
+   user.name=sarah
+   core.repositoryformatversion=0
+   core.filemode=true
+   core.bare=false
+   core.logallrefupdates=true
+   user.email=sarah@example.com
+   user.name=sarah
+   remote.origin.url=http://git.example.com/sarah/story-blog.git
+   remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+   ```
+
+7. Which command can be used to push data to our remote repo?
+
+   remote repo alias : `origin`
+
+   remote branch : `master`
+
+   - **git push origin master**
+   - git push origin
+   - git push master origin
+   - git push master
+
+   Syntax: `git push <remote repo alias> <remote branch>`
+
+8. Now push our current stories to the remote git repository we created
+
+   Login info:
+
+   Username: `sarah`
+
+   Password: `Sarah_pass123`
+
+   remote repo alias : `origin`
+
+   remote branch : `master`
+
+   Simply run `git push origin master` to push and input login credentials
+
+   ```
+   arah (master)$ git push origin master
+   Username for 'http://git.example.com': sarah
+   Password for 'http://sarah@git.example.com': 
+   Enumerating objects: 14, done.
+   Counting objects: 100% (14/14), done.
+   Delta compression using up to 56 threads
+   Compressing objects: 100% (12/12), done.
+   Writing objects: 100% (14/14), 2.05 KiB | 2.05 MiB/s, done.
+   Total 14 (delta 4), reused 0 (delta 0), pack-reused 0
+   remote: . Processing 1 references
+   remote: Processed 1 references in total
+   To http://git.example.com/sarah/story-blog.git
+    * [new branch]      master -> master
+   ```
+
+9. View the changes in the remote repository using the GUI.
+
+   Refresh the remote Gitea page if its already open or click on the `Git Portal UI` button at the top of your terminal.
+
+   Ok
+
+10. Looking at the remote repository on Gitea can you identify the total disk space consumed by this repository?
+
+   Choose the closest option below
+
+   - 10 MiB
+   - 1 GiB
+   - 2 KiB
+   - **20 KiB**
+
+11. Let's explore the repositories and teams in our organization and see who is doing what.
+
+    How many users can you see in the `Gitea` tool?
+
+    - 3
+    - 2
+    - 4
+    - **5**
+    - 1
+
+    In the top menu bar select `Explore` -> `Users`
+
+12. Who owns the most number of repositories?
+
+    - Max
+    - **Tej**
+    - Sarah
+    - Tom
+
+    In the top menu bar select `Explore` -> `Repositories` and count the number of repositories for each user.
+
+13. `Tej` seems to be working on an `ecommerce` application. How many commits have been made in that repository?
+
+    - 4
+    - 10
+    - **19**
+    - 59
+
+    In the top menu bar select `Explore` -> `Repositories` -> `tej/ecommerce` and look at the number of commits.
+
+14. `Sarah` seems to have accidentally created a repository for story-blog mis-spelt as `story-bloggg`. Please delete it.
+
+    Select the repository and go to settings.
+
+    Check
+
+    - Repository deleted?
+
+    Go to `story-bloggg` repository in GUI and click on settings.
+
+    Scroll all the way down and click on `Delete This Repository` option. Then follow the instructions.
+
+
+
+## INITIALIZE REMOTE REPOSITORIES, LAB: CLONING REMOTE REPOSITORIES
+
+1. Max would like to contribute to the story blog. Let's help Max share(push) his story to the remote repository created by `Sarah`.
+
+   Ok
+
+2. First max needs to download the current code (stories) uploaded by `Sarah` in remote repository. As user `Max`, clone the remote repo to his home directory - `/home/max`
+
+   Target repo web URL : `http://git.example.com/sarah/story-blog`
+
+   You can also find this URL from UI
+
+   Check
+
+   - Valid git repo?
+
+   Run `cd /home/max; git clone http://git.example.com/sarah/story-blog.git`
+
+   ```
+   max $ pwd
+   /home/max
+   
+   max $ git clone http://git.example.com/sarah/story-blog
+   Cloning into 'story-blog'...
+   remote: Enumerating objects: 14, done.
+   remote: Counting objects: 100% (14/14), done.
+   remote: Compressing objects: 100% (12/12), done.
+   remote: Total 14 (delta 4), reused 0 (delta 0), pack-reused 0
+   Receiving objects: 100% (14/14), done.
+   Resolving deltas: 100% (4/4), done.
+   
+   max $ ls
+   story-blog
+   ```
+
+3. Check the contents of the cloned repository. Confirm that you can see Sarah's story and history of commit by running `git log` and validate author info, commit message etc.
+
+   Ok
+
+   ```
+   max $ cd story-blog/
+   max (master)$ ls -l 
+   total 8
+   -rw-r--r--    1 max      max            792 Jan 31 01:37 frogs-and-ox.txt
+   -rw-r--r--    1 max      max           1086 Jan 31 01:37 lion-and-mouse.txt
+   ```
+
+4. Max has written his story about The 🦊 `Fox and Grapes` 🍇
+
+   View the file he created and its contents. You may read the story if you wish to. But don't spend all day 😝
+
+   Ok
+
+   ```
+   max (master)$ ls -l 
+   total 12
+   -rw-r--r--    1 max      max            807 Jan 31 01:39 fox-and-grapes.txt
+   -rw-r--r--    1 max      max            792 Jan 31 01:37 frogs-and-ox.txt
+   -rw-r--r--    1 max      max           1086 Jan 31 01:37 lion-and-mouse.txt
+   max (master)$ cat fox-and-grapes.txt 
+   --------------------------------------------
+         THE FOX AND GRAPES
+   --------------------------------------------
+   
+   A Fox one day spied a beautiful bunch of ripe grapes hanging from a vine trained along the branches of a tree.
+   
+   The grapes seemed ready to burst with juice, and the Fox's mouth watered as he gazed longingly at them.
+   
+   The bunch hung from a high branch, and the Fox had to jump for it.
+   
+   The first time he jumped he missed it by a long way.
+   
+   So he walked off a short distance and took a running leap at it, only to fall short once more.
+   
+   Again and again he tried, but in vain.
+   
+   Now he sat down and looked at the grapes in disgust.
+   
+   "What a fool I am," he said. "Here I am wearing myself out to get a bunch of sour grapes that are not worth gaping for."
+   ```
+
+5. Let us now try to commit the changes. Try to commit the changes with the message `Added fox-and-grapes story`. And you might get an error that says `Please tell me who you are`
+
+   This is because Max has cloned the repository, but `Git` doesn't know who Max is. Max needs to tell `Git` his username and email address. For this use the command `git config user.email "max@example.com"` and `git config user.name "max"`
+
+   Check
+
+   - Verify commit
+
+   Run `git add fox-and-grapes.txt` and then `git commit -m 'Added fox-and-grapes story'`
+
+   ```
+   max (master)$ git status
+   On branch master
+   Your branch is up to date with 'origin/master'.
+   
+   Untracked files:
+     (use "git add <file>..." to include in what will be committed)
+           fox-and-grapes.txt
+   
+   nothing added to commit but untracked files present (use "git add" to track)
+   
+   max (master)$ git add fox-and-grapes.txt 
+   
+   max (master)$ git status
+   On branch master
+   Your branch is up to date with 'origin/master'.
+   
+   Changes to be committed:
+     (use "git restore --staged <file>..." to unstage)
+           new file:   fox-and-grapes.txt
+   
+   max (master)$ git commit -m "Added fox-and-grapes story"
+   [master 7ae571e] Added fox-and-grapes story
+    1 file changed, 21 insertions(+)
+    create mode 100644 fox-and-grapes.txt
+   
+   
+   max (master)$ git status
+   On branch master
+   Your branch is ahead of 'origin/master' by 1 commit.
+     (use "git push" to publish your local commits)
+   
+   nothing to commit, working tree clean
+   ```
+
+6. Great! It's time to push our changes to remote. Do we need to add a remote repository, as Sarah did, before pushing?
+
+   Check the configured remotes on the repository
+
+   - Yes, we must always add a remote before pushing to remote
+   - **No, the remotes are already configured as we cloned the repository**
+
+7. Now try to push Max's story to remote git repository hosted on `Gitea` using the below details. If you might run into a permission denied error, proceed to next question.
+
+   login info:
+
+   Username: `max`
+
+   Password: `Max_pass123`
+
+   remote repo alias : `origin`
+
+   remote branch : `master`
+
+   Ok
+
+8. If you ran into an issue it is because the repository is public but not everyone can change it. It is `public` but `read-only`. To push changes to the repository you need to be a collaborator or a member of the project.
+
+   The account owner - `Sarah` needs to add you as a collaborator. While logged in to the Gitea UI as user `sarah` go to `Settings` -> `Collaborators` of the project and add `max` as collaborate with `Write` permissions.
+
+   Use Sarah's credentials:
+   Username: `sarah`
+   Password: `Sarah_pass123`
+
+   Check
+
+   - Max added as collaborator with write permissions
+
+9. Now try to push Max's story to remote git repository hosted on `Gitea`
+
+   Login info:
+
+   Username: `max`
+
+   Password: `Max_pass123`
+
+   remote repo alias : `origin`
+
+   remote branch : `master`
+
+   Check
+
+   - Content pushed?
+
+   Simply run `git push origin master` to push and input login credentials
+
+   ```
+   max (master)$ git push origin master
+   Username for 'http://git.example.com': max
+   Password for 'http://max@git.example.com': 
+   Enumerating objects: 4, done.
+   Counting objects: 100% (4/4), done.
+   Delta compression using up to 56 threads
+   Compressing objects: 100% (3/3), done.
+   Writing objects: 100% (3/3), 743 bytes | 743.00 KiB/s, done.
+   Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+   remote: . Processing 1 references
+   remote: Processed 1 references in total
+   To http://git.example.com/sarah/story-blog.git
+      560bbe7..e895cee  master -> master
+   ```
+
+10. Confirm the changes in the remote repository using the GUI. Make sure both the stories of Sarah and Max are visible there.
+
+   Refresh the remote Gitea page if its already open or click on the `Git Portal UI` button at the top of your terminal.
+
+   Ok
+
+
+
+## INITIALIZE REMOTE REPOSITORIES, LABS: PULL REQUESTS
+
+1. 
