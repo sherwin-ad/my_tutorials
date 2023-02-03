@@ -1,5 +1,195 @@
 [TOC]
 
+# Install Odoo 16 on Ubuntu 22.04 (Jammy)
+
+## Step 1 – Installing Required Packages
+
+First, update your server and then upgrade it. If it asks for a password, give it:
+
+```
+sudo apt update && sudo apt upgrade
+```
+
+The command will upgrade available updates for the installed packages. Then install all the required packages for the Odoo setup on the Ubuntu system. This will install essential packages for build, Python, and Node.js on your system.
+
+```
+sudo apt install git wget nodejs npm python3 build-essential libzip-dev python3-dev libxslt1-dev python3-pip libldap2-dev python3-wheel libsasl2-dev python3-venv python3-setuptools node-less libjpeg-dev xfonts-75dpi xfonts-base libpq-dev libffi-dev fontconfig 
+```
+
+Also, install the below node module to enable RTL support.
+
+```
+sudo npm install -g rtlcss 
+```
+
+## Step 2 – Installing wkhtmltopdf
+
+Now, you also need to install `wkhtmltox` Debian package, which provided useful `wkhtmltoimage` and `wkhtmltopdf` binary commands.
+
+Download the Debian package from Github:
+
+```
+wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb 
+```
+
+Then install it on your system.
+
+```
+sudo dpkg -i wkhtmltox_0.12.6.1-2.jammy_amd64.deb 
+```
+
+## Step 3 – Create a New System Account
+
+Running the Odoo service as a separate user is a good practice. Now for the creation of a user for Odoo who can access the Odoo and can make changes to it.
+
+```
+sudo adduser --system --group --home=/opt/odoo --shell=/bin/bash odoo 
+```
+
+This will create a new account to use for Odoo service.
+
+## Step 4 – Installing PostgreSQL
+
+As we know that PostgreSQL is required as the database server for Odoo. So we will install it:
+
+```
+sudo apt install postgresql -y
+```
+
+Now for the creation of an Odoo user in PostgreSQL:
+
+```
+sudo su - postgres -c "createuser -s odoo" 
+```
+
+This will add a new role `odoo` in PostgreSQL server.
+
+## Step 5 – Installing Odoo 16 on Ubuntu
+
+We can download the Odoo from the Github repository. So clone it on your system. Make sure to clone the correct branch you need to install on your system. As we are installing Odoo 16, so use the branch name “16.0”.
+
+```
+cd /opt/odoo 
+git clone https://github.com/odoo/odoo.git --depth 1 --branch 16.0 --single-branch odoo-server 
+```
+
+Change the file ownership to the odoo user.
+
+```
+sudo chown -R odoo:odoo /opt/odoo/odoo-server 
+```
+
+It’s a good practice to create a Python virtual environment for isolating applications. Create a virtual environment with the following commands:
+
+```
+cd /opt/odoo/odoo-server 
+python3 -m venv venv  
+source venv/bin/activate  
+```
+
+Once the virtual environment is activated, you will see the system prompt as “(venv) $”. Now install the Python dependencies for the Odoo under the virtual environment.
+
+```
+pip3 install wheel 
+pip3 install -r requirements.txt
+```
+
+After finishing the installation, deactivate the virtual environment with the following command.
+
+```
+deactivate
+```
+
+Now we will create the directory of log and also change its permissions settings
+
+```
+sudo mkdir /var/log/odoo 
+sudo chown odoo:odoo /var/log/odoo 
+sudo chmod 777 /var/log/odoo 
+```
+
+## Step 6 – Create Odoo Configuration File
+
+Next, create a configuration for the Odoo server. This is useful for customizing the Odoo application. Edit the configuration file `/etc/odoo-server.conf` in your favorite text editor:
+
+```
+sudo nano /etc/odoo-server.conf 
+```
+
+Add the below content to file:
+
+```
+[options]
+admin_passwd = pass$123
+db_user = odoo
+addons_path = /opt/odoo/odoo-server/addons
+logfile = /var/log/odoo/odoo-server.log
+log_level  = debug
+```
+
+
+
+Make sure to change the **admin_passwd** value with a strong password. Save your file and close it.
+
+Next, change the ownership to oddo user for the configuration file. Also, change file permissions
+
+```
+sudo chown odoo:odoo /etc/odoo-server.conf 
+```
+
+## Step 7 – Create Odoo Systemd Unit File
+
+Create a Systemd unit file for the Oddo service management. It will help you manage Odoo’s service easily. Also allowed us to start Odoo on system boot. Create a new file **odoo.service** and edit in a text editor:
+
+```
+sudo nano /etc/systemd/system/odoo.service 
+```
+
+Add the following content.
+
+```
+[Unit]
+Description=Odoo 16.0 Service
+Requires=postgresql.service
+After=network.target postgresql.service
+ 
+[Service]
+Type=simple
+SyslogIdentifier=odoo
+PermissionsStartOnly=true
+User=odoo
+Group=odoo
+ExecStart=/opt/odoo/odoo-server/venv/bin/python3 /opt/odoo/odoo-server/odoo-bin -c /etc/odoo-server.conf
+StandardOutput=journal+console
+ 
+[Install]
+WantedBy=multi-user.target
+```
+
+
+
+Save the file and close it.
+
+Now, reload the systemd daemon to load the newly created file.
+
+```
+sudo systemctl daemon-reload
+```
+
+Start the Odoo service, Also enable it to auto-start on system boot:
+
+```
+sudo systemctl enable --now odoo.service 
+```
+
+Verify the service status:
+
+```
+sudo systemctl status odoo.service 
+```
+
+
+
 # Install Odoo 13 on Ubuntu 20.04
 
 https://gist.github.com/parthivgls/70569370528876524abb4f6e7a0cf53f

@@ -1061,6 +1061,24 @@ dry run
     - webapp-nginx deployment created?
 
     Run the command: `helm install webapp ./webapp-nginx` to install the chart and to ensure that the deployment resource created by using the command : `kubectl get deploy`.
+    
+    ```
+    controlplane ~ ➜  helm install webapp ./webapp-nginx/
+    NAME: webapp
+    LAST DEPLOYED: Tue Jan 31 04:18:50 2023
+    NAMESPACE: default
+    STATUS: deployed
+    REVISION: 1
+    TEST SUITE: None
+    ```
+    
+    ```
+    controlplane ~ ➜  kubectl get deployments.apps 
+    NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+    webapp-nginx   1/1     1            1           26s
+    ```
+    
+    
 
 
 
