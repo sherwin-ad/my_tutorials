@@ -171,6 +171,98 @@
 
 
 
+### QUIZ: INSTALL A BOOT MANAGER
+
+1. To change the menu entries for GRUB Legacy, which file would you edit?
+
+   - **/boot/grub/menu.lst**
+
+   - /boot/grub/grub.cfg
+
+   - /etc/grub/menu.lst
+
+   - /etc/grub/grub.cfg
+
+2. GRUB 2 stores its configuration file at:
+
+   - /boot/grub/grub.cfg
+
+   - **/etc/grub/grub.cfg**
+
+   - /etc/grub.d/
+
+   - /boot/grub.d/
+
+3. When using GRUB Legacy, how is the first partition of the first disk labeled?
+
+   - (hd1,1)
+
+   - (hd0,1)
+
+   - **(hd0,0)**
+
+   - (hd1,0)
+
+4. If you update the configuration for GRUB 2, which command would you run to write that configuration to the correct directory for GRUB 2 to use the next time you boot the system?
+
+   - **grub-mkconfig -o /boot/grub/grub.cfg**
+
+   - grub-config -o /boot/grub/grub.conf
+
+   - grub-config -o /boot/grub/grub.cfg
+
+   - grub-mkconfig -o /boot/grub/grub.conf
+
+5. When using GRUB 2, which menu entry parameter determines how long GRUB 2 will pause before booting the default menu entry?
+
+   - **GRUB_TIMEOUT=**
+
+   - GRUB_TIMER=
+
+   - GRUB_PAUSE=
+
+   - GRUB_WAIT=
+
+
+
+### QUIZ: MANAGE SHARED LIBRARIES
+
+1. You have added a new shared library directory to your system, and you have written a custom configuration file including the full path to to the new shared library location. Which directory would you put the configuration file into?
+
+   - /etc/share
+
+   - /usr/ld.so.conf.d/
+
+   - **/etc/ld.so.conf.d/**
+
+   - /usr/share/
+
+2. After adding a new shared library directory to your system, you copied a configuration file with its full path to the correct directory. Which command would you use to notify the system of the change?
+
+   - **ldconfig**
+
+   - ldd
+
+   - updatedb
+
+   - libupdate
+
+3. Static libraries have which file extension?
+
+   - .aout
+
+   - .out
+
+   - .a
+
+   - .lib
+
+   
+
+
+
+
+
 
 
 
