@@ -253,17 +253,129 @@
 
    - .out
 
-   - .a
+   - **.a**
 
    - .lib
 
-   
+4. The naming format for shared libraries is:
+
+   - [libraryname.versionnumber.so](http://libraryname.versionnumber.so/)
+
+   - **libraryname.so.versionnumber**
+
+   - libraryname-so.versionnumber
+
+   - [libraryname-versionnumber.so](http://libraryname-versionnumber.so/)
+
+5. Which command would you use to list the shared libraries used by the /usr/bin/systemctl program?
+
+   - shared /usr/bin/systemctl
+
+   - lib /usr/bin/systemctl
+
+   - **ldd /usr/bin/systemctl**
+
+   - ###### which /usr/bin/systemctl
+
+### QUIZ: USE DEBIAN PACKAGE MANAGEMENT
+
+1. Which parameter would you add to dpkg-query to show which package contains a particular file?
+
+   - **-S**
+   - -l
+   - -s
+   - -W
+
+2. Which apt-cache command will provide information for a package?
+
+   - apt-cache info
+
+   - apt-cache search
+
+   - apt-cache print
+
+   - **apt-cache show**
+
+3. On a Debian system, which command would remove a package and all of its configuration files?
+
+   - dpkg --remove
+
+   - dkpg --erase
+
+   - **dpkg -P**
+
+   - dpkg -r
+
+4. Which apt-file command would show the package that contains the file /usr/bin/systemctl?
+
+   - apt-file query /usr/bin/systemctl
+
+   - apt-file provides /usr/bin/systemctl
+
+   - **apt-file search /usr/bin/systemctl**
+
+   - apt-file show /usr/bin/systemctl
+
+5. Which command would you use to install a .deb file located on your local Linux system?
+
+   - dpkg -I
+
+   - dpkg install
+
+   - **dpkg -i**
+
+   - dpkg -install
 
 
 
+### QUIZ: USE RPM AND YUM PACKAGE MANAGEMENT
 
+1. Where are repository files stored for DNF and YUM?
 
+   - /etc/repos.d/
 
+   - /etc/yum/repos.d/
 
+   - **/etc/yum.repos.d/**
 
+   - /etc/yum/repos/
 
+2. Using YUM or DNF, which option would uninstall a package from the system, along with any packages that depend on that package?
+
+   - uninstall
+
+   - **remove**
+
+   - delete
+
+   - purge
+
+3. Using DNF, how would you install the httpd package?
+
+   - dnf provide httpd
+
+   - dnf -i httpd
+
+   - dnf httpd
+
+   - **dnf install httpd**
+
+4. Which yum command will bring repository metadata to the most recent version?
+
+   - yum check-metadata
+
+   - yum metadata
+
+   - yum upgrade
+
+   - **yum update**
+
+5. Using zypper, how would you find out which package provides the file /usr/bin/systemctl?
+
+   - **zypper se --provides /usr/bin/systemctl**
+
+   - zypper se /usr/bin/systemctl
+
+   - zypper se provides /usr/bin/systemctl
+
+   - zypper --provides /usr/bin/systemctl
