@@ -74,13 +74,13 @@ UPDATE wp_posts SET guid = REPLACE(guid, 'https://stg1.beesites.net/bmb/', 'http
 
 
 ````
-UPDATE wp_options SET option_value = replace(option_value, 'https://nemsu.beesuite.ph/', 'https://nemsu-uis.beesites.net/') WHERE option_name = 'home' OR option_name = 'siteurl';
+UPDATE wp_options SET option_value = replace(option_value, 'https://cwis.bmb.gov.ph/', 'https://192.168.11.80/') WHERE option_name = 'home' OR option_name = 'siteurl';
 
-UPDATE wp_posts SET guid = replace(guid,'https://nemsu.beesuite.ph/', 'https://nemsu-uis.beesites.net/');
+UPDATE wp_posts SET guid = replace(guid,'https://cwis.bmb.gov.ph/', 'https://192.168.11.80/');
 
-UPDATE wp_posts SET post_content = replace(post_content, 'https://nemsu.beesuite.ph/', 'https://nemsu-uis.beesites.net/');
+UPDATE wp_posts SET post_content = replace(post_content, 'https://cwis.bmb.gov.ph/', 'https://192.168.11.80/');
 
-UPDATE wp_postmeta SET meta_value = replace(meta_value, 'https://nemsu.beesuite.ph/', 'https://nemsu-uis.beesites.net/');
+UPDATE wp_postmeta SET meta_value = replace(meta_value, 'https://cwis.bmb.gov.ph/', 'https://192.168.11.80/');
 ````
 
 
