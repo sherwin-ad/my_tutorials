@@ -379,3 +379,61 @@
    - zypper se provides /usr/bin/systemctl
 
    - zypper --provides /usr/bin/systemctl
+
+
+
+### QUIZ: LINUX AS A VIRTUALIZATION GUEST
+
+1. Which type of virtualization requires the guest to be capable of running all instructions on virtual hardware?
+
+   - bare metal
+
+   - paravirtualization
+
+   - **full virtualization**
+
+   - hybrid virtualization
+
+2. Intel VT-x and AMD-V are examples of _____ used to provide support for fully virtualized guests?
+
+   - hypervisors
+
+   - virtual machines
+
+   - paravirtualized drivers
+
+   - **CPU extensions**
+
+3. Which virtualization method provides the highest performance?
+
+   - Virsh
+
+   - VirtualBox
+
+   - **Paravirtualization**
+
+   - Full virtualization
+
+4. Which program is used to start Linux virtual instances in a cloud environment?
+
+   - kickstart
+
+   - upstart
+
+   - **cloud-init**
+
+   - cloud-start
+
+5. KVM is a _____ hypervisor. Select all that apply.
+
+   - **Type-1**
+
+   - Bare metal
+
+   - Hybrid
+
+   - **Type-2**
+
+
+
+## GNU AND UNIX COMMANDS
