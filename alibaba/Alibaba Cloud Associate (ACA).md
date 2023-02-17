@@ -1192,17 +1192,520 @@ RDS provides easy and various options to monitor various RDBMS metrics.
 
 
 
+# Section 7: Object Storage Service (OSS)
 
 
 
+## OSS Overview
+
+- 15% of the exam questions related to the object storage service.
+- Familiar with OSS related concepts, including regions and zones, buckets, objects, anti-leech and object lifecycle management.
+- Have knowledge about the advantages, application scenarios and billing models of OSS products
+- Have knowledge about the management use and operations of OSS buckets and objects.
 
 
 
+## OSS Concept
+
+- Object Storage Service (OSS) is an encrypted and secure cloud object storage, which stores, processes and accesses massive amounts of data from anywhere in the world.
+- OSS. uses a data redundancy storage mechanism to store redundant data of each object on multiple devices of different facilities in the same area
+- 3 replicas and 3 zones.
+- 99.995% service availability 
+- 99.9999999% data reliability
+- OSS is a managed service (PaaS)
 
 
 
+**3 Components of OSS** 
+
+1. **Bucket** 
+
+   - is a container for objects stored in OSS.
+
+   - Every object must be contained in a bucket.
+
+   - The bucket name is globally unique and OSS
+
+   - After a bucket is created, its name, region and storage class cannot be modified.
+
+   - There is no limit on the number of objects in each bucket.
+
+   - An application can have one or more buckets
+
+   - A user can create many buckets.
+
+   - You can restrict the access to the objects in the buckets using Access Control (ACL).
+
+   - You are able to access a bucket is the following:
+
+     http://**bucket_name.**oss-**region_name**.aliyuncs.com
+
+2.  **Object**
+
+   - is the fundamental entity stored in OSS. buckets.
+   - Object is uniquely identified within a bucket by a key.
+   - Each file is an object 
+   - Every object includes key data and meta data.
+   - File size limitation and it differs from how the data was uploaded.
+     - If  via **Put Object mode**, the object size cannot exceed **5 GB**
+     - If via **Multipart mode**, the object size cannot exceed **48.8 TB**
+
+3. **Key**
+
+   - is the unique identifier for an object within a bucket.
+   - Every object in a bucket has exactly one key 
+   - Uniquely identifies each object.
+
+   - You are able to access a key is the following.
+
+     http://**bucket_name.**oss-**region_name**.aliyuncs.com/**key_name**
+
+   
+
+## OSS Storage Types
+
+1. **Standard** 
+- is a default one and is a High-Performance, highly reliable and highly available OSS instances 
+  
+- persistence of  99.999999%
+  
+- The storage is applicable to service scenarios characterized by high throughputs, hot files and frequent access.
+  
+- There is no minimum storage period 
+  
+- Application scenarios are, for example, mobile applications, large Web sites, picture sharing, popular audio and video 
+
+2. **Infrequent Access** 
+   - OSS instances characterized by relatively low storage costs and real time access.
+   - persistence of 99.999999%
+   - Features: applicable to service scenarios that support real time in frequent data access.
+   - Minimum storage period is 30 days.
+   - Application scenarios are, for example, mobile devices, backup of applications and enterprise data, monitoring data, and online storage applications.
+3. **Archives**
+   - OSS. instances that support long term archive data storage at the lowest unit price.
+   - persistence of 99.999999%
+   - Features: applicable to service scenarios that are subject to data recovery  wait time and have requirements on data storage period 
+   - minimum storage period is 60 days.
+   - Application scenarios of a long term archive, data storage, medical imaging, video materials
 
 
 
+## OSS Lifecycle Management
+
+- The **object lifecycle management** is used to automatically delete multiple objects at the specified point in time or to automatically change the storage class after a period of time for cost savings.
+
+- You configure lifecycle management rules which contain lifecycle policies.
+- Lifecycle policies specify the validity period or expiration time, and the operation to perform on these objects after they expire.
+- You can delete specific objects or all objects in a bucket.
 
 
+
+## OSS Bucket Operations
+
+![image-20230216144944738](images/image-20230216144944738.png)
+
+
+
+**Create Bucket**
+
+- Choose the Region
+- Bucket name is globally unique and cannot be changed after creation
+- Bucket name rule:
+  - bucket name can contain lowercase letters, numbers and hyphens
+  - bucket name must begin and end with lowercase letters or numbers
+  - bucket name must be 3-64 characters in length
+
+**Configure bucket access control (ACL)**
+
+- It can be configured doing the bucket creation and can also be modified after bucket creation.
+- Bucket ACL can be: 
+  - private 
+  - public read 
+  - public read/write
+
+**Check bucket information.**
+
+**Delete bucket** 
+
+- to prevent deleting a bucket by mistake. users are not allowed to delete a non-empty bucket.
+
+
+
+## OSS Object Operation
+
+![image-20230216150429710](images/image-20230216150429710.png)
+
+
+
+**Create a directory and upload a file** 
+
+- Choose an existing bucket and create the directory or upload a file
+
+- File size limitation, differs from how the data was uploaded:
+
+  - If via Put Object mode to object, size cannot exceed 5 GB
+  - If via Multipart mode, the object size cannot exceed 48.8 TB
+
+  Directory naming rules:
+
+  - Use valid UTF-8 characters
+  - Slash (/) are not allowed
+  - The directory name must be between 1-254 characters
+
+**Access file**
+
+**Delete file**
+
+- 3 methods to delete a file:
+  - Delete a single file at a time
+  - Delete multiple files at a time (supports 1000 objects a a time)
+  - Auto delete files according to predefined lifecycle policies
+
+
+
+## OSS Website Hosting
+
+You can host your entire Static Website on OSS for a low cost, highly available hosting solution that can scale automatically to meet traffic demands.
+
+- With OSS you can reliably send your traffic and handle unexpected peaks without worrying about scaling your infrastructure.
+
+- The index document is required: index.html
+
+- OSS access domain name to the static website:
+
+  Public domain, 
+
+  http://**bucket_name**.oss-**region_name**.aliyuncs.com
+
+  Private domain
+
+  http://**bucket_name**.oss-**region_name-internal**.aliyuncs.com
+
+- Custom domain name 
+
+  - To use a custom domain to access an uploaded object, you must bind the custom domain to the bucket where the object is stored and add a CNAME record that points to the public endpoint of the bucket.
+
+## OSS Anti-leech
+
+OSS Anti-leech prevents from being leached based on HTTP headers.
+
+- You can configure referrer white list for a bucket or whether to allow access by requests, whether referrer is blank.
+
+- You can also use signed URLs  that give you time limited access to specific objects.
+
+- For example, for a bucket named roopu-cloud-example, set its referer whitelist to
+
+  http://www.roopu.cloud/. Then only requests with a referrer of 
+
+  http://www.roopu.cloud/  can access the objects in the bucket.
+
+
+
+## OSS Security
+
+**Encryption**
+
+- **Server side encryption**
+
+  - OSS protects static data by encrypting it on the server side.
+
+  - SSE-KMS: Customer master keys (CMKs) are hosted by OSS
+
+  - SSE-KMS BYOK: This encryption method allows you to use your own key (BYOK)
+
+  - SE-OSS: This encryption method is fully hosted by OSS. OSS will automatically encrypt your data on write and decrypt your data on retrieval using AES-256 keys.
+
+- **Client-side encryption** 
+  - encrypts files on the client before they are uploaded to OSS
+    - Use CMKs hosted on KMS
+    - Manually manage data keys.
+
+- **Transmission encryption**
+  - OSS allows you to access resources in OSS. over HTTP or HTTPS. You can set bucket-based authorization policies to only allow access to resources in OSS over HTTPS.
+
+**Access Control** 
+
+- OSS provides **Acces Control List (ACL)** for access control. 
+- An ACL is set on resources. 
+- You can also set an ACL for a bucket when you create the bucket or for an object when you upload the object to OSS.
+- You can also modify the ACL for creating bucket or an uploaded object at any time.
+
+**RAM Policy**
+
+- **Resource Access Management (RAM)** is a service provided by Alibaba Cloud for resource access control.
+- RAM policies are configured based on users.
+- By configuring RAM policies, you can manage multiple users in a centralized manner and control the resources that can be accessed by the users.
+- For example, you can control the permission of a user so that the user can only read a specified bucket.
+- A RAM user belongs to the Alibaba cloud account under which it was created and does not own any actual resources. That is, all resources belong to the corresponding Alibaba cloud account.
+
+**Bucket Policy** 
+
+- Bucket policies are configured based on resources
+- Compared with RAM policies Bucket policies can be directly configured on the graphical console
+- By configuring bucket policies, you can authorize users to access your bucket even if you don't have permission for RAM operations.
+- By configuring bucket policies, you can grant access permissions to ram users onto other Alibaba cloud accounts and to anonymous users who access your resources from specified IP addresses or IP ranges.
+
+### Logs and Monitoring
+
+**Query access logs**
+
+- A large number of logs are generated when OSS resources are accessed.
+
+- After you enable and configure logging for a bucket, an object with a specified prefix is generated on an hourly basis to record access logs of the bucket.
+
+**Query logs in real time**
+
+- Real time log query integrates OSS with Log Service. 
+- This feature allows you to query and collect statics on:
+  -  OSS access logs, 
+  - Audit access to OSS, 
+  - Track exception events and 
+  - Troubleshoot problems in the OSS console.
+
+**Monitoring**
+
+- Monitoring service of OSS provides metrics that describe basic system operating statuses, performance and metering.
+- The monitoring service also provides a customs alert service to help you track requests and analyze usage, collect statistics on business trends and promptly discover and diagnose system problems.
+
+## Quiz 6: OSS Quiz
+
+1. What does OSS stand for?
+   - Own Storage Service
+   - Own Service Storage
+   - Object Single Service
+   - **Object Storage Service**
+2. Which of the following cloud model is OSS?
+   - IaaS
+   - **PaaS**
+   - SaaS
+   - On-premise
+3. Which is the limit on the number of objects stored in a OSS bucket?
+   - 2 TB
+   - 4 TB
+   - 50 TB
+   - **There is no limit**
+4. A company is planning to migrate a massive amount of data to the Alibaba Cloud platform. Which Alibaba Cloud service should the company use?
+   - **OSS**
+   - ECS
+   - RDS
+   - CDN
+5. Which of the following feature does OSS not support?
+   - **Anti-DDoS**
+   - Custom Domain Name
+   - Website hosting
+   - Anti-leech
+
+# Section 8: Cloud Security and Cloud Monitor
+
+## Cloud Security and Cloud Monitor Overview
+
+- 10% of the exam are questions related to general knowledge about Cloud Security and Cloud Monitor.
+- Has basic security awareness and security basics of using cloud services
+- Has knowlwdge about Alibaba Cloud Security series, such as Anti-DDoS Basic, Anti-DDos Pro, Security Center and Cloud Monitor.
+
+## Security Shared Responsibility Model
+
+![image-20230217080646130](images/image-20230217080646130.png)
+
+- Customers are responsible only for the security of applications built on top of or connected to the cloud.
+- Alibaba cloud, on the other hand, it's responsible for the security of the underlying cloud service platform and infrastructure.
+- By maintaining this model, customers can leverage the underlying security assurance and capabilities that Alibaba cloud provides.
+- Additionally, customers can rest assured that they have full control over the security of their data.
+
+## Security Center
+
+- **Security Center** allows users to secure and monitor diagnostic services.
+- You can use a security center to secure and manage your assets on the cloud.
+- Security Center also enables you to analyze the security situation and detect potential threats by collecting and auditing up to 10 types of security logs, your asset fingerprints and network threats to intelligence.
+- It is a Unified Solution for Server Protection and Security Operations Center.
+
+**The security center is available in three editions.**
+
+**Basic edition** 
+
+- detects unusual log on and server vulnerabilities, and it is available for free.
+
+**Advanced and Enterprise Edition** 
+
+- provides comprehensive security services and they are charged by annual and monthly subscription.
+
+## Anti-DDos
+
+DDoS is short for Distributed Denial of Service.
+
+- The major objective of such attacks is to prevent designate targets from providing normal services.
+- DDoS is currently one of the most powerful and difficult to defend attacks.
+
+
+
+2 Types of Anti-DDoS Web Services
+
+1. **Anti DDoS Basic** 
+   - is a cloud based security service that integrates with Alibaba Cloud ECS instances to safeguard your data and applications from DDoS attacks and provides increased visibility and control over your security measures 
+   - Anti-DDoS Basic enables you to meet stringent security requirements for your cloud hosting architecture without any investment.
+   - The service is available to all Alibaba cloud users free of charge
+2. **Anti-DDoS Pro** 
+   - provides BGP bandwidth resources to help you mitigate massive DDoS attacks at 1 Tbit/s.
+   - You can redirect attack traffic to Anti-DDoS Pro to ensure the stability and availability of origin sites.
+
+## Clod Monitor
+
+- **Cloud Monitor** is a service that collects monitor metrics of Alibaba cloud resources and customer metrics.
+- Provides monitoring for IT facilities as well as network quality and service monitoring based on events, customer metrics and logs.
+- Can be used to detect the availability of your service and allows you to set alarms on specific metrics.
+- Enables you to view and fully understand the usage of the cloud resources and the status and health of your business.
+
+### Cloud Monitoring Features
+
+- Dashboard 
+
+  - allows you to view the monitoring data as needed.
+
+- Application Groups 
+
+  - allows you to group regions and services together to manage their resources.
+
+- Host Monitoring
+
+- Event Nonitoring 
+
+- Customer Monitoring 
+
+- Site Monitor 
+
+- Cloud Service Monitoring 
+
+  - allows you to query the performance indicators of the purchase cloud service instances.
+
+- Alert Service
+
+  - sends alerts when the metric values exceed the pre-configured thresholds.
+  - You can configure alert rules to specify how the alert system checks the monitoring data and when it sends alerts.
+  - By configuring alert rules on important metrics, you can receive a notification immediately after any metric data.
+
+  ### Cloud Monitor Benefits
+
+  - **Seamless integration**
+
+    - You can access cloud monitor immediately after you activate your Alibaba cloud account
+    - Enabling you to view and monitor the running status of cloud products and services and set alarms from the start.
+
+  - **Data visualization**
+
+    - offers a rich array of charts and presentation formats through dashboards, which also supports full screen presentation and automatic data refresh to satisfy all of your metric
+
+  - **Monitoring data processing**
+
+    - Monitor helps to process monitoring data through dashboards based on temporal and spatial dimensions.
+
+  - **Flexible alarms**
+
+    - offers an alarm service where you can set alarm rules and alarm notification methods.
+    - By using the service, you can identify and fix the service exceptions without any delay. Increasing the availability of your products.
+
+## Quiz 7: Clod Security and Monitor Quiz
+
+1. What does DDoS stand for?
+
+   - Deny Distributed of Service
+   - Denial Distributed of Service
+   - Distributed Decouple of Service
+   - **Distributed Denial of Service**
+
+2. Which is currently one of the most powerful and difficult-to-defend attacks?
+
+   - SQL injection
+   - **DDoS**
+   - Brute-force password attack
+   - Cross-site scripting (XSS)
+
+3. Which Alibaba Cloud service safeguards your data and applications from DDoS attacks?
+
+   - DDoS
+   - **Anti-DDoS**
+   - Security Center
+   - Server Guard
+
+4. A SQL injection is a web security vulnerability that allows an attacker to interfere with the queries that an application makes. Which service will be affected by this attack?
+
+   - VPC
+   - OSS
+   - **RDS**
+   - CDN
+
+5. Which Alibaba Cloud service collects monitor metrics of Alibaba Cloud resources and custom metrics?
+
+   - **CloudMonitor**
+   - CloudWatch
+   - Cloud Monitoring Service
+   - Security Center
+
+# Section 9: Exam Preparation
+
+- Do every section quiz until you get 100%
+- Do the exam sample questions until you get 100%
+- Do the practice exam until you get at least 80%
+- This is really the key to pass the exam on the first attempt since the questions in the quizzes are very close to the real exam.
+- Please answer all the questions on the exam. Even if you don't know the answer, since there are no points deducted if you fail.
+- It doesn't matter if you have no clue or if you do not understand the question. Just answer it. Before leaving it blank, 
+- You have enough time, 90 minutes for 50 questions.
+- Flag the questions you are not so sure of. So you can review them later.
+
+## Practice Test 1: Exam Sample Questions
+
+1. A company wants to use Alibaba Cloud service to replace their self-built database, which of the following services should it choose?
+
+   - SLB
+   - ECS
+   - **RDS**
+   - CDN
+
+   #### Explanation
+
+   Apsara for RDS is a relational database service
+
+   
+
+2. Cloud computing facing security threats mainly from: availability, integrity and confidentiality. The following threats will directly impact the availability of cloud computing service: ________ (Number of correct answers: 2)
+
+   - **CC attack(ChallengeCollapsar).**
+   - **Distributed Denial of Service Attack(DDoS).**
+   - Brute-force cracking on server credentials.
+   - Backdoor implantation on web site
+
+3. Alibaba Cloud object storage (Object Storage Service, OSS for short) provides massive, secured, relatively low-cost, and highly reliable cloud storage service. Users can upload and download files to/from OSS via WEB console or API.
+
+   - **True**
+   - False
+
+4. When using Alibaba Cloud SLB, you can set different weights for backend ECS instances. The higher the weight of a backend ECS instance, the more load will be assigned to it. If an SLB instance has 5 ECS instances in the backend server pool, all of which are healthy. Among these 5 ECS instances, the weight of ecs_inst1 is set to 100. Which of the following statements is correct?
+
+   - Based on SLB's working mechanism, approximately 20% of loads will be assigned to ecs_inst1.
+   - Based on request level parameters of external requests, all requests with a request level parameter of 100 will be transferred to ecs_inst1.
+   - 100% of loads will be assigned to ecs_inst1, and the rest 4 ECS instances will stay idle
+   - **We do not know the weight settings of the remaining 4 ECS instances, so we cannot tell what would happen**
+
+5. Cloud disks provide a secure storage method to ensure that your stored content will not be lost. However, if the data stored on a cloud disk is incorrect due to an application error, or the data is maliciously tampered by hackers through an application vulnerability, snapshots ensure that your data can be restored to the desired state.
+
+   - False
+   - **True**
+
+6. Alibaba Cloud OSS is a cloud storage service that features massive capacity, outstanding security, low cost, and high reliability. To store files in OSS, you must create a bucket and then upload and manage files in the bucket. Which of the following statements are true for buckets? (Number of correct answers: 3)
+
+   - During bucket creation, you have to specify the maximum capacity.
+   - **Data transfers to your buckets are made over SSL and can be encrypted.**
+   - **Bucket names must be globally unique throughout the OSS and cannot be changed once created.**
+   - **Each user can have multiple buckets.**
+
+   #### Explanation
+
+   There is no capacity limit in OSS
+
+7. Auto Scaling can automatically remove unhealthy ECS instances from the scaling group (this feature is called Elastic Self-Health). Yet, after removal, the user has to manually add equivalent amount of new ECS instances back to the scaling group
+
+   - **False**
+   - True
+
+   #### Explanation
+
+   You do not need to add it manually, it happens automatically.
