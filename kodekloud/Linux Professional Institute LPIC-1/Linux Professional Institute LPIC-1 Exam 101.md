@@ -437,3 +437,297 @@
 
 
 ## GNU AND UNIX COMMANDS
+
+## QUIZ: WORK ON THE COMMAND LINE PART 1
+
+1. Which command is used to search the short description of man pages for keywords?
+
+   - find
+
+   - **apropos**
+
+   - grep
+
+   - cat
+
+2. To create an empty file named emptyfile in the current working directory, which command would you use?
+
+   - echo emptyfile
+
+   - **touch emptyfile**
+
+   - new emptyfile
+
+   - blank emptyfile
+
+3. Which command will cause Bash to print the path of the current directory?
+
+   - **pwd**
+
+   - cwd
+
+   - whereami
+
+   - which directory
+
+4. If you are unsure of the location of an executable mycommand on a Linux system, how would you find it?
+
+   - whereis mycommand
+
+   - **which mycommand**
+
+   - find mycommand
+
+   - fetch mycommand
+
+5. Before the apropos command will work on a new system, it may be necessary to run another command first. Which command would you run to make sure apropos has access to all of the information it needs?
+
+   - mandb
+
+   - dbupdate
+
+   - apropos -update
+
+   - **updatedb**
+
+
+
+## QUIZ: WORK ON THE COMMAND LINE PART 2
+
+1. You have set a variable called kodekloud using the export command. Which command would print the value of the kodekloud variable?
+
+   - echo kodekloud
+
+   - print kodekloud
+
+   - **echo $kodekloud**
+
+   - read $kodekloud
+
+2. The _____ command can be used to assign values to environment variables for the current shell session.
+
+   - import
+
+   - env
+
+   - echo
+
+   - **export**
+
+3. The _____ command will print a list of all current environment variables.
+
+   - import
+
+   - **env**
+
+   - export
+
+   - path
+
+4. Which command would return the list of directories used by the shell to find executable commands?
+
+   - **echo $PATH**
+
+   - print $PATH
+
+   - pwd $PATH
+
+   - read $PATH
+
+5. The _____ command can be used to clear environment variables for the current shell session.
+
+   - import
+
+   - clear
+
+   - **unset**
+
+   - echo
+
+
+
+## QUIZ: PROCESS TEXT STREAMS USING FILTERS
+
+1. Which command can be used to search file content using regular expression patterns?
+
+   - find
+
+   - **grep**
+
+   - search
+
+   - read
+
+2. Which command sequence would put the contents of a text file named myfile.txt in alphabetical order and remove all duplicates? Select all that apply.
+
+   - **sort myfile.txt | uniq**
+
+   - **uniq myfile.txt | sort**
+
+   - sed -i -s ‘duplicates//g’ myfile.txt && sort myfile.txt
+
+   - sort myfile.txt | sed -s ‘duplicates//g’
+
+3. The _____ command will print the contents of a text file to standard output.
+
+   - grep
+
+   - **cat**
+
+   - wc
+
+   - print
+
+4. The _____ command can be used to perform search and replace operations on text files.
+
+   - **sed**
+
+   - substitute
+
+   - grep
+
+   - find
+
+5. Which command can be used to print only the desired field from text?
+
+   - grep
+
+   - find
+
+   - sed
+
+   - **cut**
+
+
+
+
+
+## QUIZ: PERFORM BASIC FILE MANAGEMENT PART 1
+
+1. Which command can be used to rename an existing file or directory?
+
+   - cp
+
+   - ls
+
+   - touch
+
+   - **mv**
+
+2. To remove a directory called mydir along with all of its files and subdirectories, which command would you use?
+
+   - rm mydir
+
+   - rm -R mydir
+
+   - rm mydir/*
+
+   - **rm -rf mydir**
+
+3. Which command(s) would list all of the files in the current directory that start with the word “file” followed by one number and .txt?
+
+   - **ls file[0-9].txt**
+
+   - ls | grep ‘file*.txt’
+
+   - **ls | grep ‘file[0-9].txt’**
+
+   - ls file*.txt
+
+4. Which option(s) would you use with the ls command to print file sizes in human readable format?
+
+   - ls -h
+
+   - ls -l --human
+
+   - ls --human
+
+   - **ls -lh**
+
+5. Which option can be used with ls to show hidden files?
+
+   - -h
+
+   - **-a**
+
+   - –hidden
+
+   - -?
+
+
+
+## QUIZ: PERFORM BASIC FILE MANAGEMENT PART 2
+
+1. Which command would take the contents of the /home/kodekloud/ directory and create a gzipped tar archive of the contents in a file called kodekloud.tar.gz?
+
+   - tar -cvf kodekloud.tar.gz /home/kodekloud/
+
+   - tar -czvf /home/kodekloud/ kodekloud.tar.gz
+
+   - tar -cvf /home/kodekloud/ kodekloud.tar.gz
+
+   - **tar -czvf kodekloud.tar.gz /home/kodekloud/**
+
+2. Which of the following commands could be used to back up an entire disk, including its filesystem?
+
+   - **dd**
+
+   - cpio
+
+   - gzip
+
+   - tar
+
+3. Which option(s) would you use with tar to extract the archive located at /home/kodekloud/archive.tar.gz?
+
+   - xfz
+
+   - cfvz
+
+   - cvf
+
+   - **xf**
+
+4. Which command could be used to create an archive named backup.cpio containing all of the files and directories in the current working directory?
+
+   - cpio -o > backup.cpio
+
+   - **ls | cpio -o > backup.cpio**
+
+   - cpio * > backup.cpio
+
+   - cpio -o * > backup.cpio
+
+5. Which of the following find command would find files in the current directory that have an extension of .bak and are larger than 1 gigabyte?
+
+   - **find . -name *.bak -size +1G**
+
+   - find . -name *.bak -size =1G+
+
+   - find pwd -name *.bak -size -1G
+
+   - find . -name *.back -size 1G
+
+
+
+## QUIZ: USE STREAMS, PIPES, AND REDIRECTS PART 1
+
+1. Which of the following would search the contents of the /etc/ directory for the pattern “kodekloud” and write only the errors to a file a /home/kodekloud/errors.list?
+
+   - grep -r ‘kodekloud’ /etc/ > /home/kodekloud/errors.list
+
+   - **grep -r ‘kodekloud’ /etc/ 2> /home/kodekloud/errors.list**
+
+   - grep -r ‘kodekloud’ /etc/ 2>&1 /home/kodekloud/errors.list
+
+   - grep -r ‘kodekloud’ /etc/ 1> /home/kodekloud/errors.list
+
+2. Which command would search the /etc/ directory for the pattern “kodekloud” and redirect all output (stdout and stderr) to the file at /home/kodekloud/output.list?
+
+   - grep -r ‘kodekloud’ /etc/ 2>&1 /home/kodekloud/output.list
+
+   - grep -r ‘kodekloud’ /etc/ 2> /home/kodekloud/output.list
+
+   - grep -r ‘kodekloud’ /etc/ > /home/kodekloud/output.list
+
+   - grep -r ‘kodekloud’ /etc/ 1> /home/kodekloud/output.list
