@@ -724,10 +724,92 @@
 
 2. Which command would search the /etc/ directory for the pattern “kodekloud” and redirect all output (stdout and stderr) to the file at /home/kodekloud/output.list?
 
-   - grep -r ‘kodekloud’ /etc/ 2>&1 /home/kodekloud/output.list
+   - **grep -r ‘kodekloud’ /etc/ 2>&1 /home/kodekloud/output.list**
 
    - grep -r ‘kodekloud’ /etc/ 2> /home/kodekloud/output.list
 
    - grep -r ‘kodekloud’ /etc/ > /home/kodekloud/output.list
 
    - grep -r ‘kodekloud’ /etc/ 1> /home/kodekloud/output.list
+
+3. Which operator can be used to append text to a file, without overwriting the existing contents?
+
+   - <
+
+   - <<
+
+   - **\>\>**
+
+   - \>
+
+4. Which operator would be used to designate a herestring?
+
+   - <<<<
+
+   - **<<<**
+
+   - <<
+
+   - <
+
+5. Which symbol(s) would be used to specify a stdout redirect? Select all that apply.
+
+   - 0>
+   - **none**
+
+   - **1>**
+
+   - 2>
+
+
+## QUIZ: USE STREAMS, PIPES, AND REDIRECTS PART 2
+
+1. _____ is an intermediary program used to pass the output from one program as arguments to another program.
+
+   - **xargs**
+
+   - xinput
+
+   - xout
+
+   - xin
+
+2. Which operator(s) can be used for command substitution? Select all that apply.
+
+   - **$()**
+
+   - **``**
+
+   - %{}
+
+   - “”
+
+3. The output of _____ is passed as an argument to _____ by xargs in the following command: ps -ef | grep ‘httpd’ | xargs kill
+
+   - ps to kill
+
+   - httpd to kill
+
+   - ps to grep
+
+   - **grep to kill**
+
+4. The standard operator used to pass the output of one program to the input of another is:
+
+   - @
+
+   - **|**
+
+   - %
+
+   - &
+
+5. Given that the “whoami” command prints the current user’s username, what would be the result of the following command: rm -rf /home/$(whoami)
+
+   - Nothing; this is not a valid command
+
+   - It would delete the directory /home/whoami
+
+   - **It would delete the user’s home directory**
+
+   - An endless loop
