@@ -1545,7 +1545,7 @@ Please follow the subsequent instructions very carefully as SFTP is very strict 
 ```
 
 ```
-# sed -e 's/oldserver.com/newserver.com/g' oldmysqldump.sql > newmysqldump.sql
+# sed -e "s/learn.doh.gov.ph/35.201.175.2/g" doh-lms-db-02232023.sql > doh-lms-db-02232023-new.sql
 ```
 
 
@@ -1657,3 +1657,16 @@ openssl req -text -noout -verify -in server.csr
 ```
 
 #### Verify a certificate and key matches
+
+
+
+
+
+## Change user permissions via MySQL in Moodle
+
+```
+select id, username from mdl_user where username='mybusybeeadmin';
+
+
+```
+

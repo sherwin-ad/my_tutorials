@@ -1,0 +1,545 @@
+NAME: centos-7-v20220126
+PROJECT: centos-cloud
+FAMILY: centos-7
+DEPRECATED: 
+STATUS: READY
+
+NAME: centos-stream-8-v20220128
+PROJECT: centos-cloud
+FAMILY: centos-stream-8
+DEPRECATED: 
+STATUS: READY
+
+NAME: cos-85-13310-1416-5
+PROJECT: cos-cloud
+FAMILY: cos-85-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: cos-89-16108-604-11
+PROJECT: cos-cloud
+FAMILY: cos-89-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: cos-93-16623-102-12
+PROJECT: cos-cloud
+FAMILY: cos-93-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: cos-beta-93-16623-39-6
+PROJECT: cos-cloud
+FAMILY: cos-beta
+DEPRECATED: 
+STATUS: READY
+
+NAME: debian-10-buster-v20220118
+PROJECT: debian-cloud
+FAMILY: debian-10
+DEPRECATED: 
+STATUS: READY
+
+NAME: debian-11-bullseye-v20220120
+PROJECT: debian-cloud
+FAMILY: debian-11
+DEPRECATED: 
+STATUS: READY
+
+NAME: debian-9-stretch-v20220118
+PROJECT: debian-cloud
+FAMILY: debian-9
+DEPRECATED: 
+STATUS: READY
+
+NAME: fedora-cloud-base-gcp-33-1-2-x86-64
+PROJECT: fedora-cloud
+FAMILY: fedora-cloud-33
+DEPRECATED: 
+STATUS: READY
+
+NAME: fedora-cloud-base-gcp-34-1-2-x86-64
+PROJECT: fedora-cloud
+FAMILY: fedora-cloud-34
+DEPRECATED: 
+STATUS: READY
+
+NAME: fedora-cloud-base-gcp-35-1-2-x86-64
+PROJECT: fedora-cloud
+FAMILY: fedora-cloud-35
+DEPRECATED: 
+STATUS: READY
+
+NAME: opensuse-leap-15-2-v20200702
+PROJECT: opensuse-cloud
+FAMILY: opensuse-leap
+DEPRECATED: 
+STATUS: READY
+
+NAME: opensuse-leap-15-3-v20220128
+PROJECT: opensuse-cloud
+FAMILY: opensuse-leap
+DEPRECATED: 
+STATUS: READY
+
+NAME: rhel-7-v20220126
+PROJECT: rhel-cloud
+FAMILY: rhel-7
+DEPRECATED: 
+STATUS: READY
+
+NAME: rhel-8-v20220126
+PROJECT: rhel-cloud
+FAMILY: rhel-8
+DEPRECATED: 
+STATUS: READY
+
+NAME: rhel-7-6-sap-v20220126
+PROJECT: rhel-sap-cloud
+FAMILY: rhel-7-6-sap-ha
+DEPRECATED: 
+STATUS: READY
+
+NAME: rhel-7-7-sap-v20220126
+PROJECT: rhel-sap-cloud
+FAMILY: rhel-7-7-sap-ha
+DEPRECATED: 
+STATUS: READY
+
+NAME: rhel-7-9-sap-v20220126
+PROJECT: rhel-sap-cloud
+FAMILY: rhel-7-9-sap-ha
+DEPRECATED: 
+STATUS: READY
+
+NAME: rhel-8-1-sap-v20220126
+PROJECT: rhel-sap-cloud
+FAMILY: rhel-8-1-sap-ha
+DEPRECATED: 
+STATUS: READY
+
+NAME: rhel-8-2-sap-v20220126
+PROJECT: rhel-sap-cloud
+FAMILY: rhel-8-2-sap-ha
+DEPRECATED: 
+STATUS: READY
+
+NAME: rhel-8-4-sap-v20220126
+PROJECT: rhel-sap-cloud
+FAMILY: rhel-8-4-sap-ha
+DEPRECATED: 
+STATUS: READY
+
+NAME: rocky-linux-8-v20220126
+PROJECT: rocky-linux-cloud
+FAMILY: rocky-linux-8
+DEPRECATED: 
+STATUS: READY
+
+NAME: sles-12-sp5-v20220126
+PROJECT: suse-cloud
+FAMILY: sles-12
+DEPRECATED: 
+STATUS: READY
+
+NAME: sles-15-sp3-v20220223
+PROJECT: suse-cloud
+FAMILY: sles-15
+DEPRECATED: 
+STATUS: READY
+
+NAME: sles-12-sp3-sap-v20220201
+PROJECT: suse-sap-cloud
+FAMILY: sles-12-sp3-sap
+DEPRECATED: 
+STATUS: READY
+
+NAME: sles-12-sp4-sap-v20220201
+PROJECT: suse-sap-cloud
+FAMILY: sles-12-sp4-sap
+DEPRECATED: 
+STATUS: READY
+
+NAME: sles-12-sp5-sap-v20220126
+PROJECT: suse-sap-cloud
+FAMILY: sles-12-sp5-sap
+DEPRECATED: 
+STATUS: READY
+
+NAME: sles-15-sap-v20220126
+PROJECT: suse-sap-cloud
+FAMILY: sles-15-sap
+DEPRECATED: 
+STATUS: READY
+
+NAME: sles-15-sp1-sap-v20220126
+PROJECT: suse-sap-cloud
+FAMILY: sles-15-sp1-sap
+DEPRECATED: 
+STATUS: READY
+
+NAME: sles-15-sp2-sap-v20220126
+PROJECT: suse-sap-cloud
+FAMILY: sles-15-sp2-sap
+DEPRECATED: 
+STATUS: READY
+
+NAME: sles-15-sp3-sap-v20220223
+PROJECT: suse-sap-cloud
+FAMILY: sles-15-sp3-sap
+DEPRECATED: 
+STATUS: READY
+
+NAME: ubuntu-1804-bionic-v20220213
+PROJECT: ubuntu-os-cloud
+FAMILY: ubuntu-1804-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: ubuntu-pro-1604-xenial-v20211213
+PROJECT: ubuntu-os-pro-cloud
+FAMILY: ubuntu-pro-1604-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: ubuntu-pro-1804-bionic-v20220131
+PROJECT: ubuntu-os-pro-cloud
+FAMILY: ubuntu-pro-1804-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: ubuntu-pro-2004-focal-v20220204
+PROJECT: ubuntu-os-pro-cloud
+FAMILY: ubuntu-pro-2004-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2012-r2-dc-core-v20220210
+PROJECT: windows-cloud
+FAMILY: windows-2012-r2-core
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2012-r2-dc-v20220210
+PROJECT: windows-cloud
+FAMILY: windows-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2016-dc-core-v20220210
+PROJECT: windows-cloud
+FAMILY: windows-2016-core
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2012-enterprise-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2012-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2012-standard-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2012-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2012-web-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2012-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2014-enterprise-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2014-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2014-enterprise-windows-2016-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2014-win-2016
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2014-standard-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2014-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2014-web-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2014-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: cos-dev-97-16882-0-0
+PROJECT: cos-cloud
+FAMILY: cos-dev
+DEPRECATED: 
+STATUS: READY
+
+NAME: cos-stable-93-16623-102-12
+PROJECT: cos-cloud
+FAMILY: cos-stable
+DEPRECATED: 
+STATUS: READY
+
+NAME: ubuntu-2004-focal-v20220204
+PROJECT: ubuntu-os-cloud
+FAMILY: ubuntu-2004-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: ubuntu-2110-impish-v20220204
+PROJECT: ubuntu-os-cloud
+FAMILY: ubuntu-2110
+DEPRECATED: 
+STATUS: READY
+
+NAME: ubuntu-minimal-1804-bionic-v20220208
+PROJECT: ubuntu-os-cloud
+FAMILY: ubuntu-minimal-1804-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: ubuntu-minimal-2004-focal-v20220203
+PROJECT: ubuntu-os-cloud
+FAMILY: ubuntu-minimal-2004-lts
+DEPRECATED: 
+STATUS: READY
+
+NAME: ubuntu-minimal-2110-impish-v20220203
+PROJECT: ubuntu-os-cloud
+FAMILY: ubuntu-minimal-2110
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2016-dc-v20220210
+PROJECT: windows-cloud
+FAMILY: windows-2016
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2019-dc-core-for-containers-v20220211
+PROJECT: windows-cloud
+FAMILY: windows-2019-core-for-containers
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2019-dc-core-v20220210
+PROJECT: windows-cloud
+FAMILY: windows-2019-core
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2019-dc-for-containers-v20220211
+PROJECT: windows-cloud
+FAMILY: windows-2019-for-containers
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2019-dc-v20220210
+PROJECT: windows-cloud
+FAMILY: windows-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2022-dc-core-v20220215
+PROJECT: windows-cloud
+FAMILY: windows-2022-core
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-2022-dc-v20220215
+PROJECT: windows-cloud
+FAMILY: windows-2022
+DEPRECATED: 
+STATUS: READY
+
+NAME: windows-server-20h2-dc-core-v20220210
+PROJECT: windows-cloud
+FAMILY: windows-20h2-core
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2016-enterprise-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2016-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2016-enterprise-windows-2016-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2016-win-2016
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2016-enterprise-windows-2019-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2016-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2016-standard-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2016-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2016-standard-windows-2016-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2016-win-2016
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2016-standard-windows-2019-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2016-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2016-web-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2016-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2016-web-windows-2016-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2016-win-2016
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2016-web-windows-2019-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2016-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: fedora-coreos-35-20220131-3-0-gcp-x86-64
+PROJECT: fedora-coreos-cloud
+FAMILY: fedora-coreos-stable
+DEPRECATED: 
+STATUS: READY
+
+NAME: fedora-coreos-35-20220213-1-0-gcp-x86-64
+PROJECT: fedora-coreos-cloud
+FAMILY: fedora-coreos-next
+DEPRECATED: 
+STATUS: READY
+
+NAME: fedora-coreos-35-20220213-2-0-gcp-x86-64
+PROJECT: fedora-coreos-cloud
+FAMILY: fedora-coreos-testing
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-enterprise-windows-2016-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2017-win-2016
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-enterprise-windows-2019-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2017-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-enterprise-windows-2022-dc-v20220216
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2017-win-2022
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-express-windows-2012-r2-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-exp-2017-win-2012-r2
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-express-windows-2016-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-exp-2017-win-2016
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-express-windows-2019-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-exp-2017-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-standard-windows-2016-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2017-win-2016
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-standard-windows-2019-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2017-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-standard-windows-2022-dc-v20220216
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2017-win-2022
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-web-windows-2016-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2017-win-2016
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-web-windows-2019-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2017-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2017-web-windows-2022-dc-v20220216
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2017-win-2022
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2019-enterprise-windows-2019-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2019-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2019-enterprise-windows-2022-dc-v20220216
+PROJECT: windows-sql-cloud
+FAMILY: sql-ent-2019-win-2022
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2019-standard-windows-2019-dc-v20220210
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2019-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2019-standard-windows-2022-dc-v20220216
+PROJECT: windows-sql-cloud
+FAMILY: sql-std-2019-win-2022
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2019-web-windows-2019-dc-v20220211
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2019-win-2019
+DEPRECATED: 
+STATUS: READY
+
+NAME: sql-2019-web-windows-2022-dc-v20220216
+PROJECT: windows-sql-cloud
+FAMILY: sql-web-2019-win-2022
+DEPRECATED: 
+STATUS: READY
