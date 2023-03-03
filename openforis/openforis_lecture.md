@@ -195,3 +195,25 @@ This will grant access to any system in the **192.168.0.\*** range of IP address
 You can change the IP address to a specific range for your intranet. Alternately, you can use the IP address of a single system.
 
 The **asterisk** acts as a wildcard to allow multiple IP addresses. Granting full access can leave security vulnerabilities. Instead, enable only systems with a business need to access Tomcat.
+
+
+
+## Build openforis
+
+```
+git clone https://github.com/MYBUSYBEEINC/jhmc-efmis
+
+# Build
+mvn -DargLine="--add-opens java.base/java.lang=ALL-UNNAMED" clean install -DskipTests
+```
+
+```
+cd collect-webapp/target
+
+sudo cp collect.war /opt/tomcat/webapps/
+```
+
+```
+
+```
+

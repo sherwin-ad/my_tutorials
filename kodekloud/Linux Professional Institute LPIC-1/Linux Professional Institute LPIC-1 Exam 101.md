@@ -438,7 +438,7 @@
 
 ## GNU AND UNIX COMMANDS
 
-## QUIZ: WORK ON THE COMMAND LINE PART 1
+### QUIZ: WORK ON THE COMMAND LINE PART 1
 
 1. Which command is used to search the short description of man pages for keywords?
 
@@ -492,7 +492,7 @@
 
 
 
-## QUIZ: WORK ON THE COMMAND LINE PART 2
+### QUIZ: WORK ON THE COMMAND LINE PART 2
 
 1. You have set a variable called kodekloud using the export command. Which command would print the value of the kodekloud variable?
 
@@ -546,7 +546,7 @@
 
 
 
-## QUIZ: PROCESS TEXT STREAMS USING FILTERS
+### QUIZ: PROCESS TEXT STREAMS USING FILTERS
 
 1. Which command can be used to search file content using regular expression patterns?
 
@@ -602,7 +602,7 @@
 
 
 
-## QUIZ: PERFORM BASIC FILE MANAGEMENT PART 1
+### QUIZ: PERFORM BASIC FILE MANAGEMENT PART 1
 
 1. Which command can be used to rename an existing file or directory?
 
@@ -656,7 +656,7 @@
 
 
 
-## QUIZ: PERFORM BASIC FILE MANAGEMENT PART 2
+### QUIZ: PERFORM BASIC FILE MANAGEMENT PART 2
 
 1. Which command would take the contents of the /home/kodekloud/ directory and create a gzipped tar archive of the contents in a file called kodekloud.tar.gz?
 
@@ -710,7 +710,7 @@
 
 
 
-## QUIZ: USE STREAMS, PIPES, AND REDIRECTS PART 1
+### QUIZ: USE STREAMS, PIPES, AND REDIRECTS PART 1
 
 1. Which of the following would search the contents of the /etc/ directory for the pattern “kodekloud” and write only the errors to a file a /home/kodekloud/errors.list?
 
@@ -762,7 +762,7 @@
    - 2>
 
 
-## QUIZ: USE STREAMS, PIPES, AND REDIRECTS PART 2
+### QUIZ: USE STREAMS, PIPES, AND REDIRECTS PART 2
 
 1. _____ is an intermediary program used to pass the output from one program as arguments to another program.
 
@@ -813,3 +813,158 @@
    - **It would delete the user’s home directory**
 
    - An endless loop
+
+
+
+### QUIZ: CREATE, MONITOR AND KILL PROCESSES
+
+1. To view dynamically updated information on system processes and resources, we can use the _____ command.
+
+   - ps
+
+   - jobs
+
+   - uptime
+
+   - **top**
+
+2. To bring a job with job ID 1 from the background to the foreground, which command could we run?
+
+   - fg $1
+
+   - **fg %1**
+
+   - bg %1
+
+   - bg $1
+
+3. To modify a the priority of an existing process, we can use the _____ command.
+
+   - top
+
+   - **renice**
+
+   - ps
+
+   - nice
+
+4. True or false: A regular user can only lower the process niceness one time.
+
+   - False
+
+   - **True**
+
+5. To set the priority for a process when it is run, we can use the _____ command.
+
+   - top
+
+   - ps
+
+   - renice
+
+   - **nice**
+
+6. To view processes which have been sent to the background, we can use the _____ command.
+
+   - **jobs**
+
+   - fg
+
+   - cron
+
+   - bg
+
+7. To run a command detached from the current session, we can use the _____ command.
+
+   - SIGTERM
+
+   - jobs
+
+   - bg
+
+   - **nohup**
+
+8. Which command(s) can we use to view the priority of a process that is already running? Select all that apply.
+
+   - **ps**
+
+   - renice
+
+   - nice
+
+   - **top**
+
+9. To get detailed information about a process when we already have the PID (process ID), we can use the _____ command.
+
+   - **ps**
+
+   - pgrep
+
+   - proc
+
+   - pkill
+
+10. Which user account(s) can lower the niceness of a process to a value less than zero? Select all that apply.
+
+    - only the user who started the process
+
+    - normal users
+
+    - **the root user**
+
+    - **any user with sudo access**
+
+
+
+
+
+### QUIZ: GNU SCREEN AND TMUX
+
+1.  The _____ terminal multiplexer uses a client-server model.
+
+   - GNU screen
+
+   - **tmux**
+
+2. The default configuration file for GNU screen is located at _____.
+
+   - **/etc/screenrc**
+
+   - /etc/screen/screenrc
+
+   - /etc/screen/conf/screenrc
+
+   - /etc/screen.conf.d/screenrc
+
+3. The default command prefix for GNU screen is:
+
+   - CTRL + b
+
+   - CTRL + v
+
+   - **CTRL + a**
+
+   - CTRL + s
+
+4. The default command prefix for tmux is:
+
+   - CTRL + s
+
+   - CTRL + v
+
+   - **CTRL + b**
+
+   - CTRL + a
+
+5. The default configuration file for tmux is located at _____.
+
+   - /etc/tmux.conf.d/tmux.conf
+
+   - /etc/tmux/conf/tmux.conf
+
+   - **/etc/tmux.conf**
+
+   - /etc/conf/tmux.conf
+
+6. 
+

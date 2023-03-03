@@ -513,16 +513,14 @@ However, there are some restrictions to keep in mind:
 
 **3 types of disk images** 
 
-1. System Images (Public Images)
-
+1. **System Images** (Public Images)
    - Public images are Alibaba cloud provided images of Linux and Windows.
    - This is the default option if you do not choose any image.
-
-2. Marketplace Images
-
+   
+2. **Marketplace Images**
    - Alibaba cloud provided third party images with some software or value added services pre-installed 
-
-3. User-defined Images (Custom Image):
+   
+3. **User-defined Images** (Custom Image):
    - A user defined images created from the system disk snapshot of an ECS instance. 
    - These images are the basis of the auto scaling service.
 
@@ -540,23 +538,22 @@ However, there are some restrictions to keep in mind:
 
 **3 Essential Components of a VPC**
 
-1. Vswitches
-
+1. **Vswitches**
    - VSwitches is a basic network device that connects different cloud resources in a VPC.
-
+   
    - You can create one or more subnets in the VPC by creating V switches.
-
+   
    - The Vswitches within a VPC are interconnected.
-
+   
    - You can deploy your applications in these switches that belong to different zones to improve service availability.
-
+   
    - Each Vswitch can only be associated with one route table 
-
-2. Vrouter 
+   
+2. **Vrouter** 
    - is a hub that connects all Vswitches in a VPC and serves as a gateway between the VPC and other networks.
    - After VPC is created, a router is automatically created for the VPC.
    - Each Vrouter is associated with a route table.
-3. Route Table 
+3. **Route Table** 
    - is a list of route entries in a VPC.
    - The network traffic routed is based on the configurations of the route entries in the route table
    - A route entry specifies the destination of traffic 
@@ -723,7 +720,7 @@ Automatically scale your ECS fleet:
 
 The next four points are important to know before taking the exam.
 
-- Routing forwarding rules are defined on liisteners
+- Routing forwarding rules are defined on listeners
 - Session stickiness (session persistence) is set at the listener level.
 
 - Health check configurations are done at listener level.
@@ -962,7 +959,7 @@ The next four points are important to know before taking the exam.
 
 - **Scaling trigger tasks** are tasks that trigger scaling rule such as scheduled tasks and Cloud Monitor alert tasks.
 
-## Quiz 4: AutoScaling QuiZ
+## Quiz 4: Auto Scaling QuiZ
 
 1. A company wants to use an Alibaba Cloud service to automatically scale the ECS instances fleet, which of the following services should it choose?
    - SLB
@@ -1081,11 +1078,11 @@ Some features of the RDS backup are:
 
 3 ways to recover data in RDS
 
-1. Master node rollback
+1. **Master node rollback**
    - used to restore a node to the state that it was in at a specific point in time.
-2. Slave node repair 
+2. **Slave node repair** 
    - used to automatically create a new slave node to reduce risks when an irreparable failure occurs to the slave node.
-3. Temporary instance (recommended)
+3. **Temporary instance** (recommended)
    - You can create a temporary instance with your backup and migrate data to the for master instance
    - Valid for 48 hours 
    - Only one temporary instance can be generated at the same time.
@@ -1096,7 +1093,7 @@ Some features of the RDS backup are:
 
 ### RDS Read-only instances 
 
-- **Read-only instances** are instances that you can directly attached to RDF in order to distribute the read pressure on the master.
+- **Read-only instances** are instances that you can directly attached to RDS in order to distribute the read pressure on the master.
 - Instance, this feature is only supported for MySQL
 - If a large volume of read requests overwhelm the primary instance, your business may be interrupted.
 - Each read-only instance has an independent connection string and the read pressure can be automatically distributed on the application side.
@@ -1106,9 +1103,9 @@ Some features of the RDS backup are:
 
 ### RDS Migration Service
 
-- Iigrate data from a local database to ApsaraDB or migrate an AbsaraDB instance to another instance.
+- Iigrate data from a local database to ApsaraDB or migrate an ApsaraDB instance to another instance.
 
-**Data transfer service** **(DTG)** is an ApsaraDB tool to facilitate quick database migration
+**Data transfer service** **(DTS)** is an ApsaraDB tool to facilitate quick database migration
 
 **3 migration modes**
 
@@ -1319,9 +1316,9 @@ RDS provides easy and various options to monitor various RDBMS metrics.
 
 - It can be configured doing the bucket creation and can also be modified after bucket creation.
 - Bucket ACL can be: 
-  - private 
-  - public read 
-  - public read/write
+  - **private** 
+  - **public read** 
+  - **public read/write**
 
 **Check bucket information.**
 
@@ -1357,9 +1354,9 @@ RDS provides easy and various options to monitor various RDBMS metrics.
 **Delete file**
 
 - 3 methods to delete a file:
-  - Delete a single file at a time
-  - Delete multiple files at a time (supports 1000 objects a a time)
-  - Auto delete files according to predefined lifecycle policies
+  - **Delete a single file at a time**
+  - **Delete multiple files at a time (supports 1000 objects a a time)**
+  - **Auto delete files according to predefined lifecycle policies**
 
 
 
@@ -1447,13 +1444,13 @@ OSS Anti-leech prevents from being leached based on HTTP headers.
 
 ### Logs and Monitoring
 
-**Query access logs**
+**1. Query access logs**
 
 - A large number of logs are generated when OSS resources are accessed.
 
 - After you enable and configure logging for a bucket, an object with a specified prefix is generated on an hourly basis to record access logs of the bucket.
 
-**Query logs in real time**
+**2. Query logs in real time**
 
 - Real time log query integrates OSS with Log Service. 
 - This feature allows you to query and collect statics on:
@@ -1462,7 +1459,7 @@ OSS Anti-leech prevents from being leached based on HTTP headers.
   - Track exception events and 
   - Troubleshoot problems in the OSS console.
 
-**Monitoring**
+**3. Monitoring**
 
 - Monitoring service of OSS provides metrics that describe basic system operating statuses, performance and metering.
 - The monitoring service also provides a customs alert service to help you track requests and analyze usage, collect statistics on business trends and promptly discover and diagnose system problems.
@@ -1538,7 +1535,7 @@ DDoS is short for Distributed Denial of Service.
 
 
 
-2 Types of Anti-DDoS Web Services
+**2 Types of Anti-DDoS Web Services**
 
 1. **Anti DDoS Basic** 
    - is a cloud based security service that integrates with Alibaba Cloud ECS instances to safeguard your data and applications from DDoS attacks and provides increased visibility and control over your security measures 
@@ -1557,27 +1554,27 @@ DDoS is short for Distributed Denial of Service.
 
 ### Cloud Monitoring Features
 
-- Dashboard 
+- **Dashboard** 
 
   - allows you to view the monitoring data as needed.
 
-- Application Groups 
+- **Application Groups** 
 
   - allows you to group regions and services together to manage their resources.
 
-- Host Monitoring
+- **Host Monitoring**
 
-- Event Nonitoring 
+- **Event Monitoring** 
 
-- Customer Monitoring 
+- **Customer Monitoring** 
 
-- Site Monitor 
+- **Site Monitor** 
 
-- Cloud Service Monitoring 
+- **Cloud Service Monitoring** 
 
   - allows you to query the performance indicators of the purchase cloud service instances.
 
-- Alert Service
+- **Alert Service**
 
   - sends alerts when the metric values exceed the pre-configured thresholds.
   - You can configure alert rules to specify how the alert system checks the monitoring data and when it sends alerts.
