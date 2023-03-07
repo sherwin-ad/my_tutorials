@@ -966,5 +966,112 @@
 
    - /etc/conf/tmux.conf
 
-6. 
 
+
+# Devices, Linux Filesystems, Filesystem Hierarchy Standard
+
+
+
+## QUIZ: CREATE PARTITIONS AND FILESYSTEMS
+
+
+
+1. Which command will check a filesystem for errors and repair it if it is offline?
+
+   - sfc
+
+   - fdisk
+
+   - chkdsk
+
+   - **fsck**
+
+2. Which command can be used to determine how much disk space is available?
+
+   - du
+
+   - free
+
+   - **df**
+
+   - diskfree
+
+3. Which command can be used to show how much space is currently taken up on a disk and display that output in human-readable format?
+
+   - free -h
+
+   - diskfree -h
+
+   - df -h
+
+   - **du -h**
+
+4. Which command is used to create filesystems?
+
+   - mkswap
+
+   - fdisk
+
+   - **mkfs**
+
+   - parted
+
+5. The two types of partition tables commonly used in Linux are (select two):
+
+   - BSD
+
+   - **GPT**
+
+   - **MBR**
+
+   - DVH
+
+6. Which of the following are features of BTRFS? Select all that apply.
+
+   - **subvolumes**
+
+   - encryption
+
+   - **snapshots**
+
+   - **compression**
+
+7. Before checking a filesystem for errors and repairing any that are found, you should first use the ____ command on the filesystem to get it ready for this process.
+
+   - **umount**
+
+   - mount
+
+   - xfs_repair
+
+   - fsck
+
+8. Which utility can be used to check and repair XFS filesystems?
+
+   - **xfs_repair**
+
+   - xfs_fsck
+
+   - xfs_fix
+
+   - xfs_check
+
+9. Which command(s) can be used to work with partitio-ns? Select all that apply.
+
+   - **gdisk**
+
+   - **fdisk**
+
+   - **parted**
+
+   - vdisk
+
+10. Which methods can be used on Linux to move memory pages from RAM to the hard disk?
+
+    - disk cache
+
+    - virtual memory
+
+    - **swap partition**
+
+    - **swap file**
