@@ -322,3 +322,119 @@ sudo /etc/init.d/apache2 restart**
 
 
 
+# How to Configure Apache As Reverse Proxy
+
+## Step 1: Setup Apache Proxy Module
+
+By default, this module is enabled in Apache for users who installed using rpm packages. The Debian-based users need to enable modules manually.
+
+- Redhat-based systems: Edit the proxy configuration file
+
+  /etc/httpd/conf.modules.d/00-proxy.conf
+
+  uncomment the following entries. If not available, then add them.
+
+  ```
+  LoadModule proxy_module modules/mod_proxy.so
+  LoadModule proxy_http_module modules/mod_proxy_http.so
+  ```
+
+- Debian-based systems: Use the following command to enable the Proxy module with Apache.
+
+  ```
+  sudo a2enmod proxy proxy_http 
+  ```
+
+After enabling the modules, you will need to restart Apache services to apply changes immediately.
+
+## Step 2: Configure Apache Virtual Host
+
+Now will start working with the virtual host. We are creating three virtual hosts as below. You create only what is required with needed modifications. Edit Apache’s main configuration file and start with the configuration.
+
+- #### First Virtual Host Example:
+
+- To forward all requests sent to example.com to backend tomcat server corresponding application like:
+
+- - http://example.com >> http://localhost:8080/demo1/
+
+- Configure the first virtual host as below:
+
+- ```
+  <VirtualHost *:80>
+      ServerName example.com
+   
+      ProxyRequests On
+      ProxyPass / http://localhost:8080/demo1/
+      ProxyPassReverse / http://localhost:8080/demo1/
+   
+  </VirtualHost>
+  ```
+
+- #### Second Virtual Host Example:
+
+- To forward all requests sent to example.net to backend tomcat server corresponding application like:
+
+- - http://example.net >> http://localhost:8080/demo2/
+
+- Configure a virtual host like this.
+
+- ```
+  <VirtualHost *:80>
+      ServerName example.net
+   
+      ProxyRequests On
+      ProxyPass / http://localhost:8080/demo2/
+      ProxyPassReverse / http://localhost:8080/demo2/
+   
+  </VirtualHost>
+  ```
+
+- 
+
+- #### Third Virtual Host Example:
+
+- To forward all requests sent to subdirectory /demo1/ or /demo2 on http://domain.com to back-end tomcat corresponding applications like:
+
+- - http://domain.com/demo1/ >> http://localhost:8080/demo1/
+  - http://domain.com/demo2/ >> http://localhost:8080/demo2/
+
+- Configure a virtual host like this.
+
+- ```
+  <VirtualHost *:80>
+      ServerName domain.com
+   
+      ProxyRequests On
+      ProxyPass /demo1 http://localhost:8080/demo1/
+      ProxyPassReverse /demo1 http://localhost:8080/demo1/
+   
+      ProxyPass /demo2 http://localhost:8080/demo2/
+      ProxyPassReverse /demo2 http://localhost:8080/demo2/
+   
+      <Location "/demo1">
+          Required granted all
+      </Location>
+      <Location "/demo2">
+          Required granted all
+      </Location>
+  </VirtualHost>
+  ```
+
+- 
+
+## Step 3: Restart Apache to Apply Changes
+
+Once you have successfully created Apache virtual host, you need to restart the Apache service. Use the following commands to restart the Apache service based on the operating system.
+
+- Redhat-based systems:
+
+  ```
+  sudo systemctl restart httpd 
+  ```
+
+- Debed-based systems:
+
+  ```
+  sudo systemctl restart apache2 
+  ```
+

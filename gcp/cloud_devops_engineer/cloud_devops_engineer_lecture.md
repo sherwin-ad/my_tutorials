@@ -460,13 +460,28 @@ v1.0: digest: sha256:37ad21e7cf123ae6c72c32c9deb7a622c631343dba9ed1a51019c6723ac
 
 ### Deploy Cloud Functions
 
+- this is the event-driven model.
+- based on some kind of event, you can execute microservice kind of very single task, simple microservices.
 
+1. Create function 
+
+   ![image-20230310172644363](images/image-20230310172644363.png)
+
+2. Runtine select Python3.7 and deploy.
+
+   ![image-20230310172934905](images/image-20230310172934905.png)
+
+   3. Go to trigger tab and click Triger URL
+
+      ![image-20230310173606901](images/image-20230310173606901.png)
+
+      **Triger URL**
+
+      ![image-20230310173803038](images/image-20230310173803038.png)
 
 
 
 ### Deploy app on Google App Engine
-
-
 
 **Check python and flask version**
 
@@ -499,14 +514,351 @@ if __name__ == '__main__':
 **requirements.txt**
 
 ```
-FLASK==2.2.3
+Flask==2.2.3
 ```
 
 **app.yaml**
 
 ```
-runtime: python39
+runtime: python37
 ```
+
+
+
+```
+sherwinowen@cloudshell:~/devops/deploy-app/app-engine (gcp-devops-379408)$ gcloud app deploy
+Services to deploy:
+
+descriptor:                  [/home/sherwinowen/devops/deploy-app/app-engine/app.yaml]
+source:                      [/home/sherwinowen/devops/deploy-app/app-engine]
+target project:              [gcp-devops-379408]
+target service:              [default]
+target version:              [20230310t100650]
+target url:                  [https://gcp-devops-379408.uc.r.appspot.com]
+target service account:      [App Engine default service account]
+
+
+Do you want to continue (Y/n)? Y
+
+Beginning deployment of service [default]...
+Created .gcloudignore file. See `gcloud topic gcloudignore` for details.
+Uploading 3 files to Google Cloud Storage
+33%
+67%
+100%
+100%
+File upload done.
+Updating service [default]...done.     
+Setting traffic split for service [default]...done.     
+Deployed service [default] to [https://gcp-devops-379408.uc.r.appspot.com]
+
+You can stream logs from the command line by running:
+  $ gcloud app logs tail -s default
+
+To view your application in the web browser run:
+  $ gcloud app browse
+```
+
+
+
+```
+sherwinowen@cloudshell:~/devops/deploy-app/app-engine (gcp-devops-379408)$ gcloud app browse
+Did not detect your browser. Go to this link to view your app:
+https://gcp-devops-379408.uc.r.appspot.com
+```
+
+
+
+**Deploy version 2**
+
+**Edit main.py**
+
+```
+from flask import Flask
+
+app = Flask(__name__)
+
+
+@app.route('/')
+def index():
+        return 'Welcome to Python Flask World V2.0'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
+```
+
+Deploy without any traffic to be serve in version 2.0
+
+```
+sherwinowen@cloudshell:~/devops/deploy-app/app-engine (gcp-devops-379408)$ gcloud app deploy --no-promote --version 2
+Services to deploy:
+
+descriptor:                  [/home/sherwinowen/devops/deploy-app/app-engine/app.yaml]
+source:                      [/home/sherwinowen/devops/deploy-app/app-engine]
+target project:              [gcp-devops-379408]
+target service:              [default]
+target version:              [2]
+target url:                  [https://2-dot-gcp-devops-379408.uc.r.appspot.com]
+target service account:      [App Engine default service account]
+
+
+     (add --promote if you also want to make this service available from
+     [https://gcp-devops-379408.uc.r.appspot.com])
+
+Do you want to continue (Y/n)? Y
+
+Beginning deployment of service [default]...
+Uploading 1 file to Google Cloud Storage
+100%
+100%
+File upload done.
+Updating service [default]...done.     
+Deployed service [default] to [https://2-dot-gcp-devops-379408.uc.r.appspot.com]
+
+You can stream logs from the command line by running:
+  $ gcloud app logs tail -s default
+
+To view your application in the web browser run:
+  $ gcloud app browse
+```
+
+There are 2 versions now
+
+![image-20230310183332709](images/image-20230310183332709.png)
+
+Split traffic
+
+![image-20230310184044238](images/image-20230310184044238.png)
+
+Put all the traffic to version 2
+
+![image-20230310184754956](images/image-20230310184754956.png)
+
+![image-20230310185133202](images/image-20230310185133202.png)
+
+### Deploy Docker image on Cloud Run
+
+**Create service**
+
+![image-20230313091750059](images/image-20230313091750059.png)
+
+![image-20230313092038630](images/image-20230313092038630.png)
+
+**Create service version 2**
+
+main.py
+
+```
+from flask import Flask
+
+app = Flask(__name__)
+
+
+@app.route('/')
+def index():
+    return 'Welcome to Python Flask World v2.0'
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
+```
+
+Build docker image
+
+```
+sherwinowen@cloudshell:~/devops/docker-basics (gcp-devops-379408)$ docker build -t gcr.io/gcp-devops-379408/myfimage:v2.0 .
+[+] Building 9.1s (9/9) FINISHED
+ => [internal] load .dockerignore                                                                                                                                        0.0s
+ => => transferring context: 2B                                                                                                                                          0.0s
+ => [internal] load build definition from Dockerfile                                                                                                                     0.0s
+ => => transferring dockerfile: 156B                                                                                                                                     0.0s
+ => [internal] load metadata for docker.io/library/python:3.7-slim                                                                                                       1.2s
+ => [1/4] FROM docker.io/library/python:3.7-slim@sha256:f9b06aae870f02611984695ab7d63a88b78ae86c4ebc1d2aa7d03237f2ac1a63                                                 2.7s
+ => => resolve docker.io/library/python:3.7-slim@sha256:f9b06aae870f02611984695ab7d63a88b78ae86c4ebc1d2aa7d03237f2ac1a63                                                 0.0s
+ => => sha256:f9b06aae870f02611984695ab7d63a88b78ae86c4ebc1d2aa7d03237f2ac1a63 1.86kB / 1.86kB                                                                           0.0s
+ => => sha256:3b2af3fa6a7c1b5abbbe67a771d839ed0db8f4afb83827a8cc47ed1d2b8f2457 1.37kB / 1.37kB                                                                           0.0s
+ => => sha256:e1a1a27f6a343b8047bf2b28d9cfe6b58153cff8024928ea153c1280225a9f9f 8.39kB / 8.39kB                                                                           0.0s
+ => => sha256:3f9582a2cbe7197f39185419c0ced2c986389f8fc6aa805e1f5c090eea6511e0 31.41MB / 31.41MB                                                                         0.3s
+ => => sha256:57d9937f91c017aba99f0f612c832a63021706b0ebe3e2f1cf33c382135ad5fd 1.08MB / 1.08MB                                                                           0.1s
+ => => sha256:e7f1bb2e27ccad69654fde0da28a49bef5756a2aeff0b73e7c1fbe6fc10a6d90 10.73MB / 10.73MB                                                                         0.2s
+ => => sha256:22765ac5f463e1b9735cc236faf16f33a490fd5026318a04192825fc651ae9ce 233B / 233B                                                                               0.1s
+ => => sha256:da7b9537ddd2441355a1f1cb84a6688683dc0545c09056199cf7ea0e51a11df9 3.17MB / 3.17MB                                                                           0.2s
+ => => extracting sha256:3f9582a2cbe7197f39185419c0ced2c986389f8fc6aa805e1f5c090eea6511e0                                                                                1.2s
+ => => extracting sha256:57d9937f91c017aba99f0f612c832a63021706b0ebe3e2f1cf33c382135ad5fd                                                                                0.1s
+ => => extracting sha256:e7f1bb2e27ccad69654fde0da28a49bef5756a2aeff0b73e7c1fbe6fc10a6d90                                                                                0.4s
+ => => extracting sha256:22765ac5f463e1b9735cc236faf16f33a490fd5026318a04192825fc651ae9ce                                                                                0.0s
+ => => extracting sha256:da7b9537ddd2441355a1f1cb84a6688683dc0545c09056199cf7ea0e51a11df9                                                                                0.2s
+ => [internal] load build context                                                                                                                                        0.0s
+ => => transferring context: 230B                                                                                                                                        0.0s
+ => [2/4] RUN pip install flask                                                                                                                                          4.9s
+ => [3/4] WORKDIR /myapp                                                                                                                                                 0.0s
+ => [4/4] COPY main.py /myapp/main.py                                                                                                                                    0.0s
+ => exporting to image                                                                                                                                                   0.2s
+ => => exporting layers                                                                                                                                                  0.2s
+ => => writing image sha256:13db842d8d6353739cad7c4e9332accb03f3898ebb8d77f2f449cb57c778c033                                                                             0.0s
+ => => naming to gcr.io/gcp-devops-379408/myfimage:v2.0                                   
+```
+
+List imags
+
+```
+sherwinowen@cloudshell:~/devops/docker-basics (gcp-devops-379408)$ docker images
+REPOSITORY                          TAG       IMAGE ID       CREATED         SIZE
+gcr.io/gcp-devops-379408/myfimage   v2.0      13db842d8d63   2 minutes ago   135MB
+```
+
+Push images to the Container Registry
+
+```
+sherwinowen@cloudshell:~/devops/docker-basics (gcp-devops-379408)$ docker push gcr.io/gcp-devops-379408/myfimage:v2.0
+The push refers to repository [gcr.io/gcp-devops-379408/myfimage]
+ca943e2ebc32: Pushed
+15b65af28eab: Pushed
+f0536a916e51: Pushed
+98a4c639afe6: Layer already exists
+4921c2a1a9b8: Layer already exists
+7de256fe1ffa: Layer already exists
+7d13900c8624: Layer already exists
+650abce4b096: Layer already exists
+v2.0: digest: sha256:f3df88bef8f2e6aa452955c96093957f75fce2f78d70580ffebbc414b65adab0 size: 1994
+```
+
+Check image if uploaded to Container Registry
+
+![image-20230313093423651](images/image-20230313093423651.png)
+
+
+
+Select myfimage service and click "EDIT & DEPLOY NEW REVISION"
+
+![image-20230313095423145](images/image-20230313095423145.png)
+
+Select the myfimage v2.0 
+
+![image-20230313095649678](/home/sherwinowen/Documents/my_tutorials/gcp/cloud_devops_engineer/images/image-20230313095649678.png)
+
+Unchek "Serve this revision immediately" and click "DEPLOY"
+
+![image-20230313095824683](images/image-20230313095824683.png)
+
+Click Manage Traffic and save
+
+![image-20230313100411979](images/image-20230313100411979.png)
+
+
+
+### Deploy Docker image on GKE
+
+1. Create cluster
+
+   Select "Standard"
+
+    ![image-20230313104048025](images/image-20230313104048025.png)
+
+2. Workload deployment
+
+   Create a deployment and Specify container select "myfimage v1.0"
+
+   ![image-20230313104536615](images/image-20230313104536615.png)
+
+   Deployment name "myfimage-v1" snd click "Deploy"
+
+   ![image-20230313104815658](images/image-20230313104815658.png)
+
+3. Expose service
+
+   ![image-20230313140217382](images/image-20230313140217382.png)
+
+   Go to Services & Ingress and click the "External Endpoints"
+
+   ![image-20230313141313112](images/image-20230313141313112.png)
+
+
+
+Deploy "myfimage v2.0" via Rolling Update
+
+Go to Container Registry to copy the "myfimage v2.0" image
+
+![image-20230313142452987](images/image-20230313142452987.png)
+
+Goto GKE > Worloads > myfimage Deployment and click Actions > Rolling Update
+
+- Paste the "myfimage v2.0" image in the Container images and click "Update"
+
+![image-20230313143029820](images/image-20230313143029820.png)
+
+Check the status of the pods
+
+![image-20230313143144533](images/image-20230313143144533.png)
+
+### Deploy to Compute Engine
+
+#### Deploy Containerized App in GCE
+
+Go to Container Registry > Select v1.0 and Deploy to GCE
+
+![image-20230313145025643](images/image-20230313145025643.png)
+
+Change container images to "myfimage v1" image and clik "Create"
+
+![image-20230313145946666](images/image-20230313145946666.png)
+
+Create a firewall rule to allow port 8080
+
+![image-20230313151043881](images/image-20230313151043881.png)
+
+### Deploy Instance Group
+
+#### 1. Create Instance Template
+
+![image-20230313170105454](images/image-20230313170105454.png)
+
+Startup script
+
+```
+#! /bin/bash
+apt update 
+apt -y install apache2
+echo "<h3>Apache Home page from $(hostname) $(hostname -i) $(hostname -d) </h3>" > /var/www/html/index.html
+```
+
+
+
+#### 2. Create Instance Group
+
+![image-20230313171016110](images/image-20230313171016110.png)
+
+![image-20230313173552014](images/image-20230313173552014.png)
+
+![image-20230313173642263](images/image-20230313173642263.png)
+
+![image-20230313173938263](images/image-20230313173938263.png)
+
+#### 3. Create Load Balancer
+
+Goto Networking Services > Load Balancing > HTTP(S) Load Balancing > 
+
+![image-20230313174742810](images/image-20230313174742810.png)
+
+Backend configuration > Create a backend service
+
+![image-20230313175232436](images/image-20230313175232436.png)
+
+![image-20230313180100820](images/image-20230313180100820.png)
+
+
+
+​		Create Health Check
+
+![image-20230313175635324](images/image-20230313175635324.png)
+
+Check Load Balancer
+
+![image-20230313181124774](images/image-20230313181124774.png)
+
+![image-20230313181232043](images/image-20230313181232043.png)
+
+### CI/CD Pipeline
 
 
 

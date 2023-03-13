@@ -1075,3 +1075,405 @@
     - **swap partition**
 
     - **swap file**
+
+
+
+## QUIZ: CONTROL MOUNTING AND UNMOUNTING OF FILESYSTEM
+
+1. In addition to the device’s disk identifier and partition number (e.g., /dev/sda1), what else can be used in /etc/fstab to identify a partition? Select all that apply.
+
+   - **UUID**
+
+   - **label**
+
+   - blkid
+
+   - FSID
+
+2. When trying to unmount a filesystem, you get an error saying the target is busy. Which command can you use to see the program that is keeping the disk busy?
+
+   - lsfiles
+
+   - lsio
+
+   - **lsof**
+
+   - iowait
+
+3. Which command will mount every filesystem defined in /etc/fstab?
+
+   - mount -o
+
+   - **mount -a**
+
+   - mount -t
+
+   - mount -e
+
+4. Which command can be used to show information about all block devices on the system?
+
+   - ls /dev/
+
+   - disks
+
+   - **lsblk**
+
+   - mount
+
+5. A list of filesystems to be mounted when the system boots can be found in _____.
+
+   - **/etc/fstab**
+
+   - /boot/fs
+
+   - /etc/fs
+
+   - /boot/fstab
+
+
+
+## QUIZ: MANAGE FILE PERMISSIONS AND OWNERSHIP
+
+1. A file named “myfile” has the user owner “kodekloud” and the group owner “users.” Which command(s) could be use to change the group owner to “friends”? Select all that apply.
+
+   - **chgrp friends myfile**
+
+   - chown myfile kodekloud:friends
+
+   - chgrp myfile friends
+
+   - **chown kodekloud:friends myfile**
+
+2. Which command would change the permissions of the file “myfile” to read, write, and execute for the user owner, read and write for the group owner, and no permissions for all other users? Select all that apply.
+
+   - **chmod u=rwx,g=rw,u= myfile**
+
+   - chmod u=rw,g=rw=u= myfile
+
+   - chmod 660 myfile
+
+   - **chmod 760 myfile**
+
+3. Which command would change the user owner of a directory named “mydir” to “kodekloud” and also make this change for all files and subdirectories contained in the directory?
+
+   - chown mydir kodekloud
+
+   - chown kodekloud mydir
+
+   - chown -R mydir kodekloud
+
+   - **chown -R kodekloud mydir**
+
+4. To add execute permissions for the user-owner of a file to existing permissions, which command would you use?
+
+   - chmod -x
+
+   - chmod u-x
+
+   - **chmod u+x**
+
+   - chmod +x
+
+5. How can we set the sticky bit on a file named “myfile”? Other permissions are unimportant. Select all that apply.
+
+   - chmod 0777 myfile
+
+   - **chmod 1777 myfile**
+
+   - **chmod +t myfile**
+
+   - chmod 4777 myfile
+
+
+
+## QUIZ: CREATE AND CHANGE HARD AND SYMBOLIC LINKS\
+
+1. The command ln myphoto.jpg /home/kodekloud/Pictures/photo would create a _____ link.
+
+   - Symbolic
+
+   - **Hard**
+
+2. True or false: When a soft link is deleted, the original file is also deleted.
+
+   - **False**
+
+   - True
+
+3. Which command would create a soft link between myphoto.jpg and /home/kodekloud/photo?
+
+   - ln -s /home/kodekloud/photo myphoto.jpg
+
+   - ln /home/kodekloud/photo myphoto.jpg
+
+   - ln myphoto.jpg /home/kodekloud/photo
+
+   - **ln -s myphoto.jpg /home/kodekloud/photo**
+
+4. True or false: When a hard link is deleted, the original file is also deleted.
+
+   - False
+
+   - **True**
+
+5. You see myphoto.jpg -> photo in the output of the ls command. What type of link does this show?
+
+   - **Soft**
+
+   - Hard
+
+
+
+## QUIZ: FIND SYSTEM FILES AND PLACE FILES IN THE CORRECT LOCATION
+
+
+
+1. Removable storage, such as CD-ROMs and flash drives are mounted to the _____ directory.
+
+   - /media
+
+   - /mnt
+
+   - /run
+
+   - /home
+
+2. Temporary files can be located in _____. Select any that apply.
+
+   - /usr/tmp
+
+   - **/run**
+
+   - **/tmp**
+
+   - **/var/tmp**
+
+3. The standard layout for Linux directories and their contents, as determined by the Linux Foundation, is known as the _____.
+
+   - Filesystem Standard Hierarchy
+
+   - Hierarchical Filesystem Standard
+
+   - **Filesystem Hierarchy Standard**
+
+   - Standard Hierarchical Filesystem
+
+4. Essential programs, available to all users, are found in _____.
+
+   - /usr/bin
+
+   - /usr/sbin
+
+   - **/bin**
+
+   - /sbin
+
+5. To locate files, we use the _____ command.
+
+   - spotlight
+
+   - cortana
+
+   - **find**
+
+   - search
+
+# MOCK EXAM 101-1
+
+1. To set the priority for a process when it is run, we can use the _____ command.
+
+   - **nice**
+
+   - ps
+
+   - top
+
+   - renice
+
+2. If you want to warn other users of a Linux system that the system is going down for maintenance, which command could you use to send a message to all logged-in users?
+
+   - wipe
+
+   - **wall**
+
+   - write
+
+   - warn
+
+3. Which of the following would search the contents of the /etc/ directory for the pattern “kodekloud” and write only the errors to a file a /home/kodekloud/errors.list?
+
+   - **grep -r ‘kodekloud’ /etc/ 2> /home/kodekloud/errors.list**
+
+   - grep -r ‘kodekloud’ /etc/ > /home/kodekloud/errors.list
+
+   - grep -r ‘kodekloud’ /etc/ 1> /home/kodekloud/errors.list
+
+   - grep -r ‘kodekloud’ /etc/ 2>&1 /home/kodekloud/errors.list
+
+4. The _____ command will print a list of all current environment variables.
+
+   - path
+
+   - **env**
+
+   - export
+
+   - import
+
+5. Which command will mount every filesystem defined in /etc/fstab?
+
+   - **mount -a**
+
+   - mount -e
+
+   - mount -o
+
+   - mount -t
+
+6. Which command would you use to install a .deb file located on your local Linux system?
+
+   - dpkg -I
+
+   - dpkg install
+
+   - dpkg -install
+
+   - **dpkg -i**
+
+7. The _____ command will print the contents of a text file to standardThe _____ command will print the contents of a text file to standard output.
+
+   - **cat**
+
+   - print
+
+   - wc
+
+   - grep
+
+8. How can we set the sticky bit on a file named “myfile”? Other permissions are unimportant. Select all that apply.
+
+   - chmod 0777 myfile
+
+   - **chmod +t myfile**
+
+   - chmod 4777 myfile
+
+   - **chmod 1777 myfile**
+
+9. The default command prefix for tmux is:
+
+   - CTRL + v
+
+   - CTRL + a
+
+   - CTRL + s
+
+   - **CTRL + b**
+
+10. Which regular expression symbol matches a single instance of a any character?
+
+    - $
+
+    - **.**
+
+    - ^
+    - \
+
+11. In addition to the device’s disk identifier and partition number (e.g., /dev/sda1), what else can be used in /etc/fstab to identify a partition? Select all that apply.
+
+    - **UUID**
+
+    - FSID
+
+    - **label**
+
+    - blkid
+
+12. After adding a new shared library directory to your system, you copied a configuration file with its full path to the correct directory. Which command would you use to notify the system of the change?
+
+    - **ldconfig**
+
+    - updatedb
+
+    - libupdate
+
+    - ldd
+
+13. To bring a job with job ID 1 from the background to the foreground, which command could we run?
+
+    - bg %1
+
+    - **fg %1**
+
+    - fg $1
+
+    - bg $1
+
+14. You need to know which hardware devices are inside of a Linux system, but you cannot open the system’s case. How would you get Linux to produce a list of hardware connected to the PCI bus?
+
+    - modprobe
+
+    - cat /proc/hardware
+
+    - **lspci**
+
+    - ls /dev/
+
+15. Which option can be used with sed to edit the file as-is, without specifying a different file name as a target?
+
+    - –here
+
+    - –same
+
+    - -e
+
+    - **-i**
+
+16. A list of filesystems to be mounted when the system boots can be found in _____.
+
+    - /boot/fstab
+
+    - **/etc/fstab**
+
+    - /etc/fs
+
+    - /boot/fs
+
+17. Which command is used to create filesystems?
+
+    - fdisk
+
+    - parted
+
+    - **mkfs**
+
+    - mkswap
+
+18. When using vi, in normal mode, which key allows us to search the file?
+
+    - **/**
+
+    - t
+
+    - s
+
+    - f
+
+19. The command ln myphoto.jpg /home/kodekloud/Pictures/photo would create a _____ link.
+
+    - **Hard**
+
+    - Symbolic
+
+20. Which parameter would you add to dpkg-query to show which package contains a particular file?
+
+    - -W
+
+    - **-S**
+
+    - -s
+
+    - -l
+
+21. 
+
