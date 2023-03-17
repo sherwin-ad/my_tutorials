@@ -1475,5 +1475,1571 @@
 
     - -l
 
-21. 
+21. Which command would take the contents of the /home/kodekloud/ directory and create a gzipped tar archive of the contents in a file called kodekloud.tar.gz?
 
+    - tar -cvf /home/kodekloud/ kodekloud.tar.gz
+
+    - **tar -czvf kodekloud.tar.gz /home/kodekloud/**
+
+    - tar -cvf kodekloud.tar.gz /home/kodekloud/
+
+    - tar -czvf /home/kodekloud/ kodekloud.tar.gz
+
+22. Given that the “whoami” command prints the current user’s username, what would be the result of the following command: rm -rf /home/$(whoami)
+
+    - Nothing; this is not a valid command
+
+    - **It would delete the user’s home directory**
+
+    - An endless loop
+
+    - It would delete the directory /home/whoami
+
+23. A friend is visiting you and brings a portable USB hard drive to share some files with you. You have one SATA drive in your Linux machine. Which name will be given to your friend’s portable USB hard drive in the /dev/ directory of your Linux machine?
+
+    - /dev/sata2
+
+    - **/dev/sdb**
+
+    - /dev/usb1
+
+    - /dev/sba
+
+24. Using YUM or DNF, which option would uninstall a package from the system, along with any packages that depend on that package?
+
+    - purge
+
+    - delete
+
+    - uninstall
+
+    - **remove**
+
+25. To create an empty file named emptyfile in the current working directory, which command would you use?
+
+    - echo emptyfile
+
+    - new emptyfile
+
+    - blank emptyfile
+
+    - **touch emptyfile**
+
+26. If you update the configuration for GRUB 2, which command would you run to write that configuration to the correct directory for GRUB 2 to use the next time you boot the system?
+
+    - grub-mkconfig -o /boot/grub/grub.conf
+
+    - grub-config -o /boot/grub/grub.conf
+
+    - grub-config -o /boot/grub/grub.cfg
+
+    - **grub-mkconfig -o /boot/grub/grub.cfg**
+
+27. Which command would cause the system to shutdown 45 minutes from now?
+
+    - shutdown +45M
+
+    - shutdown now+45
+
+    - **shutdown +45**
+
+    - shutdown 00:45
+
+28. Using DNF, how would you install the httpd package?
+
+    - dnf -i httpd
+
+    - dnf provide httpd
+
+    - **dnf install httpd**
+
+    - dnf httpd
+
+29. Which option would you pass to journalctl to change the directory it uses to search for log files?
+
+    - **-D**
+
+    - –log-dir
+
+    - -d
+
+    - –log-directory=
+
+30. Which command would change the permissions of the file “myfile” to read, write, and execute for the user owner, read and write for the group owner, and no permissions for all other users? Select all that apply.
+
+    - **chmod 760 myfile**
+
+    - **chmod u=rwx,g=rw,u= myfile**
+
+    - chmod u=rw,g=rw=u= myfile
+
+    - chmod 660 myfile
+
+31. Which command will check a filesystem for errors and repair it if it is offline?
+
+    - chkdsk
+
+    - sfc
+
+    - fdisk
+
+    - **fsck**
+
+32. Which virtualization method provides the highest performance?
+
+    - **Paravirtualization**
+
+    - Virsh
+
+    - VirtualBox
+
+    - Full virtualization
+
+33. Which command would you use to view only the last ten lines of the initialization log?
+
+    - **dmesg | tail**
+
+    - dmesg -H
+
+    - dmesg --last
+
+    - lastlog
+
+34. Which command can be used to show how much space is currently taken up on a disk and display that output in human-readable format?
+
+    - **du -h**
+
+    - diskfree -h
+
+    - free -h
+
+    - df -h
+
+35. Volume Groups are divided into:
+
+    - Chunks
+
+    - **Extents**
+
+    - Sectors
+
+    - Slices
+
+36. Which regular expression symbol indicates that a line ends with a regular expression pattern?
+
+    - ^
+
+    - **$**
+
+    - .
+
+37. _____ is an intermediary program used to pass the output from one program as arguments to another program.
+
+    - **xargs**
+
+    - xout
+
+    - xin
+
+    - xinput
+
+38. Temporary files can be located in _____. Select any that apply.
+
+    - **/var/tmp**
+
+    - /usr/tmp
+
+    - **/run**
+
+    - **/tmp**
+
+39. Which option(s) would you use with the ls command to print file sizes in human readable format?
+
+    - **ls -lh**
+
+    - ls --human
+
+    - ls -h
+
+    - ls -l --human
+
+40. Which user account(s) can lower the niceness of a process to a value less than zero? Select all that apply.
+
+    - **the root user**
+
+    - only the user who started the process
+
+    - normal users
+
+    - **any user with sudo access**
+
+41. Which command would change the user owner of a directory named “mydir” to “kodekloud” and also make this change for all files and subdirectories contained in the directory?
+
+    - chown mydir kodekloud
+
+    - **chown -R kodekloud mydir**
+
+    - chown kodekloud mydir
+
+    - chown -R mydir kodekloud
+
+42. Which command could be used to create an archive named backup.cpio containing all of the files and directories in the current working directory?
+
+    - cpio -o > backup.cpio
+
+    - cpio * > backup.cpio
+
+    - cpio -o * > backup.cpio
+
+    - **ls | cpio -o > backup.cpio**
+
+43. Where are repository files stored for DNF and YUM?
+
+    - /etc/repos.d/
+
+    - /etc/yum/repos.d/
+
+    - **/etc/yum.repos.d/**
+
+    - /etc/yum/repos/
+
+44. Which regular expression symbol indicates a line that begins with a regular expression pattern?
+
+    - $
+
+    - .
+
+    - **^**
+
+45. When using GRUB Legacy, how is the first partition of the first disk labeled?
+
+    - (hd0,1)
+
+    - (hd1,1)
+
+    - (hd1,0)
+
+    - **(hd0,0)**
+
+46. Which command sequence would put the contents of a text file named myfile.txt in alphabetical order and remove all duplicates? Select all that apply.
+
+    - sed -i -s ‘duplicates//g’ myfile.txt && sort myfile.txt
+
+    - sort myfile.txt | sed -s ‘duplicates//g’
+
+    - **sort myfile.txt | uniq**
+
+    - **uniq myfile.txt | sort**
+
+47. Which formula would give the size of a Logical Volume?
+
+    - Disk sectors multiplied by number of extents
+
+    - **Number of extents multiplied by physical extent size**
+
+    - Size of physical extents divided by number of extents
+
+    - Number of extents divided by size of physical extents
+
+48. Which command is used to search the short description of man pages for keywords?
+
+    - find
+
+    - grep
+
+    - **apropos**
+
+    - cat
+
+49. Which of the following commands could be used to back up an entire disk, including its filesystem?
+
+    - cpio
+
+    - **dd**
+
+    - tar
+
+    - gzip
+
+50. The default command prefix for GNU screen is:
+
+    - **CTRL + a**
+
+    - CTRL + s
+
+    - CTRL + b
+
+    - CTRL + v
+
+51. Given a theoretical file located at /etc/rc3.d/S45 ethernet, what would happen to any services listed in this file when the system enters runlevel 3?
+
+    - They will stop.
+
+    - They will be suspended.
+
+    - They will be restarted.
+
+    - **They will start.**
+
+52. Which filesystem would you use for the ESP partition?
+
+    - xfs
+
+    - **fat32**
+
+    - ext2
+
+    - ntfs
+
+53. Essential programs, available to all users, are found in _____.
+
+    - /usr/sbin
+
+    - **/bin**
+
+    - /sbin
+
+    - /usr/bin
+
+54. Which command would return the list of directories used by the shell to find executable commands?
+
+    - read $PATH
+
+    - print $PATH
+
+    - **echo $PATH**
+
+    - pwd $PATH
+
+55. Which option can be used with ls to show hidden files?
+
+    - **-a**
+
+    - -h
+
+    - –hidden
+
+    - -?
+
+56. On a Debian system, which command would remove a package and all of its configuration files?
+
+    - dpkg -r
+
+    - **dpkg -P**
+
+    - dkpg --erase
+
+    - dpkg --remove
+
+57. In command mode, which command will allow us to save changes and exit vi?
+
+    - **:wq**
+
+    - :q!
+
+    - :w
+
+    - :q
+
+58. To view dynamically updated information on system processes and resources, we can use the _____ command.
+
+    - **top**
+
+    - ps
+
+    - jobs
+
+    - uptime
+
+59. Which command would create a soft link between myphoto.jpg and /home/kodekloud/photo?
+
+    - **ln -s myphoto.jpg /home/kodekloud/photo**
+
+    - ln myphoto.jpg /home/kodekloud/photo
+
+    - ln -s /home/kodekloud/photo myphoto.jpg
+
+    - ln /home/kodekloud/photo myphoto.jpg
+
+60. Which command(s) can be used to work with partitions? Select all that apply.
+
+    - **parted**
+    - **fdsik**
+    - **gdisk**
+    - vdisk
+
+# MOCK EXAM 101-2
+
+1. Which yum command will bring repository metadata to the most recent version?
+
+   - yum upgrade
+
+   - **yum update**
+
+   - yum check-metadata
+
+   - yum metadata
+
+2. Which regular expression symbol matches any characters from a list provided with that symbol?
+
+   - ( )
+
+   - **[ ]**
+
+   - ?
+   - .
+
+3. To view processes which have been sent to the background, we can use the _____ command.
+
+   - cron
+
+   - bg
+
+   - **jobs**
+
+   - fg
+
+4. A file named “myfile” has the user owner “kodekloud” and the group owner “users.” Which command(s) could be use to change the group owner to “friends”? Select all that apply.
+
+   - chgrp myfile friends
+
+   - **chown kodekloud:friends myfile**
+
+   - chown myfile kodekloud:friends
+
+   - **chgrp friends myfile**
+
+5. To get detailed information about a process when we already have the PID (process ID), we can use the _____ command.
+
+   - pgrep
+
+   - proc
+
+   - pkill
+
+   - **ps**
+
+6. To run a command detached from the current session, we can use the _____ command.
+
+   - **nohup**
+
+   - SIGTERM
+
+   - jobs
+
+   - bg
+
+7. The _____ command can be used to clear environment variables for the current shell session.
+
+   - **unset**
+
+   - clear
+
+   - import
+
+   - echo
+
+8. Which utility can be used to check and repair XFS filesystems?
+
+   - **xfs_repair**
+
+   - xfs_fsck
+
+   - xfs_fix
+
+   - xfs_check
+
+9. Which command can be used to search file content using regular expression patterns?
+
+   - **grep**
+
+   - read
+
+   - find
+
+   - search
+
+10. You have added a new shared library directory to your system, and you have written a custom configuration file including the full path to to the new shared library location. Which directory would you put the configuration file into?
+
+    - /usr/share/
+
+    - **/etc/ld.so.conf.d/**
+
+    - /etc/share
+
+    - /usr/ld.so.conf.d/
+
+11. Removable storage, such as CD-ROMs and flash drives are mounted to the _____ directory.
+
+    - **/media**
+
+    - /run
+
+    - /mnt
+
+    - /home
+
+12. Which apt-cache command will provide information for a package?
+
+    - apt-cache info
+
+    - apt-cache search
+
+    - apt-cache print
+
+    - **apt-cache show**
+
+13. Which option can be used with the find command to show only directories?
+
+    - –type -d
+
+    - **-type d**
+
+    - –type --directory
+
+    - -type directory
+
+14. True or false: A regular user can only lower the process niceness one time.
+
+    - **True**
+
+    - False
+
+15. Which of the following utilities makes use of regular expressions? Select all that apply.
+
+    - **sed**
+
+    - **egrep**
+
+    - ps
+
+    - **grep**
+
+16. To change the menu entries for GRUB Legacy, which file would you edit?
+
+    - /etc/grub/grub.cfg
+
+    - **/boot/grub/menu.lst**
+
+    - /boot/grub/grub.cfg
+
+    - /etc/grub/menu.lst
+
+17. Which command can be used to determine how much disk space is available?
+
+    - **df**
+
+    - du
+
+    - diskfree
+
+    - free
+
+18. To add execute permissions for the user-owner of a file to existing permissions, which command would you use?
+
+    - chmod -x
+
+    - chmod +x
+
+    - **chmod u+x**
+
+    - chmod u-x
+
+19. In addition to vi, what are some other common editors for Linux?
+
+    - **Emacs**
+
+    - **nano**
+
+    - Word
+
+    - notes
+
+20. Intel VT-x and AMD-V are examples of _____ used to provide support for fully virtualized guests?
+
+    - paravirtualized drivers
+
+    - **CPU extensions**
+
+    - virtual machines
+
+    - hypervisors
+
+21. The two types of partition tables commonly used in Linux are (select two):
+
+    - **GPT**
+
+    - **MBR**
+
+    - BSD
+
+    - DVH
+
+22. You have set a variable called kodekloud using the export command. Which command would print the value of the kodekloud variable?
+
+    - print kodekloud
+
+    - read $kodekloud
+
+    - echo kodekloud
+
+    - **echo $kodekloud**
+
+23. In addition to the device’s disk identifier and partition number (e.g., /dev/sda1), what else can be used in /etc/fstab to identify a partition? Select all that apply.
+
+    - FSID
+
+    - **label**
+
+    - blkid
+
+    - **UUID**
+
+24. Which command will list kernel modules in use by hardware?
+
+    - **lspci -k**
+
+    - lspci --modules
+
+    - lspci -l
+
+    - lspci -m
+
+25. Where are repository files stored for DNF and YUM?
+
+    - /etc/repos.d/
+
+    - /etc/yum/repos/
+
+    - **/etc/yum.repos.d/**
+
+    - /etc/yum/repos.d/
+
+26. Which command(s) would list all of the files in the current directory that start with the word “file” followed by one number and .txt?
+
+    - ls | grep ‘file*.txt’
+
+    - **ls file[0-9].txt**
+
+    - **ls | grep ‘file[0-9].txt’**
+
+    - ls file*.txt
+
+27. True or false: When a soft link is deleted, the original file is also deleted.
+
+    - **False**
+
+    - True
+
+28. Which apt-file command would show the package that contains the file /usr/bin/systemctl?
+
+    - apt-file query /usr/bin/systemctl
+
+    - **apt-file search /usr/bin/systemctl**
+
+    - apt-file provides /usr/bin/systemctl
+
+    - apt-file show /usr/bin/systemctl
+
+29. In vi normal mode, the pp command will paste. Which command can be used to copy?
+
+    - cc
+
+    - :copy
+
+    - **yy**
+
+    - :yank
+
+30. Which command will cause Bash to print the path of the current directory?
+
+    - **pwd**
+
+    - cwd
+
+    - which directory
+
+    - whereami
+
+31. Which symbol(s) would be used to specify a stdout redirect? Select all that apply.
+
+    - 0>
+
+    - **1>**
+
+    - 2>
+
+32. Which option(s) would you use with tar to extract the archive loc-ated at /home/kodekloud/archive.tar.gz?
+
+    - cfvz
+
+    - cvf
+
+    - **xf**
+
+    - xfz
+
+33. On a system equipped with BIOS, what should be placed in the MBR of the first storage device in order to boot the system?
+
+    - **bootstrap**
+
+    - firmware
+
+    - kernel
+
+    - initrd
+
+34. On SysV systems, which file contains the default init configuration?-
+
+    - **/etc/inittab**
+
+    - /etc/init.d/defaults
+
+    - /etc/conf.d/inittab
+
+    - /etc/defaults/inittab
+
+35. Which operator(s) can be used for command substitution? Select all that apply.
+
+    - **``**
+
+    - %{}
+
+    - **$()**
+
+    - “”
+
+36. Where are the files for the GRUB bootloader stored?
+
+    - /boot/
+
+    - **/boot/grub/**
+
+    - /etc/grub/
+
+    - /grub/boot/
+
+37. Given a theoretical file located at /etc/rc3.d/S45 ethernet, what would happen to any services listed in this file when the system enters runlevel 3?
+
+    - **They will start.**
+
+    - They will be restarted.
+
+    - They will be suspended.
+
+    - They will stop.
+
+38. Which command can be used to show information about all block devices on the system?
+
+    - mount
+
+    - disks
+
+    - ls /dev/
+
+    - **lsblk**
+
+39. When a Linux system mounts the EFI partition, where is it usually mounted?
+
+    - /efi/
+
+    - /mnt/efi/
+
+    - **/boot/efi/**
+
+    - /boot/grub/efi/
+
+40. When trying to unmount a filesystem, you get an error saying the target is busy. Which command can you use to see the program that is keeping the disk busy?
+
+    - lsio
+
+    - iowait
+
+    - **lsof**
+
+    - lsfiles
+
+41. When using GRUB 2, which menu entry parameter determines how long GRUB 2 will pause before booting the default menu entry?
+
+    - GRUB_TIMER=
+
+    - **GRUB_TIMEOUT=**
+
+    - GRUB_PAUSE=
+
+    - GRUB_WAIT=
+
+42. True or false: When a hard link is deleted, the original file is also deleted.
+
+    - **True**
+
+    - False
+
+43. Which of the following are features of BTRFS? Select all that apply.
+
+    - **snapshots**
+
+    - **subvolumes**
+
+    - encryption
+
+    - **compression**
+
+44. Which of the following find command would find files in the current directory that have an extension of .bak and are larger than 1 gigabyte?
+
+    - find . -name *.bak -size =1G+
+
+    - find pwd -name *.bak -size -1G
+
+    - find . -name *.back -size 1G
+
+    - **find . -name *.bak -size +1G**
+
+45. Which command would you use to view only the last ten lines of the initialization log?
+
+    - dmesg --last
+
+    - **dmesg | tail**
+
+    - dmesg -H
+
+    - lastlog
+
+46. The standard layout for Linux directories and their contents, as determined by the Linux Foundation, is known as the _____.
+
+    - Hierarchical Filesystem Standard
+
+    - Filesystem Standard Hierarchy
+
+    - Standard Hierarchical Filesystem
+
+    - **Filesystem Hierarchy Standard**
+
+47. Which operator would be used to designate a herestring?
+
+    - <<
+
+    - **<<<**
+
+    - <<<<
+
+    - <
+
+48. Which command would change the permissions of the file “myfile” to read, write, and execute for the user owner, read and write for the group owner, and no permissions for all other users? Select all that apply.
+
+    - **chmod u=rwx,g=rw,u= myfile**
+
+    - **chmod 760 myfile**
+
+    - chmod 660 myfile
+
+    - chmod u=rw,g=rw=u= myfile
+
+49. To modify a the priority of an existing process, we can use the _____ command.
+
+    - nice
+
+    - ps
+
+    - top
+
+    - **renice**
+
+50. Which grep option can be used to search an entire directory and its sub directories?
+
+    - .
+
+    - **-r**
+
+    - -R
+
+51. When using vi in normal mode, which command will delete the line at the cursor?
+
+    - **dd**
+
+    - yy
+
+    - d
+
+    - ZZ
+
+52. Using zypper, how would you find out which package provides the file /usr/bin/systemctl?
+
+    - zypper se provides /usr/bin/systemctl
+
+    - zypper --provides /usr/bin/systemctl
+
+    - zypper se /usr/bin/systemctl
+
+    - **zypper se --provides /usr/bin/systemctl**
+
+53. The _____ terminal multiplexer uses a client-server model.
+
+    - GNU screen
+
+    - **tmux**
+
+54. Which command can be used to print only the desired field from text?
+
+    - grep
+
+    - find
+
+    - sed
+
+    - **cut**
+
+55. You have compiled a custom kernel, and the filesystem type used by your Linux system’s root filesystem is compiled as a module. What would you need to include along with the kernel to make sure your system loads the root filesystem correctly?
+
+    - EFI applications
+
+    - A copy of /etc/modules.conf.d/
+
+    - bootstrap
+
+    - **initramfs**
+
+56. Using systemctl, how would you determine if a service named myservice.service is configured to start when the system boots?
+
+    - **systemctl is-enabled myservice.service**
+
+    - systemctl is-active myservice.service
+
+    - systemctl on-boot myservice.service
+
+    - systemctl status myservice.service
+
+57. Which file would you search to determine the CPU features on a Linux machine?
+
+    - **/proc/cpuinfo**
+
+    - /dev/cpuinfo
+
+    - /proc/cpu
+
+    - /proc/hardware/cpuinfo
+
+58. The _____ command can be used to assign values to environment variables for the current shell session.
+
+    - **export**
+
+    - env
+
+    - echo
+
+    - import
+
+59. Which parameter would you add to dpkg-query to show which package contains a particular file?
+
+    - **-S**
+
+    - -W
+
+    - -s
+
+    - -l
+
+60. The standard operator used to pass the output of one program to the input of another is:
+
+    - &
+
+    - @
+
+    - **|**
+
+    - %
+
+
+
+# MOCK EXAM 101-2
+
+1. Which command would you use to view only the last ten lines of the initialization log?
+
+   - lastlog
+
+   - **dmesg | tail**
+
+   - dmesg -H
+
+   - dmesg --last
+
+2. If you update the configuration for GRUB 2, which command would you run to write that configuration to the correct directory for GRUB 2 to use the next time you boot the system?
+
+   - grub-config -o /boot/grub/grub.conf
+
+   - grub-mkconfig -o /boot/grub/grub.conf
+
+   - **grub-mkconfig -o /boot/grub/grub.cfg**
+
+   - grub-config -o /boot/grub/grub.cfg
+
+3. Which command would create a soft link between myphoto.jpg and /home/kodekloud/photo?
+
+   - ln myphoto.jpg /home/kodekloud/photo
+
+   - ln -s /home/kodekloud/photo myphoto.jpg
+
+   - ln /home/kodekloud/photo myphoto.jpg
+
+   - **ln -s myphoto.jpg /home/kodekloud/photo**
+
+4. Which command can be used to determine how much disk space is available?
+
+   - **df**
+
+   - diskfree
+
+   - free
+
+   - du
+
+5. Which grep option can be used to search an entire directory and its sub directories?
+
+   - **-r**
+
+   - .
+
+   - -R
+
+6. The default configuration file for tmux is located at _____.
+
+   - /etc/conf/tmux.conf
+
+   - /etc/tmux/conf/tmux.conf
+
+   - /etc/tmux.conf.d/tmux.conf
+
+   - **/etc/tmux.conf**
+
+7. Which option can be used with ls to show hidden files?
+
+   - **-a**
+
+   - -?
+
+   - -h
+
+   - –hidden
+
+8. The _____ command can be used to perform search and replace operations on text files.
+
+   - grep
+
+   - **sed**
+
+   - find
+
+   - substitute
+
+9. To remove a directory called mydir along with all of its files and subdirectories, which command would you use?
+
+   - rm mydir/*
+
+   - **rm -rf mydir**
+
+   - rm mydir
+
+   - rm -R mydir
+
+10. Which command is used to search the short description of man pages for keywords?
+
+    - **apropos**
+
+    - cat
+
+    - find
+
+    - grep
+
+11. When using GRUB 2, which menu entry parameter determines how long GRUB 2 will pause before booting the default menu entry?
+
+    - GRUB_PAUSE=
+
+    - GRUB_TIMER=
+
+    - GRUB_WAIT=
+
+    - **GRUB_TIMEOUT=**
+
+12. Using systemctl, how would you determine if a service named myservice.service is configured to start when the system boots?
+
+    - **systemctl is-enabled myservice.service**
+
+    - systemctl on-boot myservice.service
+
+    - systemctl status myservice.service
+
+    - systemctl is-active myservice.service
+
+13. In command mode, which command will allow us to save changes and exit vi?
+
+    - :wq
+
+    - :q
+
+    - :q!
+
+    - :w
+
+14. If you are unsure of the location of an executable mycommand on a Linux system, how would you find it?
+
+    - whereis mycommand
+
+    - fetch mycommand
+
+    - **which mycommand**
+
+    - find mycommand
+
+15. Before the apropos command will work on a new system, it may be necessary to run another command first. Which command would you run to make sure apropos has access to all of the information it needs?
+
+    - dbupdate
+
+    - apropos -update
+
+    - **updatedb**
+
+    - mandb
+
+16. When a Linux system mounts the EFI partition, where is it usually mounted?
+
+    - /efi/
+
+    - /boot/grub/efi/
+
+    - **/boot/efi/**
+
+    - /mnt/efi/
+
+17. You have added a new hard drive to a system. You know that the hard drive has no defects, but the system cannot boot. Where would you go to begin troubleshooting this problem?
+
+    - The manufacturer’s website.
+
+    - **The BIOS setup utility.**
+
+    - An Internet forum.
+
+    - The manual for the hard drive.
+
+18. Which command can be used to rename an existing file or directory?
+
+    - cp
+
+    - mv
+
+    - touch
+
+    - ls
+
+19. Where are repository files stored for DNF and YUM?
+
+    - **/etc/yum.repos.d/**
+
+    - /etc/repos.d/
+
+    - /etc/yum/repos.d/
+
+    - /etc/yum/repos/
+
+20. Which filesystem would you use for the ESP partition?
+
+    - ext2
+
+    - **fat32**
+
+    - xfs
+
+    - ntfs
+
+21. Which of the following would search the contents of the /etc/ directory for the pattern “kodekloud” and write only the errors to a file a /home/kodekloud/errors.list?
+
+    - **grep -r ‘kodekloud’ /etc/ 2> /home/kodekloud/errors.list**
+
+    - grep -r ‘kodekloud’ /etc/ > /home/kodekloud/errors.list
+
+    - grep -r ‘kodekloud’ /etc/ 1> /home/kodekloud/errors.list
+
+    - grep -r ‘kodekloud’ /etc/ 2>&1 /home/kodekloud/errors.list
+
+22. In addition to swap partitions, Linux can make use of swap files. Where is the swap file typically located?
+
+    - /swap
+
+    - **/swapfile**
+
+    - /mnt/swap
+
+    - /mnt/swapfile
+
+23. Which command could be used to create an archive named backup.cpio containing all of the files and directories in the current working directory?
+
+    - **ls | cpio -o > backup.cpio**
+
+    - cpio -o * > backup.cpio
+
+    - cpio * > backup.cpio
+
+    - cpio -o > backup.cpio
+
+24. Removable storage, such as CD-ROMs and flash drives are mounted to the _____ directory.
+
+    - **/media**
+
+    - /home
+
+    - /mnt
+
+    - /run
+
+25. Which command can be used to print only the desired field from text?
+
+    - grep
+
+    - find
+
+    - **cut**
+
+    - sed
+
+26. Which command would change the permissions of the file “myfile” to read, write, and execute for the user owner, read and write for the group owner, and no permissions for all other users? Select all that apply.
+
+    - chmod 660 myfile
+
+    - chmod u=rw,g=rw=u= myfile
+
+    - **chmod 760 myfile**
+
+    - **chmod u=rwx,g=rw,u= myfile**
+
+27. When trying to unmount a filesystem, you get an error saying the target is busy. Which command can you use to see the program that is keeping the disk busy?
+
+    - lsfiles
+
+    - **lsof**
+
+    - lsio
+
+    - iowait
+
+28. A friend is visiting you and brings a portable USB hard drive to share some files with you. You have one SATA drive in your Linux machine. Which name will be given to your friend’s portable USB hard drive in the /dev/ directory of your Linux machine?
+
+    - /dev/sba
+
+    - **/dev/sdb**
+
+    - /dev/sata2
+
+    - /dev/usb1
+
+29. To view dynamically updated information on system processes and resources, we can use the _____ command.
+
+    - ps
+
+    - **top**
+
+    - uptime
+
+    - jobs
+
+30. To set the priority for a process when it is run, we can use the _____ command.
+
+    - top
+
+    - **nice**
+
+    - ps
+
+    - renice
+
+31. Which option for sed indicates that every instance of a term should be replaced?
+
+    - **g**
+
+    - ?
+
+    - a
+    - .
+
+32. Which command would take the contents of the /home/kodekloud/ directory and create a gzipped tar archive of the contents in a file called kodekloud.tar.gz?
+
+    - tar -cvf /home/kodekloud/ kodekloud.tar.gz
+
+    - **tar -czvf kodekloud.tar.gz /home/kodekloud/**
+
+    - tar -czvf /home/kodekloud/ kodekloud.tar.gz
+
+    - tar -cvf kodekloud.tar.gz /home/kodekloud/
+
+33. Which command would search the /etc/ directory for the pattern “kodekloud” and redirect all output (stdout and stderr) to the file at /home/kodekloud/output.list?
+
+    - grep -r ‘kodekloud’ /etc/ > /home/kodekloud/output.list
+
+    - grep -r ‘kodekloud’ /etc/ 2> /home/kodekloud/output.list
+
+    - **grep -r ‘kodekloud’ /etc/ 2>&1 /home/kodekloud/output.list**
+
+    - grep -r ‘kodekloud’ /etc/ 1> /home/kodekloud/output.list
+
+34. You have compiled a custom kernel, and the filesystem type used by your Linux system’s root filesystem is compiled as a module. What would you need to include along with the kernel to make sure your system loads the root filesystem correctly?
+
+    - A copy of /etc/modules.conf.d/
+
+    - EFI applications
+
+    - bootstrap
+
+    - **initramfs**
+
+35. Which methods can be used on Linux to move memory pages from RAM to the hard disk?
+
+    - virtual memory
+
+    - **swap partition**
+
+    - disk cache
+
+    - **swap file**
+
+36. Which parameter would you add to dpkg-query to show which package contains a particular file?
+
+    - -W
+
+    - **-S**
+
+    - -s
+
+    - -l
+
+37. Which command(s) can we use to view the priority of a process that is already running? Select all that apply.
+
+    - **top**
+
+    - **ps**
+
+    - renice
+
+    - nice
+
+38. You see myphoto.jpg -> photo in the output of the ls command. What type of link does this show?
+
+    - **Soft**
+
+    - Hard
+
+39. To add execute permissions for the user-owner of a file to existing permissions, which command would you use?
+
+    - chmod +x
+
+    - chmod -x
+
+    - chmod u-x
+
+    - **chmod u+x**
+
+40. Which apt-cache command will provide information for a package?
+
+    - apt-cache search
+
+    - apt-cache info
+
+    - apt-cache print
+
+    - **apt-cache show**
+
+41. You have set a variable called kodekloud using the export command. Which command would print the value of the kodekloud variable?
+
+    - print kodekloud
+
+    - **echo $kodekloud**
+
+    - read $kodekloud
+
+    - echo kodekloud
+
+42. Temporary files can be located in _____. Select any that apply.
+
+    - **/var/tmp**
+
+    - **/run**
+
+    - **/tmp**
+
+    - /usr/tmp
+
+43. When using vi in normal mode, which command will delete the line at the cursor?
+
+    - yy
+
+    - ZZ
+
+    - **dd**
+
+    - d
+
+44. On a Debian system, which command would remove a package and all of its configuration files?
+
+    - dpkg -r
+
+    - **dpkg -P**
+
+    - dpkg --remove
+
+    - dkpg --erase
+
+45. Which command can be used to show information about all block devices on the system?
+
+    - ls /dev/
+
+    - mount
+
+    - **lsblk**
+
+    - disks
+
+46. A file named “myfile” has the user owner “kodekloud” and the group owner “users.” Which command(s) could be use to change the group owner to “friends”? Select all that apply.
+
+    - **chgrp friends myfile**
+
+    - chown myfile kodekloud:friends
+
+    - **chown kodekloud:friends myfile**
+
+    - chgrp myfile friends
+
+47. Which type of virtualization requires the guest to be capable of running all instructions on virtual hardware?
+
+    - paravirtualization
+
+    - **full virtualization**
+
+    - bare metal
+
+    - hybrid virtualization
+
+48. Which of the following are features of BTRFS? Select all that apply.
+
+    - **snapshots**
+
+    - encryption
+
+    - **subvolumes**
+
+    - **compression**
+
+49. Which yum command will bring repository metadata to the most recent version?
+
+    - yum metadata
+
+    - yum check-metadata
+
+    - yum upgrade
+
+    - **yum update**
+
+50. ## The naming format for shared libraries is:
+
+    - [libraryname.versionnumber.so](http://libraryname.versionnumber.so/)
+
+    - **libraryname.so.versionnumber**
+
+    - [libraryname-versionnumber.so](http://libraryname-versionnumber.so/)
+
+    - libraryname-so.versionnumber
+
+51. Which operator can be used to append text to a file, without overwriting the existing contents?
+
+    - <<
+
+    - <
+    - .
+    - **\>\>**
+
+52. Before checking a filesystem for errors and repairing any that are found, you should first use the ____ command on the filesystem to get it ready for this process.
+
+    - fsck
+
+    - xfs_repair
+
+    - **umount**
+
+    - mount
+
+53. Which option can be used with grep when the case (upper or lower) of the term does not matter?
+
+    - -e
+
+    - **-i**
+
+    - -k
+
+    - -f
+
+54. In addition to the device’s disk identifier and partition number (e.g., /dev/sda1), what else can be used in /etc/fstab to identify a partition? Select all that apply.
+
+    - FSID
+
+    - **label**
+
+    - blkid
+
+    - **UUID**
+
+55. The default configuration file for GNU screen is located at _____.
+
+    - /etc/screen/screenrc
+
+    - /etc/screen/conf/screenrc
+
+    - **/etc/screenrc**
+
+    - /etc/screen.conf.d/screenrc
+
+56. When using vi, in normal mode, which key allows us to search the file?
+
+    - **/**
+
+    - f
+
+    - t
+
+    - s
+
+57. Given a theoretical file located at /etc/rc3.d/S45 ethernet, what would happen to any services listed in this file when the system enters runlevel 3?
+
+    - They will be restarted.
+
+    - **They will start.**
+
+    - They will be suspended.
+
+    - They will stop.
+
+58. Using YUM or DNF, which option would uninstall a package from the system, along with any packages that depend on that package?
+
+    - delete
+
+    - uninstall
+
+    - purge
+
+    - **remove**
+
+59. On SysV systems, which file contains the default init configuration?
+
+    - /etc/defaults/inittab
+
+    - /etc/init.d/defaults
+
+    - /etc/conf.d/inittab
+
+    - **/etc/inittab**
+
+60. To get detailed information about a process when we already have the PID (process ID), we can use the _____ command.
+
+    - **ps**
+
+    - proc
+
+    - pgrep
+
+    - pkill

@@ -858,7 +858,538 @@ Check Load Balancer
 
 ![image-20230313181232043](images/image-20230313181232043.png)
 
-### CI/CD Pipeline
+### CI/CD Pipeline-1
+
+1. Create repository in GCP Cloud Source Repositories
+
+   ![image-20230316103750763](images/image-20230316103750763.png)
+
+   Put repository name "repo-1" and select "gcp-devops" project and click "Create"
+
+   ![image-20230316103929508](images/image-20230316103929508.png)
+
+   **Google Cloud SDK**
+
+   1. Install the [Google Cloud SDK ](https://cloud.google.com/sdk).
+
+   2. Provide your authentication credentials:
+
+      ```
+      gcloud init 
+      ```
+
+   3. Clone this repository to a local Git repository:
+
+      ```
+      gcloud source repos clone repo-1 --project=gcp-devops-379408
+      ```
+
+      Note: This may display the following message that is safe to ignore:
+      "Warning: remote HEAD refers to a nonexistent ref, unable to checkout."
+
+   4. Switch to your new local Git repository:
+
+      ```
+      cd repo-1
+      ```
+
+   5. After you've committed code to your local Git repository, push it to this repository:
+
+      ```
+      git push -u origin master content_copy
+      ```
+
+   6. If you are using a version of Git with main as the default branch instead of master, after you've committed code to your local Git repository, push it to this repository using:
+
+      ```
+      git push -u origin main
+      ```
+
+   7. Once you've completed all these steps, refresh your browser.
+
+   **SSH Authentication**
+
+   1. Setup SSH key.
+
+      Learn how 
+
+      If you already have a SSH key on your machine, skip to step 2. [Find SSH Keys on your machine ](https://cloud.google.com/source-repositories/docs/authentication#use_existing_keys).
+
+   2. [Register the SSH key ](https://source.cloud.google.com/user/ssh_keys?register=true)with Google Cloud.
+
+   3. Clone this repository to a local Git repository:
+
+      - Clone with command line
+
+        ```
+        git clone ssh://sherwinowen@gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-1
+        ```
+
+      - Or clone with VS Code [Clone](vscode://vscode.git/clone?url=ssh://sherwinowen@gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-1)
+
+      Note: This may display the following message that is safe to ignore:
+      "warning: You appear to have cloned an empty repository."
+
+   4. Switch to your new local Git repository:
+
+      ```
+      cd repo-1
+      ```
+
+   5. After you've committed code to your local Git repository, push it to this repository:
+
+      ```
+      git push -u origin master
+      ```
+
+   6. If you are using a version of Git with main as the default branch instead of master, after you've committed code to your local Git repository, push it to this repository using:
+
+      ```
+      git push -u origin main
+      ```
+
+   7. Once you've completed all these steps, refresh your browser.
+
+2. Clone repository
+
+   - Register ssh key
+
+   ```
+   git clone ssh://sherwinowen@gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-1
+   ```
+
+3. Add files "Dockerfile" and "main.py" in repo-1
+
+   Dockerfile
+
+   ```
+   FROM python:3.7-slim
+   RUN pip install flask
+   WORKDIR /myapp
+   COPY main.py /myapp/main.py
+   CMD ["python", "/myapp/main.py"]
+   ```
+
+   main.py
+
+   ```
+   from flask import Flask
+   
+   app = Flask(__name__)
+   
+   
+   @app.route('/')
+   def index():
+       return 'Welcome to Python Flask World v1.0'
+   
+   
+   if __name__ == '__main__':
+       app.run(host='0.0.0.0', port=8080)
+   ```
+
+4. Push files to the repository
+
+   ```
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git status
+   On branch master
+   No commits yet
+   Untracked files:
+     (use "git add <file>..." to include in what will be committed)
+   	Dockerfile
+   	main.py
+   nothing added to commit but untracked files present (use "git add" to track)
+   
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git add .
+   
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git status
+   On branch master
+   No commits yet
+   Changes to be committed:
+     (use "git rm --cached <file>..." to unstage)
+   	new file:   Dockerfile
+   	new file:   main.py
+   
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git commit -m "first commit" 
+   [master (root-commit) 64ca7f7] first commit
+    2 files changed, 17 insertions(+)
+    create mode 100644 Dockerfile
+    create mode 100644 main.py
+   
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git push -u origin master
+   Enumerating objects: 4, done.
+   Counting objects: 100% (4/4), done.
+   Delta compression using up to 8 threads
+   Compressing objects: 100% (4/4), done.
+   Writing objects: 100% (4/4), 494 bytes | 494.00 KiB/s, done.
+   Total 4 (delta 0), reused 0 (delta 0)
+   To ssh://gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-1
+    * [new branch]      master -> master
+   Branch 'master' set up to track remote branch 'master' from 'origin'.
+   
+   ```
+
+5. Create trigger in Cloud Build
+
+   ![image-20230316142047183](images/image-20230316142047183.png)
+
+   ![image-20230316142141988](images/image-20230316142141988.png)
+
+   ![image-20230316142232312](images/image-20230316142232312.png)
+
+   Run the trigger manually
+
+   ![image-20230316143605483](images/image-20230316143605483.png)
+
+   Check the History
+
+   ![image-20230316143847726](images/image-20230316143847726.png)
+
+   Check the Cointainer Registry if "image1" is created
+
+   ![image-20230316144053922](images/image-20230316144053922.png)
+
+6. Automatic Trigger when push to the repository is done.
+
+   Edit main.py
+
+   ```
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git status 
+   On branch master
+   Your branch is up to date with 'origin/master'.
+   
+   Changes not staged for commit:
+     (use "git add <file>..." to update what will be committed)
+     (use "git restore <file>..." to discard changes in working directory)
+   	modified:   main.py
+   
+   no changes added to commit (use "git add" and/or "git commit -a")
+   
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git add main.py 
+   
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git status 
+   On branch master
+   Your branch is up to date with 'origin/master'.
+   
+   Changes to be committed:
+     (use "git restore --staged <file>..." to unstage)
+   	modified:   main.py
+   
+   
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git commit -m "automate build"
+   [master 67dfdb2] automate build
+    1 file changed, 1 insertion(+), 1 deletion(-)
+   
+   sherwinowen@owenbox:~/Documents/cicd-pipeline/repo-1$ git push -u origin master
+   Enumerating objects: 5, done.
+   Counting objects: 100% (5/5), done.
+   Delta compression using up to 8 threads
+   Compressing objects: 100% (3/3), done.
+   Writing objects: 100% (3/3), 328 bytes | 328.00 KiB/s, done.
+   Total 3 (delta 1), reused 0 (delta 0)
+   remote: Resolving deltas: 100% (1/1)
+   To ssh://gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-1
+      db2ab79..67dfdb2  master -> master
+   Branch 'master' set up to track remote branch 'master' from 'origin'.
+   
+   ```
+
+   Check the Cointainer Registry if new image is created
+
+   ![image-20230316154758521](images/image-20230316154758521.png)
 
 
 
+### CI/CD Pipeline-2
+
+#### Deploy Pythn Web app to Google App Engine
+
+![image-20230317093749170](images/image-20230317093749170.png)
+
+1. Create repository
+
+   ![image-20230316155425842](images/image-20230316155425842.png)
+
+   2. Clone reposistory
+
+      ```
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline$ git clone ssh://sherwinowen@gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-2
+      ```
+
+      ```
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline/repo-2$ cp ~/Documents/my_tutorials/gcp/cloud_devops_engineer/devops/deploy-app/app-engine/*.* 
+      ```
+
+      main.py
+
+      ```
+      from flask import Flask
+      
+      app = Flask(__name__)
+      
+      
+      @app.route('/')
+      def index():
+          return 'Welcome to Python Flask World V1.0 from CI/CD pipeline'
+      
+      
+      if __name__ == '__main__':
+          app.run(host='0.0.0.0', port=8080)
+      ```
+
+      app.yaml
+
+      ```
+      runtime: python37
+      ```
+
+      requirements.txt
+
+      ```
+      Flask==2.0.2
+      ```
+
+      cloudbuild.yaml
+
+      ```
+      steps:
+      - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+        entrypoint: 'bash'
+        args: ['-c', 'gcloud config set app/cloud_build_timeout 1600 && gcloud app deploy']
+      options:
+        logging: CLOUD_LOGGING_ONLY
+      timeout: 1600s
+      ```
+
+      **Push to "repo-2" repository**
+
+      ```
+      $ git add .
+      
+      $ git commit -m "first app deploy commit"
+      
+      $ git push -u origin master
+      Warning: Permanently added the ECDSA host key for IP address '[108.177.125.82]:2022' to the list of known hosts.
+      Enumerating objects: 6, done.
+      Counting objects: 100% (6/6), done.
+      Delta compression using up to 8 threads
+      Compressing objects: 100% (4/4), done.
+      Writing objects: 100% (6/6), 712 bytes | 237.00 KiB/s, done.
+      Total 6 (delta 0), reused 0 (delta 0)
+      To ssh://gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-2
+       * [new branch]      master -> master
+      Branch 'master' set up to track remote branch 'master' from 'origin'.
+      ```
+
+   3.  Create service account 
+
+      Go to IAM and Admin > Service Accounts
+
+      ![image-20230316175604075](images/image-20230316175604075.png)
+
+      ![image-20230316182918647](images/image-20230316182918647.png)
+
+      
+
+   4. Create trigger in Cloud Build
+
+      ![image-20230316175904430](images/image-20230316175904430.png)
+
+      ![image-20230316175948581](images/image-20230316175948581.png)
+
+      Run trigger "dicd-2"
+
+      ![image-20230316183206794](images/image-20230316183206794.png)
+
+      **Go to App Engine > Services**
+
+      ![image-20230316183611713](images/image-20230316183611713.png)
+
+      
+
+      **Browse the "default" service**
+
+      ![image-20230316183659262](images/image-20230316183659262.png)
+
+   5. Try to edit main.py and build v2.0 image
+
+      main.py
+
+      ```
+      from flask import Flask
+      
+      app = Flask(__name__)
+      
+      
+      @app.route('/')
+      def index():
+          return 'Welcome to Python Flask World V2.0 from CI/CD pipeline'
+      
+      
+      if __name__ == '__main__':
+          app.run(host='0.0.0.0', port=8080)
+      
+      ```
+
+      ```
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline/repo-2$ git add .
+      
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline/repo-2$ git commit -m "v2.0"
+      [master a753e37] v2.0
+       1 file changed, 1 insertion(+), 1 deletion(-)
+      
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline/repo-2$ git push -u origin master 
+      Enumerating objects: 5, done.
+      Counting objects: 100% (5/5), done.
+      Delta compression using up to 8 threads
+      Compressing objects: 100% (3/3), done.
+      Writing objects: 100% (3/3), 284 bytes | 284.00 KiB/s, done.
+      Total 3 (delta 2), reused 0 (delta 0)
+      remote: Resolving deltas: 100% (2/2)
+      To ssh://gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-2
+         f93803f..a753e37  master -> master
+      Branch 'master' set up to track remote branch 'master' from 'origin'.
+      ```
+
+      **Check Cloud Build > History**
+
+      ![image-20230316184306173](images/image-20230316184306173.png)
+
+      **Go to App Engine > Services**
+
+      ![image-20230316184607303](images/image-20230316184607303.png)
+
+      **Browse the "default" service**
+
+      ![image-20230316184650822](images/image-20230316184650822.png)
+
+
+
+### CI/CD Pipeline-3
+
+#### Deploy to Google Cloud Function
+
+![image-20230317093905206](images/image-20230317093905206.png)
+
+1. Create repository
+
+   ![image-20230317094607305](images/image-20230317094607305.png)
+
+   2. Goto Cloud Functions and download the source code zip file 
+
+      ![image-20230317100243246](images/image-20230317100243246.png)
+
+   3. Clone "repo-3" repository 
+
+      ```
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline$ git clone ssh://sherwinowen@gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-3
+      Cloning into 'repo-3'...
+      warning: You appear to have cloned an empty repository.
+      
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline$ cd repo-
+      repo-1/ repo-2/ repo-3/ 
+      
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline$ cd repo-3/
+      ```
+
+      cloudbuild.yaml
+
+      ```
+      steps:
+      - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+        args:
+        - gcloud
+        - functions
+        - deploy
+        - function_cicd
+        - --region=us-central1
+        - --source=.
+        - --trigger-http
+        - --runtime=python37 
+        - --allow-unauthenticated
+      ```
+
+      main.py
+
+      ```
+      def function_cicd(request):
+          """Responds to any HTTP request.
+          Args:
+              request (flask.Request): HTTP request object.
+          Returns:
+              The response text or any set of values that can be turned into a
+              Response object using
+              `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
+          """
+          request_json = request.get_json()
+          if request.args and 'message' in request.args:
+              return request.args.get('message')
+          elif request_json and 'message' in request_json:
+              return request_json['message']
+          else:
+              return f'Function1 - V1.0 with CI/CD Pipeline '
+      ```
+
+      
+
+      ```
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline/repo-3$ git add .
+      
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline/repo-3$ git commit -m "first commit for CI/CD - Cloud Function"
+      [master (root-commit) c8e7279] first commit for CI/CD - Cloud Function
+       2 files changed, 12 insertions(+)
+       create mode 100644 cloudbuild.yaml
+       create mode 100644 function-source.zip
+      
+      sherwinowen@owenbox:~/Documents/my_lab/cicd-pipeline/repo-3$ git push -u origin master
+      Enumerating objects: 4, done.
+      Counting objects: 100% (4/4), done.
+      Delta compression using up to 8 threads
+      Compressing objects: 100% (4/4), done.
+      Writing objects: 100% (4/4), 979 bytes | 979.00 KiB/s, done.
+      Total 4 (delta 0), reused 0 (delta 0)
+      To ssh://gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-3
+       * [new branch]      master -> master
+      Branch 'master' set up to track remote branch 'master' from 'origin'.
+      ```
+
+   4. Goto Cloud Build and create trigger
+
+      ![image-20230317113256272](images/image-20230317113256272.png)
+
+      ![image-20230317113336116](images/image-20230317113336116.png)
+
+   5. Goto to Cloud Build and manually run the trigger "cicd-3"
+
+      ![image-20230317115031922](images/image-20230317115031922.png)
+
+      Check Build History
+
+      ![image-20230317115126766](images/image-20230317115126766.png)
+
+      Check Cloud Function
+
+      ![image-20230317115213098](images/image-20230317115213098.png)
+
+      Goto Cloud Function > click function_cicd > Permissions
+
+      - Grant access "allUsers" > "Cloud Functions Invoker"
+
+      ![image-20230317115841696](images/image-20230317115841696.png)
+
+      Goto Cloud Function > click function_cicd > Trigger and click "Trigger URL"
+
+      ![image-20230317120016094](images/image-20230317120016094.png)
+
+      ![image-20230317120041442](images/image-20230317120041442.png)
+
+
+
+### CI/CD Pipeline-3
+
+#### Deploy to Google Cloud Run
+
+![image-20230317120306431](images/image-20230317120306431.png)
+
+1. Create repository
+
+   ![image-20230317120533389](images/image-20230317120533389.png)
