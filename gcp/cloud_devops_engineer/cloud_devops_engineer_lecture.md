@@ -1384,7 +1384,7 @@ Check Load Balancer
 
 
 
-### CI/CD Pipeline-3
+### CI/CD Pipeline-4
 
 #### Deploy to Google Cloud Run
 
@@ -1393,3 +1393,106 @@ Check Load Balancer
 1. Create repository
 
    ![image-20230317120533389](images/image-20230317120533389.png)
+   
+   Clone repository
+   
+   ```
+   git clone ssh://sherwinowen@gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-4
+   ```
+   
+   main.py
+   
+   ```
+   from flask import Flask
+   
+   app = Flask(__name__)
+   
+   
+   @app.route('/')
+   def index():
+       return 'Welcome to Python Flask World v2.0'
+   
+   
+   if __name__ == '__main__':
+       app.run(host='0.0.0.0', port=8080)
+   ```
+   
+   Dockerfile
+   
+   ```
+   FROM python:3.7-slim
+   RUN pip install flask
+   WORKDIR /myapp
+   COPY main.py /myapp/main.py
+   CMD ["python", "/myapp/main.py"]
+   ```
+   
+   cloudbuild.yaml
+   
+   ```
+   steps:
+   # Build the container image
+   - name: 'gcr.io/cloud-builders/docker'
+     args: ['build', '-t', 'gcr.io/gcp-devops-379408/runimage', '.']
+   # Push the container image to Container Registry
+   - name: 'gcr.io/cloud-builders/docker'
+     args: ['push', 'gcr.io/gcp-devops-379408/runimage']
+   # Deploy container image to Cloud Run
+   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+     entrypoint: gcloud
+     args: ['run', 'deploy', 'runwithcicd', '--image', 'gcr.io/gcp-devops-379408/runimage', '--region', 'us-central1', '--allow-unauthenticated']
+   images:
+   - gcr.io/gcp-devops-379408/runimage
+   ```
+   
+   Push to "repo-4" repository
+   
+   ```
+   sherwinowen@Owen-MBA repo-4 % git add .
+   
+   sherwinowen@Owen-MBA repo-4 % git commit -m "first commit for cicd Cloud Run dem
+   o"
+   [master (root-commit) 0f5733a] first commit for cicd Cloud Run demo
+    3 files changed, 31 insertions(+)
+    create mode 100644 Dockerfile
+    create mode 100644 cloudbuild.yaml
+    create mode 100644 main.py
+   
+   sherwinowen@Owen-MBA repo-4 % git push -u origin master
+   Enter passphrase for key '/Users/sherwinowen/.ssh/id_rsa':
+   Enumerating objects: 5, done.
+   Counting objects: 100% (5/5), done.
+   Delta compression using up to 8 threads
+   Compressing objects: 100% (5/5), done.
+   Writing objects: 100% (5/5), 816 bytes | 816.00 KiB/s, done.
+   Total 5 (delta 0), reused 0 (delta 0), pack-reused 0
+   To ssh://gmail.com@source.developers.google.com:2022/p/gcp-devops-379408/r/repo-4
+    * [new branch]      master -> master
+   branch 'master' set up to track 'origin/master'.
+   ```
+   
+   
+   
+   2. Goto Cloud Build and create Trigger
+   
+      ![image-20230317155910961](images/image-20230317155910961.png)
+   
+      Run Trigger and check Build History
+   
+      ![image-20230317160429970](images/image-20230317160429970.png)
+   
+   3. Goto Cloud Run and check for "runwithcicd" service browse the URL
+   
+      ![image-20230317161533191](images/image-20230317161533191.png)
+   
+      
+   
+      ![image-20230317161628397](images/image-20230317161628397.png)
+   
+      
+### CI/CD Pipeline-5
+
+​      
+
+​      
+
