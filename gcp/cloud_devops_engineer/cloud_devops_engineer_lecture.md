@@ -2638,7 +2638,7 @@ OR
   - Python/Java SDK
   - From On-premises
 
-## Log Collection via Gcloud SDK
+### Log Collection via Gcloud SDK
 
 **Write a log**
 
@@ -2722,5 +2722,18 @@ severity: CRITICAL
 timestamp: '2023-03-24T01:30:41.959958913Z'
 ```
 
+### Log collection - other google cloud services
 
+**Check Cloud run logs**
+
+- **Goto Logs Explorer and Select resource (GCP services) you want to query**
+
+![image-20230324141610442](images/image-20230324141610442.png)
+
+**Log Collection Nginx**
+
+**Install legacy logging agent**
+
+```
+```
 
