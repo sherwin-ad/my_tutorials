@@ -2735,5 +2735,440 @@ timestamp: '2023-03-24T01:30:41.959958913Z'
 **Install legacy logging agent**
 
 ```
+curl -sSO https://dl.google.com/cloudagents/add-logging-agent-repo.sh
+
+sudo bash add-logging-agent-repo.sh --also-install
 ```
 
+**Restart the agent service**
+
+```
+sudo service google-fluentd restart
+```
+
+**To verify that the agent is working as expected, run:**
+
+```
+$ sudo service google-fluentd status
+● google-fluentd.service - LSB: data collector for Treasure Data
+     Loaded: loaded (/etc/init.d/google-fluentd; generated)
+     Active: active (running) since Mon 2023-03-27 23:41:37 UTC; 9min ago
+       Docs: man:systemd-sysv-generator(8)
+    Process: 2119 ExecStart=/etc/init.d/google-fluentd start (code=exited, status=0/SUCCESS)
+      Tasks: 112 (limit: 4389)
+     Memory: 134.5M
+        CPU: 6.930s
+     CGroup: /system.slice/google-fluentd.service
+             ├─2146 /opt/google-fluentd/embedded/bin/ruby /usr/sbin/google-fluentd --log /var/log/google-fluen>
+             └─2149 /opt/google-fluentd/embedded/bin/ruby -Eascii-8bit:ascii-8bit /usr/sbin/google-fluentd --l>
+
+Mar 27 23:41:36 instance-log google-fluentd[2139]: /opt/google-fluentd/embedded/lib/ruby/gems/2.7.0/gems/fluen>
+Mar 27 23:41:36 instance-log google-fluentd[2139]: /opt/google-fluentd/embedded/lib/ruby/gems/2.7.0/gems/fluen>
+Mar 27 23:41:36 instance-log google-fluentd[2139]: /opt/google-fluentd/embedded/lib/ruby/gems/2.7.0/gems/fluen>
+Mar 27 23:41:36 instance-log google-fluentd[2139]: /opt/google-fluentd/embedded/lib/ruby/gems/2.7.0/gems/fluen>
+Mar 27 23:41:36 instance-log google-fluentd[2139]: /opt/google-fluentd/embedded/lib/ruby/gems/2.7.0/gems/fluen>
+Mar 27 23:41:36 instance-log google-fluentd[2139]: /opt/google-fluentd/embedded/lib/ruby/gems/2.7.0/gems/fluen>
+Mar 27 23:41:36 instance-log google-fluentd[2139]: /opt/google-fluentd/embedded/lib/ruby/gems/2.7.0/gems/fluen>
+Mar 27 23:41:36 instance-log google-fluentd[2139]: /opt/google-fluentd/embedded/lib/ruby/gems/2.7.0/gems/fluen>
+Mar 27 23:41:37 instance-log google-fluentd[2119]: google-fluentd.
+Mar 27 23:41:37 instance-log systemd[1]: Started LSB: data collector for Treasure Data.
+```
+
+**You can also examine the logs and ensure there are no errors:**
+
+```
+sherwinowen@instance-log:~$ tail /var/log/google-fluentd/google-fluentd.log 
+2023-03-27 23:41:39 +0000 [info]: #0 Started the add_insert_ids plugin with logging.googleapis.com/insertId as the insert ID key.
+2023-03-27 23:41:39 +0000 [info]: #0 Initialized the insert ID key to cl8xih7qragoajjhx.
+2023-03-27 23:41:39 +0000 [info]: #0 analyze_config plugin: Started the plugin to analyze configuration.
+2023-03-27 23:41:39 +0000 [info]: #0 listening syslog socket on 127.0.0.1:514 with tcp
+2023-03-27 23:41:39 +0000 [info]: #0 listening syslog socket on 127.0.0.1:514 with udp
+2023-03-27 23:41:39 +0000 [info]: #0 following tail of /var/log/syslog
+2023-03-27 23:41:39 +0000 [info]: #0 following tail of /var/log/messages
+2023-03-27 23:41:39 +0000 [info]: #0 listening port port=24224 bind="127.0.0.1"
+2023-03-27 23:41:39 +0000 [info]: #0 fluentd worker is now running worker=0
+2023-03-27 23:41:45 +0000 [info]: #0 Successfully sent gRPC to Stackdriver Logging API.
+```
+
+**google-fluentd configuration file and folder**
+
+- /etc/google-fluentd/google-fluentd.conf
+- /etc/google-fluentd/config.d
+
+```
+sherwinowen@instance-log:~$ ls -l /etc/google-fluentd/config.d/
+total 112
+-rw-r--r-- 1 root root  515 Jan 13  2021 apache.conf
+-rw-r--r-- 1 root root  624 Jan 13  2021 cassandra.conf
+-rw-r--r-- 1 root root 2471 Jan 13  2021 chef.conf
+-rw-r--r-- 1 root root  162 Jan 13  2021 forward.conf
+-rw-r--r-- 1 root root 1614 Jan 13  2021 gitlab.conf
+-rw-r--r-- 1 root root  268 Jan 13  2021 jenkins.conf
+-rw-r--r-- 1 root root  537 Jan 13  2021 jetty.conf
+-rw-r--r-- 1 root root  322 Jan 13  2021 joomla.conf
+-rw-r--r-- 1 root root  747 Jan 13  2021 magento.conf
+-rw-r--r-- 1 root root  368 Jan 13  2021 mediawiki.conf
+-rw-r--r-- 1 root root  167 Jan 13  2021 memcached.conf
+-rw-r--r-- 1 root root  163 Jan 13  2021 mongodb.conf
+-rw-r--r-- 1 root root  966 Jan 13  2021 mysql.conf
+-rw-r--r-- 1 root root  350 Jan 13  2021 nginx.conf
+-rw-r--r-- 1 root root  192 Jan 13  2021 postgresql.conf
+-rw-r--r-- 1 root root 5197 Jan 13  2021 puppet-enterprise.conf
+-rw-r--r-- 1 root root  545 Jan 13  2021 puppet.conf
+-rw-r--r-- 1 root root 1156 Jan 13  2021 rabbitmq.conf
+-rw-r--r-- 1 root root  177 Jan 13  2021 redis.conf
+-rw-r--r-- 1 root root  163 Jan 13  2021 redmine.conf
+-rw-r--r-- 1 root root  674 Jan 13  2021 salt.conf
+-rw-r--r-- 1 root root  154 Jan 13  2021 solr.conf
+-rw-r--r-- 1 root root  166 Jan 13  2021 sugarcrm.conf
+-rw-r--r-- 1 root root  289 Jan 13  2021 syslog.conf
+-rw-r--r-- 1 root root  271 Jan 13  2021 syslog_endpoint.conf
+-rw-r--r-- 1 root root  669 Jan 13  2021 tomcat.conf
+-rw-r--r-- 1 root root  373 Jan 13  2021 zookeeper.conf
+```
+
+
+
+**Check in Log Monitoring if legacy agent is installed**
+
+![image-20230328074758751](images/image-20230328074758751.png)
+
+**Check the Log Explorer**
+
+![image-20230328080731936](images/image-20230328080731936.png)
+
+### Cloud Logging API
+
+#### From cloud shell
+
+log-main.py
+
+```
+#!/usr/bin/env python
+
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+def run_quickstart():
+    # [START logging_quickstart]
+    # Imports the Google Cloud client library
+    from google.cloud import logging
+
+    # Instantiates a client
+    logging_client = logging.Client()
+
+    # The name of the log to write to
+    log_name = "log-from-py-1"
+    # Selects the log to write to
+    logger = logging_client.logger(log_name)
+
+    # The data to log
+    text = "Hello, world 1 from Python code!"
+
+    # Writes the log entry
+    logger.log_text(text)
+
+    print("Logged: {}".format(text))
+    # [END logging_quickstart]
+
+
+if __name__ == "__main__":
+    run_quickstart()
+```
+
+**Run log-main.py**
+
+```
+sherwinowen@cloudshell:~/devops/log (gcp-devops-379408)$ python3 log-main.py
+Logged: Hello, world 1 from Python code!
+```
+
+**Check the logs in Log Explorer**
+
+![image-20230328083505309](images/image-20230328083505309.png)
+
+#### From on on-premise
+
+**Install google-cloud-logging module**
+
+```
+pip3 install google-cloud-logging
+```
+
+**Create key in service account**
+
+**![image-20230328084917506](images/image-20230328084917506.png)**
+
+log-main2.py
+
+```
+#!/usr/bin/env python
+
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+def run_quickstart():
+    # [START logging_quickstart]
+    # Imports the Google Cloud client library
+    from google.cloud import logging
+
+    # Instantiates a client
+    logging_client = logging.Client()
+
+    # The name of the log to write to
+    log_name = "log-from-py-1"
+    # Selects the log to write to
+    logger = logging_client.logger(log_name)
+
+    # The data to log
+    text = "Hello, world 2 from Python code!"
+
+    # Writes the log entry
+    logger.log_text(text)
+
+    print("Logged: {}".format(text))
+    # [END logging_quickstart]
+
+
+if __name__ == "__main__":
+    run_quickstart()
+```
+
+**Run log-main2.py**
+
+```
+sherwinowen@owenbox:~/Documents/my_tutorials/gcp/cloud_devops_engineer/devops/log$ set GOOGLE_APPLICATION_CREDENTIALS=gcp-devops-379408-539172535321.json
+
+sherwinowen@owenbox:~/Documents/my_tutorials/gcp/cloud_devops_engineer/devops/log$ python3 log-main2.py 
+Logged: Hello, world 2 from Python code!
+```
+
+**Check the logs in Log Explorer**
+
+![image-20230328090616118](images/image-20230328090616118.png)
+
+### Log based Metrics - Counter
+
+**Create log metric**
+
+![image-20230328095039491](images/image-20230328095039491.png)
+
+**Check Metrics Explorer**
+
+![image-20230328101434259](images/image-20230328101434259.png)
+
+
+
+
+
+### Log based Metrics - Distribution
+
+**Create log metric**
+
+![image-20230328102339768](images/image-20230328102339768.png)
+
+**Check Metrics Explorer**
+
+![image-20230328103004507](images/image-20230328103004507.png)
+
+
+
+### Cloud Log Router
+
+- Log arrives at Log Router from various sources
+- From Router, diverted to various sink
+- Two types of Log Bucket
+  - _Required
+  - _Default
+- Logs can be routed to User defined Bucket
+- Sinks
+    - BigQuery
+    - Cloud Storage
+    - PubSub
+
+![image-20230328104405528](images/image-20230328104405528.png)
+
+**Create user defined log bucket** 
+
+- Goto Logs Storage and Create Log Bucket
+
+ ![image-20230328104721732](images/image-20230328104721732.png)
+
+**Create sink to user-defined log bucket "my-log-bucket"**
+
+- Goto Log Router and Create Sink
+
+![image-20230328105011316](images/image-20230328105011316.png)
+
+# More Ops/Dev Tool
+
+- Cloud error reporting – detect error
+- Cloud Debugger – Find state of running application
+- Cloud Trace - latency
+- Cloud Profiler – How much resource consumed
+
+## Cloud Error Reporting
+
+- Cloud error reporting – detect error
+
+app.yaml
+
+```
+runtime: python37
+```
+
+requirement.txt
+
+```
+Flask==2.2.3
+```
+
+main.py
+
+```
+from flask import Flask
+
+app = Flask(__name__)
+
+
+@app.route('/')
+def index():
+        dividebyzero = 3/0
+        return 'Welcome to Python Flask World Error Reporting'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
+```
+
+**Deploy source code to App Engine**
+
+```
+gcloud app deploy
+```
+
+**Check Error Reporting**
+
+![image-20230329071016359](images/image-20230329071016359.png)
+
+
+
+## Cloud Debugger
+
+- Cloud Debugger – Find state of running application
+
+https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/appengine/standard_python3/cloud_debugger
+
+**Clone repository**
+
+```
+sherwinowen@cloudshell:~ (gcp-devops-379408)$ git clone https://github.com/GoogleCloudPlatform/python-docs-samples.git
+```
+
+**Deploy source code in App Engine**
+
+```
+sherwinowen@cloudshell:~ (gcp-devops-379408)$ cd python-docs-samples/appengine/standard_python3/cloud_debugger/
+
+sherwinowen@cloudshell:~/devops/python-docs-samples/appengine/standard_python3/cloud_debugger (gcp-devops-379408)$ gcloud app deploy
+```
+
+**Check Cloud Debugger**
+
+![image-20230329101532071](images/image-20230329101532071.png)![image-20230329102606519](/home/sherwinowen/Documents/my_tutorials/gcp/cloud_devops_engineer/images/image-20230329102606519.png)
+
+## Cloud Trace
+
+- Cloud Trace - latency
+
+![image-20230329111057631](images/image-20230329111057631.png)
+
+
+
+
+
+# Optimize resource utilization
+
+- Resource cost, utilization levels, Billing
+- Pre-emptible VMs
+- Committed use discounts [CUD], sustained use discounts[SUD]
+- TCO considerations
+
+## Preemptible VM
+
+- Just like Other virtual machine
+- Short lived cheaper virtual machine
+- Provision Pre-emptible VM When
+  - Workload is fault tolerant
+  - Not require 100% high availability
+  - Cost is critical
+- up to 80% discount
+- max life is 24 hours
+- Not always available
+- Google give you 30 sec warning before auto shutdown
+    - Regular VM has higher priority than Preemptible VM
+
+![image-20230329115824910](images/image-20230329115824910.png)
+
+## Flat Rate
+- Pay for what you use
+- No Special Discount
+- In Compute Engine :
+  - E2 and A2 category of Machine
+
+## Sustained use discounts[CUD]
+- Sustained use discounts are automatic discounts for running specific Compute Engine resources a significant portion of the billing month
+
+-  Applies to N1, N2 machine types
+
+  - Not applicable to other machine type
+
+- If you use at least 25% of month
+    
+- Only on GKE & VM Instances
+
+## Committed use discounts[CUD]
+
+- Let’s say your workload is predictable
+- you can commit for 1 year or 3 year
+- Get up to 70% of discount.
+- Only on GKE & VM Instances
+- Can not cancel commitments
+
+**Goto to Compute Engine > Committed Use Discount**
+
+![image-20230329144508714](images/image-20230329144508714.png)
+
+
+
+## Total cost of operations (TCO)
+- TCO = Purchase Cost of Asset + Cost of operation
+- When moving to Cloud from on Premises
+  - Cost need to consider
+  - In GCP, No purchase of asset
+  - Provision Resources with no minimum commitment (Expect few service feature)
+  - Cost include (Pay as you go model)
+  - Operation Cost
