@@ -3048,3 +3048,3645 @@ host_key_checking = False
    - Prepare Environment
    - Apply Playbook
    - Verify Tasks
+
+
+
+## LABS – MODULES – USERS AND GROUPS
+
+1. Which of these options is used with `Users` module to expire a user account
+
+   - **expires**
+   - expires_at
+   - expiry
+   - remove_after
+
+2. Write a playbook `create_user.yml` to create a user named `admin` with `group: admin` and `uid: 2048`
+
+   *NOTE: Your playbook must be placed inside folder: `/home/thor/playbooks/`. Run this playbook for all servers which are listed in `/home/thor/playbooks/inventory` file.*
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   inventory 
+
+   ```
+   node00 ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   node01 ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=root
+   ```
+
+   create_user.yml
+
+   ```
+   ---
+   - hosts: all
+     gather_facts: no
+     tasks:
+       - group:
+           name: 'admin'
+           state: present
+       - user:
+           name: 'admin'
+           uid: 2048
+           group: 'admin'
+   ```
+
+3. Suppose `Sabin Nepal` joined your team on the first day of 2020 as a special contractor to work for a span of 3 years, ie, till the end of the year 2023. He needs his accounts on the remote hosts till his work span.
+
+   Write a playbook `add_user.yml` to create his user account with username `neymarsabin` that would be expiring after 3 years. The `expires` option on the users module is in the epoch. So `Sunday, December 31, 2023 11:59:59 PM GMT`== `1704067199` as epoch time
+
+   Remember: your playbook must be placed inside `/home/thor/playbooks` and use `inventory` file there.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   add_user.yml
+
+   ```
+   ---
+   - hosts: all
+     gather_facts: no
+     tasks:
+       - user:
+           name: 'neymarsabin'
+           expires: 1704067199
+   ```
+
+4. The `admin` user you created earlier got compromised for some reason, and you need to remove it asap from the system.
+
+   Write a playbook `remove_user.yml` to remove the admin account created earlier.
+
+   Remember, your playbook must be placed inside `/home/thor/playbooks` and use `inventory` file there.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   remove_user.yml
+
+   ```
+   ---
+   - hosts: all
+     gather_facts: no
+     tasks:
+       - user:
+           name: 'admin'
+           state: absent
+       - group:
+           name: 'admin'
+           state: absent
+   ```
+
+   
+
+## Project Introduction
+
+https://github.com/kodekloudhub/learning-app-ecommerce
+
+**Install Firewall**
+
+```
+$ sudo yum install firewalld
+$ sudo service firewalld start
+$ sudo systemctl enable firewalld
+```
+
+**Install MariaDB**
+
+```
+$ sudo yum install mariadb-server
+```
+
+**Configure MariaDB**
+
+```
+$ sudo vi /etc/my.cnf # configure the file with the right port
+```
+
+**Start and Enable MariaDB**
+
+```
+$ sudo service mariadb start
+$ sudo systemctl enable mariadb
+```
+
+**Configure Firewall**
+
+```
+$ sudo firewall-cmd --permanent --zone=public --add-port=3306/tcp
+$ sudo firewall-cmd --reload
+```
+
+**Configure Database**
+
+```
+$ mysql
+MariaDB > CREATE DATABASE ecomdb;
+MariaDB > CREATE USER 'ecomuser'@'localhost' IDENTIFIED BY 'ecompassword’;
+MariaDB > GRANT ALL PRIVILEGES ON *.* TO 'ecomuser'@'localhost';
+MariaDB > FLUSH PRIVILEGES;
+```
+
+**Load Data**
+
+```
+$ mysql < db-load-script.sql
+```
+
+**Install httpd / Install php / Configure Firewall**
+
+```
+$ sudo yum install –y httpd php php-mysql
+$ sudo firewall-cmd --permanent --zone=public --add-port=80/tcp
+$ sudo firewall-cmd --reload
+```
+
+**Configure httpd**
+
+```
+$ sudo vi /etc/httpd/conf/httpd.conf #
+# configure DirectoryIndex to use index.php instead of index.html
+```
+
+**Start and Enable httpd**
+
+```
+$ sudo service httpd start
+$ sudo systemctl enable httpd
+```
+
+**Download Code**
+
+```
+$ sudo yum install –y git
+$ git clone https://github.com/<application>.git /var/www/html/
+# Update index.php to use the right database address, name and credentials
+```
+
+**Test**
+
+```
+$ curl http://localhost
+```
+
+## PROJECT – ENVIRONMENT SETUP
+
+1. Let us explore the environment for our `KodeKloud e-commerce LAMP stack` application. There are 2 servers - `lamp-web` and `lamp-db`. Let us setup the inventory files for that. Create an inventory file at `/home/thor/playbooks/lamp-stack-playbooks/inventory` to include the following data:
+
+   **Hosts:** `lamp-web, lamp-db`
+
+   **Groups:** `db_servers` contains `lamp-db`; `web_servers` contains `lamp-web`
+
+   **IP Addresses:** `lamp-web: 172.20.1.100; lamp-db: 172.20.1.101`
+
+   **Credentials for lamp-web:** `Username=john Password=john`
+
+   **Credentials for lamp-db** `Username=maria Password=maria`
+
+   Check
+
+   - Inventory must contain hosts
+   - Inventory must contain groups
+   - lamp-web server: Host, User and Password
+   - lamp-db server: Host, User & Password
+
+   inventory
+
+   ```
+   [db_servers]
+   lamp-db ansible_host=172.20.1.101 ansible_ssh_pass=maria ansible_user=maria
+   
+   [web_servers]
+   lamp-web ansible_host=172.20.1.100 ansible_ssh_pass=john ansible_user=john
+   ```
+
+2. Let's add some additional data required for setting up the database and web servers. The data should be associated with the respective servers.
+
+   **Database Info:**
+
+   ```
+   mysqlservice=mysqld
+   mysql_port=3306
+   dbname=ecomdb
+   dbuser=ecomuser
+   dbpassword=ecompassword
+   ```
+
+   **Web Info:**
+
+   ```
+   httpd_port=80
+   repository=https://github.com/kodekloudhub/learning-app-ecommerce.git
+   ```
+
+   Check
+
+   - lamp-db server: dbname, dbpassword, dbuser
+   - lamp-db server: mysql_port
+   - lamp-db server: mysql_port
+   - lamp-web server: httpd_port
+   - lamp-web server: repository
+
+   inventory
+
+   ```
+   [db_servers]
+   lamp-db ansible_host=172.20.1.101 ansible_user=maria mysqlservice=mysqld mysql_port=3306 dbname=ecomdb dbuser=ecomuser dbpassword=ecompassword
+   
+   [web_servers]
+   lamp-web ansible_host=172.20.1.100 ansible_user=john httpd_port=80 repository=https://github.com/kodekloudhub/learning-app-ecommerce.git
+   ```
+
+3. Let us setup password less authentication between `Ansible Controller` and the web/db servers.
+
+   Create a pair of SSH keys for each user (without any passphrase) at `/home/thor/.ssh/maria` and `/home/thor/.ssh/john`
+
+   And distribute the public keys to the web and database servers - `lamp-db` and `lamp-web`.
+
+   DB server user is `maria` and its password is `maria`. Web server user is `john` and its password is `john`.
+
+   Check
+
+   - Generate SSH Keys for Maria
+   - Generate SSH Keys for John
+   - Distribute Maria's keys to lamp-db
+   - Distribute John's keys to web server
+
+   ```
+   ssh-keygen -f /home/thor/.ssh/maria 
+   
+   ssh-keygen -f /home/thor/.ssh/john 
+   
+   ssh-copy-id -i /home/thor/.ssh/maria maria@lamp-db and 
+   
+   ssh-copy-id -i /home/thor/.ssh/john john@lamp-web
+   ```
+
+4. Update the inventory file to use the newly created private keys for the respective hosts
+
+   Check
+
+   - Inventory uses private key file for lamp-db
+   - Inventory uses private key file for lamp-web
+   - Inventory no longer contains passwords for lamp-web
+   - Inventory no longer contains passwords for lamp-db
+
+   inventory
+
+   ```
+   [db_servers]
+   lamp-db ansible_host=172.20.1.101 ansible_ssh_private_key_file=/home/thor/.ssh/maria ansible_user=maria mysqlservice=mysqld mysql_port=3306 dbname=ecomdb dbuser=ecomuser dbpassword=ecompassword
+   
+   [web_servers]
+   lamp-web ansible_host=172.20.1.100 ansible_ssh_private_key_file=/home/thor/.ssh/john ansible_user=john httpd_port=80 repository=https://github.com/kodekloudhub/learning-app-ecommerce.git
+   ```
+
+5. A playbook `deploy-lamp-stack.yml` is given with a basic tasks to install basic libraries. Execute the playbook and fix any issues.
+
+   You are not required to add any tasks or plays. Only fix the issue with execution.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   deploy-lamp-stack.yml
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes 
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   ```
+
+6. Perfect! We are all set with our environment to start building our playbooks. Once you go through more Ansible concepts through the course, we will resume developing this project to write playbooks to configure the LAMP stack application.
+
+   OK
+
+## PROJECT – PLAYBOOK
+
+1. Let us continue to improve our `LAMP stack E-Commerce` application. Now that we have learned to develop playbooks and various modules, let's further develop our playbooks to install packages and configure applications.
+
+   Let us start with the first step of installing common dependencies on both the servers. We need the following packages installed on both web and db servers.
+
+   ```
+   libselinux-python
+   libsemanage-python
+   ```
+
+   `firewalld`.
+
+   Playbook: `~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   inventory
+
+   ```
+   [db_servers]
+   lamp-db ansible_host=172.20.1.101 ansible_ssh_private_key_file=/home/thor/.ssh/maria ansible_user=maria mysqlservice=mysqld mysql_port=3306 dbname=ecomdb dbuser=ecomuser dbpassword=ecompassword
+   
+   [web_servers]
+   lampweb ansible_host=172.20.1.100 ansible_ssh_private_key_file=/home/thor/.ssh/john ansible_user=john httpd_port=80 repository=https://github.com/kodekloudhub/learning-app-ecommerce.git
+   ```
+
+   deploy-lamp-stack.yml
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   ```
+
+   ```
+   $ ansible-playbook -i inventory deploy-lamp-stack.yml 
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lampweb]
+   ok: [lamp-db]
+   
+   TASK [Install common dependencies] ************************************************************************
+   changed: [lamp-db]
+   changed: [lampweb]
+   
+   PLAY RECAP ************************************************************************************************
+   lamp-db                    : ok=2    changed=1    unreachable=0    failed=0   
+   lampweb                    : ok=2    changed=1    unreachable=0    failed=0   
+   ```
+
+   
+
+2. Let us now configure MariaDB Service on the `lamp-db` server. Update the playbook to add a play to perform the following tasks on `lamp-db`
+
+   ##### 1. Install the following packages: 
+
+   ```
+   mariadb-server
+   MySQL-python
+   ```
+
+   ##### 2. Copy the MySQL Configuration file
+
+   located at `files/my.cnf` to `/etc/my.cnf`
+
+   ##### 3. Start and enable the `mariadb` Service
+
+   ##### 4. Start and enable the `firewalld` Service
+
+   ##### 5. Insert `firewalld` rule
+
+   Allow mysql_port - `3306/tcp`
+   `zone - public`
+
+   Playbook: `~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   **my.cnf**
+
+   ```
+   [mysqld]
+   innodb-buffer-pool-size=5242880
+   # datadir=/var/lib/mysql
+   # socket=/var/lib/mysql/mysql.sock
+   user=mysql
+   # Disabling symbolic-links is recommended to prevent assorted security risks
+   symbolic-links=0
+   port=3306
+   ```
+
+   **deploy-lamp-stack.yml**
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   
+   # Install and Configure Database
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     tasks:
+       - name: Install MariaDB package
+         yum:
+           name:
+             - mariadb-server
+             - MySQL-python
+           state: installed
+   
+       - name: Create Mysql configuration file
+         copy: src=files/my.cnf dest=/etc/my.cnf
+   
+       - name: Start MariaDB Service
+         service: name=mariadb state=started enabled=yes
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule
+         firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   ```
+
+   ```
+   $ ansible-playbook -i inventory deploy-lamp-stack.yml 
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lamp-db]
+   ok: [lampweb]
+   
+   TASK [Install common dependencies] ************************************************************************
+   ok: [lamp-db]
+   ok: [lampweb]
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Install MariaDB package] ****************************************************************************
+   changed: [lamp-db]
+   
+   TASK [Create Mysql configuration file] ********************************************************************
+   changed: [lamp-db]
+   
+   TASK [Start MariaDB Service] ******************************************************************************
+   changed: [lamp-db]
+   
+   TASK [Start firewalld] ************************************************************************************
+   changed: [lamp-db]
+   
+   TASK [insert firewalld rule] ******************************************************************************
+   changed: [lamp-db]
+   
+   PLAY RECAP ************************************************************************************************
+   lamp-db                    : ok=8    changed=5    unreachable=0    failed=0   
+   lampweb                    : ok=2    changed=0    unreachable=0    failed=0   
+   ```
+
+   
+
+3. Let us now configure MariaDB Database and add some inventory data for our e-commerce store. Update the playbook to add a play to perform the following tasks on `lamp-db`
+
+   ##### 1. Create Application Database
+
+   Use the `dbname` variable from inventory as the name of the database
+
+   ##### 2. Create Application Database User
+
+   Use inventory variables `dbuser` `dbpassword` from inventory.
+
+   ```
+   host` should be set to IP address of web server `172.20.1.100
+   priv` should be set to `*.*:ALL
+   ```
+
+   ##### 3. Copy `db-load-script.sql` file to `/tmp` directory on the database server
+
+   ##### 4. Load Inventory data by running the below `shell` command on the database server
+
+   ```
+   mysql -f < /tmp/db-load-script.sql
+   ```
+
+   Playbook: `~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Database
+   - Verify Data
+
+   db-load-script.sql 
+
+   ```
+   USE ecomdb;
+   CREATE TABLE products (id mediumint(8) unsigned NOT NULL auto_increment,Name varchar(255) default NULL,Price varchar(255) default NULL, ImageUrl varchar(255) default NULL,PRIMARY KEY (id)) AUTO_INCREMENT=1;
+   
+   INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
+   ```
+
+   Update `deploy-lamp-stack.yml` playbook as per below given code
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   
+       # Install and Configure Database
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     tasks:
+       - name: Install MariaDB package
+         yum:
+           name:
+             - mariadb-server
+             - MySQL-python
+           state: installed
+   
+       - name: Create Mysql configuration file
+         copy: src=files/my.cnf dest=/etc/my.cnf
+   
+       - name: Start MariaDB Service
+         service: name=mariadb state=started enabled=yes
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule
+         firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Create Application Database
+         mysql_db: name={{ dbname }} state=present
+   
+       - name: Create Application DB User
+         mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host='172.20.1.100' state=present
+   
+       - name: Move db-load-script to db host
+         copy:
+           src: files/db-load-script.sql
+           dest: /tmp/db-load-script.sql
+   
+       - name: Load Inventory Data
+         shell: mysql -f < /tmp/db-load-script.sql
+   ```
+
+   ```
+   $ ansible-playbook -i inventory deploy-lamp-stack.yml 
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lampweb]
+   ok: [lamp-db]
+   
+   TASK [Install common dependencies] ************************************************************************
+   ok: [lamp-db]
+   ok: [lampweb]
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Install MariaDB package] ****************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Mysql configuration file] ********************************************************************
+   ok: [lamp-db]
+   
+   TASK [Start MariaDB Service] ******************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Start firewalld] ************************************************************************************
+   ok: [lamp-db]
+   
+   TASK [insert firewalld rule] ******************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Application Database] ************************************************************************
+   changed: [lamp-db]
+   
+   TASK [Create Application DB User] *************************************************************************
+   changed: [lamp-db]
+   
+   TASK [Move db-load-script to db host] *********************************************************************
+   changed: [lamp-db]
+   
+   TASK [Load Inventory Data] ********************************************************************************
+   changed: [lamp-db]
+   
+   PLAY RECAP ************************************************************************************************
+   lamp-db                    : ok=12   changed=4    unreachable=0    failed=0   
+   lampweb                    : ok=2    changed=0    unreachable=0    failed=0   
+   ```
+
+   
+
+4. We now proceed to Installing web service on the web server.
+
+   ##### 1. Install Web Server
+
+   Install `httpd`, `php` and `php-mysql` packages
+
+   ##### 2. Install Git to download source code
+
+   package: `git`
+
+   ##### 3. Start and enable the `firewalld` service
+
+   ##### 4. Insert `firewalld` rule for httpd
+
+   For port use `httpd_port`/tcp variable.
+
+   ##### 4. Set `index.php` as the default page
+
+   Modify line `"DirectoryIndex index.html"` to `"DirectoryIndex index.php"` in file `/etc/httpd/conf/httpd.conf`
+
+   ##### 5. Start and enable the `httpd` service
+
+   Playbook: `~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Update `deploy-lamp-stack.yml` playbook as per below given code
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   
+   # Install and Configure Database
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     tasks:
+       - name: Install MariaDB package
+         yum:
+           name:
+             - mariadb-server
+             - MySQL-python
+           state: installed
+   
+       - name: Create Mysql configuration file
+         copy: src=files/my.cnf dest=/etc/my.cnf
+   
+       - name: Start MariaDB Service
+         service: name=mariadb state=started enabled=yes
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule
+         firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Create Application Database
+         mysql_db: name={{ dbname }} state=present
+   
+       - name: Create Application DB User
+         mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host='172.20.1.100' state=present
+   
+       - name: Move db-load-script to db host
+         copy:
+           src: files/db-load-script.sql
+           dest: /tmp/db-load-script.sql
+   
+       - name: Load Inventory Data
+         shell: mysql -f < /tmp/db-load-script.sql
+   
+   - name: Deploy lamp stack application
+     hosts: lampweb
+     become: yes
+     tasks:
+       - name: Install httpd and php
+         yum:
+           name:
+             - httpd
+             - php
+             - php-mysql
+           state: present
+   
+       - name: Install web role specific dependencies
+         yum: name=git state=installed
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule for httpd
+         firewalld: port={{ httpd_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Set index.php as the default page
+         tags: "Set index.php as the default page"
+         replace:
+           path: /etc/httpd/conf/httpd.conf
+           regexp: 'DirectoryIndex index.html'
+           replace: 'DirectoryIndex index.php'
+   
+       - name: http service state
+         service: name=httpd state=started enabled=yes
+   ```
+
+   ```
+   $ ansible-playbook -i inventory deploy-lamp-stack.yml 
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lampweb]
+   ok: [lamp-db]
+   
+   TASK [Install common dependencies] ************************************************************************
+   ok: [lampweb]
+   ok: [lamp-db]
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Install MariaDB package] ****************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Mysql configuration file] ********************************************************************
+   ok: [lamp-db]
+   
+   TASK [Start MariaDB Service] ******************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Start firewalld] ************************************************************************************
+   ok: [lamp-db]
+   
+   TASK [insert firewalld rule] ******************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Application Database] ************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Application DB User] *************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Move db-load-script to db host] *********************************************************************
+   ok: [lamp-db]
+   
+   TASK [Load Inventory Data] ********************************************************************************
+   changed: [lamp-db]
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lampweb]
+   
+   TASK [Install httpd and php] ******************************************************************************
+   changed: [lampweb]
+   
+   TASK [Install web role specific dependencies] *************************************************************
+   changed: [lampweb]
+   
+   TASK [Start firewalld] ************************************************************************************
+   changed: [lampweb]
+   
+   TASK [insert firewalld rule for httpd] ********************************************************************
+   changed: [lampweb]
+   
+   TASK [Set index.php as the default page] ******************************************************************
+   changed: [lampweb]
+   
+   TASK [http service state] *********************************************************************************
+   changed: [lampweb]
+   
+   PLAY RECAP ************************************************************************************************
+   lamp-db                    : ok=12   changed=1    unreachable=0    failed=0   
+   lampweb                    : ok=9    changed=6    unreachable=0    failed=0   
+   ```
+
+5. Finally, let us download the latest source code of our web application and upload the `index.php` file.
+
+   ##### 1. Clone the source code from the repository
+
+   The address of the URL is given in the inventory file. Use the right variable. Clone it to `/var/www/html/`
+
+   ##### 2. Copy the custom index.php file
+
+   from `files/index.php` to `/var/www/html/index.php`
+
+   Playbook: `~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml`
+
+   CheckCompleteIncomplete
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Update `deploy-lamp-stack.yml` playbook as per below given code
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   
+   # Install and Configure Database
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     tasks:
+       - name: Install MariaDB package
+         yum:
+           name:
+             - mariadb-server
+             - MySQL-python
+           state: installed
+   
+       - name: Create Mysql configuration file
+         copy: src=files/my.cnf dest=/etc/my.cnf
+   
+       - name: Start MariaDB Service
+         service: name=mariadb state=started enabled=yes
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule
+         firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Create Application Database
+         mysql_db: name={{ dbname }} state=present
+   
+       - name: Create Application DB User
+         mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host='172.20.1.100' state=present
+   
+       - name: Move db-load-script to db host
+         copy:
+           src: files/db-load-script.sql
+           dest: /tmp/db-load-script.sql
+   
+       - name: Load Inventory Data
+         shell: mysql -f < /tmp/db-load-script.sql
+   
+   - name: Deploy lamp stack application
+     hosts: lampweb
+     become: yes
+     tasks:
+       - name: Install httpd and php
+         yum:
+           name:
+             - httpd
+             - php
+             - php-mysql
+           state: present
+   
+       - name: Install web role specific dependencies
+         yum: name=git state=installed
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule for httpd
+         firewalld: port={{ httpd_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Set index.php as the default page
+         tags: "Set index.php as the default page"
+         replace:
+           path: /etc/httpd/conf/httpd.conf
+           regexp: 'DirectoryIndex index.html'
+           replace: 'DirectoryIndex index.php'
+   
+       - name: http service state
+         service: name=httpd state=started enabled=yes
+   
+       - name: Copy the code from repository
+         git: repo={{ repository }} dest=/var/www/html/  force=yes
+   
+       - name: Creates the index.php file
+         copy: src=files/index.php dest=/var/www/html/index.php
+   ```
+
+   ```
+   $ ansible-playbook -i inventory deploy-lamp-stack.yml 
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lamp-db]
+   ok: [lampweb]
+   
+   TASK [Install common dependencies] ************************************************************************
+   ok: [lampweb]
+   ok: [lamp-db]
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Install MariaDB package] ****************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Mysql configuration file] ********************************************************************
+   ok: [lamp-db]
+   
+   TASK [Start MariaDB Service] ******************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Start firewalld] ************************************************************************************
+   ok: [lamp-db]
+   
+   TASK [insert firewalld rule] ******************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Application Database] ************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Application DB User] *************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Move db-load-script to db host] *********************************************************************
+   ok: [lamp-db]
+   
+   TASK [Load Inventory Data] ********************************************************************************
+   changed: [lamp-db]
+   
+   PLAY [Deploy lamp stack application] **********************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [lampweb]
+   
+   TASK [Install httpd and php] ******************************************************************************
+   ok: [lampweb]
+   
+   TASK [Install web role specific dependencies] *************************************************************
+   ok: [lampweb]
+   
+   TASK [Start firewalld] ************************************************************************************
+   ok: [lampweb]
+   
+   TASK [insert firewalld rule for httpd] ********************************************************************
+   ok: [lampweb]
+   
+   TASK [Set index.php as the default page] ******************************************************************
+   ok: [lampweb]
+   
+   TASK [http service state] *********************************************************************************
+   ok: [lampweb]
+   
+   TASK [Copy the code from repository] **********************************************************************
+   changed: [lampweb]
+   
+   TASK [Creates the index.php file] *************************************************************************
+   changed: [lampweb]
+   
+   PLAY RECAP ************************************************************************************************
+   lamp-db                    : ok=12   changed=1    unreachable=0    failed=0   
+   lampweb                    : ok=11   changed=2    unreachable=0    failed=0 
+   ```
+
+6. If not done already you may optionally execute the playbook and wait to completion. Then view the application by clicking the `Web App` link at the top of your terminal.
+
+   OK
+
+# Variables and Jinja2
+
+## LABS – VARIABLE REGISTER
+
+1. A register variable is created when we:
+
+   - execute a task and save the necessary variables to a cache file
+   - execute a playbook and debug the variable to inspect it
+   - **execute a task and save the returned value in a variable to use in the tasks later**
+   - every time we execute an ansible playbook with flag -v
+
+2. How do we print the results, a command is returning?
+
+   - **-v**
+   - --debug
+   - --trace
+   - --verbose
+
+3. Which of the following keywords is used to create a registered variable?
+
+   - set_facts
+   - **register**
+
+4. The registered variable is stored in:
+
+   - /tmp
+   - **memory**
+   - ~/.ansible/tmp
+   - remote hosts
+
+5. We need to find the uptime of remote hosts. Out of the following options, which one would print the uptime in your playbook?
+
+   A sample playbook is provided to you to answer this question.
+   It is located at `/home/thor/playbooks/uptime.yml` and your remote hosts are listed in the inventory file: `/home/thor/playbooks/inventory`.
+
+   Using options below, make changes to the playbook and run the playbook: `ansible-playbook -i inventory uptime.yml`, and find the uptime.
+
+   - debug: msg=uptime_result.stdout
+   - debug: var=uptime_result.output
+   - **debug: var=uptime_result.stdout**
+   - debug: msg=uptime_result.stdoutput
+
+   inventory
+
+   ```
+   web1 ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   web2 ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=root[thor@ansible-controller playbooks
+   ```
+
+   Modify the playbook and it should look like this:
+
+   uptime.yml
+
+   ```
+   - hosts: all
+     tasks:
+        - shell: uptime
+          register: uptime_result
+   
+        - debug: var=uptime_result.stdout
+   ```
+
+   ```
+   $ ansible-playbook -i inventory uptime.yml -v
+   Using /etc/ansible/ansible.cfg as config file
+   /home/thor/playbooks/inventory did not meet host_list requirements, check plugin documentation if this is unexpected
+   
+   PLAY [all] ************************************************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [web2]
+   ok: [web1]
+   
+   TASK [shell] **********************************************************************************************
+   changed: [web2] => {"changed": true, "cmd": "uptime", "delta": "0:00:00.086990", "end": "2023-04-05 08:27:53.682391", "rc": 0, "start": "2023-04-05 08:27:53.595401", "stderr": "", "stderr_lines": [], "stdout": " 08:27:53 up  1:29,  1 user,  load average: 5.18, 5.52, 6.06", "stdout_lines": [" 08:27:53 up  1:29,  1 user,  load average: 5.18, 5.52, 6.06"]}
+   changed: [web1] => {"changed": true, "cmd": "uptime", "delta": "0:00:00.083509", "end": "2023-04-05 08:27:53.675469", "rc": 0, "start": "2023-04-05 08:27:53.591960", "stderr": "", "stderr_lines": [], "stdout": " 08:27:53 up  1:29,  1 user,  load average: 5.18, 5.52, 6.06", "stdout_lines": [" 08:27:53 up  1:29,  1 user,  load average: 5.18, 5.52, 6.06"]}
+   
+   TASK [debug] **********************************************************************************************
+   ok: [web1] => {
+       "msg": "uptime_result.stdout"
+   }
+   ok: [web2] => {
+       "msg": "uptime_result.stdout"
+   }
+   
+   PLAY RECAP ************************************************************************************************
+   web1                       : ok=3    changed=1    unreachable=0    failed=0   
+   web2                       : ok=3    changed=1    unreachable=0    failed=0   
+   ```
+
+   
+
+6. Symlinks are common in practice while configuring services. Write a playbook which when executed, creates a file `/tmp/by_ansible` on the remote hosts. This file must contains the facts/info of `/var/run` file.
+
+   A playbook is already at `/home/thor/playbooks/playbook.yml` for you to start.
+   The remote hosts are listed in the inventory file: `/home/thor/playbooks/inventory`.
+   Please complete the task on that file.
+
+   To test it with: `ansible-playbook -i inventory playbook.yml`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Update `playbook.yml` playbook as per below given code
+
+   ```
+   ---
+   - hosts: all
+     gather_facts: no  
+     tasks:    
+       - name: stat module help to find the file info
+         stat:
+           path: /var/run
+         register: your_variable
+   
+       # for your reference, check the outputs of these
+       - debug:
+          var=your_variable.stat
+   
+       # your code goes here...
+       - shell: echo "{{your_variable.stat}}" > /tmp/by_ansible
+   ```
+
+   ```
+   $ ansible-playbook -i inventory playbook.yml 
+   
+   PLAY [all] ************************************************************************************************
+   
+   TASK [stat module help to find the file info] *************************************************************
+   ok: [web1]
+   ok: [web2]
+   
+   TASK [debug] **********************************************************************************************
+   ok: [web1] => {
+       "your_variable.stat": {
+           "atime": 1680677911.7133505, 
+           "attr_flags": "", 
+           "attributes": [], 
+           "block_size": 4096, 
+           "blocks": 0, 
+           "charset": "unknown", 
+           "ctime": 1680677915.3217132, 
+           "dev": 15728778, 
+           "device_type": 0, 
+           "executable": true, 
+           "exists": true, 
+           "gid": 0, 
+           "gr_name": "root", 
+           "inode": 14789261, 
+           "isblk": false, 
+           "ischr": false, 
+           "isdir": false, 
+           "isfifo": false, 
+           "isgid": false, 
+           "islnk": true, 
+           "isreg": false, 
+           "issock": false, 
+           "isuid": false, 
+           "lnk_source": "/run", 
+           "lnk_target": "../run", 
+           "mimetype": "unknown", 
+           "mode": "0777", 
+           "mtime": 1564621774.0, 
+           "nlink": 1, 
+           "path": "/var/run", 
+           "pw_name": "root", 
+           "readable": true, 
+           "rgrp": true, 
+           "roth": true, 
+           "rusr": true, 
+           "size": 6, 
+           "uid": 0, 
+           "version": null, 
+           "wgrp": true, 
+           "woth": true, 
+           "writeable": true, 
+           "wusr": true, 
+           "xgrp": true, 
+           "xoth": true, 
+           "xusr": true
+       }
+   }
+   ok: [web2] => {
+       "your_variable.stat": {
+           "atime": 1680677911.7133505, 
+           "attr_flags": "", 
+           "attributes": [], 
+           "block_size": 4096, 
+           "blocks": 0, 
+           "charset": "unknown", 
+           "ctime": 1680677915.3217132, 
+           "dev": 16777402, 
+           "device_type": 0, 
+           "executable": true, 
+           "exists": true, 
+           "gid": 0, 
+           "gr_name": "root", 
+           "inode": 14789261, 
+           "isblk": false, 
+           "ischr": false, 
+           "isdir": false, 
+           "isfifo": false, 
+           "isgid": false, 
+           "islnk": true, 
+           "isreg": false, 
+           "issock": false, 
+           "isuid": false, 
+           "lnk_source": "/run", 
+           "lnk_target": "../run", 
+           "mimetype": "unknown", 
+           "mode": "0777", 
+           "mtime": 1564621774.0, 
+           "nlink": 1, 
+           "path": "/var/run", 
+           "pw_name": "root", 
+           "readable": true, 
+           "rgrp": true, 
+           "roth": true, 
+           "rusr": true, 
+           "size": 6, 
+           "uid": 0, 
+           "version": null, 
+           "wgrp": true, 
+           "woth": true, 
+           "writeable": true, 
+           "wusr": true, 
+           "xgrp": true, 
+           "xoth": true, 
+           "xusr": true
+       }
+   }
+   
+   TASK [shell] **********************************************************************************************
+   changed: [web2]
+   changed: [web1]
+   
+   PLAY RECAP ************************************************************************************************
+   web1                       : ok=3    changed=1    unreachable=0    failed=0   
+   web2                       : ok=3    changed=1    unreachable=0    failed=0   
+   ```
+
+7. A friend of yours came to you with this broken playbook: `/home/thor/playbooks/help_me_fix_it.yml`. Help him fix it.
+
+   The playbook is supposed to get information about the operating system of the remote hosts and save it to file `/tmp/output.txt` . Please use the inventory: `/home/thor/playbooks/inventory` for this task.
+
+   Once completed, please test as: `ansible-playbook -i inventory help_me_fix_it.yml`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Update `help_me_fix_it.yml` playbook as per below given code
+
+   ```
+   ---
+   - name: help me fix it playbook
+     hosts: all
+     gather_facts: yes
+     tasks:
+       - name: alternative way to gather facts about remote host
+         setup: filter='ansible_dist*'
+         register: facts
+       - debug: var=facts.ansible_facts.ansible_distribution
+       - shell: echo "{{facts.ansible_facts.ansible_distribution}}" > /tmp/output.txt
+   ```
+
+   ```
+   $ ansible-playbook -i inventory help_me_fix_it.yml 
+   
+   PLAY [help me fix it playbook] ****************************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [web2]
+   ok: [web1]
+   
+   TASK [alternative way to gather facts about remote host] **************************************************
+   ok: [web1]
+   ok: [web2]
+   
+   TASK [debug] **********************************************************************************************
+   ok: [web1] => {
+       "facts.ansible_facts.ansible_distribution": "CentOS"
+   }
+   ok: [web2] => {
+       "facts.ansible_facts.ansible_distribution": "CentOS"
+   }
+   
+   TASK [shell] **********************************************************************************************
+   changed: [web1]
+   changed: [web2]
+   
+   PLAY RECAP ************************************************************************************************
+   web1                       : ok=4    changed=1    unreachable=0    failed=0   
+   web2                       : ok=4    changed=1    unreachable=0    failed=0   
+   ```
+
+
+
+## Magic Variables
+
+## LABS – MAGIC VARIABLES
+
+1. Which of the following is not a magic variable ?
+
+   - playbook_dir
+   - **ansible_node_name**
+   - inventory_dir
+   - hostvars
+
+2. Which of the following magic variable is used to fetch the information about current running version of ansible ?
+
+   - **ansible_version**
+   - ansible_host_version
+   - ansible_versions
+   - ansible-version
+
+3. Is it compulsory to turn on `gather_facts` for all special variables ?
+
+   - yes
+   - **no**
+
+4. We have an inventory file `~/playbooks/inventory` in which two hosts are defined, we have defined `dns_server=8.8.8.8` variable for `node01.host` managed node only. Write a playbook `~/playbooks/variable.yml` to run a shell task for all managed nodes so that it picks `node01.host` hosts’s `dns_server` for all managed nodes and save the output of this task in `/tmp/variable.txt` on each managed node.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   inventory
+
+   ```
+   node00.host ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   node01.host ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=root dns_server=8.8.8.8
+   ```
+
+   variable.yml
+
+   ```
+   ---
+   - name: print_dns server
+     hosts: all
+     tasks:
+       - shell: "echo {{hostvars['node01.host'].dns_server}} >> /tmp/variable.txt"
+   ```
+
+   ```
+   $ ansible-playbook -i inventory variable.yml 
+   
+   PLAY [print_dns server] ********************************************************************************
+   
+   TASK [shell] *******************************************************************************************
+   changed: [node01.host]
+   changed: [node00.host]
+   
+   PLAY RECAP *********************************************************************************************
+   node00.host                : ok=1    changed=1    unreachable=0    failed=0   
+   node01.host                : ok=1    changed=1    unreachable=0    failed=0   
+   ```
+
+5. We have a template `~/playbooks/templates/hostinfo.j2` in which some values need to be updated. There is a playbook `~/playbooks/hostinfo.yml` to copy this template to `/root/hostinfo` destination on `node00` managed node. In the template update values for full inventory hostname, short inventory hostname and inventory file.
+
+   Check
+
+   - Syntax Check
+
+   - Prepare Environment
+
+   - Apply Playbook
+
+   - Verify Tasks
+
+     hostinfo.yml
+
+     ```
+     ---
+     - hosts: node00.host
+       gather_facts: false
+       tasks:
+         - name : hostinfo
+           template:
+             src: hostinfo.j2
+             dest: /root/hostinfo
+     ```
+
+     templates/hostinfo.j2
+
+     ```
+     This is my full inventory hostname {{inventory_hostname}} #Fill variable for full inventory hostname
+     This is my short inventory hostname {{inventory_hostname_short}} #Fill variable for short inventory hostname
+     This is my inventory file {{inventory_file}} #Fill variable for inventory file
+     ```
+
+     ```
+     $ ansible-playbook -i inventory hostinfo.yml 
+     
+     PLAY [node00.host] ****************************************************************************************
+     
+     TASK [hostinfo] *******************************************************************************************
+     changed: [node00.host]
+     
+     PLAY RECAP ************************************************************************************************
+     node00.host                : ok=1    changed=1    unreachable=0    failed=0   
+     ```
+
+     ```
+     [root@node00 ~]# cat /root/hostinfo 
+     This is my full inventory hostname node00.host #Fill variable for full inventory hostname
+     This is my short inventory hostname node00 #Fill variable for short inventory hostname
+     This is my inventory file /home/thor/playbooks/inventory #Fill variable for inventory file
+     ```
+
+6. We have a playbook `~/playbooks/hosts.yml` to add some entries in `/etc/hosts` file on `node00.host` managed node. It has a missing variable for inventory hostname of the node. Add the variable and run the playbook.
+
+   `Note`: If IP address of the node is `1.1.1.1` then, the final entry in `/etc/hosts` file should look like:
+
+   ```
+   node00.host 1.1.1.1
+   ```
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Update the `hosts.yml` playbook as per below given code
+
+   ```
+   ---
+   - hosts: node00.host
+     gather_facts: yes
+     tasks:
+     - shell: "echo  {{inventory_hostname}} {{ ansible_default_ipv4.address }} >> /etc/hosts"
+   ```
+
+   ```
+   ]$ ansible-playbook -i inventory hosts.yml   
+   
+   PLAY [node00.host] ****************************************************************************************
+   
+   TASK [Gathering Facts] ************************************************************************************
+   ok: [node00.host]
+   
+   TASK [shell] **********************************************************************************************
+   changed: [node00.host]
+   
+   PLAY RECAP ************************************************************************************************
+   node00.host                : ok=2    changed=1    unreachable=0    failed=0   
+   ```
+
+   ```
+   [root@node00 ~]# cat /etc/hosts
+   127.0.0.1       localhost
+   ::1     localhost ip6-localhost ip6-loopback
+   fe00::0 ip6-localnet
+   ff00::0 ip6-mcastprefix
+   ff02::1 ip6-allnodes
+   ff02::2 ip6-allrouters
+   172.20.1.100    node00.host node00
+   172.17.0.6      node00.host node00
+   node00.host 172.20.1.100
+   ```
+
+
+
+## Jinja2 Basics
+
+## LABS – JINJA2 – BASICS
+
+1. Develop a Jinja2 Expression to use the variable `name` that generates the expected output.
+
+   ##### Source Data:
+
+   ```
+   {
+     "name": "Bond"
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   The name is Bond
+   ```
+
+   **Solution:**
+
+   ```
+   The name is {{ name }}
+   ```
+
+2. Update the jinja2 expression to display the `name` in UPPERCASE
+
+   ##### Source Data:
+
+   ```
+   {
+     "name": "Bond"
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   The name is BOND
+   ```
+
+   **Solution:**
+
+   ```
+   The name is {{ name | upper}}
+   ```
+
+3. Update the jinja2 expression to display the `book_name` in title case
+
+   ##### Source Data:
+
+   ```
+   {
+     "book_name": "Title of books are usually title cased"
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   Title Of Books Are Usually Title Cased
+   ```
+
+   **Solution:**
+
+   ```
+   {{ book_name | title }}
+   ```
+
+4. Update the jinja2 expression to display the correct name in the `dialogue`
+
+   `Replace` the wrong name with the right name
+
+   ##### Source Data:
+
+   ```
+   {
+     "dialogue": "The name is Bourne, James Bourne!"
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   The name is Bond, James Bond!
+   ```
+
+   **Solution:**
+
+   ```
+   {{ dialogue | replace('Bourne', 'Bond') }}
+   ```
+
+5. Use a Jinja2 expression to display the highest number in the given array
+
+   ##### Source Data:
+
+   ```
+   {
+     "numbers": [
+       13,
+       32,
+       53,
+       34,
+       25,
+       76,
+       17
+     ]
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   76
+   ```
+
+   **Solution:**
+
+   ```
+   {{ numbers | max }}
+   ```
+
+6. Use a Jinja2 expression to display the last number in the given array
+
+   ##### Source Data:
+
+   ```
+   {
+     "numbers": [
+       13,
+       32,
+       53,
+       34,
+       25,
+       76,
+       17
+     ]
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   17
+   ```
+
+   **Solution:**
+
+   ```
+   {{ numbers | last }}
+   ```
+
+7. You are given an array of words. Use a Jinja2 expression to join them to form a single sentence.
+
+   ##### Source Data:
+
+   ```
+   {
+     "words": [
+       "we",
+       "are",
+       "meant",
+       "to",
+       "be",
+       "together"
+     ]
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   we are meant to be together
+   ```
+
+   **Solution:**
+
+   ```
+   {{ words | join(' ') }}
+   ```
+
+8. That was actually a movie name. Make sure its shown in title case.
+
+   ##### Source Data:
+
+   ```
+   {
+     "words": [
+       "we",
+       "are",
+       "meant",
+       "to",
+       "be",
+       "together"
+     ]
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   We Are Meant To Be Together
+   ```
+
+   **Solution:**
+
+   ```
+   {{ words | join(' ') | title }}
+   ```
+
+9. Use a Jinja2 expression to count the number of words.
+
+   ##### Source Data:
+
+   ```
+   {
+     "words": "Everyone was busy, so I went to the movie alone. I was very proud of my nickname throughout high school but today- I couldn’t be any different to what my nickname was. Wow, does that work? She works two jobs to make ends meet; at least, that was her reason for not having time to join us."
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   58
+   ```
+
+   **Solution:**
+
+   ```
+   {{ words | wordcount }}
+   ```
+
+
+
+## Jinja2 in Ansible
+
+## LABS – JINJA2 – ANSIBLE
+
+1. Develop a jinja2 expression to print the given words in a new line.
+
+   Use Jina2 Blocks
+
+   ##### Source Data:
+
+   ```
+   {
+     "names": [
+       "Alpha",
+       "Beta",
+       "Charlie",
+       "Delta",
+       "Echo"
+     ]
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   Alpha
+   Beta
+   Charlie
+   Delta
+   Echo
+   ```
+
+   **Solution:**
+
+   ```
+   {% for name in names -%}
+   {{ name}}
+   {% endfor %}
+   ```
+   
+2. Develop a jinja2 expression to generate a resolv.conf file using the given name server details.
+
+   	Use Jina2 Blocks
+
+##### 		Source Data:
+
+```
+{
+  "name_servers": [
+    "10.1.1.5",
+    "10.1.1.6",
+    "10.1.1.8",
+    "10.8.8.1",
+    "8.8.8.8"
+  ]
+}
+```
+
+##### Expected Output:
+
+```
+nameserver 10.1.1.5
+nameserver 10.1.1.6
+nameserver 10.1.1.8
+nameserver 10.8.8.1
+nameserver 8.8.8.8
+```
+
+**Solution:**
+
+```
+{% for ips in name_servers -%}
+nameserver {{ ips }}
+{% endfor %}
+```
+
+
+
+3. Develop a jinja2 expression to generate an /etc/hosts file using the given information.
+
+   Use Jina2 Blocks
+
+   ##### Source Data:
+
+   ```
+   {
+     "hosts": [
+       {
+         "name": "web1",
+         "ip_address": "192.168.5.4"
+       },
+       {
+         "name": "web2",
+         "ip_address": "192.168.5.5"
+       },
+       {
+         "name": "web3",
+         "ip_address": "192.168.5.8"
+       },
+       {
+         "name": "db1",
+         "ip_address": "192.168.5.9"
+       }
+     ]
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   web1 192.168.5.4
+   web2 192.168.5.5
+   web3 192.168.5.8
+   db1 192.168.5.9
+   ```
+
+   **Solution:**
+
+   ```
+   {% for host in hosts -%}
+   {{ host.name }} {{ host.ip_address }}
+   {% endfor %}
+   ```
+
+4. Update the jinja2 expression to use an if block to update /etc/hosts file only if the hostname contains web.
+
+   ##### Source Data:
+
+   ```
+   {
+     "hosts": [
+       {
+         "name": "web1",
+         "ip_address": "192.168.5.4"
+       },
+       {
+         "name": "web2",
+         "ip_address": "192.168.5.5"
+       },
+       {
+         "name": "web3",
+         "ip_address": "192.168.5.8"
+       },
+       {
+         "name": "db1",
+         "ip_address": "192.168.5.9"
+       }
+     ]
+   }
+   ```
+
+   ##### Expected Output:
+
+   ```
+   web1 192.168.5.4
+   web2 192.168.5.5
+   web3 192.168.5.8
+   ```
+
+   **Solution:**
+
+   ```
+   {% for host in hosts -%}
+     {% if "web" in host.name -%}
+   {{ host.name }} {{ host.ip_address -}}
+     {% endif %}
+   {% endfor %}
+   ```
+
+## Ansible Templates
+
+## LABS – JINJA2 – TEMPLATES
+
+1. Let us continue to improve our `LAMP stack E-Commerce` application. Now that we have learned about variables and jinja2 templates, let's put those to use.
+
+   In the `~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml` playbook, we have the IP address of the `lampweb` host hard coded in `Create Application DB User` task. This is not a good idea as this IP could change in different environments. Update the task to use a variable to get the IP address of the `lampweb` host. Note that this task is running on the `lamp-db` server.
+
+   Check
+
+   - Apply Playbook
+   - Playbook should not contain IP 172.20.1.100
+
+   inventory
+
+   ```
+   [db_servers]
+   lamp-db ansible_host=172.20.1.101 ansible_ssh_private_key_file=/home/thor/.ssh/maria ansible_user=maria mysqlservice=mysqld mysql_port=3306 dbname=ecomdb dbuser=ecomuser dbpassword=ecompassword
+   
+   [web_servers]
+   lampweb ansible_host=172.20.1.100 ansible_ssh_private_key_file=/home/thor/.ssh/john ansible_user=john httpd_port=80 repository=https://github.com/kodekloudhub/learning-app-ecommerce.git
+   ```
+
+   Update `deploy-lamp-stack.yml` playbook as per below given code
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   
+   # Install and Configure Database
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     tasks:
+       - name: Install MariaDB package
+         yum:
+           name:
+             - mariadb-server
+             - MySQL-python
+           state: installed
+   
+       - name: Create Mysql configuration file
+         copy: src=files/my.cnf dest=/etc/my.cnf
+   
+       - name: Start MariaDB Service
+         service: name=mariadb state=started enabled=yes
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule
+         firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Create Application Database
+         mysql_db: name={{ dbname }} state=present
+   
+       - name: Create Application DB User
+         mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host={{ ansible_host }} state=present
+   
+       - name: Move db-load-script to db host
+         copy:
+           src: files/db-load-script.sql
+           dest: /tmp/db-load-script.sql
+   
+       - name: Load Inventory Data
+         shell: mysql -f < /tmp/db-load-script.sql
+   
+   - name: Deploy lamp stack application
+     hosts: lampweb
+     become: yes
+     tasks:
+       - name: Install httpd and php
+         yum:
+           name:
+             - httpd
+             - php
+             - php-mysql
+           state: present
+   
+       - name: Install web role specific dependencies
+         yum: name=git state=installed
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule for httpd
+         firewalld: port={{ httpd_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Set index.php as the default page
+         tags: "Set index.php as the default page"
+         replace:
+           path: /etc/httpd/conf/httpd.conf
+           regexp: 'DirectoryIndex index.html'
+           replace: 'DirectoryIndex index.php'
+   
+       - name: http service state
+         service: name=httpd state=started enabled=yes
+   
+       - name: Copy the code from repository
+         git: repo={{ repository }} dest=/var/www/html/  force=yes
+   
+       - name: Creates the index.php file
+         copy: src=files/index.php dest=/var/www/html/index.php
+   ```
+
+2. We have few configuration files that use hard-coded values as well.
+
+   The `files/db-load-script.sql` used to load data into the database, it has the database name hardcoded into it at the first line. Convert this file into a template and store it as `db-load-script.sql.j2` in the `templates` folder. Modify the contents of the file to use the `dbname` variable instead of the hardcoded value.
+
+   Check
+
+   - Template file exists
+   - Template file does not have dbname hardcoded in it.
+   - Template file valid
+   - Template file uses the right variable
+
+   Edit files/db-load-script.sql
+
+   ```
+   USE {{ dbname }};
+   CREATE TABLE products (id mediumint(8) unsigned NOT NULL auto_increment,Name varchar(255) default NULL,Price varchar(255) default NULL, ImageUrl varchar(255) default NULL,PRIMARY KEY (id)) AUTO_INCREMENT=1;
+   
+   INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
+   ```
+
+   Copy  files/db-load-script.sql to templates/db-load-script.sql
+
+   Edit deploy-lamp-stack.yml
+
+   - ​    - name: Move db-load-script to db host
+
+   ```
+      - name: Move db-load-script to db host
+         template:
+           src: templates/db-load-script.sql.j2
+           dest: /tmp/db-load-script.sql.j2
+   ```
+
+3. The next file is the database configuration file named `my.cnf`
+
+   Create a template file `my.cnf.j2` for it under the `templates` directory and replace the hardcoded port number with the variable `mysql_port`
+
+   Check
+
+   - Template file my.cnf.j2 exists
+   - Template file does not have port number hardcoded in it.
+   - Template file valid
+   - Template file uses the right variable
+
+   templates/my.cnf.j2
+
+   ```
+   [mysqld]
+   innodb-buffer-pool-size=5242880
+   # datadir=/var/lib/mysql
+   # socket=/var/lib/mysql/mysql.sock
+   user=mysql
+   # Disabling symbolic-links is recommended to prevent assorted security risks
+   symbolic-links=0
+   port={{ mysql_port }}
+   ```
+
+4. The next file is the index file named `index.php`
+
+   Create a template file for this as `index.php.j2`. You must replace the following hard-coded values in it:
+
+   `172.20.1.101` : IP address of `lamp-db` server
+
+   ```
+   ecomuser` : `dbuser
+   ecompassword` : `dbpassword
+   ecomdb` : `dbname
+   ```
+
+   Note that the values must be encoded in quotes as a string
+
+   Also Note that this task is running on the web server, however the variables are defined for the database server. But we already know how to get variables from another host.
+
+   Check
+
+   - Template file index.php.j2 exists
+   - Template file does not have port number hardcoded in it.
+   - Template file valid
+   - Template file uses the right username
+   - Uses the right dbname
+
+   Create `index.php.j2` template and add below given code
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+       <head>
+           <meta charset="utf-8">
+           <meta http-equiv="X-UA-Compatible" content="IE=edge">
+           <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+           <title>Kodekloud E-Commerce</title>
+   
+           <!-- Favicon -->
+           <link rel="icon" href="img/favicon.png" type="image/png" />
+           <!-- Bootstrap CSS -->
+           <link href="css/bootstrap.min.css" rel="stylesheet">
+           <!-- Icon CSS-->
+           <link rel="stylesheet" href="vendors/font-awesome/css/font-awesome.min.css">
+           <link rel="stylesheet" href="vendors/linearicons/linearicons-1.0.0.css">
+           <!-- Animations CSS-->
+           <link rel="stylesheet" href="vendors/wow-js/animate.css">
+           <!-- owl_carousel-->
+           <link rel="stylesheet" href="vendors/owl_carousel/owl.carousel.css">
+   
+           <!-- Theme style CSS -->
+           <link href="css/style.css" rel="stylesheet">
+   <!--        <link href="css/responsive.css" rel="stylesheet">  -->
+   
+           <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+           <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+           <!--[if lt IE 9]>
+             <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+           <![endif]-->
+       </head>
+       <body>
+           <!--==========Main Header==========-->
+           <header class="main_header_area">
+               <nav class="navbar navbar-default navbar-fixed-top" id="main_navbar">
+                   <div class="container-fluid searchForm">
+                       <form action="#" class="row">
+                           <div class="input-group">
+                               <span class="input-group-addon"><i class="lnr lnr-magnifier"></i></span>
+                               <input type="search" name="search" class="form-control" placeholder="Type & Hit Enter">
+                               <span class="input-group-addon form_hide"><i class="lnr lnr-cross"></i></span>
+                           </div>
+                       </form>
+                   </div>
+                   <div class="container">
+                       <div class="row">
+                       <!-- Brand and toggle get grouped for better mobile display -->
+                       <div class="col-md-2 p0">
+                           <div class="navbar-header">
+                               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                               <span class="sr-only">Toggle navigation</span>
+                               <span class="icon-bar"></span>
+                               <span class="icon-bar"></span>
+                               <span class="icon-bar"></span>
+                               </button>
+                               <a class="navbar-brand" href="index.html">
+                                   <img src="img/logo.png" alt="">
+                                   <img src="img/logo-2.png" alt="">
+                               </a>
+                           </div>
+                       </div>
+   
+                       <!-- Collect the nav links, forms, and other content for toggling -->
+                       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                           <div class="col-md-9 p0">
+                               <ul class="nav navbar-nav main_nav">
+                                 <li><a href="#">Laptops</a></li>
+                                 <li><a href="#">Drones</a></li>
+                                   <li><a href="#">Gadgets</a></li>
+                                   <li><a href="#">Phones</a></li>
+                                   <li><a href="#">VR</a></li>
+                                   <li><a href="#">Contact us</a></li>
+                               </ul>
+                           </div>
+                           <div class="col-md-1 p0">
+                               <ul class="nav navbar-nav navbar-right">
+                                   <li><a href="#" class="nav_searchFrom"><i class="lnr lnr-magnifier"></i></a></li>
+                               </ul>
+                           </div>
+                       </div><!-- /.navbar-collapse -->
+                       </div>
+                   </div><!-- /.container-fluid -->
+               </nav>
+           </header>
+           <!--==========Main Header==========-->
+   
+           <!--==========Slider area==========-->
+           <section class="slider_area row m0">
+               <div class="slider_inner">
+                   <div class="camera_caption">
+                       <h2 class="wow fadeInUp animated">Make Your Shopping Easy</h2>
+                       <h5 class="wow fadeIn animated" data-wow-delay="0.3s">Find everything accordingly</h5>
+                       <a class="learn_mor wow fadeInU" data-wow-delay="0.6s" href="#product-list">Show Now!</a>
+                   </div>
+               </div>
+           </section>
+           <!--==========End Slider area==========-->
+   
+           <section class="best_business_area row">
+               <div class="check_tittle wow fadeInUp" data-wow-delay="0.7s" id="product-list">
+                   <h2>Product List</h2>
+               </div>
+               <div class="row it_works">
+                 <?php
+   
+                           $link = mysqli_connect("{{ hostvars['lamp-db']['ansible_facts']['eth0']['ipv4']['address'] }}", "{{ hostvars['lamp-db']['dbuser'] }}", "{{ hostvars['lamp-db']['dbpassword'] }}", "{{ hostvars['lamp-db']['dbname'] }}");
+   
+                           if ($link) {
+                           $res = mysqli_query($link, "select * from products;");
+                           while ($row = mysqli_fetch_assoc($res)) { ?>
+   
+                   <div class="col-md-3 col-sm-6 business_content">
+                       <?php echo '<img src="img/' . $row['ImageUrl'] . '" alt="">' ?>
+                       <div class="media">
+                           <div class="media-left">
+   
+                           </div>
+                           <div class="media-body">
+                               <a href="#"><?php echo $row['Name'] ?></a>
+                               <p>Purchase <?php echo $row['Name'] ?> at the lowest price <span><?php echo $row['Price'] ?>$</span></p>
+                           </div>
+                       </div>
+                   </div>
+   
+                   <?php
+                           }
+                       }
+                       else {
+                   ?>
+                   <div style="width: 100%">
+                   <div class="error-content">
+   
+                       <h1>Database connection error</h1>
+                       <p>
+                       <?php
+                             echo mysqli_connect_errno() . ":" . mysqli_connect_error();
+                       ?>
+                       </p>
+                     </div>
+                     </div>
+                     <?php
+                       }
+                     ?>
+   
+   
+               </div>
+           </section>
+   
+   
+           <footer class="footer_area row">
+               <div class="container custom-container">
+   
+   
+   
+                   <div class="copy_right_area">
+                       <h4 class="copy_right">© Copyright 2019 Kodekloud Ecommerce | All Rights Reserved</h4>
+                   </div>
+               </div>
+           </footer>
+   
+           <!-- jQuery -->
+           <script src="js/jquery-1.12.4.min.js"></script>
+           <!-- Bootstrap -->
+           <script src="js/bootstrap.min.js"></script>
+           <!-- Wow js -->
+           <script src="vendors/wow-js/wow.min.js"></script>
+           <!-- Wow js -->
+           <script src="vendors/Counter-Up/waypoints.min.js"></script>
+           <script src="vendors/Counter-Up/jquery.counterup.min.js"></script>
+           <!-- Stellar js -->
+           <script src="vendors/stellar/jquery.stellar.js"></script>
+           <!-- owl_carousel js -->
+           <script src="vendors/owl_carousel/owl.carousel.min.js"></script>
+           <!-- Theme js -->
+           <script src="js/theme.js"></script>
+       </body>
+   </html>
+   ```
+
+5. Finally, update the playbook `deploy-lamp-stack.yml` to use these template files instead of static files.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks - 1
+   - Verify Tasks - 2
+   - Verify Tasks - 3
+   - Verify Tasks - 4
+   - Verify Tasks - 5
+
+   Update `deploy-lamp-stack.yml` playbook as per below given code\
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     tasks:
+       - name: Install MariaDB package
+         yum:
+           name:
+             - mariadb-server
+             - MySQL-python
+           state: installed
+   
+       - name: Create Mysql configuration file
+         template: src=templates/my.cnf.j2 dest=/etc/my.cnf
+   
+       - name: Start MariaDB Service
+         service: name=mariadb state=started enabled=yes
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule
+         firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Create Application Database
+         mysql_db: name={{ dbname }} state=present
+   
+       - name: Create Application DB User
+         tags: Create Application DB User
+         mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host={{ hostvars['lampweb']['ansible_facts']['eth0']['ipv4']['address'] }} state=present
+   
+       - name: Move db-load-script to db host
+         template:
+           src: templates/db-load-script.sql.j2
+           dest: /tmp/db-load-script.sql
+   
+       - name: Load Inventory Data
+         shell: mysql -f < /tmp/db-load-script.sql
+   
+   - name: Deploy lamp stack application
+     hosts: lampweb
+     become: yes
+     tasks:
+       - name: Install httpd and php
+         yum:
+           name:
+             - httpd
+             - php
+             - php-mysql
+           state: present
+   
+       - name: Install web role specific dependencies
+         yum: name=git state=installed
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule for httpd
+         firewalld: port={{ httpd_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Set index.php as the default page
+         tags: "Set index.php as the default page"
+         replace:
+           path: /etc/httpd/conf/httpd.conf
+           regexp: 'DirectoryIndex index.html'
+           replace: 'DirectoryIndex index.php'
+   
+       - name: http service state
+         service: name=httpd state=started enabled=yes
+   
+       - name: Copy the code from repository
+         git: repo={{ repository }} dest=/var/www/html/  force=yes
+   
+       - name: Creates the index.php file
+         template: src=templates/index.php.j2 dest=/var/www/html/index.php
+   ```
+
+6. If not done already you may optionally view the application by clicking the `Web App` link at the top of your terminal and make sure the site opens up correct and displays all correct data.
+
+   If you run into issues inspect the connectivity details in the `index.php` file.
+
+
+
+## PROJECT – VARIABLES AND JINJA2 TEMPLATES
+
+1. Let us continue to improve our `LAMP stack E-Commerce` application. Now that we have learned about variables and jinja2 templates, let's put those to use.
+
+   In the `~/playbooks/lamp-stack-playbooks/deploy-lamp-stack.yml` playbook, we have the IP address of the `lampweb` host hard coded in `Create Application DB User` task. This is not a good idea as this IP could change in different environments. Update the task to use a variable to get the IP address of the `lampweb` host. Note that this task is running on the `lamp-db` server.
+
+   Check
+
+   - Apply Playbook
+   - Playbook should not contain IP 172.20.1.100
+
+   inventory
+
+   ```
+   [db_servers]
+   lamp-db ansible_host=172.20.1.101 ansible_ssh_private_key_file=/home/thor/.ssh/maria ansible_user=maria mysqlservice=mysqld mysql_port=3306 dbname=ecomdb dbuser=ecomuser dbpassword=ecompassword
+   
+   [web_servers]
+   lampweb ansible_host=172.20.1.100 ansible_ssh_private_key_file=/home/thor/.ssh/john ansible_user=john httpd_port=80 repository=https://github.com/kodekloudhub/learning-app-ecommerce.git
+   ```
+
+   Update `deploy-lamp-stack.yml` playbook as per below given code
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   
+   # Install and Configure Database
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     tasks:
+       - name: Install MariaDB package
+         yum:
+           name:
+             - mariadb-server
+             - MySQL-python
+           state: installed
+   
+       - name: Create Mysql configuration file
+         copy: src=files/my.cnf dest=/etc/my.cnf
+   
+       - name: Start MariaDB Service
+         service: name=mariadb state=started enabled=yes
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule
+         firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Create Application Database
+         mysql_db: name={{ dbname }} state=present
+   
+       - name: Create Application DB User
+         mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host={{ ansible_host }} state=present
+   
+       - name: Move db-load-script to db host
+         copy:
+           src: files/db-load-script.sql
+           dest: /tmp/db-load-script.sql
+   
+       - name: Load Inventory Data
+         shell: mysql -f < /tmp/db-load-script.sql
+   
+   - name: Deploy lamp stack application
+     hosts: lampweb
+     become: yes
+     tasks:
+       - name: Install httpd and php
+         yum:
+           name:
+             - httpd
+             - php
+             - php-mysql
+           state: present
+   
+       - name: Install web role specific dependencies
+         yum: name=git state=installed
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule for httpd
+         firewalld: port={{ httpd_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Set index.php as the default page
+         tags: "Set index.php as the default page"
+         replace:
+           path: /etc/httpd/conf/httpd.conf
+           regexp: 'DirectoryIndex index.html'
+           replace: 'DirectoryIndex index.php'
+   
+       - name: http service state
+         service: name=httpd state=started enabled=yes
+   
+       - name: Copy the code from repository
+         git: repo={{ repository }} dest=/var/www/html/  force=yes
+   
+       - name: Creates the index.php file
+         copy: src=files/index.php dest=/var/www/html/index.php
+   ```
+
+2. We have few configuration files that use hard-coded values as well.
+
+   The `files/db-load-script.sql` used to load data into the database, it has the database name hardcoded into it at the first line. Convert this file into a template and store it as `db-load-script.sql.j2` in the `templates` folder. Modify the contents of the file to use the `dbname` variable instead of the hardcoded value.
+
+   Check
+
+   - Template file exists
+   - Template file does not have dbname hardcoded in it.
+   - Template file valid
+   - Template file uses the right variable
+
+   templates/db-load-script.sql.j2
+
+   ```
+   USE {{ dbname }};
+   CREATE TABLE products (id mediumint(8) unsigned NOT NULL auto_increment,Name varchar(255) default NULL,Price varchar(255) default NULL, ImageUrl varchar(255) default NULL,PRIMARY KEY (id)) AUTO_INCREMENT=1;
+   
+   INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
+   ```
+
+3. The next file is the database configuration file named `my.cnf`
+
+   Create a template file `my.cnf.j2` for it under the `templates` directory and replace the hardcoded port number with the variable `mysql_port`
+
+   Check
+
+   - Template file my.cnf.j2 exists
+   - Template file does not have port number hardcoded in it.
+   - Template file valid
+   - Template file uses the right variable
+
+   templates/my.cnf.j2
+
+   ```
+   [mysqld]
+   innodb-buffer-pool-size=5242880
+   # datadir=/var/lib/mysql
+   # socket=/var/lib/mysql/mysql.sock
+   user=mysql
+   # Disabling symbolic-links is recommended to prevent assorted security risks
+   symbolic-links=0
+   port={{ mysql_port }}
+   ```
+
+4. The next file is the index file named `index.php`
+
+   Create a template file for this as `index.php.j2`. You must replace the following hard-coded values in it:
+
+   `172.20.1.101` : IP address of `lamp-db` server
+
+   ```
+   ecomuser` : `dbuser
+   ecompassword` : `dbpassword
+   ecomdb` : `dbname
+   ```
+
+   Note that the values must be encoded in quotes as a string
+
+   Also Note that this task is running on the web server, however the variables are defined for the database server. But we already know how to get variables from another host.
+
+   Check
+
+   - Template file index.php.j2 exists
+   - Template file does not have port number hardcoded in it.
+   - Template file valid
+   - Template file uses the right username
+   - Uses the right dbname
+
+   templates/index.php.j2
+
+   ```
+   <!DOCTYPE html>
+   <html lang="en">
+       <head>
+           <meta charset="utf-8">
+           <meta http-equiv="X-UA-Compatible" content="IE=edge">
+           <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+           <title>Kodekloud E-Commerce</title>
+   
+           <!-- Favicon -->
+           <link rel="icon" href="img/favicon.png" type="image/png" />
+           <!-- Bootstrap CSS -->
+           <link href="css/bootstrap.min.css" rel="stylesheet">
+           <!-- Icon CSS-->
+           <link rel="stylesheet" href="vendors/font-awesome/css/font-awesome.min.css">
+           <link rel="stylesheet" href="vendors/linearicons/linearicons-1.0.0.css">
+           <!-- Animations CSS-->
+           <link rel="stylesheet" href="vendors/wow-js/animate.css">
+           <!-- owl_carousel-->
+           <link rel="stylesheet" href="vendors/owl_carousel/owl.carousel.css">
+   
+           <!-- Theme style CSS -->
+           <link href="css/style.css" rel="stylesheet">
+   <!--        <link href="css/responsive.css" rel="stylesheet">  -->
+   
+           <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+           <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+           <!--[if lt IE 9]>
+             <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+           <![endif]-->
+       </head>
+       <body>
+           <!--==========Main Header==========-->
+           <header class="main_header_area">
+               <nav class="navbar navbar-default navbar-fixed-top" id="main_navbar">
+                   <div class="container-fluid searchForm">
+                       <form action="#" class="row">
+                           <div class="input-group">
+                               <span class="input-group-addon"><i class="lnr lnr-magnifier"></i></span>
+                               <input type="search" name="search" class="form-control" placeholder="Type & Hit Enter">
+                               <span class="input-group-addon form_hide"><i class="lnr lnr-cross"></i></span>
+                           </div>
+                       </form>
+                   </div>
+                   <div class="container">
+                       <div class="row">
+                       <!-- Brand and toggle get grouped for better mobile display -->
+                       <div class="col-md-2 p0">
+                           <div class="navbar-header">
+                               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                               <span class="sr-only">Toggle navigation</span>
+                               <span class="icon-bar"></span>
+                               <span class="icon-bar"></span>
+                               <span class="icon-bar"></span>
+                               </button>
+                               <a class="navbar-brand" href="index.html">
+                                   <img src="img/logo.png" alt="">
+                                   <img src="img/logo-2.png" alt="">
+                               </a>
+                           </div>
+                       </div>
+   
+                       <!-- Collect the nav links, forms, and other content for toggling -->
+                       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                           <div class="col-md-9 p0">
+                               <ul class="nav navbar-nav main_nav">
+                                 <li><a href="#">Laptops</a></li>
+                                 <li><a href="#">Drones</a></li>
+                                   <li><a href="#">Gadgets</a></li>
+                                   <li><a href="#">Phones</a></li>
+                                   <li><a href="#">VR</a></li>
+                                   <li><a href="#">Contact us</a></li>
+                               </ul>
+                           </div>
+                           <div class="col-md-1 p0">
+                               <ul class="nav navbar-nav navbar-right">
+                                   <li><a href="#" class="nav_searchFrom"><i class="lnr lnr-magnifier"></i></a></li>
+                               </ul>
+                           </div>
+                       </div><!-- /.navbar-collapse -->
+                       </div>
+                   </div><!-- /.container-fluid -->
+               </nav>
+           </header>
+           <!--==========Main Header==========-->
+   
+           <!--==========Slider area==========-->
+           <section class="slider_area row m0">
+               <div class="slider_inner">
+                   <div class="camera_caption">
+                       <h2 class="wow fadeInUp animated">Make Your Shopping Easy</h2>
+                       <h5 class="wow fadeIn animated" data-wow-delay="0.3s">Find everything accordingly</h5>
+                       <a class="learn_mor wow fadeInU" data-wow-delay="0.6s" href="#product-list">Show Now!</a>
+                   </div>
+               </div>
+           </section>
+           <!--==========End Slider area==========-->
+   
+           <section class="best_business_area row">
+               <div class="check_tittle wow fadeInUp" data-wow-delay="0.7s" id="product-list">
+                   <h2>Product List</h2>
+               </div>
+               <div class="row it_works">
+                 <?php
+   
+                           $link = mysqli_connect("{{ hostvars['lamp-db']['ansible_facts']['eth0']['ipv4']['address'] }}", "{{ hostvars['lamp-db']['dbuser'] }}", "{{ hostvars['lamp-db']['dbpassword'] }}", "{{ hostvars['lamp-db']['dbname'] }}");
+   
+                           if ($link) {
+                           $res = mysqli_query($link, "select * from products;");
+                           while ($row = mysqli_fetch_assoc($res)) { ?>
+   
+                   <div class="col-md-3 col-sm-6 business_content">
+                       <?php echo '<img src="img/' . $row['ImageUrl'] . '" alt="">' ?>
+                       <div class="media">
+                           <div class="media-left">
+   
+                           </div>
+                           <div class="media-body">
+                               <a href="#"><?php echo $row['Name'] ?></a>
+                               <p>Purchase <?php echo $row['Name'] ?> at the lowest price <span><?php echo $row['Price'] ?>$</span></p>
+                           </div>
+                       </div>
+                   </div>
+   
+                   <?php
+                           }
+                       }
+                       else {
+                   ?>
+                   <div style="width: 100%">
+                   <div class="error-content">
+   
+                       <h1>Database connection error</h1>
+                       <p>
+                       <?php
+                             echo mysqli_connect_errno() . ":" . mysqli_connect_error();
+                       ?>
+                       </p>
+                     </div>
+                     </div>
+                     <?php
+                       }
+                     ?>
+   
+   
+               </div>
+           </section>
+   
+   
+           <footer class="footer_area row">
+               <div class="container custom-container">
+   
+   
+   
+                   <div class="copy_right_area">
+                       <h4 class="copy_right">© Copyright 2019 Kodekloud Ecommerce | All Rights Reserved</h4>
+                   </div>
+               </div>
+           </footer>
+   
+           <!-- jQuery -->
+           <script src="js/jquery-1.12.4.min.js"></script>
+           <!-- Bootstrap -->
+           <script src="js/bootstrap.min.js"></script>
+           <!-- Wow js -->
+           <script src="vendors/wow-js/wow.min.js"></script>
+           <!-- Wow js -->
+           <script src="vendors/Counter-Up/waypoints.min.js"></script>
+           <script src="vendors/Counter-Up/jquery.counterup.min.js"></script>
+           <!-- Stellar js -->
+           <script src="vendors/stellar/jquery.stellar.js"></script>
+           <!-- owl_carousel js -->
+           <script src="vendors/owl_carousel/owl.carousel.min.js"></script>
+           <!-- Theme js -->
+           <script src="js/theme.js"></script>
+       </body>
+   </html>
+   ```
+
+5. Finally, update the playbook `deploy-lamp-stack.yml` to use these template files instead of static files.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks - 1
+   - Verify Tasks - 2
+   - Verify Tasks - 3
+   - Verify Tasks - 4
+   - Verify Tasks - 5
+
+   Update `deploy-lamp-stack.yml` playbook as per below given code
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     tasks:
+       - name: Install MariaDB package
+         yum:
+           name:
+             - mariadb-server
+             - MySQL-python
+           state: installed
+   
+       - name: Create Mysql configuration file
+         template: src=templates/my.cnf.j2 dest=/etc/my.cnf
+   
+       - name: Start MariaDB Service
+         service: name=mariadb state=started enabled=yes
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule
+         firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Create Application Database
+         mysql_db: name={{ dbname }} state=present
+   
+       - name: Create Application DB User
+         tags: Create Application DB User
+         mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host={{ hostvars['lampweb']['ansible_facts']['eth0']['ipv4']['address'] }} state=present
+   
+       - name: Move db-load-script to db host
+         template:
+           src: templates/db-load-script.sql.j2
+           dest: /tmp/db-load-script.sql
+   
+       - name: Load Inventory Data
+         shell: mysql -f < /tmp/db-load-script.sql
+   
+   - name: Deploy lamp stack application
+     hosts: lampweb
+     become: yes
+     tasks:
+       - name: Install httpd and php
+         yum:
+           name:
+             - httpd
+             - php
+             - php-mysql
+           state: present
+   
+       - name: Install web role specific dependencies
+         yum: name=git state=installed
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule for httpd
+         firewalld: port={{ httpd_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Set index.php as the default page
+         tags: "Set index.php as the default page"
+         replace:
+           path: /etc/httpd/conf/httpd.conf
+           regexp: 'DirectoryIndex index.html'
+           replace: 'DirectoryIndex index.php'
+   
+       - name: http service state
+         service: name=httpd state=started enabled=yes
+   
+       - name: Copy the code from repository
+         git: repo={{ repository }} dest=/var/www/html/  force=yes
+   
+       - name: Creates the index.php file
+         template: src=templates/index.php.j2 dest=/var/www/html/index.php
+   ```
+
+6. If not done already you may optionally view the application by clicking the `Web App` link at the top of your terminal and make sure the site opens up correct and displays all correct data.
+
+   If you run into issues inspect the connectivity details in the `index.php` file.
+
+   OK
+
+
+
+# PLAYBOOK FLOW
+
+## Ansible Conditionals
+## LABS – CONDITIONALS
+
+1. Which of the following is a valid conditional clause in an Ansible Playbook?
+
+   - if
+   - else
+   - then
+   - **when**
+
+2. Which of the following is a valid conditional statement?
+
+   - when: ansible_distribution == "Ubuntu" && foo=="bar"
+   - when: ansible_distribution == "Ubuntu" and if foo=="bar"
+   - **when: ansible_distribution == "CentOS" and foo=="bar"**
+   - when: ansible_distribution == "Archlinux" || foo=="bar"
+
+3. We are tasked to deploy an HTTP webserver using Ansible Playbooks. Install `apache` web server on all the hosts in the inventory `/home/thor/playbooks/inventory`. Note that they are of different flavours i,e. `Ubuntu` and `CentOS`.
+
+   Develop a playbook `/home/thor/playbooks/install_apache.yml` that would install apache on both Ubuntu and CentOS. Note that the package name is `apache2` on Ubuntu and `httpd` on CentOS
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   inventory
+
+   ```
+   web1 ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   web2 ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=roo
+   ```
+
+   Update `install_apache.yml` playbook as per below given code
+
+   ```
+   ---
+   - name: Install apache
+     hosts: all
+     gather_facts: True
+     tasks:
+       - name: install apache2 when Ubuntu
+         package:
+           name: apache2
+           state: present
+         when: ansible_distribution == "Ubuntu"
+       - name: install httpd when CentOS
+         package:
+           name: httpd
+           state: present
+         when: ansible_distribution == "CentOS"
+   ```
+
+   ```
+   $ ansible-playbook -i inventory install_apache.yml 
+   
+   PLAY [Install apache] ************************************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [web2]
+   ok: [web1]
+   
+   TASK [install apache2 when Ubuntu] ***********************************************************************
+   skipping: [web1]
+   ok: [web2]
+   
+   TASK [install httpd when CentOS] *************************************************************************
+   skipping: [web2]
+   ok: [web1]
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=2    changed=0    unreachable=0    failed=0   
+   web2                       : ok=2    changed=0    unreachable=0    failed=0   
+   ```
+
+4. Help your friend fix this playbook `/home/thor/playbooks/copy_file_only_if.yml`.
+
+   Your firend is trying to copy this script `/home/thor/playbooks/report_status.sh` to `web2` at location `/usr/local/bin/report_status.sh` based on a condition: if variable `copy_file_only_if=true`.
+
+   Problem is: Even though (s)he is passing `True` or `true` the boolean variable set this way is being evaulated as string and the conditional is being skipped as `Conditional result was False`
+
+   Please use the inventory file `/home/thor/playbooks/inventory`.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Update `copy_file_only_if.yml` playbook as per below given code
+
+   ```
+   ---
+   - name: copy script if not present
+     gather_facts: yes
+     hosts: web2
+     vars:
+       remote_dest: /usr/local/bin/report_status.sh
+     tasks:
+       - copy:
+           src: report_status.sh
+           dest: "{{remote_dest}}"
+         when: copy_file_only_if is defined and copy_file_only_if|bool
+         ###......................................problem is here ^
+         ### modify this so copy_file_only_if is evaluated as boolean.
+   ```
+
+   ```
+   $ ansible-playbook -i inventory copy_file_only_if.yml 
+   
+   PLAY [copy script if not present] ************************************************************************
+   
+   TASK [copy] **********************************************************************************************
+   skipping: [web2]
+   
+   PLAY RECAP ***********************************************************************************************
+   web2                       : ok=0    changed=0    unreachable=0    failed=0   
+   ```
+
+   
+
+5. Check if `report_status.sh` copied earlier to `web2` remote host is executable or not.
+   If it is not executable, log the message: `File report_status.sh is not executable, making it executable...` in file `/tmp/change.log` on `web2` remote host and make it executable.
+
+   Develop a playbook `/home/thor/playbooks/make_it_executable.yml` and use the inventory file `/home/thor/playbooks/inventory`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Update `make_it_executable.yml` playbook as per below given code
+
+   ```yaml
+   ---
+   - hosts: web2
+     gather_facts: no
+     vars:
+       remote_dest: /usr/local/bin/report_status.sh
+     tasks:
+       - stat:
+           path: "{{remote_dest}}"
+         register: file_status
+   
+       - debug: var=file_status
+       - shell: echo "File report_status.sh is not executable, making it executable..." > /tmp/change.log
+         when: file_status.stat.exists and file_status.stat.executable == false
+   
+       - name: Make the script executable
+         file:
+           path: "{{remote_dest}}"
+           mode: 0775
+   ```
+
+   ```
+   $ ansible-playbook -i inventory make_it_executable.yml 
+   
+   PLAY [web2] **********************************************************************************************
+   
+   TASK [stat] **********************************************************************************************
+   ok: [web2]
+   
+   TASK [debug] *********************************************************************************************
+   ok: [web2] => {
+       "file_status": {
+           "changed": false, 
+           "failed": false, 
+           "stat": {
+               "atime": 1681288211.7117717, 
+               "attr_flags": "", 
+               "attributes": [], 
+               "block_size": 4096, 
+               "blocks": 8, 
+               "charset": "us-ascii", 
+               "checksum": "ec68b3da7e7dc798cdd89d385a8a4ac56e6612a7", 
+               "ctime": 1681288213.183875, 
+               "dev": 3145905, 
+               "device_type": 0, 
+               "executable": true, 
+               "exists": true, 
+               "gid": 0, 
+               "gr_name": "root", 
+               "inode": 22732103, 
+               "isblk": false, 
+               "ischr": false, 
+               "isdir": false, 
+               "isfifo": false, 
+               "isgid": false, 
+               "islnk": false, 
+               "isreg": true, 
+               "issock": false, 
+               "isuid": false, 
+               "mimetype": "text/plain", 
+               "mode": "0755", 
+               "mtime": 1681287719.0291424, 
+               "nlink": 1, 
+               "path": "/usr/local/bin/report_status.sh", 
+               "pw_name": "root", 
+               "readable": true, 
+               "rgrp": true, 
+               "roth": true, 
+               "rusr": true, 
+               "size": 99, 
+               "uid": 0, 
+               "version": null, 
+               "wgrp": false, 
+               "woth": false, 
+               "writeable": true, 
+               "wusr": true, 
+               "xgrp": true, 
+               "xoth": true, 
+               "xusr": true
+           }
+       }
+   }
+   
+   TASK [shell] *********************************************************************************************
+   skipping: [web2]
+   
+   TASK [Make the script executable] ************************************************************************
+   changed: [web2]
+   
+   PLAY RECAP ***********************************************************************************************
+   web2                       : ok=3    changed=1    unreachable=0    failed=0   
+   ```
+
+6. The script `report_status.sh` executes a command to test if you are still vulnerable to Shellshock Vulnerability.
+   The script outputs `vulnerable` if you are still vulnerable else echos `not vulnerable`. Note: You don't need to modify anything on the script.
+
+   Write a playbook `/home/thor/playbooks/check_if_vulnerable.yml` and execute that script `report_status.sh` you copied earlier to test if you are vulnerable. If you are still vulnerable add a play to `update package bash` to the latest version.
+   Use inventory `/home/thor/playbooks/inventory`.
+
+   Check
+
+   - Apply Playbook
+
+   ###### Create `check_if_vulnerable.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: web2
+     gather_facts: no
+     tasks:
+       - name: Run a script
+         shell: sh /usr/local/bin/report_status.sh
+         register: test
+       - debug:
+           var: test
+   ```
+
+   ```
+   $ ansible-playbook -i inventory check_if_vulnerable.yml 
+   
+   PLAY [web2] **********************************************************************************************
+   
+   TASK [Run a script] **************************************************************************************
+   changed: [web2]
+   
+   TASK [debug] *********************************************************************************************
+   ok: [web2] => {
+       "test": {
+           "changed": true, 
+           "cmd": "sh /usr/local/bin/report_status.sh", 
+           "delta": "0:00:00.005212", 
+           "end": "2023-04-12 08:46:59.665555", 
+           "failed": false, 
+           "rc": 0, 
+           "start": "2023-04-12 08:46:59.660343", 
+           "stderr": "", 
+           "stderr_lines": [], 
+           "stdout": "not vulnerable", 
+           "stdout_lines": [
+               "not vulnerable"
+           ]
+       }
+   }
+   
+   PLAY RECAP ***********************************************************************************************
+   web2                       : ok=2    changed=1    unreachable=0    failed=0   
+   ```
+
+7. Develop a playbook - `/home/thor/playbooks/install_packages.yml` - to install an extra package `htop` on `web2` node. The package name `htop` must be passed as a value to a variable `extra_packages` with the `-e` option in the command line while running the playbook. The playbook `install_packages.yml` already has some exiting code, modify the task `install extra packages` so that it only runs if `extra_packages` variable is defined and it has value `htop`. At the end playbook must be able to install this extra package on `web2` node while passing correct values in the extra vars i.e `-e`.
+
+   Use inventory from `/home/thor/playbooks/inventory`.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   ###### Update `install_packages.yml` playbook as per below given code
+
+   ```yaml
+   ---
+   - hosts: web2
+     gather_facts: no
+     tasks:
+       - name: install nginx
+         apt: name=nginx state=present
+         tags: [install_core]
+   
+       - name: install extra packages
+         apt: name={{item}}
+         with_items: "{{extra_packages}}"
+         when: extra_packages is defined and extra_packages == "htop"
+   ```
+
+## Ansible Blocks
+## LABS – BLOCKS
+
+1. How do we do logical grouping of the tasks in Ansible?
+
+   - Using roles
+   - Using inventory
+   - Using tags
+   - **Using blocks**
+
+2. Which of the following is useful for error handling in Ansible blocks?
+
+   - when
+   - **rescue**
+   - ignore_errors
+   - tags
+
+3. We have three web nodes that are managed by Ansible. There is an inventory file `~/playbooks/inventory` on `Ansible controller` which has all these three nodes added. Create a playbook `~/playbooks/blocks.yml` on `Ansible controller` to `install httpd web server` and `start its service`. We need the tasks to be run only on `CentOS` based web nodes.
+
+   Create the playbook using blocks to logically group the tasks (installation and service start) so that even if we run playbook for all hosts that are in inventory, the tasks are run only on `CentOS` based nodes.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify web1
+   - Verify web2
+   - Verify web3
+   - Ensure Ansible's blocks were used
+   - Check skipped server
+
+   inventory
+
+   ```
+   web1 ansible_host=172.20.1.100 ansible_user=root ansible_ssh_pass=Passw0rd
+   web2 ansible_host=172.20.1.101 ansible_user=root ansible_ssh_pass=Passw0rd
+   web3 ansible_host=172.20.1.102 ansible_user=root ansible_ssh_pass=Passw0rd
+   ```
+
+   Create `blocks.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     tasks:
+       - name: Install and configure httpd web server
+         when: ansible_facts['distribution'] == 'CentOS'
+         block:
+           - yum:
+               name: httpd
+               state: present
+           - service:
+               name: httpd
+               state: started
+   ```
+
+   ```
+   $ ansible-playbook -i inventory blocks.yml 
+   
+   PLAY [all] ***********************************************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [web2]
+   ok: [web3]
+   ok: [web1]
+   
+   TASK [yum] ***********************************************************************************************
+   skipping: [web2]
+   changed: [web3]
+   changed: [web1]
+   
+   TASK [service] *******************************************************************************************
+   skipping: [web2]
+   changed: [web1]
+   changed: [web3]
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=3    changed=2    unreachable=0    failed=0   
+   web2                       : ok=1    changed=0    unreachable=0    failed=0   
+   web3                       : ok=3    changed=2    unreachable=0    failed=0   
+   ```
+
+4. Make a copy of the playbook you just created - `~/playbooks/blocks.yml` to `~/playbooks/blocks_rescue.yml`. Update the new playbook as per below details:
+
+   a. Add a rescue section under the block so that if the task fails for any of the managed node the rescue section should display a message in the form:
+
+   `Playbook has failed for web3 node`
+   Use `{{ inventory_hostname}}` in place of `web3` so that correct value can be picked for each node
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+   - Make sure rescue was used.
+
+   Copy `blocks.yml` to `blocks_rescue.yml`, Updated `blocks_rescue.yml` playbook as per below given code
+
+   ```unix
+   ---
+   - hosts: all
+     tasks:
+       - name: Install and configure httpd web server
+         when: ansible_facts['distribution'] == 'CentOS'
+         block:
+           - yum:
+               name: httpd
+               state: present
+           - service:
+               name: httpd
+               state: started
+         rescue:
+           - debug:
+               msg: "Playbook has failed for {{ inventory_hostname }} node"
+   ```
+
+   ```
+   $ ansible-playbook -i inventory blocks_rescue.yml 
+   
+   PLAY [all] ***********************************************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [web2]
+   ok: [web1]
+   ok: [web3]
+   
+   TASK [yum] ***********************************************************************************************
+   skipping: [web2]
+   fatal: [web3]: FAILED! => {"changed": false, "msg": "No package matching 'httpd' found available, installed or updated", "rc": 126, "results": ["No package matching 'httpd' found available, installed or updated"]}
+   ok: [web1]
+   
+   TASK [service] *******************************************************************************************
+   skipping: [web2]
+   ok: [web1]
+   
+   TASK [debug] *********************************************************************************************
+   ok: [web3] => {
+       "msg": "Playbook has failed for web3 node"
+   }
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=3    changed=0    unreachable=0    failed=0   
+   web2                       : ok=1    changed=0    unreachable=0    failed=0   
+   web3                       : ok=2    changed=0    unreachable=0    failed=1   
+   ```
+
+5. We just created a new playbook at `~/playbooks/blocks_always.yml`. This playbook creates a file on all web nodes and performs some tasks on them. The last task that prints `This task always runs!` must always run. However, the playbook fails at the second task and as a result the third and fourth task does not run. We do not need to fix the second task for now, but by using `always` section we want the last task to always run regardless of status of other tasks before it.
+
+   Add an `always` section and configure the last task to always run. Do not modify any other task.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify
+   - Verify always: section was used
+
+   Update `blocks_always.yml` playbook as per below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     tasks:
+       - name: Create a file
+         block:
+           - file:
+               path: /tmp/file.txt
+               state: touch
+           - name: This will fail
+             command: /bin/false
+           - debug:
+               msg: "This will never run"
+         always:
+           - debug:
+               msg: "This task always runs!"
+   ```
+
+   ```
+   $ ansible-playbook -i inventory blocks_always.yml 
+   
+   PLAY [all] ***********************************************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [web2]
+   ok: [web1]
+   ok: [web3]
+   
+   TASK [file] **********************************************************************************************
+   changed: [web2]
+   changed: [web1]
+   changed: [web3]
+   
+   TASK [This will fail] ************************************************************************************
+   fatal: [web2]: FAILED! => {"changed": true, "cmd": ["/bin/false"], "delta": "0:00:00.005408", "end": "2023-04-13 03:01:29.510395", "msg": "non-zero return code", "rc": 1, "start": "2023-04-13 03:01:29.504987", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+   fatal: [web1]: FAILED! => {"changed": true, "cmd": ["/bin/false"], "delta": "0:00:00.037017", "end": "2023-04-13 03:01:29.836797", "msg": "non-zero return code", "rc": 1, "start": "2023-04-13 03:01:29.799780", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+   fatal: [web3]: FAILED! => {"changed": true, "cmd": ["/bin/false"], "delta": "0:00:00.082844", "end": "2023-04-13 03:01:29.897543", "msg": "non-zero return code", "rc": 1, "start": "2023-04-13 03:01:29.814699", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+   
+   TASK [debug] *********************************************************************************************
+   ok: [web1] => {
+       "msg": "This task always runs!"
+   }
+   ok: [web2] => {
+       "msg": "This task always runs!"
+   }
+   ok: [web3] => {
+       "msg": "This task always runs!"
+   }
+           to retry, use: --limit @/home/thor/playbooks/blocks_always.retry
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=3    changed=1    unreachable=0    failed=1   
+   web2                       : ok=3    changed=1    unreachable=0    failed=1   
+   web3                       : ok=3    changed=1    unreachable=0    failed=1   
+   ```
+
+   
+
+## Error Handling
+
+## LABS – ERROR HANDLING
+
+1. Which of the following options can be used to ignore a particular failed task in a play?
+
+   - any_errors_fatal
+   - **ignore_errors**
+   - changed_when
+   - failed_when
+
+2. While running a playbook for multiple servers how can we force interrupt the entire play if a task fails for a single host?
+
+   - Ansible by default interrupt the entire play for all servers in loop if any of them fails
+   - Use ignore_errors
+   - **Set any_errors_fatal to true**
+   - Use failed_when
+
+3. We have a playbook at `~/playbooks/httpd.yml` to install `httpd` web server on all web nodes. The inventory file at `~/playbooks/inventory` has these web nodes added. Update playbook so that if any task fails for any of the web nodes the playbook should exit for all hosts.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify
+   - Verify "any_errors_fatal" was used
+
+   inventory
+
+   ```
+   web1 ansible_host=172.20.1.100 ansible_user=root ansible_ssh_pass=Passw0rd
+   web2 ansible_host=172.20.1.101 ansible_user=root ansible_ssh_pass=Passw0rd
+   ```
+
+   Use the following YAML file to correct a playbook called `httpd.yml` as follows:-
+
+   ```yaml
+   ---
+   - name: Install httpd
+     hosts: all
+     any_errors_fatal: true
+     gather_facts: no
+     tasks:
+       - name: Install httpd
+         yum:
+           name: httpd
+           state: present
+   
+       - name: start service
+         service:
+           name: httpd
+           state: started
+   ```
+
+   ```
+   $ ansible-playbook -i inventory httpd.yml 
+   
+   PLAY [Install httpd] *************************************************************************************
+   
+   TASK [Install httpd] *************************************************************************************
+   fatal: [web2]: FAILED! => {"ansible_facts": {"pkg_mgr": "yum"}, "changed": false, "msg": "No package matching 'httpd' found available, installed or updated", "rc": 126, "results": ["No package matching 'httpd' found available, installed or updated"]}
+   changed: [web1]
+   
+   NO MORE HOSTS LEFT ***************************************************************************************
+           to retry, use: --limit @/home/thor/playbooks/httpd.retry
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=1    changed=1    unreachable=0    failed=0   
+   web2                       : ok=0    changed=0    unreachable=0    failed=1   
+   ```
+
+4. A playbook at `~/playbooks/httpd_errors.yml` runs tasks on `web1` node only. However, there is a faulty task in it. We want to ignore the failed task so that the playbook can proceed to the next task. Make the appropriate changes inside the playbook to ignore the second task. Use inventory file `~/playbooks/inventory` .
+
+   Do not try to fix the failed task.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify
+   - Make sure ignore_errors was used.
+
+   Use the following YAML file to correct a playbook called `httpd_errors.yml` as follows:-
+
+   ```yaml
+   ---
+   - name: Install httpd
+     hosts: web1
+     gather_facts: no
+     tasks:
+       - name: Install httpd
+         yum:
+           name: httpd
+           state: present
+   
+       - name: Do not remove this task
+         command: /bin/false
+         register: results
+         ignore_errors: yes
+   
+       - shell: "echo {{ results.msg }} > /tmp/output"
+   
+       - name: start service
+         service:
+           name: httpd
+           state: started
+   ```
+
+   ```
+   $ ansible-playbook -i inventory httpd_errors.yml 
+   
+   PLAY [Install httpd] *************************************************************************************
+   
+   TASK [Install httpd] *************************************************************************************
+   ok: [web1]
+   
+   TASK [Do not remove this task] ***************************************************************************
+   fatal: [web1]: FAILED! => {"changed": true, "cmd": ["/bin/false"], "delta": "0:00:00.030210", "end": "2023-04-13 03:38:46.902563", "msg": "non-zero return code", "rc": 1, "start": "2023-04-13 03:38:46.872353", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+   ...ignoring
+   
+   TASK [shell] *********************************************************************************************
+   changed: [web1]
+   
+   TASK [start service] *************************************************************************************
+   changed: [web1]
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=4    changed=3    unreachable=0    failed=0   
+   ```
+
+5. The playbook `~/playbooks/httpd_check_errors.yml` installs `httpd` on `web1` node, then checks for errors in the error log and then starts the `httpd` service.
+
+   Our goal is for the playbook to fail if the error check (second task) detects errors in the log file. However, with the current playbook, the error check (second task) has no impact as it is only viewing the error log file. Update the playbook so that it fails if it detects a string `Error` in the file `/var/log/httpd/error_log`.
+
+   The task is already there. Only implement error handling. Use `~/playbooks/inventory` file to test the playbook that is already present on `ansible controller`.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify
+   - Make sure "failed_when" was used
+
+   Use the following YAML file to correct a playbook called `httpd_check_errors.yml` as follows:-
+
+   ```yaml
+   ---
+   - name: Install httpd
+     hosts: web1
+     gather_facts: no
+     tasks:
+       - name: Install httpd
+         yum:
+           name: httpd
+           state: present
+       - name: Check httpd error logs
+         command: cat /var/log/httpd/error_log
+         register: results
+   
+       - name: start service
+         service:
+           name: httpd
+           state: started
+         failed_when: '"Error" in results.stdout'
+   
+       - name: Create a file
+         file:
+           path: /tmp/file
+           state: touch
+   ```
+
+   ```
+   $ ansible-playbook -i inventory httpd_check_errors.yml 
+   
+   PLAY [Install httpd] *************************************************************************************
+   
+   TASK [Install httpd] *************************************************************************************
+   ok: [web1]
+   
+   TASK [Check httpd error logs] ****************************************************************************
+   changed: [web1]
+   
+   TASK [start service] *************************************************************************************
+   fatal: [web1]: FAILED! => {"changed": false, "failed_when_result": true, "name": "httpd", "state": "started", "status": {"ActiveEnterTimestamp": "Thu 2023-04-13 03:40:51 UTC", "ActiveEnterTimestampMonotonic": "83101580605", "ActiveExitTimestampMonotonic": "0", "ActiveState": "active", "After": "systemd-journald.socket system.slice nss-lookup.target tmp.mount network.target remote-fs.target -.mount basic.target", "AllowIsolate": "no", "AmbientCapabilities": "0", "AssertResult": "yes", "AssertTimestamp": "Thu 2023-04-13 03:40:51 UTC", "AssertTimestampMonotonic": "83101529432", "Before": "shutdown.target", "BlockIOAccounting": "no", "BlockIOWeight": "18446744073709551615", "CPUAccounting": "no", "CPUQuotaPerSecUSec": "infinity", "CPUSchedulingPolicy": "0", "CPUSchedulingPriority": "0", "CPUSchedulingResetOnFork": "no", "CPUShares": "18446744073709551615", "CanIsolate": "no", "CanReload": "yes", "CanStart": "yes", "CanStop": "yes", "CapabilityBoundingSet": "18446744073709551615", "ConditionResult": "yes", "ConditionTimestamp": "Thu 2023-04-13 03:40:51 UTC", "ConditionTimestampMonotonic": "83101529432", "Conflicts": "shutdown.target", "ControlGroup": "/docker/673f953bac1a21ce2c06c8fa76679e6f0811e88197423fafe9cc6eba0674ad85/system.slice/httpd.service", "ControlPID": "0", "DefaultDependencies": "yes", "Delegate": "no", "Description": "The Apache HTTP Server", "DevicePolicy": "auto", "Documentation": "man:httpd(8) man:apachectl(8)", "EnvironmentFile": "/etc/sysconfig/httpd (ignore_errors=no)", "ExecMainCode": "0", "ExecMainExitTimestampMonotonic": "0", "ExecMainPID": "4647", "ExecMainStartTimestamp": "Thu 2023-04-13 03:40:51 UTC", "ExecMainStartTimestampMonotonic": "83101530779", "ExecMainStatus": "0", "ExecReload": "{ path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -k graceful ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", "ExecStart": "{ path=/usr/sbin/httpd ; argv[]=/usr/sbin/httpd $OPTIONS -DFOREGROUND ; ignore_errors=no ; start_time=[Thu 2023-04-13 03:40:51 UTC] ; stop_time=[n/a] ; pid=4647 ; code=(null) ; status=0/0 }", "ExecStop": "{ path=/bin/kill ; argv[]=/bin/kill -WINCH ${MAINPID} ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", "FailureAction": "none", "FileDescriptorStoreMax": "0", "FragmentPath": "/usr/lib/systemd/system/httpd.service", "GuessMainPID": "yes", "IOScheduling": "4", "Id": "httpd.service", "IgnoreOnIsolate": "no", "IgnoreOnSnapshot": "no", "IgnoreSIGPIPE": "yes", "InactiveEnterTimestampMonotonic": "0", "InactiveExitTimestamp": "Thu 2023-04-13 03:40:51 UTC", "InactiveExitTimestampMonotonic": "83101530848", "JobTimeoutAction": "none", "JobTimeoutUSec": "0", "KillMode": "control-group", "KillSignal": "18", "LimitAS": "18446744073709551615", "LimitCORE": "18446744073709551615", "LimitCPU": "18446744073709551615", "LimitDATA": "18446744073709551615", "LimitFSIZE": "18446744073709551615", "LimitLOCKS": "18446744073709551615", "LimitMEMLOCK": "67108864", "LimitMSGQUEUE": "819200", "LimitNICE": "0", "LimitNOFILE": "1048576", "LimitNPROC": "18446744073709551615", "LimitRSS": "18446744073709551615", "LimitRTPRIO": "0", "LimitRTTIME": "18446744073709551615", "LimitSIGPENDING": "837932", "LimitSTACK": "18446744073709551615", "LoadState": "loaded", "MainPID": "4647", "MemoryAccounting": "no", "MemoryCurrent": "18446744073709551615", "MemoryLimit": "18446744073709551615", "MountFlags": "0", "Names": "httpd.service", "NeedDaemonReload": "no", "Nice": "0", "NoNewPrivileges": "no", "NonBlocking": "no", "NotifyAccess": "main", "OOMScoreAdjust": "0", "OnFailureJobMode": "replace", "PermissionsStartOnly": "no", "PrivateDevices": "no", "PrivateNetwork": "no", "PrivateTmp": "yes", "ProtectHome": "no", "ProtectSystem": "no", "RefuseManualStart": "no", "RefuseManualStop": "no", "RemainAfterExit": "no", "Requires": "basic.target", "RequiresMountsFor": "/var/tmp", "Restart": "no", "RestartUSec": "100ms", "Result": "success", "RootDirectoryStartOnly": "no", "RuntimeDirectoryMode": "0755", "SameProcessGroup": "no", "SecureBits": "0", "SendSIGHUP": "no", "SendSIGKILL": "yes", "Slice": "system.slice", "StandardError": "inherit", "StandardInput": "null", "StandardOutput": "journal", "StartLimitAction": "none", "StartLimitBurst": "5", "StartLimitInterval": "10000000", "StartupBlockIOWeight": "18446744073709551615", "StartupCPUShares": "18446744073709551615", "StatusErrno": "0", "StatusText": "Total requests: 0; Current requests/sec: 0; Current traffic:   0 B/sec", "StopWhenUnneeded": "no", "SubState": "running", "SyslogLevelPrefix": "yes", "SyslogPriority": "30", "SystemCallErrorNumber": "0", "TTYReset": "no", "TTYVHangup": "no", "TTYVTDisallocate": "no", "TasksAccounting": "no", "TasksCurrent": "18446744073709551615", "TasksMax": "18446744073709551615", "TimeoutStartUSec": "1min 30s", "TimeoutStopUSec": "1min 30s", "TimerSlackNSec": "50000", "Transient": "no", "Type": "notify", "UMask": "0022", "UnitFilePreset": "disabled", "UnitFileState": "disabled", "Wants": "system.slice", "WatchdogTimestamp": "Thu 2023-04-13 03:40:51 UTC", "WatchdogTimestampMonotonic": "83101580539", "WatchdogUSec": "0"}}
+           to retry, use: --limit @/home/thor/playbooks/httpd_check_errors.retry
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=2    changed=1    unreachable=0    failed=1   
+   ```
+
+## Strategy
+
+## LABS – PARELLELISM
+
+
+
