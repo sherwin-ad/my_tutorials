@@ -6688,5 +6688,1441 @@ nameserver {{ ips }}
 
 ## LABS – PARELLELISM
 
+1. Which of the following is not a valid strategy in Ansible?
+
+   - debug
+   - linear
+   - **host**
+   - free
+
+2. Which of the following is the default strategy configured by Ansible.
+
+   - host_pinned
+   - **linear**
+   - debug
+   - free
+
+3. What is the default value for `forks` configured in Ansible?
+
+   - 2
+   - **5**
+   - 3
+   - 4
+
+4. There are three nodes we are managing using Ansible. All of them are already added in `~/playbooks/inventory` file present on `Ansible controller`. We have a playbook at path `~/playbooks/httpd.yml` to install/configure `httpd` web server on all managed nodes. Update the playbook to use `free` strategy.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify
+   - Make sure free strategy was used.
+
+   inventory
+
+   ```
+   web1 ansible_host=172.20.1.100 ansible_user=root ansible_ssh_pass=Passw0rd
+   web2 ansible_host=172.20.1.101 ansible_user=root ansible_ssh_pass=Passw0rd
+   web3 ansible_host=172.20.1.102 ansible_user=root ansible_ssh_pass=Passw0rd
+   ```
+
+   The solution yaml is placed below for `~/playbooks/httpd.yml`:
+
+   ```yaml
+   ---
+   - name: Install httpd
+     hosts: all
+     strategy: free
+     gather_facts: no
+     tasks:
+       - name: Install htpd
+         yum:
+           name: httpd
+           state: present
+   
+       - name: start service
+         service:
+           name: httpd
+           state: started
+   ```
+
+   ```
+   $ ansible-playbook -i inventory httpd.yml 
+   
+   PLAY [Install httpd] *************************************************************************************
+   
+   TASK [Install htpd] **************************************************************************************
+   changed: [web3]
+   
+   TASK [start service] *************************************************************************************
+   changed: [web3]
+   
+   TASK [Install htpd] **************************************************************************************
+   changed: [web2]
+   changed: [web1]
+   
+   TASK [start service] *************************************************************************************
+   changed: [web2]
+   changed: [web1]
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=2    changed=2    unreachable=0    failed=0   
+   web2                       : ok=2    changed=2    unreachable=0    failed=0   
+   web3                       : ok=2    changed=2    unreachable=0    failed=0   
+   ```
+
+5. Revert the previous change made to the playbook `~/playbooks/httpd.yml` to remove the `free` strategy and let Ansible use the default `linear` strategy. Make changes in this playbook to process only `1` server in a single batch i.e Ansible must execute tasks on a single server at a time.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify
+   - Make sure at a time only 1 host in the batch was processed by Ansible
+
+   The solution yaml is placed below for `~/playbooks/httpd.yml`:
+
+   ```yaml
+   ---
+   - name: Install httpd
+     hosts: all
+     serial: 1
+     gather_facts: no
+     tasks:
+       - name: Install htpd
+         yum:
+           name: httpd
+           state: present
+   
+       - name: start service
+         service:
+           name: httpd
+           state: started
+   ```
+
+   ```
+   $ ansible-playbook -i inventory httpd.yml 
+   
+   PLAY [Install httpd] *************************************************************************************
+   
+   TASK [Install htpd] **************************************************************************************
+   ok: [web1]
+   
+   TASK [start service] *************************************************************************************
+   ok: [web1]
+   
+   PLAY [Install httpd] *************************************************************************************
+   
+   TASK [Install htpd] **************************************************************************************
+   ok: [web2]
+   
+   TASK [start service] *************************************************************************************
+   ok: [web2]
+   
+   PLAY [Install httpd] *************************************************************************************
+   
+   TASK [Install htpd] **************************************************************************************
+   ok: [web3]
+   
+   TASK [start service] *************************************************************************************
+   ok: [web3]
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=2    changed=0    unreachable=0    failed=0   
+   web2                       : ok=2    changed=0    unreachable=0    failed=0   
+   web3                       : ok=2    changed=0    unreachable=0    failed=0   
+   ```
+
+
+
+# Include and Roles
+
+## Includes
+
+## LABS – FILE SEPARATION
+
+1. We have an inventory file defined in the `/home/thor/playbooks/web-playbooks` directory. Move all host variables into a file for each of the server under a `host_vars` directory
+
+   The inventory file is located at `/home/thor/playbooks/web-playbooks/inventory`. You may edit its contents but not its filename or location.
+
+   Check
+
+   - host_vars exists
+   - Move web1 variables to host_vars
+   - Move web2 variables to host_vars
+   - No variables to be defined in the inventory file for web1
+   - No variables to be defined in the inventory file for web2
+   - web1 inventory data
+   - web2 inventory data
+
+   inventory
+
+   ```
+   [web_servers]
+   web1 ansible_host=172.20.1.100 dns_server=8.8.8.8 size=big
+   web2 ansible_host=172.20.1.101 dns_server=8.8.8.8 size=small
+   ```
+
+   Follow below given steps:
+
+   ```unix
+   cd playbooks/web-playbooks/
+   mkdir host_vars
+   ```
+
+   Create vars file for web1
+
+   ```unix
+   vi host_vars/web1.yml
+   ```
+
+   Add below given content
+
+   ```unix
+   ansible_host: 172.20.1.100
+   dns_server: 8.8.8.8
+   size: big
+   ```
+
+   Create vars file for web2
+
+   ```unix
+   vi host_vars/web2.yml
+   ```
+
+   Add below given content
+
+   ```unix
+   ansible_host: 172.20.1.101
+   dns_server: 8.8.8.8
+   size: small
+   ```
+
+   Remove all vars from the inventory file
+   `inventory` should look like
+
+   ```
+   [web_servers]
+   web1
+   web2
+   ```
+
+2. The `dns_server` details are common to both servers. Move it to a separate variable file under `group_vars` (create if doesn't exist) and remove from `host_vars`.
+
+   Check
+
+   - `dns_server` must not present in inventory or host_vars for web1
+   - `dns_server` must not present in inventory or host_vars for web2
+   - web1 inventory data
+   - web2 inventory data
+
+   Follow below given steps:
+
+   ```unix
+   cd playbooks/web-playbooks/
+   mkdir group_vars
+   ```
+
+   Create group vars file
+
+   ```unix
+   vi group_vars/web_servers.yml
+   ```
+
+   Add below given content
+
+   ```unix
+   dns_server: 8.8.8.8
+   ```
+
+   Remove the `dns_server` var from the hosts var files i.e web1.yml and web2.yml
+
+   `web1.yml` should look like
+
+   ```
+   ansible_host: 172.20.1.100
+   size: big
+   ```
+
+   `web2.yml` should look like
+
+   ```
+   ansible_host: 172.20.1.101
+   size: small
+   ```
+
+3. We have a playbook playbook.yml, inventory and other data in `/home/thor/playbooks/db-playbooks` directory. When we run the playbook it should print the value of the `ntp_server` configured on the `db` servers. However right now it says `VARIABLE IS NOT DEFINED`. Identify and fix the issue.
+
+   Check
+
+   - Fix the issue
+
+   inventory
+
+   ```
+   [db_servers]
+   db1
+   db2
+   ```
+
+   host_vars/db1.yml 
+
+   ```
+   ansible_host: 192.168.1.2
+   dns_server: 8.8.8.8
+   ```
+
+   host_vars/db2.yml 
+
+   ```
+   ansible_host: 192.168.1.3
+   dns_server: 8.8.8.8
+   ```
+
+   group_vars/db.yml 
+
+   ```
+   ntp_server: 192.168.1.10
+   ```
+
+   Follow below given steps:
+
+   ```unix
+   cd /home/thor/playbooks/db-playbooks/
+   mv group_vars/db.yml group_vars/db_servers.yml
+   ```
+
+4. We have some additional inventory data about database stored at `/home/thor/playbooks/general/common/db/db.yml`
+
+   Include this in the playbook `playbook-2.yml`. We are trying to print the `db_version`.
+
+   Check
+
+   - Include Variable
+
+   /home/thor/playbooks/general/common/db/db.yml
+
+   ```
+   db_kind: mysql
+   db_version: 8.0.17
+   db_name: student
+   ```
+
+   Update `playbook-2.yml` as per below given code
+
+   /home/thor/playbooks/db-playbooks/playbook-2.yml
+
+   ```yaml
+   ---
+   - name: Print DB server data
+     hosts: all
+     gather_facts: no
+     tasks:
+       - include_vars: /home/thor/playbooks/general/common/db/db.yml
+       - debug:
+           var: db_version
+   ```
+
+5. We must now install and configure db and web server packages on 2 servers. Some playbooks and task files have been created in the `/home/thor/playbooks/full-stack-playbooks` directory.
+
+   Finish the `playbook.yml` to include the tasks in the tasks directory.
+
+   Check
+
+   - Must use include_tasks
+
+   Follow below given steps:
+
+   ###### Update `playbook.yml` as per below given code
+
+   ```yaml
+   ---
+   - name: Configure full stack server
+     hosts: f-server-1
+     gather_facts: no
+     tasks:
+       - include_tasks: tasks/install-db-server.yml
+       - include_tasks: tasks/install-web-server.yml
+   ```
+
+   tasks/install-db-server.yml
+
+   ```
+   - name: 556847-Install dependencies
+     yum:
+       enablerepo: extras
+       name:
+         - epel-release
+       state: installed
+   
+   - name: 556847-Install dependencies
+     yum:
+       name:
+         - python-pip
+       state: installed
+   
+   - name: Install MySQL database
+     yum:
+       name:
+         - mysql-server
+         - MySQL-python
+       state:  installed
+   
+   - name: Start Mysql Service
+     service:
+       name: mysqld
+       state: started
+       enabled: yes
+   
+   - name: Create Application Database
+     mysql_db: name='employee_db' state=present
+   
+   - name: Create Application DB User
+     # For web and db on the same server
+     mysql_user: name='db_user' password='Passw0rd' priv='*.*:ALL' host='localhost' state='present'
+     # For web and db on the different server
+     # mysql_user: name='db_user' password='Passw0rd' priv='*.*:ALL' host='%' state='present'
+   ```
+
+   tasks/install-web-server.yml 
+
+   ```
+   - name: 5563947-Install dependencies
+     yum:
+       enablerepo: extras
+       name:
+         - epel-release
+       state: installed
+   
+   - name: 5563947-Install dependencies
+     yum:
+       name:
+         - python-pip
+       state: installed
+   
+   - name: 5563948-Install Python Flask dependencies
+     pip:
+       name:
+         - flask
+         - flask-mysql
+       state: present
+   
+   - name: Copy web-server code
+     copy: src=app.py dest=/opt/app.py
+   
+   - name: Start web-application
+     shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+   ```
+
+
+
+## PROJECT – FILE SEPARATION
+
+Let us continue to improve our lamp stack project. Now that we have learned to organize tasks into separate files, let's move the variables to it's respective files. Create a host_vars and group_vars directory and move all variables to them. No variables to be defined in the main inventory file. Only the below parameters are to be configured as host variables. All other parameters are to be configured as group variables for the respective groups:
+
+**Host Variables:**
+
+```
+ansible_host
+ansible_ssh_private_key_file
+ansible_user
+```
+
+The inventory file is located at `/home/thor/playbooks/lamp-stack-playbooks/inventory`. You may edit its contents but not its filename or location.
+
+Check
+
+- Move host variables to host_vars for lampweb
+- Move group variables to group_vars for lampweb
+- No variables to be defined in the inventory file for lampweb
+- Move host variables to host_vars for lamp-db
+- Move group variables to group_vars for lampweb
+- No variables to be defined in the inventory file for lamp-db
+- All inventory data intact for lampweb
+- All inventory data intact for lamp-db
+
+inventory
+
+```
+[db_servers]
+lamp-db ansible_host=172.20.1.101 ansible_ssh_private_key_file=/home/thor/.ssh/maria ansible_user=maria mysqlservice=mysqld mysql_port=3306 dbname=ecomdb dbuser=ecomuser dbpassword=ecompassword
+
+[web_servers]
+lampweb ansible_host=172.20.1.100 ansible_ssh_private_key_file=/home/thor/.ssh/john ansible_user=john httpd_port=80 repository=https://github.com/kodekloudhub/learning-app-ecommerce.git
+```
+
+##### Follow below given steps:
+
+```unix
+cd /home/thor/playbooks/lamp-stack-playbooks/
+mkdir host_vars
+```
+
+Create vars file for lamp-db
+
+```unix
+vi host_vars/lamp-db.yml
+```
+
+Add below given content
+
+```
+ansible_host: 172.20.1.101
+ansible_ssh_private_key_file: /home/thor/.ssh/maria
+ansible_user: maria
+```
+
+Create vars file for lampweb
+
+```unix
+vi host_vars/lampweb.yml
+```
+
+Add below given content
+
+```
+ansible_host: 172.20.1.100
+ansible_ssh_private_key_file: /home/thor/.ssh/john
+ansible_user: john
+```
+
+Create `group_vars` directory
+
+```unix
+mkdir group_vars
+```
+
+Create group vars file for db_servers
+
+```unix
+vi group_vars/db_servers.yml
+```
+
+Add below given content
+
+```
+mysqlservice: mysqld
+mysql_port: 3306
+dbname: ecomdb
+dbuser: ecomuser
+dbpassword: ecompassword
+```
+
+Create group vars file for web_servers
+
+```unix
+vi group_vars/web_servers.yml
+```
+
+Add below given content
+
+```
+httpd_port: 80
+repository: https://github.com/kodekloudhub/learning-app-ecommerce.git
+```
+
+Update inventory
+
+```unix
+vi inventory
+```
+
+Add below given content
+
+```
+[db_servers]
+lamp-db
+
+[web_servers]
+lampweb
+```
+
+
+
+2. Let's move the tasks to 3 separate files under the `tasks` directory. Create 3 files `common.yml`, `db.yml` and `web.yml` and move the associated tasks into each of them. Then include the tasks in the main playbook.
+
+   Do not modify the tasks or task names. Only move them to the respective files
+
+   Check
+
+   - Tasks directory exists
+   - common.yml exists
+   - db.yml exists
+   - web.yml exists
+
+   deploy-lamp-stack.yml
+
+   ```
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - libselinux-python
+             - libsemanage-python
+             - firewalld
+           state: installed
+   
+   # Install and Configure Database
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     tasks:
+       - name: Install MariaDB package
+         yum:
+           name:
+             - mariadb-server
+             - MySQL-python
+           state: installed
+   
+       - name: Create Mysql configuration file
+         template: src=templates/my.cnf.j2 dest=/etc/my.cnf
+   
+       - name: Start MariaDB Service
+         service: name=mariadb state=started enabled=yes
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule
+         firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Create Application Database
+         mysql_db: name={{ dbname }} state=present
+      
+       - name: gather facts from lampweb
+         setup:
+         delegate_to: "{{ item }}"
+         delegate_facts: True
+         with_items: "{{ hostvars[groups['web_servers'][0]].groups.web_servers }}"
+   
+       - name: Create Application DB User
+         tags: Create Application DB User
+         mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host={{ hostvars['lampweb']['ansible_facts']['eth0']['ipv4']['address'] }} state=present
+   
+       - name: Move db-load-script to db host
+         template:
+           src: templates/db-load-script.sql.j2
+           dest: /tmp/db-load-script.sql
+   
+       - name: Load Inventory Data
+         shell: mysql -f < /tmp/db-load-script.sql
+         
+   - name: Deploy lamp stack application
+     hosts: lampweb
+     become: yes
+     tasks:
+       - name: Install httpd and php
+         yum:
+           name:
+             - httpd
+             - php
+             - php-mysql
+           state: present
+   
+       - name: Install web role specific dependencies
+         yum: name=git state=installed
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   
+       - name: insert firewalld rule for httpd
+         firewalld: port={{ httpd_port }}/tcp permanent=true state=enabled immediate=yes
+   
+       - name: Set index.php as the default page
+         tags: "Set index.php as the default page"
+         replace:
+           path: /etc/httpd/conf/httpd.conf
+           regexp: 'DirectoryIndex index.html'
+           replace: 'DirectoryIndex index.php'
+   
+       - name: http service state
+         service: name=httpd state=started enabled=yes
+   
+       - name: Copy the code from repository
+         git: repo={{ repository }} dest=/var/www/html/  force=yes
+   
+       - name: Creates the index.php file
+         template: src=templates/index.php.j2 dest=/var/www/html/index.php
+   ```
+
+   
+
+   ##### Follow below given steps:
+
+   ```unix
+   mkdir tasks
+   vi tasks/common.yml
+   ```
+
+   Add below given content
+
+   ```yaml
+   - name: Install common dependencies
+     yum:
+       name:
+         - libselinux-python
+         - libsemanage-python
+         - firewalld
+   ```
+
+   ```
+   vi tasks/db.yml
+   ```
+
+   Add below given content
+
+   ```yaml
+   - name: Install MariaDB package
+     yum:
+       name:
+         - mariadb-server
+         - MySQL-python
+       state: installed
+   
+   - name: Create Mysql configuration file
+     template: src=templates/my.cnf.j2 dest=/etc/my.cnf
+   
+   - name: Start MariaDB Service
+     service: name=mariadb state=started enabled=yes
+   
+   - name: Start firewalld
+     service: name=firewalld state=started enabled=yes
+   
+   - name: insert firewalld rule
+     firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+   - name: Create Application Database
+     mysql_db: name={{ dbname }} state=present
+   
+   - name: gather facts from lampweb
+     setup:
+     delegate_to: "{{ item }}"
+     delegate_facts: True
+     with_items: "{{ hostvars[groups['web_servers'][0]].groups.web_servers }}"
+   
+   - name: Create Application DB User
+     mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host={{ hostvars['lampweb']['ansible_facts']['eth0']['ipv4']['address'] }} state=present
+   
+   - name: Move db-load-script to db host
+     template:
+       src: templates/db-load-script.sql.j2
+       dest: /tmp/db-load-script.sql
+   
+   - name: Load Inventory Data
+     shell: mysql -f < /tmp/db-load-script.sql
+   ```
+
+   ```
+   vi tasks/web.yml
+   ```
+
+   Add below given content
+
+   ```yaml
+   - name: Install httpd and php
+     yum:
+       name:
+         - httpd
+         - php
+         - php-mysql
+       state: present
+   
+   - name: Install web role specific dependencies
+     yum: name=git state=installed
+   
+   - name: Start firewalld
+     service: name=firewalld state=started enabled=yes
+   
+   - name: insert firewalld rule for httpd
+     firewalld: port={{ httpd_port }}/tcp permanent=true state=enabled immediate=yes
+   
+   - name: Set index.php as the default page
+     tags: "Set index.php as the default page"
+     replace:
+       path: /etc/httpd/conf/httpd.conf
+       regexp: 'DirectoryIndex index.html'
+       replace: 'DirectoryIndex index.php'
+   
+   - name: http service state
+     service: name=httpd state=started enabled=yes
+   
+   - name: Copy the code from repository
+     git: repo={{ repository }} dest=/var/www/html/  force=yes
+   
+   - name: Creates the index.php file
+     template: src=templates/index.php.j2 dest=/var/www/html/index.php
+   ```
+
+3. If not done already include the tasks in the main `deploy-lamp-stack.yml`
+
+   Check
+
+   - Include task files in the main playbook
+
+   ##### Follow below given steps:
+
+   ```unix
+   vi deploy-lamp-stack.yml
+   ```
+
+   Add below given content
+
+   ```yaml
+   ---
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     tasks:
+       - include_tasks: tasks/common.yml
+       # Install and Configure Database
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     gather_facts: yes
+     become: yes
+     tasks:
+       - include_tasks: tasks/db.yml
+   - name: Deploy lamp stack application
+     hosts: lampweb
+     gather_facts: yes
+     become: yes
+     tasks:
+       - include_tasks: tasks/web.yml
+   ```
+
+4. Finally, test your playbook `deploy-lamp-stack.yml` and ensure it runs successfully.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks - 1
+   - Verify Tasks - 2
+   - Verify Tasks - 3
+   - Verify Tasks - 4
+   - Verify Tasks - 5
+
+   ```
+   $ ansible-playbook -i inventory deploy-lamp-stack.yml 
+   
+   PLAY [Deploy lamp stack application] *********************************************************************
+   
+   TASK [include_tasks] *************************************************************************************
+   included: /home/thor/playbooks/lamp-stack-playbooks/tasks/common.yml for lamp-db, lampweb
+   
+   TASK [Install common dependencies] ***********************************************************************
+   ok: [lamp-db]
+   ok: [lampweb]
+   
+   PLAY [Deploy lamp stack application] *********************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [lamp-db]
+   
+   TASK [include_tasks] *************************************************************************************
+   included: /home/thor/playbooks/lamp-stack-playbooks/tasks/db.yml for lamp-db
+   
+   TASK [Install MariaDB package] ***************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Mysql configuration file] *******************************************************************
+   ok: [lamp-db]
+   
+   TASK [Start MariaDB Service] *****************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Start firewalld] ***********************************************************************************
+   ok: [lamp-db]
+   
+   TASK [insert firewalld rule] *****************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Create Application Database] ***********************************************************************
+   ok: [lamp-db]
+   
+   TASK [gather facts from lampweb] *************************************************************************
+   ok: [lamp-db -> 172.20.1.100] => (item=lampweb)
+   
+   TASK [Create Application DB User] ************************************************************************
+   ok: [lamp-db]
+   
+   TASK [Move db-load-script to db host] ********************************************************************
+   ok: [lamp-db]
+   
+   TASK [Load Inventory Data] *******************************************************************************
+   changed: [lamp-db]
+   
+   PLAY [Deploy lamp stack application] *********************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [lampweb]
+   
+   TASK [include_tasks] *************************************************************************************
+   included: /home/thor/playbooks/lamp-stack-playbooks/tasks/web.yml for lampweb
+   
+   TASK [Install httpd and php] *****************************************************************************
+   changed: [lampweb]
+   
+   TASK [Install web role specific dependencies] ************************************************************
+   changed: [lampweb]
+   
+   TASK [Start firewalld] ***********************************************************************************
+   changed: [lampweb]
+   
+   TASK [insert firewalld rule for httpd] *******************************************************************
+   changed: [lampweb]
+   
+   TASK [Set index.php as the default page] *****************************************************************
+   changed: [lampweb]
+   
+   TASK [http service state] ********************************************************************************
+   changed: [lampweb]
+   
+   TASK [Copy the code from repository] *********************************************************************
+   changed: [lampweb]
+   
+   TASK [Creates the index.php file] ************************************************************************
+   changed: [lampweb]
+   
+   PLAY RECAP ***********************************************************************************************
+   lamp-db                    : ok=14   changed=1    unreachable=0    failed=0   
+   lampweb                    : ok=12   changed=8    unreachable=0    failed=0   
+   ```
+
+5. If not done already you may optionally execute the playbook and wait to completion. Then view the application by clicking the `Web App` link at the top of your terminal.
+
+   OK
+
+## Roles
+
+## LABS – ROLES
+
+1. Let's start using roles. In the `~/playbooks/db` directory we are attempting to configure mysql on a database server. A partially developed playbook is available. We have planned to use a role in the playbook.
+
+   First, install the `kodekloud1.mysql` role on the ansible controller.
+
+   Check
+
+   - Role installed
+
+   inventory
+
+   ```
+   db_server ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   ```
+
+   Install the `kodekloud1.mysql` role on the ansible controller using below given command.
+
+   ```unix
+   $ ansible-galaxy install kodekloud1.mysql
+   - downloading role 'mysql', owned by kodekloud1
+   - downloading role from https://github.com/kodekloudhub/mysql/archive/master.tar.gz
+   - extracting kodekloud1.mysql to /home/thor/.ansible/roles/kodekloud1.mysql
+   - kodekloud1.mysql (master) was installed successfully
+   ```
+
+2. Update the playbook to use the newly created role to configure the database server.
+
+   CheckCompleteIncomplete
+
+   - Playbook uses the Role
+   - Check playbook syntax
+
+   Update `deploy_db.yml` playbook as per below given code
+
+   ```yaml
+   ---
+   - name: Deploy MySQL Server
+     hosts: db_server
+     roles:
+       - kodekloud1.mysql
+   ```
+
+3. Let's configure a web server now. Navigate to the `web` directory. Install the `geerlingguy.nginx` role inside `roles` directory within the `web` directory.
+
+   Check
+
+   - Install Role in current directory'
+
+   Install the `geerlingguy.nginx` role in `roles` directory within the `web` directory
+
+   ```unix
+   $ ansible-galaxy install geerlingguy.nginx -p roles
+   - downloading role 'nginx', owned by geerlingguy
+   - downloading role from https://github.com/geerlingguy/ansible-role-nginx/archive/3.1.4.tar.gz
+   - extracting geerlingguy.nginx to /home/thor/playbooks/web/roles/geerlingguy.nginx
+   - geerlingguy.nginx (3.1.4) was installed successfully
+   ```
+
+4. Update the playbook to use the role `geerlingguy.nginx` to install `nginx` web server
+
+   Pass in an additional parameter to the role to `NOT` configure the service to be `enabled` at startup. Use the parameter `nginx_service_enabled`. Check `roles/geerlingguy.nginx/defaults/main.yml` for more details.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   inventory
+
+   ````
+   web_server ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=root
+   ````
+
+   Update `deploy_web.yml` playbook as per below given code
+
+   ```yaml
+   ---
+   - name: Deploy Web Server
+     hosts: web_server
+     roles:
+       - name: geerlingguy.nginx
+         vars:
+           nginx_service_enabled: no
+   ```
+
+   ```
+   [thor@ansible-controller web]$ ansible-playbook -i inventory deploy_web.yml 
+   
+   PLAY [Deploy Web Server] *********************************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [web_server]
+   
+   TASK [geerlingguy.nginx : Include OS-specific variables.] ************************************************
+   ok: [web_server]
+   
+   TASK [geerlingguy.nginx : Define nginx_user.] ************************************************************
+   ok: [web_server]
+   
+   TASK [geerlingguy.nginx : include_tasks] *****************************************************************
+   included: /home/thor/playbooks/web/roles/geerlingguy.nginx/tasks/setup-RedHat.yml for web_server
+   
+   TASK [geerlingguy.nginx : Enable nginx repo.] ************************************************************
+   changed: [web_server]
+   
+   TASK [geerlingguy.nginx : Ensure nginx is installed.] ****************************************************
+   changed: [web_server]
+   
+   TASK [geerlingguy.nginx : include_tasks] *****************************************************************
+   skipping: [web_server]
+   
+   TASK [geerlingguy.nginx : include_tasks] *****************************************************************
+   skipping: [web_server]
+   
+   TASK [geerlingguy.nginx : include_tasks] *****************************************************************
+   skipping: [web_server]
+   
+   TASK [geerlingguy.nginx : include_tasks] *****************************************************************
+   skipping: [web_server]
+   
+   TASK [geerlingguy.nginx : include_tasks] *****************************************************************
+   skipping: [web_server]
+   
+   TASK [geerlingguy.nginx : Remove default nginx vhost config file (if configured).] ***********************
+   skipping: [web_server]
+   
+   TASK [geerlingguy.nginx : Ensure nginx_vhost_path exists.] ***********************************************
+   ok: [web_server]
+   
+   TASK [geerlingguy.nginx : Add managed vhost config files.] ***********************************************
+   
+   TASK [geerlingguy.nginx : Remove managed vhost config files.] ********************************************
+   
+   TASK [geerlingguy.nginx : Remove legacy vhosts.conf file.] ***********************************************
+   ok: [web_server]
+   
+   TASK [geerlingguy.nginx : Copy nginx configuration in place.] ********************************************
+   changed: [web_server]
+   
+   TASK [geerlingguy.nginx : Ensure nginx service is running as configured.] ********************************
+   changed: [web_server]
+   
+   RUNNING HANDLER [geerlingguy.nginx : reload nginx] *******************************************************
+   changed: [web_server]
+   
+   PLAY RECAP ***********************************************************************************************
+   web_server                 : ok=11   changed=5    unreachable=0    failed=0   
+   ```
+
+5. Let us now create our own role. Navigate to the `firewalld` directory. A playbook `deploy_firewalld.yml` is given that installs and starts the `firewalld` service. Let us first create our own role and move the tasks into it.
+
+   Create a role named `ansible-role-firewalld` under in the `firewalld/roles` directory.
+
+   Check
+
+   - Role created
+
+   inventory
+
+   ```
+   db_server ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   ```
+
+   Create a role named `ansible-role-firewalld` under in the `firewalld/roles` directory
+
+   ```unix
+   [thor@ansible-controller firewalld]$ ansible-galaxy init roles/ansible-role-firewalld
+   - roles/ansible-role-firewalld was created successfully
+   
+   [thor@ansible-controller firewalld]$ ls
+   deploy_firewalld.yml  inventory  roles
+   ```
+
+6. Move the tasks from the playbook to the `tasks/main.yml` file inside the role. Then use the newly created role in the playbook
+
+   Check
+
+   - Move tasks to main.yml
+   - Playbook uses new role
+   - Syntax Check
+   - Prepare Environment
+   - Apply playbook
+   - Verify Tasks
+
+   Move the tasks into `tasks/main.yml` and update `deploy_firewalld.yml` as per below given code
+
+   deploy_firewalld.yml
+
+   ```
+   - name: Configure Firewalld
+     hosts: all
+     tasks:
+       - name: Install common dependencies
+         yum:
+           name:
+             - firewalld
+           state: installed
+   
+       - name: Start firewalld
+         service: name=firewalld state=started enabled=yes
+   ```
+
+   tasks/main.yml
+
+   ```yaml
+   ---
+   - name: Install common dependencies
+     yum:
+       name:
+         - firewalld
+       state: installed
+   - name: Start firewalld
+     service: name=firewalld state=started enabled=yes
+   ```
+
+   Playbook should look like
+
+   ```yaml
+   - name: Configure Firewalld
+     hosts: all
+     roles:
+       - ansible-role-firewalld
+   
+   ```
+
+   ```
+   [thor@ansible-controller firewalld]$ ansible-playbook -i inventory deploy_firewalld.yml 
+   
+   PLAY [Configure Firewalld] *******************************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [db_server]
+   
+   TASK [ansible-role-firewalld : Install common dependencies] **********************************************
+   changed: [db_server]
+   
+   TASK [ansible-role-firewalld : Start firewalld] **********************************************************
+   changed: [db_server]
+   
+   PLAY RECAP ***********************************************************************************************
+   db_server                  : ok=3    changed=2    unreachable=0    failed=0   
+   ```
+
+
+
+## PROJECT – ROLES CREATION
+
+1. Let us continue to improve our lamp stack project. Now that we have learned about roles, let's create re-usable roles and use them in our project.
+
+   Start by creating 3 roles named `common`, `httpd-php` and `mysql` under the roles directory under your project at `/home/thor/playbooks/lamp-stack-playbooks`
+
+   Check
+
+   - httpd-php role created
+   - mysql role created
+   - common role created
+
+   inventory
+
+   ```
+   [db_servers]
+   lamp-db
+   
+   [web_servers]
+   lampweb
+   ```
+
+   Create roles
+
+   ```
+   [thor@ansible-controller lamp-stack-playbooks]$ ansible-galaxy init roles/httpd-php
+   - roles/httpd-php was created successfully
+   
+   [thor@ansible-controller lamp-stack-playbooks]$ ansible-galaxy init roles/common
+   - roles/common was created successfully
+   
+   [thor@ansible-controller lamp-stack-playbooks]$ ansible-galaxy init roles/mysql
+   - roles/mysql was created successfully
+   ```
+
+2. Let's move the tasks from the `tasks` directory to the `tasks/main.yml` file inside each role.
+
+   Do not modify the tasks or task names. Only move them to the respective files
+
+   Check
+
+   - Tasks directory exists
+   - common/tasks/main.yml contains common tasks
+   - roles/mysql/tasks/main.yml contains database tasks
+   - roles/httpd-php/tasks/main.yml contains database tasks
+
+   tasks/common.yml 
+
+   ```
+   - name: Install common dependencies
+     yum:
+       name:
+         - libselinux-python
+         - libsemanage-python
+         - firewalld
+       state: installed
+   ```
+
+   tasks/db.yml
+
+   ```
+   - name: Install MariaDB package
+     yum:
+       name:
+         - mariadb-server
+         - MySQL-python
+       state: installed
+   
+   - name: Create Mysql configuration file
+     template: src=templates/my.cnf.j2 dest=/etc/my.cnf
+   
+   - name: Start MariaDB Service
+     service: name=mariadb state=started enabled=yes
+   
+   - name: Start firewalld
+     service: name=firewalld state=started enabled=yes
+   
+   - name: insert firewalld rule
+     firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+   
+   - name: Create Application Database
+     mysql_db: name={{ dbname }} state=present
+   
+   - name: Create Application DB User
+     mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL host='172.20.1.100' state=present
+   
+   - name: Move db-load-script to db host
+     template:
+       src: templates/db-load-script.sql.j2
+       dest: /tmp/db-load-script.sql
+   
+   - name: Load Inventory Data
+     shell: mysql -f < /tmp/db-load-script.sql
+   ```
+
+   tasks/web.yml 
+
+   ```
+   - name: Install httpd and php
+     yum:
+       name:
+         - httpd
+         - php
+         - php-mysql
+       state: present
+   
+   - name: Install web role specific dependencies
+     yum: name=git state=installed
+   
+   - name: Start firewalld
+     service: name=firewalld state=started enabled=yes
+   
+   - name: insert firewalld rule for httpd
+     firewalld: port={{ httpd_port }}/tcp permanent=true state=enabled immediate=yes
+   
+   - name: Set index.php as the default page
+     tags: "Set index.php as the default page"
+     replace:
+       path: /etc/httpd/conf/httpd.conf
+       regexp: 'DirectoryIndex index.html'
+       replace: 'DirectoryIndex index.php'
+   
+   - name: http service state
+     service: name=httpd state=started enabled=yes
+   
+   - name: Copy the code from repository
+     git: repo={{ repository }} dest=/var/www/html/  force=yes
+   
+   - name: Creates the index.php file
+     template: src=templates/index.php.j2 dest=/var/www/html/index.php
+   ```
+
+   Move the tasks to the tasks/main.yml file inside each role.
+
+   ```unix
+   cp tasks/common.yml roles/common/tasks/main.yml
+   cp tasks/db.yml roles/mysql/tasks/main.yml
+   cp tasks/web.yml roles/httpd-php/tasks/main.yml
+   ```
+
+3. If not done already, update the main playbook - `deploy-lamp-stack.yml` - to use the newly created roles.
+
+   Check
+
+   - Use httpd-php role in the main playbook
+   - Use mysql role in the main playbook
+   - Use common role in the main playbook
+
+   Update `deploy-lamp-stack.yml` playbook as per below given code
+
+   ```yaml
+   ---
+   
+   - name: Deploy lamp stack application
+     hosts: all
+     become: yes
+     roles:
+       - common
+   
+       # Install and Configure Database
+   - name: Deploy lamp stack application
+     hosts: lamp-db
+     become: yes
+     roles:
+       - mysql
+   
+   - name: Deploy lamp stack application
+     hosts: lampweb
+     become: yes
+     roles:
+       - httpd-php
+   ```
+
+4. Finally, test your playbook `deploy-lamp-stack.yml` and ensure it runs successfully.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks - 1
+   - Verify Tasks - 2
+   - Verify Tasks - 3
+   - Verify Tasks - 4
+   - Verify Tasks - 5
+
+   ```
+   [thor@ansible-controller lamp-stack-playbooks]$ ansible-playbook -i inventory deploy-lamp-stack.yml 
+   
+   PLAY [Deploy lamp stack application] *********************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [lamp-db]
+   ok: [lampweb]
+   
+   TASK [common : Install common dependencies] **************************************************************
+   changed: [lampweb]
+   changed: [lamp-db]
+   
+   PLAY [Deploy lamp stack application] *********************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [lamp-db]
+   
+   TASK [mysql : Install MariaDB package] *******************************************************************
+   changed: [lamp-db]
+   
+   TASK [mysql : Create Mysql configuration file] ***********************************************************
+   changed: [lamp-db]
+   
+   TASK [mysql : Start MariaDB Service] *********************************************************************
+   changed: [lamp-db]
+   
+   TASK [mysql : Start firewalld] ***************************************************************************
+   changed: [lamp-db]
+   
+   TASK [mysql : insert firewalld rule] *********************************************************************
+   changed: [lamp-db]
+   
+   TASK [mysql : Create Application Database] ***************************************************************
+   changed: [lamp-db]
+   
+   TASK [mysql : Create Application DB User] ****************************************************************
+   changed: [lamp-db]
+   
+   TASK [mysql : Move db-load-script to db host] ************************************************************
+   changed: [lamp-db]
+   
+   TASK [mysql : Load Inventory Data] ***********************************************************************
+   changed: [lamp-db]
+   
+   PLAY [Deploy lamp stack application] *********************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [lampweb]
+   
+   TASK [httpd-php : Install httpd and php] *****************************************************************
+   changed: [lampweb]
+   
+   TASK [httpd-php : Install web role specific dependencies] ************************************************
+   changed: [lampweb]
+   
+   TASK [httpd-php : Start firewalld] ***********************************************************************
+   changed: [lampweb]
+   
+   TASK [httpd-php : insert firewalld rule for httpd] *******************************************************
+   changed: [lampweb]
+   
+   TASK [httpd-php : Set index.php as the default page] *****************************************************
+   changed: [lampweb]
+   
+   TASK [httpd-php : http service state] ********************************************************************
+   changed: [lampweb]
+   
+   TASK [httpd-php : Copy the code from repository] *********************************************************
+   changed: [lampweb]
+   
+   TASK [httpd-php : Creates the index.php file] ************************************************************
+   changed: [lampweb]
+   
+   PLAY RECAP ***********************************************************************************************
+   lamp-db                    : ok=12   changed=10   unreachable=0    failed=0   
+   lampweb                    : ok=11   changed=9    unreachable=0    failed=0   
+   ```
+
+5. If not done already you may optionally execute the playbook and wait to completion. Then view the application by clicking the `Web App` link at the top of your terminal.
+
+   OK
+
+# Other Topics
+
+## Vault
+
+
+
 
 
