@@ -8124,5 +8124,796 @@ lampweb
 
 
 
+## LABS – VAULT
+
+1. Which of the following is the valid syntax to create new encrypted data file:
+
+   - ansible-vault .
+   - ansible-vault new foo.yml
+   - **ansible-vault create foo.yml**
+   - ansible-vault init foo.yml
+
+2. What is the default cipher used by `ansible-vault` ?
+
+   - RSA
+   - CHACHA20
+   - **AES256**
+   - DES
+
+3. Which of these sub-commands is used with `ansible-vault` if you wish to change your password for a vault-encrypted file/files ?
+
+   - modify
+   - **rekey**
+   - renew
+   - rotate
+
+4. Using the ansible vault password file located at `/home/thor/playbooks/vault_pass.txt`, decrypt the file located at `/home/thor/playbooks/decrypt_me.yml`
+
+   Check
+
+   ```
+   [thor@ansible-controller playbooks]$ cat vault_pass.txt 
+   AN$1Bl3_V@u7t_i$_AWEs0m3
+   
+   [thor@ansible-controller playbooks]$ cat decrypt_me.yml 
+   $ANSIBLE_VAULT;1.1;AES256
+   36376634626565343564313733323162616564383138336232626239323930636364623636643636
+   6535333261383465346137656236366133383136303634660a383364316566356534333736633231
+   66356235653362343362323638303035633739303237363138646131666663343764366637646638
+   3130323931326437650a333262386538343739666434313034343935376164656563303865316562
+   64316634613462343163646463613838366563333561636666643439353238663437373762643232
+   3239633463363262656464356432666637616465363866653438
+   
+   [thor@ansible-controller playbooks]$ ansible-vault decrypt decrypt_me.yml --vault-password-file vault_pass.txt 
+   Decryption successful
+   
+   [thor@ansible-controller playbooks]$ cat decrypt_me.yml 
+   answer_of_mystery_to_universe: 42
+   ```
+
+5. Write a playbook to copy the secret file located at `/home/thor/playbooks/secrets_file.txt` to all remote hosts at location `/root/.secrets_file.txt`
+
+   - Your playbook must be located at: `/home/thor/playbooks/copy_secrets.yml`
+   - Remote hosts are placed in inventory: `/home/thor/playbooks/inventory`
+   - The secret file is encrypted, please use vault password from `/home/thor/playbooks/vault_pass.txt` while you execute the playbook.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   inventory
+
+   ```
+   web1 ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   web2 ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=root
+   ```
+
+   Edit `/etc/ansible/ansible.cfg` file and make sure to set `vault_password_file = /home/thor/playbooks/vault_pass.txt`. 
+
+   Also make sure `/home/thor/playbooks/vault_pass.txt` file permissions are `640`
+
+   Please use the following YAML file and place it under `~/playbooks/copy_secrets.yml`:
+
+   ```yaml
+   ---
+   - hosts: all
+     tasks:
+       - name: copy a secret file to remote hosts
+         copy:
+           src: secrets_file.txt
+           dest: /root/.secrets_file.txt
+   ```
+
+   secrets_file.txt
+
+   ```
+   $ANSIBLE_VAULT;1.1;AES256
+   39633665643332303935633666626635653665666237353330333366396461626463343961653362
+   6662393331383635343830383638636231653731303538380a393331613436353265383935356636
+   34636332623938343537386331356532376539633861616134643563633333366130663439356361
+   3530303663663461360a376335363738626632366262663934343933333563653736633365383961
+   66366237663164643238656536313036333533343034366232306133316330383663323436653236
+   37396531393530373133333161373734336235666534656461653061636133636461386165346339
+   353461356663353533373161616231616139
+   ```
+
+   ```
+   $ ansible-playbook -i inventory copy_secrets.yml 
+   
+   PLAY [all] ***********************************************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [web1]
+   ok: [web2]
+   
+   TASK [copy a secret file to remote hosts] ****************************************************************
+   changed: [web1]
+   changed: [web2]
+   
+   PLAY RECAP ***********************************************************************************************
+   web1                       : ok=2    changed=1    unreachable=0    failed=0   
+   web2                       : ok=2    changed=1    unreachable=0    failed=0   
+   ```
 
 
+
+## Dynamic Inventory
+
+## LABS – DYNAMIC INVENTORY
+
+1. How many static inventory files do you see in the default ansible directory: `/etc/ansible/` and `~/playbooks/` directory?
+
+   - 2
+   - 1
+   - 3
+   - 7
+   - **0**
+
+2. We have 0 static inventories! That is because for this test, we will make use of dynamic inventory scripts
+
+   OK
+
+3. Explore the script `dynamic_web.py`. How many hosts do you see in group `web`?
+
+   The inventory script is located at `~/playbooks`
+
+   - **2**
+   - 1
+   - 3
+   - 7
+   - 0
+
+   ```
+   $ ./dynamic_web.py --list
+   {"web": {"hosts": ["172.20.1.100", "172.20.1.101"], "vars": {"ansible_ssh_user": "root", "ansible_ssh_pass": "Passw0rd"}}, "_meta": {"hostvars": {"172.20.1.100": {"host_specific_var": "foo"}, "172.20.1.101": {"host_specific_var": "bar"}}}}
+   ```
+
+   dynamic_web.py
+
+   ```
+   #!/usr/bin/env python
+   
+   '''
+   Example custom dynamic inventory script for Ansible, in Python.
+   '''
+   
+   import os
+   import sys
+   import argparse
+   
+   try:
+       import json
+   except ImportError:
+       import simplejson as json
+   
+   class ExampleInventory(object):
+   
+       def __init__(self):
+           self.inventory = {}
+           self.read_cli_args()
+   
+           # Called with `--list`.
+           if self.args.list:
+               self.inventory = self.example_inventory()
+           # Called with `--host [hostname]`.
+           elif self.args.host:
+               # Not implemented, since we return _meta info `--list`.
+               self.inventory = self.empty_inventory()
+           # If no groups or vars are present, return an empty inventory.
+           else:
+               self.inventory = self.empty_inventory()
+   
+           print json.dumps(self.inventory);
+   
+       # Example inventory for testing.
+       def example_inventory(self):
+           return {
+               'web': {
+                   'hosts': ['172.20.1.100', '172.20.1.101'],
+                   'vars': {
+                       'ansible_ssh_user': 'root',
+                       'ansible_ssh_pass': 'Passw0rd'
+                            }
+               },
+               '_meta': {
+                   'hostvars': {
+                       '172.20.1.100': {
+                           'host_specific_var': 'foo'
+                       },
+                       '172.20.1.101': {
+                           'host_specific_var': 'bar'
+                       }
+                   }
+               }
+           }
+   
+       # Empty inventory for testing.
+       def empty_inventory(self):
+           return {'_meta': {'hostvars': {}}}
+   
+       # Read the command line args passed to the script.
+       def read_cli_args(self):
+           parser = argparse.ArgumentParser()
+           parser.add_argument('--list', action = 'store_true')
+           parser.add_argument('--host', action = 'store')
+           self.args = parser.parse_args()
+   
+   # Get the inventory.
+   ExampleInventory()
+   ```
+
+4. Explore the script `dynamic_custom.py`. How many hosts do you see in the inventory?
+
+   The inventory script is located at `~/playbooks`
+
+   - 2
+   - 4
+   - 7
+   - 1
+   - **3**
+
+   ```
+   $ ./dynamic_custom.py --list
+   {"group": {"hosts": ["172.20.1.101", "172.20.1.102", "172.20.1.103"], "vars": {"ansible_ssh_user": "root", "ansible_ssh_pass": "Passw0rd"}}, "_meta": {"172.20.1.103": {"host_specific_var": "custom3"}, "hostvars": {"172.20.1.102": {"host_specific_var": "custom2"}, "172.20.1.101": {"host_specific_var": "custom1"}}}}
+   ```
+
+   dynamic_custom.py
+
+   ```
+   #!/usr/bin/env python
+   
+   '''
+   Example custom dynamic inventory script for Ansible, in Python.
+   '''
+   
+   import os
+   import sys
+   import argparse
+   
+   try:
+       import json
+   except ImportError:
+       import simplejson as json
+   
+   class ExampleInventory(object):
+   
+       def __init__(self):
+           self.inventory = {}
+           self.read_cli_args()
+   
+           # Called with `--list`.
+           if self.args.list:
+               self.inventory = self.example_inventory()
+           # Called with `--host [hostname]`.
+           elif self.args.host:
+               # Not implemented, since we return _meta info `--list`.
+               self.inventory = self.empty_inventory()
+           # If no groups or vars are present, return an empty inventory.
+           else:
+               self.inventory = self.empty_inventory()
+   
+           print json.dumps(self.inventory);
+   
+       # Example inventory for testing.
+       def example_inventory(self):
+           return {
+               'group': {
+                   'hosts': ['172.20.1.101', '172.20.1.102', '172.20.1.103'],
+                   'vars': {
+                       'ansible_ssh_user': 'root',
+                       'ansible_ssh_pass': 'Passw0rd'
+                            }
+               },
+               '_meta': {
+                   'hostvars': {
+                       '172.20.1.101': {
+                           'host_specific_var': 'custom1'
+                       },
+                       '172.20.1.102': {
+                           'host_specific_var': 'custom2'
+                       },
+                        },
+                       '172.20.1.103': {
+                           'host_specific_var': 'custom3'
+                       }
+                   }
+               }
+   
+       # Empty inventory for testing.
+       def empty_inventory(self):
+           return {'_meta': {'hostvars': {}}}
+   
+       # Read the command line args passed to the script.
+       def read_cli_args(self):
+           parser = argparse.ArgumentParser()
+           parser.add_argument('--list', action = 'store_true')
+           parser.add_argument('--host', action = 'store')
+           self.args = parser.parse_args()
+   
+   # Get the inventory.
+   ExampleInventory()
+   ```
+
+   
+
+5. Run a simple ansible play using the ping module against the hosts using the inventory script `dynamic_custom.py`.
+
+   The playbook should be called `ping.yml` created under `~/playbooks`
+
+   Check
+
+   - Syntax Check
+   - Playbook
+
+   Please use the following YAML file and place it under `~/playbooks/ping.yml`:
+
+   ```yaml
+   ---
+   - hosts: all
+     tasks:
+       - ping:
+   ```
+
+   ```
+   $ ansible-playbook -i dynamic_custom.py ping.yml 
+   
+   PLAY [all] ***********************************************************************************************
+   
+   TASK [Gathering Facts] ***********************************************************************************
+   ok: [172.20.1.101]
+   ok: [172.20.1.102]
+   ok: [172.20.1.103]
+   
+   TASK [ping] **********************************************************************************************
+   ok: [172.20.1.101]
+   ok: [172.20.1.102]
+   ok: [172.20.1.103]
+   
+   PLAY RECAP ***********************************************************************************************
+   172.20.1.101               : ok=2    changed=0    unreachable=0    failed=0   
+   172.20.1.102               : ok=2    changed=0    unreachable=0    failed=0   
+   172.20.1.103               : ok=2    changed=0    unreachable=0    failed=0   
+   ```
+
+6. We have created a dummy inventory script called `ec2.py` under `~/playbooks/`. This script emulates the scenario of getting ec2 instance from an aws account.
+
+   Using `ansible-inventory` with the `ec2.py` script, what is the `region` for the host `172.20.1.109` ?
+
+   - eu-west-3
+   - ap-south-1
+   - **ca-central-1**
+   - us-east-1
+
+   ```
+   $ ansible-inventory -i ec2.py --host 172.20.1.109
+   {
+       "ansible_ssh_pass": "Passw0rd", 
+       "ansible_ssh_user": "root", 
+       "ec2_region": "ca-central-1", 
+       "ec2_state": "Running"
+   }
+   ```
+
+   ec2.py
+
+   ```
+   #!/usr/bin/env python
+   
+   '''
+   Example custom dynamic inventory script for Ansible, in Python.
+   '''
+   
+   import os
+   import sys
+   import argparse
+   
+   try:
+       import json
+   except ImportError:
+       import simplejson as json
+   
+   class ExampleInventory(object):
+   
+       def __init__(self):
+           self.inventory = {}
+           self.read_cli_args()
+   
+           # Called with `--list`.
+           if self.args.list:
+               self.inventory = self.example_inventory()
+           # Called with `--host [hostname]`.
+           elif self.args.host:
+               # Not implemented, since we return _meta info `--list`.
+               self.inventory = self.empty_inventory()
+           # If no groups or vars are present, return an empty inventory.
+           else:
+               self.inventory = self.empty_inventory()
+   
+           print json.dumps(self.inventory);
+   
+       # Example inventory for testing.
+       def example_inventory(self):
+           return {
+               'group': {
+                   'hosts': ['172.20.1.109', '172.20.1.110'],
+                   'vars': {
+                       'ansible_ssh_user': 'root',
+                       'ansible_ssh_pass': 'Passw0rd',
+                       'ec2_state': 'Running'
+                            }
+               },
+               '_meta': {
+                   'hostvars': {
+                       '172.20.1.109': {
+                           'ec2_region': 'ca-central-1'
+                       },
+                       '172.20.1.110': {
+                           'ec2_region': 'us-east-1'
+                        },
+                    }
+                   }
+               }
+   
+       # Empty inventory for testing.
+       def empty_inventory(self):
+           return {'_meta': {'hostvars': {}}}
+   
+       # Read the command line args passed to the script.
+       def read_cli_args(self):
+           parser = argparse.ArgumentParser()
+           parser.add_argument('--list', action = 'store_true')
+           parser.add_argument('--host', action = 'store')
+           self.args = parser.parse_args()
+   
+   # Get the inventory.
+   ExampleInventory()
+   ```
+
+
+
+# Mock Exams
+
+
+
+## LAB: MOCK EXAM – 1
+
+1. Add an entry for `node00` in `~/playbooks/inventory` file. IP address of `node00` host is `172.20.1.100` and SSH user and password is `root` and `Passw0rd`. We have a list of users in `~/playbooks/data/users.yml` file. There are two groups in there `admins` and `developers` which have list of different users. Create a playbook `~/playbooks/add_users.yml` to perform below given tasks on `node00` node:
+
+   a. Add all users given in `users.yml` on `node00`.
+
+   b. Make sure home directory for all users under `developers` group is `/var/www` and for `admins` it should be default.
+
+   c. Set password `d3v3l0p3r` for all users under `developers` group and `adm$n$` for users under `admins` group. Make sure to use Ansible vault to encrypt the passwords, use `~/playbooks/secrets/vault.txt` file as vault secret file.
+
+   d. All users under `admins` group must be added as sudo user, for that simply make them member of `wheel` group on `node00`
+
+   Check
+
+   - Check for plain text passwords
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   data/users.yml
+
+   ```
+   admins:
+     - rob
+     - david
+     - joy
+   
+   developers:
+     - tim
+     - ray
+   ```
+
+   Update inventory as per below given code
+
+   ```unix
+   node00 ansible_host=172.20.1.100 ansible_user=root ansible_ssh_pass=Passw0rd
+   node01 ansible_host=172.20.1.101 ansible_user=root ansible_ssh_pass=Passw0rd
+   node02 ansible_host=172.20.1.102 ansible_user=root ansible_ssh_pass=Passw0rd
+   ```
+
+   Create vault password for admins and developers
+
+   ```
+   $ ansible-vault encrypt_string 'adm$n$' 
+   !vault |
+             $ANSIBLE_VAULT;1.1;AES256
+             32323236646136323664323563303331623737633534653231636665626565383364303435653062
+             3238333964353533616466326462613735616231363364640a336637303062323137373063613831
+             65323665393562383331663235303264336665313866353436666266393366653030323230643734
+             3934623437663832390a303331616265663862313238613164326461383162316566336336646264
+             3961
+   Encryption successful
+   ```
+
+   ```
+   $ ansible-vault encrypt_string 'd3v3l0p3r'
+   !vault |
+             $ANSIBLE_VAULT;1.1;AES256
+             31303033383438313932363335633231356132343538663362623861383961633137616632336464
+             3330356465343933656130346532323436313535656661610a396238333761396131303934393261
+             62666461393266633439353330643434663963323936636236353032663038363364336134356337
+             6663643764383966640a366262623039396661386564333764343938373365303033653261303439
+             3133
+   Encryption successful
+   ```
+
+   
+
+   Create `add_users.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: node00
+     gather_facts: no
+     vars:
+       admin_pass: !vault |
+             $ANSIBLE_VAULT;1.1;AES256
+             32323236646136323664323563303331623737633534653231636665626565383364303435653062
+             3238333964353533616466326462613735616231363364640a336637303062323137373063613831
+             65323665393562383331663235303264336665313866353436666266393366653030323230643734
+             3934623437663832390a303331616265663862313238613164326461383162316566336336646264
+             3961
+       developer_pass: !vault |
+             $ANSIBLE_VAULT;1.1;AES256
+             31303033383438313932363335633231356132343538663362623861383961633137616632336464
+             3330356465343933656130346532323436313535656661610a396238333761396131303934393261
+             62666461393266633439353330643434663963323936636236353032663038363364336134356337
+             6663643764383966640a366262623039396661386564333764343938373365303033653261303439
+             3133
+     tasks:
+       - name: Include user.yml
+         include_vars:
+           file: data/users.yml
+       - name: Creating admins
+         user:
+           name: "{{ item }}"
+           password: "{{ admin_pass | string | password_hash('sha512') }}"
+           groups: wheel
+         with_items: "{{ admins | list }}"
+   
+       - name: creating developers
+         user:
+           name: "{{ item }}"
+           password: "{{ developer_pass | string | password_hash('sha512') }}"
+           home: /var/www
+         with_items: "{{ developers | list }}"
+   ```
+
+   ```
+   $ ansible-playbook -i inventory add_users.yml 
+   
+   PLAY [node00] *****************************************************************************************
+   
+   TASK [Include user.yml] *******************************************************************************
+   ok: [node00]
+   
+   TASK [Creating admins] ********************************************************************************
+   changed: [node00] => (item=rob)
+   changed: [node00] => (item=david)
+   changed: [node00] => (item=joy)
+   
+   TASK [creating developers] ****************************************************************************
+   changed: [node00] => (item=tim)
+   changed: [node00] => (item=ray)
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=3    changed=2    unreachable=0    failed=0    
+   ```
+
+2. Using a playbook `~/playbooks/apache.yml` (create new if doesn't exist) perform the below given tasks on `node01`:
+
+   a. Install `httpd` and `php` packages.
+
+   b. Change default document root of Apache to `/var/www/html/myroot` in default Apache config `/etc/httpd/conf/httpd.conf`. Make sure `/var/www/html/myroot` path exists.
+
+   c. There is a template `~/playbooks/templates/phpinfo.php.j2` on ansible controller node. Copy this template to Apache document root on `node01` host as `phpinfo.php` file and make sure owner and group owner is `apache` user.
+
+   d. Start and enable `httpd` service.
+
+   e. Add rule in firewalld `public` zone to open http port `80` for public access so that phpinfo.php page is accessible in browser, also rule should be permanent.
+
+   Check
+
+   - Syntax Check
+
+   - Prepare Environment
+
+   - Apply Playbook
+
+   - Verify Tasks
+
+     templates/phpinfo.php.j2
+
+     ```
+     <?php
+     phpinfo();
+     ?>
+     ```
+
+     Create `apache.yml` playbook and add below given code
+
+     ```yaml
+     ---
+     - hosts: node01
+       tasks:
+         - name: remove httpd and php packages
+           yum:
+             name: httpd, php
+             state: present
+     
+         - name: Create doc root
+           file:
+             path: /var/www/html/myroot
+             state: directory
+             owner: apache
+             group: apache
+     
+         - name: change document root
+           replace:
+             path: /etc/httpd/conf/httpd.conf
+             regexp: 'DocumentRoot "/var/www/html"'
+             replace: 'DocumentRoot "/var/www/html/myroot"'
+     
+         - name: copy template
+           template:
+             src: phpinfo.php.j2
+             dest: /var/www/html/myroot/phpinfo.php
+             owner: apache
+             group: apache
+     
+         - name: Start service httpd
+           service:
+             name: httpd
+             state: started
+             enabled: yes
+     
+         - name: open port httpd
+           firewalld:
+             port: 80/tcp
+             state: enabled
+             zone: public
+             permanent: yes
+     ```
+
+     ```
+     $ ansible-playbook -i inventory apache.yml 
+     
+     PLAY [node01] *****************************************************************************************
+     
+     TASK [remove httpd and php packages] ******************************************************************
+     changed: [node01]
+     
+     TASK [Create doc root] ********************************************************************************
+     changed: [node01]
+     
+     TASK [change document root] ***************************************************************************
+     changed: [node01]
+     
+     TASK [copy template] **********************************************************************************
+     changed: [node01]
+     
+     TASK [Start service httpd] ****************************************************************************
+     changed: [node01]
+     
+     TASK [open port httpd] ********************************************************************************
+     changed: [node01]
+     
+     PLAY RECAP ********************************************************************************************
+     node01                     : ok=6    changed=6    unreachable=0    failed=0   
+     ```
+
+     
+
+   
+
+3. We have `php`, `nginx` and `mariadb` installed on `node02` and have a DB `mydb` created there. The user to connect to DB is `myuser` and password is `mypassword`. Create a playbook `~/playbooks/database.yml` to perform below given tasks:
+
+   a. Start `nginx` and `mariadb` services.
+
+   b. Delete all default files/directories from nginx document root `/usr/share/nginx/html/`
+
+   c. Download a zip archive from `https://github.com/indercodes/ansible-1100-mock-nginx/raw/master/index.php.zip` and extract it in `/usr/share/nginx/html/`
+
+   d. The archive have an `index.php` file to check DB connectivity. Replace some required DB details in the file using replace or lineinfile module:
+
+   ```
+   $database = "database";` to `$database = "mydb";
+   $username = "user";` to `$username = "myuser";
+   $password = "password";` to `$password = "mypassword";
+   ```
+
+   e. Restart nginx after making required changes.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Create `database.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: node02
+     tasks:
+       - name: Start service nginx
+         service:
+           name: "{{ item }}"
+           state: started
+         with_items:
+           - nginx
+           - mariadb
+   
+       - name: clean nginx document root
+         shell: rm -rf /usr/share/nginx/html/*
+   
+       - name: download zip
+         unarchive: 
+           src: https://github.com/indercodes/ansible-1100-mock-nginx/raw/master/index.php.zip
+           dest: /usr/share/nginx/html/
+           remote_src: yes
+   
+       - name: Update DB details
+         replace:
+           path: /usr/share/nginx/html/index.php
+           regexp: '{{ item.1 }}'
+           replace: '{{ item.2 }}'
+         with_items:
+           - { 1: '\$database.*', 2: '$database = "mydb";' }
+           - { 1: '\$username.*', 2: '$username = "myuser";' }
+           - { 1: '\$password.*', 2: '$password = "mypassword";' }
+   
+       - name: restart Nginx
+         service:
+           name: nginx
+           state: restarted
+   ```
+
+4. Create a playbook `facts.yml` under `~/playbooks` directory on Ansible controller. In this playbook using `blockinfile` module create a file `facts.txt` under `/root` on `node02` host and add below given block in it. You will need to enable facts gathering for this task.
+
+   ```
+   This is Ansible managed node `<hostname-of-host> `
+   IP address of host is `<ip-address-of-host>`
+   Its OS family is `<os-family>`
+   ```
+
+   After that make a copy of this file as index.html under `/usr/share/nginx/html/`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Create `facts.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: node02
+     gather_facts: yes
+     tasks:
+       - name: Create facts.txt
+         blockinfile:
+           path: /root/facts.txt
+           create: yes
+           block: |
+             This is Ansible managed node {{ ansible_nodename }}
+             IP address of host is {{ ansible_default_ipv4.address }}
+             Its OS family is {{ ansible_os_family }}
+   
+       - name: Make index.html
+         copy:
+           src: /root/facts.txt
+           remote_src: yes
+           dest: /usr/share/nginx/html/index.html
+   ```
