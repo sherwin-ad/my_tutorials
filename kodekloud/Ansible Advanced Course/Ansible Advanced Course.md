@@ -8917,3 +8917,55 @@ lampweb
            remote_src: yes
            dest: /usr/share/nginx/html/index.html
    ```
+
+
+
+## LAB: MOCK EXAM – 2
+
+1. A cli tool called `awscli` has been installed using `pip3`, and its out of date on remote servers. Ensure that it is updated to the latest version.
+
+   Write a playbook `/home/thor/playbooks/update_version.yml` to update aws cli to the latest version. Use inventory `/home/thor/playbooks/inventory`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Task
+
+   inventory
+
+   ```
+   node00 ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   node01 ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=root
+   ```
+
+   Create `update_version.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     gather_facts: no
+     tasks:
+       - pip:
+           name: awscli
+           state: latest
+           executable: pip3
+   ```
+
+   ```
+   $ ansible-playbook -i inventory update_version.yml 
+   
+   PLAY [all] ******************************************************************************************************************************************************
+   
+   TASK [pip] ******************************************************************************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   PLAY RECAP ******************************************************************************************************************************************************
+   node00                     : ok=1    changed=1    unreachable=0    failed=0   
+   node01                     : ok=1    changed=1    unreachable=0    failed=0   
+   ```
+
+2. 
+
