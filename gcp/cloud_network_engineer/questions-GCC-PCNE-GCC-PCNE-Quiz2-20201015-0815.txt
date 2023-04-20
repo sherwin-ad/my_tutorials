@@ -1,0 +1,180 @@
+All the instances in your project are configured with the custom metadata enable-oslogin value set to FALSE and to block project-wide SSH keys. None of the instances are set with any SSH key, and no project-wide SSH keys have been configured. Firewall rules are set up to allow SSH sessions from any IP address range. You want to SSH into one instance. What should you do?
+A) Open the Cloud Shell SSH into the instance using gcloud compute ssh.
+B) Set the custom metadata enable-oslogin to TRUE, and SSH into the instance using a third-party tool like putty or ssh.
+C) Generate a new SSH key pair. Verify the format of the private key and add it to the instance. SSH into the instance using a third-party tool like putty or ssh.
+D) Generate a new SSH key pair. Verify the format of the public key and add it to the project. SSH into the instance using a third-party tool like putty or ssh.
+ANSWER: B
+You are adding steps to a working automation that uses a service account to authenticate. You need to drive the automation the ability to retrieve files from a Cloud Storage bucket. Your organization requires using the least privilege possible. What should you do?
+A) Grant the compute.instanceAdmin to your user account.
+B) Grant the iam.serviceAccountUser to your user account.
+C) Grant the read-only privilege to the service account for the Cloud Storage bucket.
+D) Grant the cloud-platform privilege to the service account for the Cloud Storage bucket.
+ANSWER: B
+You are designing a Google Kubernetes Engine (GKE) cluster for your organization. The current cluster size is expected to host 10 nodes, with 20 Pods per node and 150 services. Because of the migration of new services over the next 2 years, there is a planned growth for 100 nodes, 200 Pods per node, and 1500 services. You want to use VPC-native clusters with alias IP ranges, while minimizing address consumption. How should you design this topology?
+A) Create a subnet of size/25 with 2 secondary ranges of: /17 for Pods and /21 for Services. Create a VPC-native cluster and specify those ranges.
+B) Create a subnet of size/28 with 2 secondary ranges of: /24 for Pods and /24 for Services. Create a VPC-native cluster and specify those ranges. When the services are ready to be deployed, resize the subnets.
+C) Use gcloud container clusters create [CLUSTER NAME]--enable-ip-alias to create a VPC-native cluster.
+D) Use gcloud container clusters create [CLUSTER NAME] to create a VPC-native cluster.
+ANSWER: B
+You are designing a shared VPC architecture. Your network and security team has strict controls over which routes are exposed between departments. Your Production and Staging departments can communicate with each other, but only via specific networks. You want to follow Google-recommended practices. How should you design this topology?
+A) Create 2 shared VPCs within the shared VPC Host Project, and enable VPC peering between them. Use firewall rules to filter access between the specific networks.
+B) Create 2 shared VPCs within the shared VPC Host Project, and create a Cloud VPN/Cloud Router between them. Use Flexible Route Advertisement (FRA) to filter access between the specific networks.
+C) Create 2 shared VPCs within the shared VPC Service Project, and create a Cloud VPN/Cloud Router between them. Use Flexible Route Advertisement (FRA) to filter access between the specific networks.
+D) Create 1 VPC within the shared VPC Host Project, and share individual subnets with the Service Projects to filter access between the specific networks.
+ANSWER: D
+You are disabling DNSSEC for one of your Cloud DNS-managed zones. You removed the DS records from your zone file, waited for them to expire from the cache, and disabled DNSSEC for the zone. You receive reports that DNSSEC validating resolves are unable to resolve names in your zone. What should you do?
+A) Update the TTL for the zone.
+B) Set the zone to the TRANSFER state.
+C) Disable DNSSEC at your domain registrar.
+D) Transfer ownership of the domain to a new registrar.
+ANSWER: C
+You are increasing your usage of Cloud VPN between on-premises and GCP, and you want to support more traffic than a single tunnel can handle. You want to increase the available bandwidth using Cloud VPN. What should you do?
+A) Double the MTU on your on-premises VPN gateway from 1460 bytes to 2920 bytes.
+B) Create two VPN tunnels on the same Cloud VPN gateway that point to the same destination VPN gateway IP address.
+C) Add a second on-premises VPN gateway with a different public IP address. Create a second tunnel on the existing Cloud VPN gateway that forwards the same IP range, but points at the new on-premises gateway IP.
+D) Add a second Cloud VPN gateway in a different region than the existing VPN gateway. Create a new tunnel on the second Cloud VPN gateway that forwards the same IP range, but points to the existing on-premises VPN gateway IP address.
+ANSWER: B
+You are migrating to Cloud DNS and want to import your BIND zone file. Which command should you use?
+A) gcloud dns record-sets import ZONE_FILE --zone MANAGED_ZONE
+B) gcloud dns record-sets import ZONE_FILE --replace-origin-ns --zone MANAGED_ZONE
+C) gcloud dns record-sets import ZONE_FILE --zone-file-format --zone MANAGED_ZONE
+D) gcloud dns record-sets import ZONE_FILE --delete-all-existing --zone MANAGED ZONE
+ANSWER: C
+You are trying to update firewall rules in a shared VPC for which you have been assigned only Network Admin permissions. You cannot modify the firewall rules. Your organization requires using the least privilege necessary. Which level of permissions should you request?
+A) Security Admin privileges from the Shared VPC Admin.
+B) Service Project Admin privileges from the Shared VPC Admin.
+C) Shared VPC Admin privileges from the Organization Admin.
+D) Organization Admin privileges from the Organization Admin.
+ANSWER: A
+You are using a 10-Gbps direct peering connection to Google together with the gsutil tool to upload files to Cloud Storage buckets from on-premises servers. The on-premises servers are 100 milliseconds away from the Google peering point. You notice that your uploads are not using the full 10-Gbps bandwidth available to you. You want to optimize the bandwidth utilization of the connection. What should you do on your on-premises servers?
+A) Tune TCP parameters on the on-premises servers.
+B) Compress files using utilities like tar to reduce the size of data being sent.
+C) Remove the -m flag from the gsutil command to enable single-threaded transfers.
+D) Use the perfdiag parameter in your gsutil command to enable faster performance: gsutil perfdiag gs://[BUCKET NAME].
+ANSWER: D
+You converted an auto mode VPC network to custom mode. Since the conversion, some of your Cloud Deployment Manager templates are no longer working. You want to resolve the problem.What should you do?
+A) Apply an additional IAM role to the Google API's service account to allow custom mode networks.
+B) Update the VPC firewall to allow the Cloud Deployment Manager to access the custom mode networks.
+C) Explicitly reference the custom mode networks in the Cloud Armor whitelist.
+D) Explicitly reference the custom mode networks in the Deployment Manager templates.
+ANSWER: D
+You created a new VPC network named Dev with a single subnet. You added a firewall rule for the network Dev to allow HTTP traffic only and enabled logging. When you try to log in to an instance in the subnet via Remote Desktop Protocol, the login fails. You look for the Firewall rules logs in Stackdriver Logging, but you do not see any entries for blocked traffic. You want to see the logs for blocked traffic. What should you do?
+A) Check the VPC flow logs for the instance.
+B) Try connecting to the instance via SSH, and check the logs.
+C) Create a new firewall rule to allow traffic from port 22, and enable logs.
+D) Create a new firewall rule with priority 65500 to deny all traffic, and enable logs.
+ANSWER: A
+You created a VPC network named Retail in auto mode. You want to create a VPC network named Distribution and peer it with the Retail VPC. How should you configure the Distribution VPC?
+A) Create the Distribution VPC in auto mode. Peer both the VPCs via network peering.
+B) Create the Distribution VPC in custom mode. Use the CIDR range 10.0.0.0/9. Create the necessary subnets, and then peer them via network peering.
+C) Create the Distribution VPC in custom mode. Use the CIDR range 10.128.0.0/9. Create the necessary subnets, and then peer them via network peering.
+D) Rename the default VPC as "Distribution" and peer it via network peering.
+ANSWER: B
+You decide to set up Cloud NAT. After completing the configuration, you find that one of your instances is not using the Cloud NAT for outbound NAT. What is the most likely cause of this problem?
+A) The instance has been configured with multiple interfaces.
+B) An external IP address has been configured on the instance.
+C) You have created static routes that use RFC1918 ranges.
+D) The instance is accessible by a load balancer external IP address.
+ANSWER: B
+You have a storage bucket that contains the following objects: Cloud CDN is enabled on the storage bucket, and all four objects have been successfully cached. You want to remove the cached copies of all the objects with the prefix folder-a, using the minimum number of commands. What should you do?
+A) Add an appropriate lifecycle rule on the storage bucket.
+B) Issue a cache invalidation command with pattern /folder-a/*.
+C) Make sure that all the objects with prefix folder-a are not shared publicly.
+D) Disable Cloud CDN on the storage bucket. Wait 90 seconds. Re-enable Cloud CDN on the storage bucket.
+ANSWER: C
+You have a web application that is currently hosted in the us-central1 region. Users experience high latency when traveling in Asia. You've configured a network load balancer, but users have not experienced a performance improvement. You want to decrease the latency. What should you do?
+A) Configure a policy-based route rule to prioritize the traffic.
+B) Configure an HTTP load balancer, and direct the traffic to it.
+C) Configure Dynamic Routing for the subnet hosting the application.
+D) Configure the TTL for the DNS zone to decrease the time between updates.
+ANSWER: B
+You have an application hosted on a Compute Engine virtual machine instance that cannot communicate with a resource outside of its subnet. When you review the flow and firewall logs, you do not see any denied traffic listed. During troubleshooting you find: a) Flow logs are enabled for the VPC subnet, and all firewall rules are set to log. b) The subnetwork logs are not excluded from Stackdriver. c) The instance that is hosting the application can communicate outside the subnet. d) Other instances within the subnet can communicate outside the subnet. e) The external resource initiates communication. What is the most likely cause of the missing log lines?
+A) The traffic is matching the expected ingress rule.
+B) The traffic is matching the expected egress rule.
+C) The traffic is not matching the expected ingress rule.
+D) The traffic is not matching the expected egress rule.
+ANSWER: C
+You have configured Cloud CDN using HTTP(S) load balancing as the origin for cacheable content. Compression is configured on the web servers, but responses served by Cloud CDN are not compressed. What is the most likely cause of the problem?
+A) You have not configured compression in Cloud CDN.
+B) You have configured the web servers and Cloud CDN with different compression types.
+C) The web servers behind the load balancer are configured with different compression types.
+D) You have to configure the web servers to compress responses even if the request has a Via header.
+ANSWER: D
+You have deployed a new internal application that provides HTTP and TFTP services to on-premises hosts. You want to be able to distribute traffic across multiple Compute Engine instances, but need to ensure that clients are sticky to a particular instance across both services. Which session affinity should you choose?
+A) None
+B) Client IP
+C) Client IP and protocol
+D) Client IP, port and protocol
+ANSWER: B
+You need to restrict access to your Google Cloud load-balanced application so that only specific IP addresses can connect. What should you do?
+A)  Create a secure perimeter using the Access Context Manager feature of VPC Service Controls and restrict access to the source IP range of the allowed clients and Google health check IP ranges.
+B)  Create a secure perimeter using VPC Service Controls, and mark the load balancer as a service restricted to the source IP range of the allowed clients and Google health check IP ranges.
+C)  Tag the backend instances "application," and create a firewall rule with target tag "application" and the source IP range of the allowed clients and Google health check IP ranges.
+D)  Label the backend instances "application," and create a firewall rule with the target label "application" and the source IP range of the allowed clients and Google health check IP ranges.
+ANSWER: C
+You want to create a service in GCP using IPv6. What should you do?
+A) Create the instance with the designated IPv6 address.
+B) Configure a TCP Proxy with the designated IPv6 address.
+C) Configure a global load balancer with the designated IPv6 address.
+D) Configure an internal load balancer with the designated IPv6 address.
+ANSWER: C
+You want to deploy a VPN Gateway to connect your on-premises network to GCP. You are using a non BGP-capable on-premises VPN device. You want to minimize downtime and operational overhead when your network grows. The device supports only IKEv2, and you want to follow Google-recommended practices. What should you do?
+A) "¢ Create a Cloud VPN instance. "¢ Create a policy-based VPN tunnel per subnet. "¢ Configure the appropriate local and remote traffic selectors to match your local and remote networks. "¢ Create the appropriate static routes.
+B) "¢ Create a Cloud VPN instance. "¢ Create a policy-based VPN tunnel. "¢ Configure the appropriate local and remote traffic selectors to match your local and remote networks. "¢ Configure the apprspriate static routes.
+C) "¢ Create a Cloud VPN instance. "¢ Create a route-based VPN tunnel. "¢ Configure the appropriate local and remote traffic selectors to match your local and remote networks. "¢ Configure the appropriate static routes.
+D) "¢ Create a Cloud VPN instance. "¢ Create a route-based VPN tunnel. "¢ Configure the appropriate local and remote traffic selectors to 0.0.0.0/0. "¢ Configure the appropriate static routes.
+ANSWER: D
+You want to set up two Cloud Routers so that one has an active Border Gateway Protocol (BGP) session, and the other one acts as a standby. Which BGP attribute should you use on your on-premises router?
+A) AS-Path
+B) Community
+C) Local Preference
+D) Multi-exit Discriminator
+ANSWER: D
+You work for a multinational enterprise that is moving to GCP. These are the cloud requirements: a) An on-premises data center located in the United States in Oregon and New York with Dedicated Interconnects connected to Cloud regions us-west1 (primary HQ) and us-east4 (backup); b) Multiple regional offices in Europe and APAC; c)Regional data processing is required in europe-west1 and australia-southeast1; d) Centralized Network Administration Team. Your security and compliance team requires a virtual inline security appliance to perform L7 inspection for URL filtering. You want to deploy the appliance in us- west1. What should you do?
+A) "¢ Create 2 VPCs in a Shared VPC Host Project. "¢ Configure a 2-NIC instance in zone us-west1-a in the Host Project. "¢ Attach NIC0 in VPC #1 us-west1 subnet of the Host Project. "¢ Attach NIC1 in VPC #2 us-west1 subnet of the Host Project. "¢ Deploy the instance. "¢ Configure the necessary routes and firewall rules to pass traffic through the instance.
+B) "¢ Create 2 VPCs in a Shared VPC Host Project. "¢ Configure a 2-NIC instance in zone us-west1-a in the Service Project. "¢ Attach NIC0 in VPC #1 us-west1 subnet of the Host Project. "¢ Attach NIC1 in VPC #2 us-west1 subnet of the Host Project. "¢ Deploy the instance. "¢ Configure the necessary routes and firewall rules to pass traffic through the instance.
+C) "¢ Create 1 VPC in a Shared VPC Host Project. "¢ Configure a 2-NIC instance in zone us-west1-a in the Host Project. "¢ Attach NIC0 in us-west1 subnet of the Host Project. "¢ Attach NIC1 in us-west1 subnet of the Host Project "¢ Deploy the instance. "¢ Configure the necessary routes and firewall rules to pass traffic through the instance.
+D) "¢ Create 1 VPC in a Shared VPC Service Project. "¢ Configure a 2-NIC instance in zone us-west1-a in the Service Project. "¢ Attach NIC0 in us-west1 subnet of the Service Project. "¢ Attach NIC1 in us-west1 subnet of the Service Project "¢ Deploy the instance. "¢ Configure the necessary routes and firewall rules to pass traffic through the instance.
+ANSWER: A
+You work for a university that is migrating to GCP. These are the cloud requirements: a) On-premises connectivity with 10 Gbps, c) Lowest latency access to the cloud, c) Centralized Networking Administration Team. New departments are asking for on-premises connectivity to their projects. You want to deploy the most cost-efficient interconnect solution for connecting the campus to Google Cloud. What should you do?
+A) Use Shared VPC, and deploy the VLAN attachments and Interconnect in the host project.
+B) Use Shared VPC, and deploy the VLAN attachments in the service projects. Connect the VLAN attachment to the Shared VPC's host project.
+C) Use standalone projects, and deploy the VLAN attachments in the individual projects. Connect the VLAN attachment to the standalone projects' Interconnects.
+D) Use standalone projects and deploy the VLAN attachments and Interconnects in each of the individual projects.
+ANSWER: B
+Your company has recently expanded their EMEA-based operations into APAC. Globally distributed users report that their SMTP and IMAP services are slow. Your company requires end-to-end encryption, but you do not have access to the SSL certificates. Which Google Cloud load balancer should you use?
+A) SSL proxy load balancer
+B) Network load balancer
+C) HTTPS load balancer
+D) TCP proxy load balancer
+ANSWER: A
+Your company offers a popular gaming service. Your instances are deployed with private IP addresses, and external access is granted through a global load balancer. You believe you have identified a potential malicious actor, but aren't certain you have the correct client IP address. You want to identify this actor while minimizing disruption to your legitimate users. What should you do?
+A) Create a Cloud Armor Policy rule that denies traffic and review necessary logs.
+B) Create a Cloud Armor Policy rule that denies traffic, enable preview mode, and review necessary logs.
+C) Create a VPC Firewall rule that denies traffic, enable logging and set enforcement to disabled, and review necessary logs.
+D) Create a VPC Firewall rule that denies traffic, enable logging and set enforcement to enabled, and review necessary logs.
+ANSWER: D
+Your company's web server administrator is migrating on-premises backend servers for an application to GCP. Libraries and configurations differ significantly across these backend servers. The migration to GCP will be lift-and-shift, and all requests to the servers will be served by a single network load balancer frontend. You want to use a GCP-native solution when possible. How should you deploy this service in GCP?
+A) Create a managed instance group from one of the images of the on-premises servers, and link this instance group to a target pool behind your load balancer.
+B) Create a target pool, add all backend instances to this target pool, and deploy the target pool behind your load balancer.
+C) Deploy a third-party virtual appliance as frontend to these servers that will accommodate the significant differences between these backend servers.
+D) Use GCP's ECMP capability to load-balance traffic to the backend servers by installing multiple equal-priority static routes to the backend servers.
+ANSWER: B
+Your end users are located in close proximity to us-east1 and europe-west1. Their workloads need to communicate with each other. You want to minimize cost and increase network efficiency. How should you design this topology?
+A) Create 2 VPCs, each with their own regions and individual subnets. Create 2 VPN gateways to establish connectivity between these regions.
+B) Create 2 VPCs, each with their own region and individual subnets. Use external IP addresses on the instances to establish connectivity between these regions.
+C) Create 1 VPC with 2 regional subnets. Create a global load balancer to establish connectivity between the regions.
+D) Create 1 VPC with 2 regional subnets. Deploy workloads in these subnets and have them communicate using private RFC1918 IP addresses.
+ANSWER: D
+Your on-premises data center has 2 routers connected to your Google Cloud environment through a VPN on each router. All applications are working correctly; however, all of the traffic is passing across a single VPN instead of being load-balanced across the 2 connections as desired. b) Each on-premises router is configured with the same routes and priorities. c) Both on-premises routers are configured with a VPN connected to a single Cloud Router. d) BGP sessions are established between both on-premises routers and the Cloud Router. e) Only 1 of the on-premises router's routes are being added to the routing table. What is the most likely cause of this problem?
+A) The on-premises routers are configured with the same routes.
+B) A firewall is blocking the traffic across the second VPN connection.
+C) You do not have a load balancer to load-balance the network traffic.
+D) The ASNs being used on the on-premises routers are different.
+ANSWER: C
+Your organization is deploying a single project for 3 separate departments. Two of these departments require network connectivity between each other, but the third department should remain in isolation. Your design should create separate network administrative domains between these departments. You want to minimize operational overhead. How should you design the topology?
+A) Create a Shared VPC Host Project and the respective Service Projects for each of the 3 separate departments.
+B) Create 3 separate VPCs, and use Cloud VPN to establish connectivity between the two appropriate VPCs.
+C) Create 3 separate VPCs, and use VPC peering to establish connectivity between the two appropriate VPCs.
+D) Create a single project, and deploy specific firewall rules. Use network tags to isolate access between the departments.
+ANSWER: A

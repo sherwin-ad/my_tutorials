@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+  nodeName: kube-node2

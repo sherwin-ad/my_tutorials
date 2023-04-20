@@ -1,0 +1,4 @@
+I like Python because it is very interesting.
+ I plan to learn data visualization.
+ I plan to work in the field of data science.
+ I plan to make a better world for the futre generation.

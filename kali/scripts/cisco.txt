@@ -1,0 +1,12 @@
+community.cisco.com
+globalcontacts.cloudapps.cisco.com
+idpswd.cloudapps.cisco.com
+idreg.cloudapps.cisco.com
+investor.cisco.com
+learninglocator.cloudapps.cisco.com
+locatr.cloudapps.cisco.com
+meraki.cisco.com
+mycase.cloudapps.cisco.com
+newsroom.cisco.com
+software.cisco.com
+www.cisco.com

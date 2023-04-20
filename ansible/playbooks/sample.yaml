@@ -1,0 +1,14 @@
+---
+- hosts: demo_hosts
+  vars:
+      package1 : "nginx"
+      package2 : "wget"
+  tasks:
+    - name: Inatalling package nginx
+      apt: pkg=nginx state=latest update_cache=true
+      become: true
+    - name: Installing wget
+      apt: name={{ package2 }} state=latest update_cache=true
+      become: true
+    - name: Copy test11 file
+      copy: src=/tmp/test11 dest=/tmp/test11        

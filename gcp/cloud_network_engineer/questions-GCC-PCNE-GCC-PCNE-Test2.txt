@@ -1,0 +1,179 @@
+1. You have a storage bucket that contains two objects. Cloud CDN is enabled on the bucket, and both objects have been successfully cached. Now you want to make sure that one of the two objects will not be cached anymore, and will always be served to the internet directly from the origin. What should you do?
+A) Ensure that the object you don’t want to be cached anymore is not shared publicly.
+B) Create a new storage bucket, and move the object you don’t want to be checked anymore inside it. Then edit the bucket setting and enable the private attribute.
+C) Add an appropriate lifecycle rule on the storage bucket containing the two objects.
+D) Add a Cache-Control entry with value private to the metadata of the object you don’t want to be cached anymore. Invalidate all the previously cached copies.
+ANSWER: A
+2. Your company offers a popular gaming service. Your instances are deployed with private IP addresses, and external access is granted through a global load balancer. You have recently engaged a traffic-scrubbing service and want to restrict your origin to allow connections only from the traffic-scrubbing service. What should you do?
+A) Create a Cloud Armor Security Policy that blocks all traffic except for the traffic-scrubbing service.
+B) Create a VPC Firewall rule that blocks all traffic except for the traffic-scrubbing service.
+C) Create a VPC Service Control Perimeter that blocks all traffic except for the traffic-scrubbing service.
+D) Create IPTables firewall rules that block all traffic except for the traffic-scrubbing service.
+ANSWER: A
+3. Your software team is developing an on-premises web application that requires direct connectivity to Compute Engine Instances in GCP using the RFC 1918 address space. You want to choose a connectivity solution from your on-premises environment to GCP, given these specifications: a)Your ISP is a Google Partner Interconnect provider. b)Your on-premises VPN device’s internet uplink and downlink speeds are 10 Gbps. c)A test VPN connection between your on-premises gateway and GCP is performing at a maximum speed of 500 Mbps due to packet losses. Most of the data transfer will be from GCP to the on-premises environment. d)The application can burst up to 1.5 Gbps during peak transfers over the Interconnect. Cost and the complexity of the solution should be minimal. How should you provision the connectivity solution?
+A) Provision a Partner Interconnect through your ISP.
+B) Provision a Dedicated Interconnect instead of a VPN.
+C) Create multiple VPN tunnels to account for the packet losses, and increase bandwidth using ECMP.
+D) Use network compression over your VPN to increase the amount of data you can send over your VPN.
+ANSWER: A
+4. Your company has just launched a new critical revenue-generating web application. You deployed the application for scalability using managed instance groups, autoscaling, and a network load balancer as frontend. One day, you notice severe bursty traffic that the caused autoscaling to reach the maximum number of instances, and users of your application cannot complete transactions. After an investigation, you think it as a DDOS attack. You want to quickly restore user access to your application and allow successful transactions while minimizing cost. Which two steps should you take? (Choose two.)
+A) Use Cloud Armor to blacklist the attacker’s IP addresses.
+B) Increase the maximum autoscaling backend to accommodate the severe bursty traffic.
+C) Create a global HTTP(s) load balancer and move your application backend to this load balancer.
+D) Shut down the entire application in GCP for a few hours. The attack will stop when the application is offline.
+E) SSH into the backend compute engine instances, and view the auth logs and syslogs to further understand the nature of the attack.
+ANSWER: A, B
+5. You are creating a new application and require access to Cloud SQL from VPC instances without public IP addresses. Which two actions should you take? (Choose two.)
+A) Activate the Service Networking API in your project. 
+B) Activate the Cloud Datastore API in your project. 
+C) Create a private connection to a service producer. 
+D) Create a custom static route to allow the traffic to reach the Cloud SQL API. 
+E) Enable Private Google Access
+ANSWER: A, C
+6. You want to use Cloud Interconnect to connect your on-premises network to a GCP VPC. You cannot meet Google at one of its point-of-presence (POP) locations, and your on-premises router cannot run a Border Gateway Protocol (BGP) configuration. Which connectivity model should you use?
+A) Direct Peering 
+B) Dedicated Interconnect 
+C) Partner Interconnect with a layer 2 partner 
+D) Partner Interconnect with a layer 3 partner
+ANSWER: D
+7. You have configured a Compute Engine virtual machine instance as a NAT gateway. You execute the following command: a) gcloud compute routes create no-ip-internet-route b) network custom-network1 c) destination-range 0.0.0.0/0 d)next-hop instance nat-gateway e)next-hop instance-zone us-central1-a –tags no-ip –priority 800. You want existing instances to use the new NAT gateway. Which command should you execute?
+A) sudo sysctl -w net.ipv4.ip_forward=1
+B) gcloud compute instances add-tags [existing-instance] –tags no-ip
+C) gcloud builds submit –config=cloudbuild.waml –substitutions=TAG_NAME=no-ip
+D) 1. gcloud compute instances create example-instance –network custom-network1 2. subnet subnet-us-central 3. no-address 4. zone us-central1-a 5. image-family debian-9 6. image-project debian-cloud 7. tags no-ip
+ANSWER: B
+8. You need to configure a static route to an on-premises resource behind a Cloud VPN gateway that is configured for policy-based routing using the gcloud command. Which next hop should you choose?
+A) The default internet gateway
+B) The IP address of the Cloud VPN gateway
+C) The name and region of the Cloud VPN tunnel
+D) The IP address of the instance on the remote side of the VPN tunnel
+ANSWER: C
+9. You need to enable Cloud CDN for all the objects inside a storage bucket. You want to ensure that all the object in the storage bucket can be served by the CDN. What should you do in the GCP Console?
+A) Create a new cloud storage bucket, and then enable Cloud CDN on it.
+B) Create a new TCP load balancer, select the storage bucket as a backend, and then enable Cloud CDN on the backend.
+C) Create a new SSL proxy load balancer, select the storage bucket as a backend, and then enable Cloud CDN on the backend.
+D) Create a new HTTP load balancer, select the storage bucket as a backend, enable Cloud CDN on the backend, and make sure each object inside the storage bucket is shared publicly.
+ANSWER: D
+10. Your company’s Google Cloud-deployed, streaming application supports multiple languages. The application development team has asked you how they should support splitting audio and video traffic to different backend Google Cloud storage buckets. They want to use URL maps and minimize operational overhead. They are currently using the following directory structure: a) /fr/video b) /en/video c) /es/video /../video d)/fr/audio e)/en/audio f)/es/audio /../audio. Which solution should you recommend?
+A) Rearrange the directory structure, create a URL map and leverage a path rule such as /video/* and /audio/*.
+B) Rearrange the directory structure, create DNS hostname entries for video and audio and leverage a path rule such as /video/* and /audio/*.
+C) Leave the directory structure as-is, create a URL map and leverage a path rule such as /[a-z]{2}/video and /[a-z]{2}/audio.
+D) Leave the directory structure as-is, create a URL map and leverage a path rule such as /*/video and /*/audio.
+ANSWER: A
+11. You want to establish a dedicated connection to Google that can access Cloud SQL via a public IP address and that does not require a third-party service provider. Which connection type should you choose?
+A) Carrier Peering 
+B) Direct Peering 
+C) Dedicated Interconnect 
+D) Partner Interconnect
+ANSWER: B
+12. You are configuring a new instance of Cloud Router in your Organization’s Google Cloud environment to allow connection across a new Dedicated Interconnect to your data center Sales, Marketing, and IT each have a service project attached to the Organization’s host project. Where should you create the Cloud Router instance?
+A) VPC network in all projects 
+B) VPC network in the IT Project 
+C) VPC network in the Host Project 
+D) VPC network in the Sales, Marketing, and IT Projects
+ANSWER: C
+13. You created a new VPC for your development team. You want to allow access to the resources in this VPC via SSH only. How should you configure your firewall rules?
+A) Create two firewall rules: one to block all traffic with priority 0, and another to allow port 22 with priority 1000. 
+B) Create two firewall rules: one to block all traffic with priority 65536, and another to allow port 3389 with priority 1000. 
+C) Create a single firewall rule to allow port 22 with priority 1000. 
+D) Create a single firewall rule to allow port 3389 with priority 1000.
+ANSWER: C
+14. Your on-premises data center has 2 routers connected to your GCP through a VPN on each router. All applications are working correctly; however, all of the traffic is passing across a single VPN instead of being load-balanced across the 2 connections as desired. During troubleshooting you find: a) Each on-premises router is configured with the same ASN. b) Each on-premises router is configured with the same routes and priorities. c) Both on-premises routers are configured with a VPN connected to a single Cloud Router. d) The VPN logs have no-proposal-chosen lines when the VPNs are connecting. e)BGP session is not established between one on-premises router and the Cloud Router. What is the most likely cause of this problem?
+A) One of the VPN sessions is configured incorrectly.
+B) A firewall is blocking the traffic across the second VPN connection.
+C) You do not have a load balancer to load-balance the network traffic.
+D) BGP sessions are not established between both on-premises routers and the Cloud Router.
+ANSWER: C
+15. You need to define an address plan for a future new GKE cluster in your VPC. This will be a VPC native cluster, and the default Pod IP range allocation will be used. You must pre-provision all the needed VPC subnets and their respective IP address ranges before cluster creation. The cluster will initially have a single node, but it will be scaled to a maximum of three nodes if necessary. You want to allocate the minimum number of Pod IP addresses. Which subnet mask should you use for the Pod IP address range?
+A) /21
+B) /22
+C) /23
+D) /25
+ANSWER: B
+16. You have created a firewall with rules that only allow traffic over HTTP, HTTPS, and SSH ports. While testing, you specifically try to reach the server over multiple ports and protocols; however, you do not see any denied connections in the firewall logs. You want to resolve the issue. What should you do?
+A) Enable logging on the default Deny Any Firewall Rule. 
+B) Enable logging on the VM Instances that receive traffic. 
+C) Create a logging sink forwarding all firewall logs with no filters. 
+D) Create an explicit Deny Any rule and enable logging on the new rule.
+ANSWER: D
+17. In your company, two departments with separate GCP projects (code-dev and data-dev) in the same organization need to allow full cross-communication between all of their virtual machines in GCP. Each department has one VPC in its project and wants full control over their network. Neither department intends to recreate its existing computing resources. You want to implement a solution that minimizes cost. Which two steps should you take? (Choose two.)
+A) Connect both projects using Cloud VPN.
+B) Connect the VPCs in project code-dev and data-dev using VPC Network Peering.
+C) Enable Shared VPC in one project (e. g., code-dev), and make the second project (e. g., data-dev) a service project.
+D) Enable firewall rules to allow all ingress traffic from all subnets of project code-dev to all instances in project data-dev, and vice versa.
+E) Create a route in the code-dev project to the destination prefixes in project data-dev and use nexthop as the default gateway, and vice versa.
+ANSWER: B, D
+18. You need to create a GKE cluster in an existing VPC that is accessible from on-premises. You must meet the following requirements: a) IP ranges for pods and services must be as small as possible. b) The nodes and the master must not be reachable from the internet. c) You must be able to use kubectl commands from on-premises subnets to manage the cluster. How should you create the GKE cluster?
+A) 1. Create a private cluster that uses VPC advanced routes. 2. Set the pod and service ranges as /24. 3. Set up a network proxy to access the master.
+B) 1. Create a VPC-native GKE cluster using GKE-managed IP ranges. 2. Set the pod IP range as /21 and service IP range as /24. 3. Set up a network proxy to access the master.
+C) 1. Create a VPC-native GKE cluster using user-managed IP ranges. 2. Enable a GKE cluster network policy, set the pod and service ranges as /24. 3. Set up a network proxy to access the master. 4. Enable master authorized networks.
+D) 1. Create a VPC-native GKE cluster using user-managed IP ranges. 2. Enable privateEndpoint on the cluster master. 3. Set the pod and service ranges as /24. 4. Set up a network proxy to access the master. 5. Enable master authorized networks.
+ANSWER: D
+19. You are creating an instance group and need to create a new health check for HTTP(s) load balancing. Which two methods can you use to accomplish this? (Choose two.)
+A) Create a new health check using the gcloud command line tool. 
+B) Create a new health check using the VPC Network section in the GCP Console. 
+C) reate a new health check, or select an existing one, when you complete the load balancer’s backend configuration in the GCP Console. 
+D) Create a new legacy health check using the gcloud command line tool. 
+E) Create a new legacy health check using the Health checks section in the GCP Console.
+ANSWER: A, C
+20. You are in the early stages of planning a migration to GCP. You want to test the functionality of your hybrid cloud design before you start to implement it in production. The design includes services running on a Compute Engine Virtual Machine instance that need to communicate to on-premises servers using private IP addresses. The on-premises servers have connectivity to the internet, but you have not yet established any Cloud Interconnect connections. You want to choose the lowest cost method of enabling connectivity between your instance and on-premises servers and complete the test in 24 hours. Which connectivity method should you choose?
+A) Cloud VPN 
+B) 50-Mbps Partner VLAN attachment 
+C) Dedicated Interconnect with a single VLAN attachment 
+D) Dedicated Interconnect, but don’t provision any VLAN attachments
+ANSWER: A
+21. You want to implement an IPSec tunnel between your on-premises network and a VPC via Cloud VPN. You need to restrict reachability over the tunnel to specific local subnets, and you do not have a device capable of speaking Border Gateway Protocol (BGP). Which routing option should you choose?
+A) Dynamic routing using Cloud Router 
+B) Route-based routing using default traffic selectors 
+C) Policy-based routing using a custom local traffic selector 
+D) Policy-based routing using the default local traffic selector
+ANSWER: A
+22. You have enabled HTTP(S) load balancing for your application, and your application developers have reported that HTTP(S) requests are not being distributed correctly to your Compute Engine Virtual Machine instances. You want to find data about how the request are being distributed. Which two methods can accomplish this? (Choose two.)
+A) On the Load Balancer details page of the GCP Console, click on the Monitoring tab, select your backend service, and look at the graphs. 
+B) In Stackdriver Error Reporting, look for any unacknowledged errors for the Cloud Load Balancers service. 
+C) In Stackdriver Monitoring, select Resources > Metrics Explorer and search for https/ request_bytes_count metric. 
+D) In Stackdriver Monitoring, select Resources > Google Cloud Load Balancers and review the Key Metrics graphs in the dashboard. 
+E) In Stackdriver Monitoring, create a new dashboard and track the https/backend_request_count metric for the load balancer.
+ANSWER: A, D
+23. You want to use Partner Interconnect to connect your on-premises network with your VPC. You already have an Interconnect partner. What should you first?
+A) Log in to your partner’s portal and request the VLAN attachment there. 
+B) Ask your Interconnect partner to provision a physical connection to Google. 
+C) Create a Partner Interconnect type VLAN attachment in the GCP Console and retrieve the pairing key. 
+D) Run gcloud compute interconnect attachments partner update <attachment> / -- region <region> --admin-enabled.
+ANSWER: C
+24. You need to centralize the Identity and Access Management permissions and email distribution for the WebServices Team as efficiently as possible. What should you do?
+A) Create a Google Group for the WebServices Team. 
+B) Create a G Suite Domain for the WebServices Team. 
+C) Create a new Cloud Identity Domain for the WebServices Team. 
+D) Create a new Custom Role for all members of the WebServices Team.
+ANSWER: A
+25. You are using the gcloud command line tool to create a new custom role in a project by coping a predefined role. You receive this error message: INVALID_ARGUMENT: Permission resourcemanager.projects.list is not valid What should you do?
+A) Add the resourcemanager.projects.get permission, and try again. 
+B) Try again with a different role with a new name but the same permissions. 
+C) Remove the resourcemanager.projects.list permission, and try again. 
+D) Add the resourcemanager.projects.setIamPolicy permission, and try again.
+ANSWER: C
+26. One instance in your VPC is configured to run with a private IP address only. You want to ensure that even if this instance is deleted, its current private IP address will not be automatically assigned to a different instance. In the GCP Console, what should you do?
+A) Assign a public IP address to the instance. 
+B) Assign a new reserved internal IP address to the instance. 
+C) Change the instance’s current internal IP address to static. 
+D) Add custom metadata to the instance with key internal-address and value reserved.
+ANSWER: B
+27. After a network change window one of your company’s applications stops working. The application uses an on-premises database server that no longer receives any traffic from the application. The database server IP address is 10.2.1.25. You examine the change request, and the only change is that 3 additional VPC subnets were created. The new VPC subnets created are 10.1.0.0/16, 10.2.0.0/16, and 10.3.1.0/24/ The on-premises router is advertising 10.0.0.0/8. What is the most likely cause of this problem?
+A) The less specific VPC subnet route is taking priority. 
+B) The more specific VPC subnet route is taking priority. 
+C) The on-premises router is not advertising a route for the database server. 
+D) A cloud firewall rule that blocks traffic to the on-premises database server was created during the change.
+ANSWER: D
+28. You need to create a new VPC network that allows instances to have IP addresses in both the 10.1.1.0/24 network and the 172.16.45.0/24 network. What should you do?
+A) Configure global load balancing to point 172.16.45.0/24 to the correct instance. 
+B) Create unique DNS records for each service that sends traffic to the desired IP address. 
+C) Configure an alias-IP range of 172.16.45.0/24 on the virtual instances within the VPC subnet of 10.1.1.0/24. 
+D) Use VPC peering to allow traffic to route between the 10.1.0.0/24 network and the 172.16.45.0/24 network.
+ANSWER: C
+29. You are deploying a global external TCP load balancing solution and want to preserve the source IP address of the original layer 3 payload. Which type of load balancer should you use?
+A) HTTP(S) load balancer
+B) Network load balancer
+C) Internal load balancer
+D) TCP/SSL proxy load balancer
+ANSWER: B

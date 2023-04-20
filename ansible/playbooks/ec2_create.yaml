@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  tasks: 
+    - name: Create AWS instance
+      ec2:
+        key_name: mykey
+        instance_type: t2.micro
+        image: ami-0f7719e8b7ba25c61
+        wait: yes
+        count: 3
+        vpc_subnet_id: subnet-838242e5
+        assign_public_ip: no
+        region: ap-southeast-1
+        key_name: "sherwinowen_aws_keypair"
