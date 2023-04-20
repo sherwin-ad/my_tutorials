@@ -8956,6 +8956,7 @@ lampweb
    ```
    $ ansible-playbook -i inventory update_version.yml 
    
+<<<<<<< HEAD
    PLAY [all] ******************************************************************************************************************************************************
    
    TASK [pip] ******************************************************************************************************************************************************
@@ -8963,9 +8964,727 @@ lampweb
    changed: [node00]
    
    PLAY RECAP ******************************************************************************************************************************************************
+=======
+   PLAY [all] ********************************************************************************************
+   
+   TASK [pip] ********************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   PLAY RECAP ********************************************************************************************
+>>>>>>> c86e8d0c456a52c27b7eb4ea3938fe881bf74859
    node00                     : ok=1    changed=1    unreachable=0    failed=0   
    node01                     : ok=1    changed=1    unreachable=0    failed=0   
    ```
 
+<<<<<<< HEAD
 2. 
+=======
+2. A new developer called `"John Doe"` is recently hired in your team. He needs to get inside all the remote servers via `ssh` as `root` user.
+
+   Write a playbook `/home/thor/playbooks/give_ssh_access.yml` to give ssh access on all the remote servers by pushing his public key: `/home/thor/playbooks/john_doe.pub` on all of them.
+
+   List of all servers is listed in the inventory `/home/thor/playbooks/inventory`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Create `give_ssh_access.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     gather_facts: no
+     tasks:
+       - authorized_key:
+           user: root
+           key: "{{ lookup('file', 'john_doe.pub') }}"
+           state: present
+   ```
+
+   ```
+   [thor@ansible-controller playbooks]$ ls
+   ansible.cfg        index.html  john_doe.pub     update_version.yml
+   get_vault_pass.py  inventory   secret_file.txt
+   ```
+
+3. Write a playbook `/home/thor/playbooks/configure_webserver.yml` which installs `nginx` web server and serves a html file: `index.html` from directory `/usr/share/nginx/html` on remote servers.
+
+   You are provided with `/home/thor/playbooks/index.html` that you should copy to remote `web` servers listed on inventory `/home/thor/playbooks/inventory`. Ensure that nginx is serving the file, that you copied.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   index.html
+
+   ```
+   you nailed it, right !!
+   ```
+
+   Create `configure_webserver.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     tasks:
+       - package:
+           name: nginx
+           state: present
+       - copy:
+           src: index.html
+           dest: /usr/share/nginx/html/index.html
+       - service:
+           name: nginx
+           state: started
+   ```
+
+   ```
+   $ ansible-playbook -i inventory configure_webserver.yml 
+   
+   PLAY [all] ********************************************************************************************
+   
+   TASK [package] ****************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   TASK [copy] *******************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   TASK [service] ****************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=3    changed=3    unreachable=0    failed=0   
+   node01                     : ok=3    changed=3    unreachable=0    failed=0   
+   ```
+
+4. Write a playbook to copy the secret file located at `/home/thor/playbooks/secret_file.txt` to all remote hosts at location: `/root/.secret_file.txt`
+
+   Your playbook must be located at: `/home/thor/playbooks/copy_secrets.yml`
+
+   Use inventory file: `/home/thor/playbooks/inventory`. The secret file is encrypted, please use the vault password from the script `/home/thor/playbooks/get_vault_pass.py` while you execute the playbook.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+    secret_file.txt 
+
+   ```
+   $ANSIBLE_VAULT;1.1;AES256
+   36356263323361383133663063646437383137333761323036313538373764646662316666626433
+   3632333032656539303962376439323830663933393333610a353037393033636361353931343938
+   66613934383261306139316365303633313638636435326430356362653266613565343561646639
+   3239633131386337630a396435383361353464633836613634316234313034653764333934363762
+   36626663363134346430633162363237346338363565373936323232383137303432393834393732
+   6464383734396164313735643936383432636338643135653638
+   ```
+
+   Create `copy_secrets.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   
+   - hosts: all
+     tasks:
+       - name: copy a secret file to remote hosts
+         copy:
+           src: secret_file.txt
+           dest: /root/.secret_file.txt
+   ```
+
+   get_vault_pass.py
+
+   ```
+   #!/usr/bin/python
+   
+   from __future__ import print_function
+   
+   def get_secret():
+       # complex process to retive secrets...
+       secret='vaulty_pass'
+       print(secret, end='')
+   
+   get_secret()
+   ```
+
+   ```
+   $ ansible-playbook copy_secrets.yml -i inventory --vault-password-file get_vault_pass.py 
+   
+   PLAY [all] ********************************************************************************************
+   
+   TASK [copy a secret file to remote hosts] *************************************************************
+   ok: [node00]
+   ok: [node01]
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=1    changed=0    unreachable=0    failed=0   
+   node01                     : ok=1    changed=0    unreachable=0    failed=0   
+   ```
+
+5. It is a recommended practice to apply the security updates on the system in periodic intervals.
+
+   Write a playbook `/home/thor/playbooks/patch_system.yml` to ensure servers listed in `/home/thor/playbooks/inventory` are up to date with periodic security updates.
+
+   \######In CentOS, ensure the playboook installs and configures the `yum-cron` package to fit the need.
+   _Confiure the `yum-cron` config file: `/etc/yum/yum-cron.conf` as `update_cmd = security`, to auto-update security packages and ensure `yum-cron` service is restarted afterwards._
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Create `patch_system.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     tasks:
+       - package:
+           name: yum-cron
+           state: present
+       - lineinfile:
+           path: /etc/yum/yum-cron.conf
+           regexp: "^update_cmd"
+           line: "update_cmd = security"
+       - service:
+           name: yum-cron
+           state: restarted
+   ```
+
+   ```
+   $ ansible-playbook -i inventory patch_system.yml 
+   
+   PLAY [all] ********************************************************************************************
+   
+   TASK [package] ****************************************************************************************
+   changed: [node00]
+   changed: [node01]
+   
+   TASK [lineinfile] *************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   TASK [service] ****************************************************************************************
+   changed: [node00]
+   changed: [node01]
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=3    changed=3    unreachable=0    failed=0   
+   node01                     : ok=3    changed=3    unreachable=0    failed=0   
+   ```
+
+
+
+## LAB: MOCK EXAM - 3
+
+1. We have 2 managed nodes that are part of different DNS domains with a distinct DNS server for each. Using the sample resolv.conf located at `~/playbooks/dns`, generate a new resolv.conf file and copy it to the respective nodes using the `template` module.
+
+   Update the template file located at `~/playbooks/dns/templates/resolv.conf.j2` to print the nameserver details as shown in the `sample_resolv.conf` file. DNS server to be used is specified in the `inventory file`.
+   Use this template to create a playbook called `update_dns_server.yml`. This playbook should generate the new resolv.conf and copy to the temp file `/tmp/resolv.conf` on the respective nodes .
+
+   Check
+
+   - Template file templates/resolv.conf.j2 exists
+   - Prepare Environment
+   - Prepare Environment
+   - Apply playbook
+   - Verify resolv.conf on node00
+   - Verify resolv.conf on node01
+
+   inventory
+
+   ```
+   [storage_nodes] 
+   node00 ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root dns_server=172.20.1.53
+   node01 ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=root dns_server=8.8.8.8
+   ```
+
+   Updated `resolv.conf.j2` templates as per below given code
+
+   ```
+   nameserver  {{  dns_server }};
+   options ndots:0
+   ```
+
+   Updated `update_dns_server.yml` playbook as per below given code
+
+   ```yaml
+   ---
+   - hosts: storage_nodes
+     tasks:
+     - name: copy resolv.conf to nodes
+       become: true
+       template:
+         src: /home/thor/playbooks/dns/templates/resolv.conf.j2
+         dest: /tmp/resolv.conf
+   ```
+
+   ```
+   $ ansible-playbook -i inventory update_dns_server.yml 
+   
+   PLAY [storage_nodes] **********************************************************************************
+   
+   TASK [copy resolv.conf to nodes] **********************************************************************
+   changed: [node00]
+   changed: [node01]
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=1    changed=1    unreachable=0    failed=0   
+   node01                     : ok=1    changed=1    unreachable=0    failed=0   
+   ```
+
+2. We have two nodes that are managed by Ansible. There is an inventory file `~/playbooks/inventory` on `Ansible controller` which has all these two nodes added. Create a playbook `~/playbooks/blocks.yml` on `Ansible controller` to `install httpd web server` and `start its service`.
+
+   Create the playbook using blocks to logically group the tasks (installation and service start).
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Task
+   - Ensure Ansible's blocks were used
+
+   inventory
+
+   ```
+   node00 ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   node01 ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=root
+   ```
+
+   Create `blocks.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     tasks:
+       - name: Install and configure httpd web server
+         block:
+           - yum:
+               name: httpd
+               state: latest
+           - service:
+               name: httpd
+               state: started
+   ```
+
+   ```
+   $ ansible-playbook -i inventory blocks.yml 
+   
+   PLAY [all] ********************************************************************************************
+   
+   TASK [yum] ********************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   TASK [service] ****************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=2    changed=2    unreachable=0    failed=0   
+   node01                     : ok=2    changed=2    unreachable=0    failed=0   
+   ```
+
+3. Using an Ansible playbook install `firewalld` on `node00` node, start its service as well. Name the playbook as `firewall.yml` and keep it under `~/playbooks`and also white list `node01` host's IP address `172.20.1.101` on `node00`
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   inventory
+
+   ```
+   node00 ansible_host=172.20.1.100 ansible_ssh_pass=Passw0rd ansible_user=root
+   node01 ansible_host=172.20.1.101 ansible_ssh_pass=Passw0rd ansible_user=root
+   ```
+
+   Use the following YAML file to create a playbook called `firewall.yml` as follows:-
+
+   ```yaml
+   ---
+   - hosts: node00
+     tasks:
+      - yum: name=firewalld state=installed
+      - service: name=firewalld state=started
+      - firewalld:
+         source: 172.20.1.101
+         state: enabled
+         zone: internal
+         permanent: yes
+         immediate: yes
+   ```
+
+   ```
+   $ ansible-playbook firewall.yml -i inventory 
+   
+   PLAY [node00] *****************************************************************************************
+   
+   TASK [yum] ********************************************************************************************
+   changed: [node00]
+   
+   TASK [service] ****************************************************************************************
+   changed: [node00]
+   
+   TASK [firewalld] **************************************************************************************
+   changed: [node00]
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=3    changed=3    unreachable=0    failed=0   
+   ```
+
+
+
+## LAB: MOCK EXAM - 4
+
+1. Perform the following tasks:
+
+   1. Install ansible using the package manager if not installed.
+   2. Generate your ssh key to path `~/.ssh/id_rsa`
+   3. Push the public key: (`~/.ssh/id_rsa.pub`) on the remote servers listed in: `~/playbooks/inventory`
+   4. Test your setup is working with: `ansible all -m ping -i /home/thor/playbooks/inventory`
+
+   Use password: `Passw0rd` to ssh onto the remote hosts. Remember the remote hosts are managed by the `root` user.
+
+   Check
+
+   - Check ansible is installed
+   - Check ssh keys is generated
+   - Verify Setup
+
+   inventory
+
+   ```
+   node00 ansible_host=172.20.1.100 ansible_user=root
+   node01 ansible_host=172.20.1.101 ansible_user=root
+   ```
+
+   Generate your ssh key
+
+   ```unix
+   $ ssh-keygen -t rsa
+   Generating public/private rsa key pair.
+   Enter file in which to save the key (/home/thor/.ssh/id_rsa): 
+   Created directory '/home/thor/.ssh'.
+   Enter passphrase (empty for no passphrase): 
+   Enter same passphrase again: 
+   Your identification has been saved in /home/thor/.ssh/id_rsa.
+   Your public key has been saved in /home/thor/.ssh/id_rsa.pub.
+   The key fingerprint is:
+   SHA256:OSyJvZbQ3wKxXvWMHMjsuA4AVWHTuN1LpkfjbizjSKQ thor@ansible-controller
+   The key's randomart image is:
+   +---[RSA 2048]----+
+   |  ..=+           |
+   | . ....o .       |
+   |.    o..+ o      |
+   | .  .+.B*+ =     |
+   |  . + O*Soo o    |
+   |   + o.O+o       |
+   |  E o *+o .      |
+   |   . =o +.       |
+   |    ..o+         |
+   +----[SHA256]-----+
+   ```
+
+   Copy ssh public key to remote servers
+
+   ```
+   $ ssh-copy-id root@node00
+   /bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/thor/.ssh/id_rsa.pub"
+   The authenticity of host 'node00 (172.20.1.100)' can't be established.
+   ECDSA key fingerprint is SHA256:oKjhENdvKKcnQep18/Z/b5o2dbXfbybkDBlO4uZhTa0.
+   ECDSA key fingerprint is MD5:af:68:e3:bb:84:8b:d2:68:d6:7e:8d:97:ec:c0:c0:3a.
+   Are you sure you want to continue connecting (yes/no)? yes
+   /bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+   /bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+   root@node00's password: 
+   
+   Number of key(s) added: 1
+   
+   Now try logging into the machine, with:   "ssh 'root@node00'"
+   and check to make sure that only the key(s) you wanted were added.
+   ```
+
+   ```
+   $ ssh-copy-id root@node01
+   /bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/thor/.ssh/id_rsa.pub"
+   The authenticity of host 'node01 (172.20.1.101)' can't be established.
+   ECDSA key fingerprint is SHA256:YtPpbxHtrK60feNmBrWGgNhRp6V99cK5uAm20afcr2k.
+   ECDSA key fingerprint is MD5:13:aa:26:c2:fe:44:19:15:ae:c5:00:96:8d:e9:02:ee.
+   Are you sure you want to continue connecting (yes/no)? yes
+   /bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+   /bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+   root@node01's password: 
+   
+   Number of key(s) added: 1
+   
+   Now try logging into the machine, with:   "ssh 'root@node01'"
+   and check to make sure that only the key(s) you wanted were added.
+   ```
+
+   ```
+   $ ansible all -m ping -i inventory 
+   node00 | SUCCESS => {
+       "changed": false, 
+       "ping": "pong"
+   }
+   node01 | SUCCESS => {
+       "changed": false, 
+       "ping": "pong"
+   }
+   ```
+
+2. Write a playbook: `~/playbooks/add_user_with_ssh.yml` to create a user: `deploy` on remote hosts. Its a best practice to ssh using public-key than to use a plain text password. Copy the public key: `~/playbooks/devops.pub` to remote hosts inside deploy user's authorized_keys.
+
+   Use inventory file: `~/playbooks/inventory`.
+
+   Check
+
+   - Syntax Check
+   - Apply Playbook
+   - Verify Tasks
+   - Verify Tasks
+
+   Create `add_user_with_ssh.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     tasks:
+       - user:
+           name: deploy
+           state: present
+       - authorized_key:
+           user: deploy
+           key: "{{ lookup('file', 'devops.pub') }}"
+           state: present
+   ```
+
+   ```
+   $ ansible-playbook -i inventory add_user_with_ssh.yml 
+   
+   PLAY [all] ********************************************************************************************
+   
+   TASK [user] *******************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   TASK [authorized_key] *********************************************************************************
+   changed: [node00]
+   changed: [node01]
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=2    changed=2    unreachable=0    failed=0   
+   node01                     : ok=2    changed=2    unreachable=0    failed=0   
+   ```
+
+3. Write a playbook `/home/thor/playbooks/install_from_source.yml` to install a tool: `mosh` from the source:`https://github.com/mobile-shell/mosh` on all servers inside the inventory `/home/thor/playbooks/inventory`.
+
+   A normal install from source flow is:
+
+   1. git clone https://github.com/mobile-shell/mosh
+   2. cd mosh
+   3. ./autogen.sh
+   4. ./configure
+   5. make && make install
+
+   To compile mosh from source, you need these dependencies:
+
+   - git
+   - make
+   - autoconf
+   - automake
+   - protobuf-devel
+   - libutempter-devel
+   - ncurses-devel
+   - openssl-devel
+   - gcc
+   - gcc-c++
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   Create `install_from_source.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     tasks:
+       - package:
+           name: "{{ item }}"
+           state: present
+         with_items:
+           - git
+           - make
+           - autoconf
+           - automake
+           - protobuf-devel
+           - libutempter-devel
+           - ncurses-devel
+           - openssl-devel
+           - gcc
+           - gcc-c++
+       - git:
+           repo: https://github.com/mobile-shell/mosh
+           dest: /tmp/mosh
+           force: yes
+       - shell: ./autogen.sh && ./configure && make && make install
+         args:
+           chdir: /tmp/mosh
+   ```
+
+   ```
+   $ ansible-playbook -i inventory install_from_source.yml 
+   
+   PLAY [all] ********************************************************************************************
+   
+   TASK [package] ****************************************************************************************
+   changed: [node00] => (item=git)
+   changed: [node01] => (item=git)
+   changed: [node00] => (item=make)
+   changed: [node01] => (item=make)
+   changed: [node00] => (item=autoconf)
+   changed: [node01] => (item=autoconf)
+   changed: [node00] => (item=automake)
+   changed: [node01] => (item=automake)
+   changed: [node00] => (item=protobuf-devel)
+   changed: [node01] => (item=protobuf-devel)
+   changed: [node00] => (item=libutempter-devel)
+   changed: [node01] => (item=libutempter-devel)
+   changed: [node00] => (item=ncurses-devel)
+   changed: [node01] => (item=ncurses-devel)
+   changed: [node00] => (item=openssl-devel)
+   changed: [node01] => (item=openssl-devel)
+   changed: [node00] => (item=gcc)
+   changed: [node01] => (item=gcc)
+   changed: [node01] => (item=gcc-c++)
+   changed: [node00] => (item=gcc-c++)
+   
+   TASK [git] ********************************************************************************************
+   changed: [node00]
+   changed: [node01]
+   
+   TASK [shell] ******************************************************************************************
+   changed: [node01]
+   changed: [node00]
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=3    changed=3    unreachable=0    failed=0   
+   node01                     : ok=3    changed=3    unreachable=0    failed=0   
+   ```
+
+4. Write a playbook `~/playbooks/logrotate.yml` to configure log-rotation on remote hosts.
+
+   Complete the following tasks:
+
+   1. grab the module from GitHub: `https://github.com/arillso/ansible.logrotate`
+      Use ansible-galaxy install command install inside `/home/thor/playbooks/roles`
+      If you stumbled upon the issue, `could not find/use git`, install git in the ansible-runner first and install the role.
+   2. configure your log rotation rules as:
+      - daily
+      - rotate 3
+      - compress
+        …to rotate a log file that would present on location `/var/log/myapp.log`
+
+   That means rotate daily, compress the log file and keep the last three rotations.
+   Check on the options section that the role provides. Since this role depends on facts on remote hosts, make sure to gather facts is not false.
+
+   Check
+
+   - Syntax Check
+   - Prepare Environment
+   - Apply Playbook
+   - Verify Tasks
+
+   install the role using ansible-galaxy
+
+   ```unix
+   $ ansible-galaxy install git+https://github.com/arillso/ansible.logrotate --roles-path ~/playbooks/roles
+   - extracting ansible.logrotate to /home/thor/playbooks/roles/ansible.logrotate
+   - ansible.logrotate was installed successfully
+   ```
+
+   Update `roles/ansible.logrotate/defaults/main.yml` and modify `logrotate_applications` section as below:
+
+   ```yaml
+   logrotate_applications:
+     - name: myapp
+       definitions:
+         - logs:
+             - /var/log/myapp.log
+           options:
+             - daily
+             - rotate 3
+             - compress
+   ```
+
+   Create `logrotate.yml` playbook and add below given code
+
+   ```yaml
+   ---
+   - hosts: all
+     gather_facts: yes
+     roles:
+       - ansible.logrotate
+   ```
+
+   ```
+   $ ansible-playbook -i inventory logrotate.yml 
+   
+   PLAY [all] ********************************************************************************************
+   
+   TASK [Gathering Facts] ********************************************************************************
+   ok: [node01]
+   ok: [node00]
+   
+   TASK [ansible.logrotate : add OS specific variables] **************************************************
+   ok: [node00] => (item=/home/thor/playbooks/roles/ansible.logrotate/vars/CentOS.yml)
+   ok: [node01] => (item=/home/thor/playbooks/roles/ansible.logrotate/vars/CentOS.yml)
+   
+   TASK [ansible.logrotate : install logrotate packages] *************************************************
+   changed: [node00]
+   changed: [node01]
+   
+   TASK [ansible.logrotate : create logrotate configuration file] ****************************************
+   changed: [node01]
+   changed: [node00]
+   
+   TASK [ansible.logrotate : create logrotate application configuration files] ***************************
+   changed: [node00] => (item={u'definitions': [{u'logs': [u'/var/log/myapp.log'], u'options': [u'daily', u'rotate 3', u'compress']}], u'name': u'myapp'})
+   changed: [node01] => (item={u'definitions': [{u'logs': [u'/var/log/myapp.log'], u'options': [u'daily', u'rotate 3', u'compress']}], u'name': u'myapp'})
+   
+   TASK [ansible.logrotate : symlink for hourly rotation] ************************************************
+   skipping: [node00]
+   skipping: [node01]
+   
+   PLAY RECAP ********************************************************************************************
+   node00                     : ok=5    changed=3    unreachable=0    failed=0   
+   node01                     : ok=5    changed=3    unreachable=0    failed=0   
+   ```
+
+   
+>>>>>>> c86e8d0c456a52c27b7eb4ea3938fe881bf74859
 
