@@ -1088,4 +1088,1297 @@
 
    
 
+## LAB: VARIABLES
+
+1. Which of the following is not a valid `variable type`?'
+
+   - tuple
+   - list
+   - object
+   - **item**
+   - map
+
+2. Which one of the below is not a valid data type in `terraform`?
+
+   - map
+   - tuple
+   - **array**
+   - list
+   - set
+
+3. Navigate to the directory `/root/terraform-projects/variables`. Which `type` does the variable called `number` belong to?
+
+   - **bool**	
+   - string
+   - list
+   - number
+
+   variable.tf
+
+   ```
+   variable "name" {
+        type = string
+        default = "Mark"
+     
+   }
+   variable "number" {
+        type = bool
+        default = true
+     
+   }
+   variable "distance" {
+        type = number
+        default = 5
+     
+   }
+   variable "jedi" {
+        type = map
+        default = {
+        filename = "/root/first-jedi"
+        content = "phanius"
+        }
+     
+   }
    
+   variable "gender" {
+        type = list(string)
+        default = ["Male", "Female"]
+   }
+   variable "hard_drive" {
+        type = map
+        default = {
+             slow = "HHD"
+             fast = "SSD"
+        }
+   }
+   variable "users" {
+        type = set(string)
+        default = ["tom", "jerry", "pluto", "daffy", "donald", "jerry", "chip", "dale"]
+   
+     
+   }
+   ```
+
+4. How would you fetch the value of the key called `slow` from the variable called `hard_drive` in a `terraform` configuration?
+
+   This variable is defined in the file `variables.tf`.
+
+   - var.hard_drive[0]
+   - hard_drive["slow"]
+   - var.hard_drive.slow
+   - var.hard_drive.0
+   - **var.hard_drive["slow"]**
+
+   variables.tf
+
+   ```
+   variable "name" {
+        type = string
+        default = "Mark"
+     
+   }
+   variable "number" {
+        type = bool
+        default = true
+     
+   }
+   variable "distance" {
+        type = number
+        default = 5
+     
+   }
+   variable "jedi" {
+        type = map
+        default = {
+        filename = "/root/first-jedi"
+        content = "phanius"
+        }
+     
+   }
+   
+   variable "gender" {
+        type = list(string)
+        default = ["Male", "Female"]
+   }
+   variable "hard_drive" {
+        type = map
+        default = {
+             slow = "HHD"
+             fast = "SSD"
+        }
+   }
+   variable "users" {
+        type = set(string)
+        default = ["tom", "jerry", "pluto", "daffy", "donald", "jerry", "chip", "dale"]
+   
+     
+   }
+   ```
+
+5. What is the index of the element called `Female` in the variable called `gender`?
+
+   - Female
+   - 3
+   - var.gender["female"]
+   - **1**
+   - 0
+
+6. What is the type of variable called `users`?
+
+   - list(string)
+   - **set(string)**
+   - list
+   - set
+
+7. However, this variable has been defined incorrectly! Identify the mistake.
+
+   - **duplicate elements**
+   - type used is incorrect
+   - syntax error
+   - elements should not be enclosed in double quotes
+
+8. We have now updated the `main.tf` file in the same directory (`/root/terraform-projects/variables`) and added some resource blocks.
+
+   Inspect them.
+
+   OK
+
+9. What is the value for the argument called `content` used in the resource block for the resource `jedi`?
+
+   - first-jedi
+   - **phanius**
+   - jedi
+   - obi-wan
+   - yoda
+
+10. Now, let's update this resource and add variables instead. Use the default value declared in the variable called `jedi`.
+      This variable is a map. For the argument called `content` use the value of the key by the same name.
+      And, similarly, for the argument called `filename` use the value by the same name.
+
+   When ready, run `terraform init, plan and apply` to create this resource.
+
+   Check
+
+   - terraform init and apply run?
+   - resource uses variables?
+
+   main.tf
+
+   ```
+   resource "local_file" "jedi" {
+        filename = "/root/first-jedi"
+        content = "phanius"
+   }
+   ```
+
+   Variable called `jedi` is a map, so we have to use below syntax :-
+
+   ```
+   resource "local_file" "jedi" {
+        filename = var.jedi["filename"]
+        content = var.jedi["content"]
+   }
+   ```
+
+
+
+## LAB: USING VARIABLES IN TERRAFORM
+
+1. How can we use `environment` variables to pass `input variables` in `terraform` scripts?
+
+   - export variable
+   - **TF_VAR_<variable_name>**
+   - .var
+   - .tf
+
+2. Which method has the highest priority in Variable Definition Precedence?
+
+   If unsure, Refer to the documentation. Documentation tab is available at the top right.
+
+   - using .auto.tfvars
+   - **command line flag of -var or -var-file**
+   - variable definition file terraform.tfvars.json
+   - using terraform.tfvars
+
+3. Which one of the following commands is a valid way to make use of a custom variable file with the `terraform apply` command?
+
+   - terraform apply -var-file variables.vars
+   - **terraform apply -var-file variables.tfvars**
+   - terraform apply -var-file variables.tf
+
+4. We have created some files under the directory `/root/terraform-projects/variables`. Inspect it.
+
+   OK
+
+5. What will happen if we run `terraform plan` command right now?
+
+   Try it.
+
+   - **Error**
+   - Success
+
+6. The `terraform plan` command did not run as there was no reference for the input variable called `filename` in the configuration files.
+
+   Let's fix that now.
+
+   OK
+
+7. Declare the variable called `filename` with type `string` in the file `variables.tf`.
+   Don't have to specify a `default` value.
+
+   Check
+
+   - Syntax Check
+
+   Solution available for `variables.tf` file :-
+
+   ```
+   variable filename {
+     type = string
+   }
+   ```
+
+8. If we run `terraform apply` with a `-var` command line flag as shown below, which value would be considered by `terraform`?
+
+   ```
+   terraform apply -var filename=/root/tennis.txt
+   ```
+
+   - default value in variables.tf
+   - None of this
+   - **/root/tennis.txt**
+   - /root/basketball.txt
+
+9. `Terraform` follows a variable definition precedence order to determine the value and
+   the command line flag of `–var or –var-file` takes the highest priority.
+
+   OK
+
+## LAB: RESOURCE ATTRIBUTES
+
+1. Navigate to the configuration directory `/root/terraform-projects/project-chronos` and inspect the files created inside.
+
+   OK
+
+2. What is the `resource_type` of the resource that's currently defined in the `main.tf` file?
+
+   If unsure, refer to the documentation. Documentation tab is available at the top right panel.
+
+   - **time_static**
+   - time
+   - time_stamp
+   - time_update
+
+   main.tf
+
+   ```
+    resource "time_static" "time_update" {
+   }
+   ```
+
+3. As you can see, the resource block is empty. This is because `time_static` does not need any arguments to be supplied to work.
+
+   When applied as it is, `terraform` creates a logical resource locally (similar to `random_pet`) with the current time.
+
+   OK
+
+4. Which of the following `attributes` are exported by the `time_static` resource?
+
+   If unsure, refer to the documentation. Documentation tab is available at the top right panel.
+
+   - **Id**
+   - content
+   - century
+   - filename
+   - decade
+
+5. How do we refer to the attribute called `id` using a reference expression?
+
+   - time_static["id"]
+   - time_static.time_update["id"]
+   - time_update.id
+   - time_static_time
+   - **time_static.time_update.id**
+
+6. Now, update the `main.tf` file and add a new `local_file` resource called `time` with the following requirements:
+
+   1. filename: `/root/time.txt`
+
+   2. content: `Time stamp of this file is <id from time_update resource>`
+
+   Use a reference expression and interpolation.
+
+   When ready, run `terraform init, plan and apply`.
+
+   Check
+
+   - resource created as specified?
+
+   Solution for `main.tf` :-
+
+   ```
+   resource "local_file" "time" {
+     filename = "/root/time.txt"
+     content = "Time stamp of this file is ${time_static.time_update.id}"
+   
+    }
+    resource "time_static" "time_update" {
+   }
+   ```
+
+7. What is the attribute called `id` that is created for the `local file` resource called `time`?
+
+   Make use of the `terraform show` command and identify the attribute values.
+
+   - 3395a1ce5b05fd3395a1ce5b05fd
+   - 3f43292fd8d4e8dffef53f43292fd8d4e8dffef5
+   - **313bd49f17d4637edbd6597f120b2c5990e826c2**
+   - 5fdb66d473f43295fdb66d473f4329
+
+   ```
+   $ terraform show
+   # local_file.time:
+   resource "local_file" "time" {
+       content              = "Time stamp of this file is 2023-04-24T01:23:00Z"
+       content_base64sha256 = "DTgwwRr4vQ/h6PfRpp5DH48NvIAQpDGA1YJiENN26Vw="
+       content_base64sha512 = "3F2SydUIUFKrKJ/tM0juJOmNgJdccXrBqCtGVM0IlDKZNn2AHkGjTyqON+VaVysdL/wJw93S2nMs9Ndv4LMvTA=="
+       content_md5          = "912de55d6d251dd6ecc766ea31458f99"
+       content_sha1         = "313bd49f17d4637edbd6597f120b2c5990e826c2"
+       content_sha256       = "0d3830c11af8bd0fe1e8f7d1a69e431f8f0dbc8010a43180d5826210d376e95c"
+       content_sha512       = "dc5d92c9d5085052ab289fed3348ee24e98d80975c717ac1a82b4654cd08943299367d801e41a34f2a8e37e55a572b1d2ffc09c3ddd2da732cf4d76fe0b32f4c"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/time.txt"
+       id                   = "313bd49f17d4637edbd6597f120b2c5990e826c2"
+   }
+   
+   # time_static.time_update:
+   resource "time_static" "time_update" {
+       day     = 24
+       hour    = 1
+       id      = "2023-04-24T01:23:00Z"
+       minute  = 23
+       month   = 4
+       rfc3339 = "2023-04-24T01:23:00Z"
+       second  = 0
+       unix    = 1682299380
+       year    = 2023
+   }
+   ```
+
+8. What is the attribute called `rfc3339` that is created for the `time_static` resource called `time_update`?
+
+   Make use of the `terraform show` command and identify the attribute values.
+
+   - 2020
+   - **2023-04-24T01:23:00Z**
+   - 2020-01-14T00:00:00Z
+   - 2020-11-22T17:23:17Z
+
+   time.txt
+
+   ```
+   Time stamp of this file is 2023-04-24T01:23:00Z
+   ```
+
+
+
+## LAB: RESOURCE DEPENDENCIES
+
+1. Which argument should be used to explicitly set dependencies for a resource?
+
+   - **depends_on**
+   - resource_depend
+   - dependent
+   - depend_on
+
+2. `Resource A` relies on another `Resource B` but doesn't access any of its attributes in its own arguments. What is this type of dependency called?
+
+   - implicit dependency
+   - external_dependency
+   - internal_dependency
+   - **explicit dependency**
+
+3. How do we make use of `implicit dependency`?
+
+   - variables
+   - datasources
+   - **reference expressions**
+   - depends_on
+
+4. n the configuration directory `/root/terraform-projects/key-generator`, create a file called `key.tf` with the following specifications:
+
+
+   Resource Type: `tls_private_key`
+
+   Resource Name: `pvtkey`
+
+   algorithm: `RSA`
+
+   rsa_bits: `4096`
+
+   When ready, run `terraform init, plan and apply`.
+
+   If unsure, refer to the documentation.
+
+   Check
+
+   - resource created as specified?
+
+   Solution for `key.tf` :-
+
+   ```
+   resource "tls_private_key" "pvtkey" {
+     algorithm = "RSA"
+     rsa_bits  = 4096
+   }
+   ```
+
+5. Resource `tls_private_key` generates a secure private key and encodes it as PEM. It is a logical resource that lives only in the `terraform state`.
+
+   You can see the details of the resource, including the private key by running the `terraform show` command.
+
+   You can read the documentation for more details. `https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key`
+
+   OK
+
+   ```
+   $ terraform show
+   # tls_private_key.pvtkey:
+   resource "tls_private_key" "pvtkey" {
+       algorithm                     = "RSA"
+       ecdsa_curve                   = "P224"
+       id                            = "32be13e37f94f1ed9e9b56be7daeda1d98509c22"
+       private_key_openssh           = (sensitive value)
+       private_key_pem               = (sensitive value)
+       private_key_pem_pkcs8         = (sensitive value)
+       public_key_fingerprint_md5    = "e0:80:2b:8d:b8:23:79:0c:ba:19:ac:73:07:9a:58:12"
+       public_key_fingerprint_sha256 = "SHA256:T/KiSiya8hwOCiztFr6EjZaAeoPD6RYet4DUWD6Ayto"
+       public_key_openssh            = <<~EOT
+           ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDTLyzHY+BXFdP8PjImzSR2D9rvstIUvgVUpKf2CiosohYd7cDflcWtuwJRojPWp14vXH5HwXbDJLu2T9BJqBpZZIwMYjcdrxeyRXHH+0UbpsLRMEpyXA0nq8heE4e6DZOPxQwANDokLWxJp2VBGbhGI1CcF0cSKArxSfndPQ7FMTP82lRX0MbNXjwXoM8WjUb0VSjwfTbfHcSA8eFbjdEJ+HSBivrZs0M5/mpHTzye+q8a00aWuqQ+ODjnW+4S/QDGCWLhOcWeFNslYaQ9vAnAf8y0hvdGchtSR7tcnNCk+xwtLS3hO5v0sna/A1oiU6BCOLwN1Nw/4PJssuhO3DbguR9cDIEOkcCTIV2QO6cVwxcg9gOoDBHjIHCLxt5bAb5M8L+Tn5JfpVFjgc48knshM0/k0N7EHZZ6VN4NKP158fE9KJqOx0bXnWm5sSEc+GIX4byWQC5KnsaFokozy9k1bqtLMzOjO5xPO5sLiiNe9DO0zI9iLAnl4KUupCjrKbS7QNouHBzCiLluQ/BS30eyqAYuGEnVuWAZAdj+mY/UUoFtcV3IovrSLHHUBNtjOs8wb4v9apyjK6aQC+elT52lfrahSQMURW5NLRb9dXjLnsyM8KeRfI89mR4yYUQHOT23YIoyTgwhCjTurVe+ZqN9WBXMI93me21MPWaUsPJYEQ==
+       EOT
+       public_key_pem                = <<~EOT
+           -----BEGIN PUBLIC KEY-----
+           MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA0y8sx2PgVxXT/D4yJs0k
+           dg/a77LSFL4FVKSn9goqLKIWHe3A35XFrbsCUaIz1qdeL1x+R8F2wyS7tk/QSaga
+           WWSMDGI3Ha8XskVxx/tFG6bC0TBKclwNJ6vIXhOHug2Tj8UMADQ6JC1sSadlQRm4
+           RiNQnBdHEigK8Un53T0OxTEz/NpUV9DGzV48F6DPFo1G9FUo8H023x3EgPHhW43R
+           Cfh0gYr62bNDOf5qR088nvqvGtNGlrqkPjg451vuEv0Axgli4TnFnhTbJWGkPbwJ
+           wH/MtIb3RnIbUke7XJzQpPscLS0t4Tub9LJ2vwNaIlOgQji8DdTcP+DybLLoTtw2
+           4LkfXAyBDpHAkyFdkDunFcMXIPYDqAwR4yBwi8beWwG+TPC/k5+SX6VRY4HOPJJ7
+           ITNP5NDexB2WelTeDSj9efHxPSiajsdG151pubEhHPhiF+G8lkAuSp7GhaJKM8vZ
+           NW6rSzMzozucTzubC4ojXvQztMyPYiwJ5eClLqQo6ym0u0DaLhwcwoi5bkPwUt9H
+           sqgGLhhJ1blgGQHY/pmP1FKBbXFdyKL60ixx1ATbYzrPMG+L/WqcoyumkAvnpU+d
+           pX62oUkDFEVuTS0W/XV4y57MjPCnkXyPPZkeMmFEBzk9t2CKMk4MIQo07q1Xvmaj
+           fVgVzCPd5nttTD1mlLDyWBECAwEAAQ==
+           -----END PUBLIC KEY-----
+       EOT
+       rsa_bits                      = 4096
+   }
+   ```
+
+6. Now, let's use the `private key` created by this resource in another resource of type `local file`. Update the `key.tf` file with the requirements:
+
+
+   Resource Name: `key_details`
+
+   File Name: `/root/key.txt`
+
+   Content: use a reference expression to use the attribute called `private_key_pem` of the `pvtkey` resource.
+
+   When ready, run `terraform init, plan and apply`.
+
+   Check
+
+   Solution for `key.tf` :-
+
+   ```
+   resource "tls_private_key" "pvtkey" {
+     algorithm = "RSA"
+     rsa_bits  = 4096
+   }
+   
+   resource "local_file" "key_details" {
+     content  = tls_private_key.pvtkey.private_key_pem
+     filename = "/root/key.txt"
+   }
+   ```
+
+7. Now destroy these two resources.
+
+   Use `terraform destroy`.
+
+   Check
+
+   - resource destroyed?
+
+   ```
+   $ terraform destroy
+   ```
+
+8. For the next question, navigate to the directory `/root/terraform-projects/explicit-dependency`.
+
+   OK
+
+9. Within this directory, create two `local_file` type resources in `main.tf` file.
+
+   
+   Resource 1:
+
+   Resource Name: `whale`
+
+   File Name: `/root/whale`
+
+   content: `whale`
+
+   
+   Resource 2:
+
+   Resource Name: `krill`
+
+   File Name: `/root/krill`
+
+   content: `krill`
+
+   
+   Resource called `whale` should depend on `krill` but do not use reference expressions.
+
+   When ready, run `terraform init, plan and apply`.
+
+   Check
+
+   - Syntax Check
+
+   Solution for `main.tf` :-
+
+   ```
+   resource "local_file" "whale" {
+     filename   = "/root/whale"
+     content    = "whale"
+     depends_on = [local_file.krill]
+   }
+   resource "local_file" "krill" {
+     filename = "/root/krill"
+     content  = "krill"
+   }
+   ```
+
+
+
+## LAB: OUTPUT VARIABLES
+
+1. Navigate to the directory called `/root/terraform-projects/data`. We have used the configuration files created in this directory to create some resources. Inspect them.
+
+   OK
+
+2. Navigate to the directory called `/root/terraform-projects/data`. We have used the configuration files created in this directory to create some resources. Inspect them.
+
+   - **random**
+   - local
+   - tls
+   - time
+
+   main.tf
+
+   ```
+   resource "random_uuid" "id1" {
+      
+   }
+   resource "random_uuid" "id2" {
+      
+   }
+   resource "random_uuid" "id3" {
+      
+   }
+   resource "random_uuid" "id4" {
+      
+   }
+   resource "random_uuid" "id5" {
+      
+   }
+   resource "random_uuid" "id6" {
+      
+   }
+   resource "random_uuid" "id7" {
+      
+   }
+   resource "random_integer" "order1" {
+     min     = 1
+     max     = 99999
+    
+   }
+   resource "random_integer" "order2" {
+     min     = 1
+     max     = 222222
+    
+   }
+   ```
+
+3. Which two resource types are configured in the configuration files?
+
+   - random_password && random_pet
+   - random_uuid && random_shuffle
+   - random_pet && random_id
+   - **random_uuid && random_integer**
+
+4. We also defined a few output variables in the `output.tf` file in this configuration directory. Inspect them.
+
+   OK
+
+   output.tf
+
+   ```
+   output "id1" {
+      value = random_uuid.id1.result
+   }
+   output "id2" {
+       value = random_uuid.id2.result
+      
+   }
+   output "id3" {
+       value = random_uuid.id3.result
+      
+   }
+   
+   output "id4" {
+       value = random_uuid.id4.result
+      
+   }
+   output "id5" {
+       value = random_uuid.id5.result
+   }
+      
+   output "id6" {
+       value = random_uuid.id6.result
+      
+   }
+   output "id7" {
+       value = random_uuid.id7.result
+      
+   }
+   output "order1" {
+    value = random_integer.order1.result
+    
+   }
+   output "order2" {
+    value = random_integer.order1.result
+    
+   }
+   ```
+
+5. Run `terraform init, plan and apply` to create these resources.
+
+   Check
+
+   - terraform applied correctly?
+
+6. What is the value of the `output` variable called `id2` ?
+
+   Use the `terraform output` command.
+
+   - daaf6371-eacb-6996-b497-5491879cdcdd
+   - b48f3418-400e-3c31-735e-8bc713711bce
+   - **74c68a8c-73f8-706e-e438-aa8c64d71ed6**
+
+   ```
+   $ terraform output
+   id1 = 10538602-96fd-9b8f-5842-b4d2d3e963e9
+   id2 = 74c68a8c-73f8-706e-e438-aa8c64d71ed6
+   id3 = 88be9bf7-4a26-1e63-c41b-7873661764ab
+   id4 = 3121b21f-2de8-ad78-2999-c4b10c48ea2a
+   id5 = 8ef26852-8f38-8abb-b39e-62440d2be7f0
+   id6 = 524f978d-795d-0a25-a25b-18554c41d723
+   id7 = 08261662-a3e7-6c97-1294-2477cd8e0150
+   order1 = 21351
+   order2 = 21351
+   ```
+
+7. What is the value of the `output` variable called `order1` ?
+
+   Use the `terraform output` command.
+
+   - **21351**
+   - 2222
+   - 040385
+   - 141612
+   - 240187
+
+   ```
+   $ terraform output
+   id1 = 10538602-96fd-9b8f-5842-b4d2d3e963e9
+   id2 = 74c68a8c-73f8-706e-e438-aa8c64d71ed6
+   id3 = 88be9bf7-4a26-1e63-c41b-7873661764ab
+   id4 = 3121b21f-2de8-ad78-2999-c4b10c48ea2a
+   id5 = 8ef26852-8f38-8abb-b39e-62440d2be7f0
+   id6 = 524f978d-795d-0a25-a25b-18554c41d723
+   id7 = 08261662-a3e7-6c97-1294-2477cd8e0150
+   order1 = 21351
+   order2 = 21351
+   ```
+
+8. We have a new configuration directory located at the path `/root/terraform-projects/output`. Inspect the configuration files that are created in this directory.
+
+   What is the value of the `output` variable `pet-name` ?
+
+   Use the `terraform output` command within the new configuration directory.
+
+   - joy
+   - **herring**
+   - rox
+   - fin
+
+   main.tf
+
+   ```
+   resource "random_pet" "my-pet" {
+   
+     length    = var.length 
+   }
+   
+   output "pet-name" {
+   	
+   	value = random_pet.my-pet.id
+   	description = "Record the value of pet ID generated by the random_pet resource"
+   }
+   ```
+
+   variables.tf
+
+   ```
+   variable "prefix" {
+     default = "Mrs"	
+   }
+   
+   variable "separator" {
+   	default = "."
+   }
+   
+   variable "length" {
+   	default = "1"
+   }
+   ```
+
+   ```
+   $ terraform output pet-name
+   herring
+   ```
+
+9. We have just updated the `main.tf` file in this directory with a new resource block.
+   Add a new `output` variable with the following specifications:
+
+   Output Variable Name: `welcome_message`
+
+   Value: `content` of the resource called `welcome`
+
+   When ready, run `terraform init, plan and apply`
+
+   Check
+
+   - resource and output variable created?
+
+   main.tf
+
+   ```
+   resource "random_pet" "my-pet" {
+   
+     length = var.length
+   }
+   
+   output "pet-name" {
+   
+     value       = random_pet.my-pet.id
+     description = "Record the value of pet ID generated by the random_pet resource"
+   }
+   
+   resource "local_file" "welcome" {
+     filename = "/root/message.txt"
+     content  = "Welcome to Kodekloud."
+   }
+   output "welcome_message" {
+     value = local_file.welcome.content
+   }
+   ```
+
+   ```
+   terraform apply
+   random_pet.my-pet: Refreshing state... [id=herring]
+   local_file.welcome: Refreshing state... [id=d2d3e44fe87af01e8f96ec1b0e467845109264b2]
+   
+   Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+   
+   Outputs:
+   
+   pet-name = herring
+   welcome_message = Welcome to Kodekloud.
+   ```
+
+
+
+# Terraform State
+
+## LAB: TERRAFORM STATE
+
+1. Which location is the terraform `state file` stored by default?
+
+   - **Inside the configuration directory**
+   - /root
+   - /tmp
+   - /root/terraform-projects
+
+2. Which option should we use to disable state?
+
+   - -state=false
+   - **We cannot disable state!**
+   - -refresh=false
+   - --nostate
+
+3. Which format is the state file stored in by default?
+
+   - TOML
+   - XML
+   - YAML
+   - **JSON**
+
+4. Which of the following commands does NOT refresh the state?
+
+   - terraform plan
+   - **terraform init**
+   - terraform apply
+
+5. What is the name of the state file that is created by default?
+
+   - state.tf
+   - terraform.tfvars
+   - .terraform
+   - **terraform.tfstate**
+
+6. Navigate to the configuration directory `/root/terraform-projects/project-flash` we have created a few configuration files here. The directory has been initialized and the provider plugins downloaded inside the `.terraform` directory. However, there is no `terraform.tfstate` file created. Why is that?
+
+   - terraform plan was not run
+   - **terraform apply was not run**
+   - syntax error
+   - terraform init was not run correctly
+
+7. Run the `terraform show` command and identify the `id` created for the resource called `speed_force`.
+
+   - 121212-232323
+   - 75c434n343-43c9323
+   - **No Details Printed - There is No State**
+   - 2c23232-23cdc4r23
+
+   ```
+   $ terraform show
+   No state.
+   ```
+
+8. Now, run `terraform apply` in this directory.
+
+   Check
+
+   - Syntax Check
+
+   main.tf
+
+   ```
+   resource "local_file" "speed_force" {
+       filename = "/root/speed-force"
+       content = "speed-force"
+   }
+   ```
+
+   reverse-flash.tf
+
+   ```
+   resource "local_file" "reverse-flash" {
+       filename = "/root/reverse-flash"
+       content = "reverse-flash"
+   }
+   ```
+
+   ridller.tf
+
+   ```
+   resource "local_file" "riddler" {
+       filename = "/root/riddler"
+       content = "riddler"
+   }
+   ```
+
+   zoom.tf
+
+   ```
+   resource "local_file" "zoom" {
+       filename = "/root/zoom"
+       content = "zoom"
+   }
+   ```
+
+   
+
+9. Now, check `terraform show` again. What is the value of id for the resource called `speed_force`?
+
+   - e6b4b0d3255bfef95e6b4b0d3255bfef95
+   - **ebeb8b595c8eb4a6e81cacf244146e742fab2981**
+   - da39a3ee5e6b4b0d32da39a3ee5e6b4b0d32
+   - 55bfef95601890afd8070955bfef95601890afd80709
+
+   ```
+   $ terraform show
+   # local_file.reverse-flash:
+   resource "local_file" "reverse-flash" {
+       content              = "reverse-flash"
+       content_base64sha256 = "Kace3gKIeU2ZCrzpIfitqTpaWRR2kK9h1SfG7HQX9g8="
+       content_base64sha512 = "B02UG9wp6Czo23pn2gT/+YreJPaAoMf5fvjDpnymQiXsSfNSHvLfhyn4qXmNQUqborgGFq3imi6wMp7GYHQnPg=="
+       content_md5          = "f6cc31cf8b2e4d5868b646567f2c8edb"
+       content_sha1         = "eebf1b0eee8ccea695bf7925def3d540801e16c7"
+       content_sha256       = "29a71ede0288794d990abce921f8ada93a5a59147690af61d527c6ec7417f60f"
+       content_sha512       = "074d941bdc29e82ce8db7a67da04fff98ade24f680a0c7f97ef8c3a67ca64225ec49f3521ef2df8729f8a9798d414a9ba2b80616ade29a2eb0329ec66074273e"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/reverse-flash"
+       id                   = "eebf1b0eee8ccea695bf7925def3d540801e16c7"
+   }
+   
+   # local_file.riddler:
+   resource "local_file" "riddler" {
+       content              = "riddler"
+       content_base64sha256 = "ZovOaJeJQ6wk+LukJRF4IvHfbvLwrjID3HoP9Mrvo6A="
+       content_base64sha512 = "ZzOhD2IhUO4zPafhb8xoi1zMpVzfiOcprBlhCY7waUIS1/zHmvtbVYqS5aQdXnTQEFjEmuvjlwqaV9kErD/7TA=="
+       content_md5          = "426c70c360c4b0c5ef58e6dc535cf520"
+       content_sha1         = "4a99c9eed6c660f5874cc2505558d5abf940a498"
+       content_sha256       = "668bce68978943ac24f8bba425117822f1df6ef2f0ae3203dc7a0ff4caefa3a0"
+       content_sha512       = "6733a10f622150ee333da7e16fcc688b5ccca55cdf88e729ac1961098ef0694212d7fcc79afb5b558a92e5a41d5e74d01058c49aebe3970a9a57d904ac3ffb4c"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/riddler"
+       id                   = "4a99c9eed6c660f5874cc2505558d5abf940a498"
+   }
+   
+   # local_file.speed_force:
+   resource "local_file" "speed_force" {
+       content              = "speed-force"
+       content_base64sha256 = "+hI5F86aVJG7nQ6K0VEOJHTIhlj5aRLnpODNbyZExtI="
+       content_base64sha512 = "COfaah4Goo2T1qerQ8gYg5uR6onGpW1IjlpCtZuOW3UT+MH0rzPSj/LSKTJHHCfYVL0w3Q0B78u8RsRpueUNqg=="
+       content_md5          = "b5db1e5be7170beefea11ae7271a06a8"
+       content_sha1         = "ebeb8b595c8eb4a6e81cacf244146e742fab2981"
+       content_sha256       = "fa123917ce9a5491bb9d0e8ad1510e2474c88658f96912e7a4e0cd6f2644c6d2"
+       content_sha512       = "08e7da6a1e06a28d93d6a7ab43c818839b91ea89c6a56d488e5a42b59b8e5b7513f8c1f4af33d28ff2d22932471c27d854bd30dd0d01efcbbc46c469b9e50daa"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/speed-force"
+       id                   = "ebeb8b595c8eb4a6e81cacf244146e742fab2981"
+   }
+   
+   # local_file.zoom:
+   resource "local_file" "zoom" {
+       content              = "zoom"
+       content_base64sha256 = "0hu1N3JdYD7i2635w9Hikaa3rtIV02o05YoaOw2qUIQ="
+       content_base64sha512 = "3Y2YQB1BY5V4oYMn3EG3BuLyLFtEZINT1DQ+37JtqKgecw0RXR4hvh4dfrMJNcD0jYgwfh1k64noe1NNjLZx8w=="
+       content_md5          = "15913c103a5238e5a80ac2f498ee090d"
+       content_sha1         = "92298812107bb17eff1b85e15547ae13b6fee3a1"
+       content_sha256       = "d21bb537725d603ee2dbadf9c3d1e291a6b7aed215d36a34e58a1a3b0daa5084"
+       content_sha512       = "dd8d98401d41639578a18327dc41b706e2f22c5b44648353d4343edfb26da8a81e730d115d1e21be1e1d7eb30935c0f48d88307e1d64eb89e87b534d8cb671f3"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/zoom"
+       id                   = "92298812107bb17eff1b85e15547ae13b6fee3a1"
+   }
+   ```
+
+10. We have just added a new configuration file called `aws-infra.tf` into this configuration directory and provisioned the resources.
+
+   These are `AWS` resources. Don't worry if they are unfamiliar to you, we will soon be learning about them in the upcoming lectures!
+
+   OK
+
+   aws-inra.tf
+
+   ```
+   resource "aws_instance" "dev-server" {
+       instance_type = "t2.micro"
+       ami         = "ami-02cff456777cd"
+   }
+   resource "aws_s3_bucket" "falshpoint"  {
+       bucket = "project-flashpoint-paradox"
+   }
+   ```
+
+11. Inspect the `terraform.tfstate` file or run `terraform show` command.
+
+    You will notice that all the attribute details for all the resources created by this configuration is now printed on the screen!
+
+    Among them is an `EC2 Instance` which is created by the resource called `dev-server`. See if you can find out the `private_ip` for the instance that was created.
+
+    - **10.23.169.44**
+
+    terraform.tfstate
+
+    ```
+    {
+      "version": 4,
+      "terraform_version": "0.13.3",
+      "serial": 7,
+      "lineage": "6f0c078f-5b40-5f46-a8af-3d17e5601567",
+      "outputs": {},
+      "resources": [
+        {
+          "mode": "managed",
+          "type": "aws_instance",
+          "name": "dev-server",
+          "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+          "instances": [
+            {
+              "status": "tainted",
+              "schema_version": 1,
+              "attributes": {
+                "ami": "ami-02cff456777cd",
+                "arn": "arn:aws:ec2:us-east-1::instance/i-133bbe9035332521b",
+                "associate_public_ip_address": true,
+                "availability_zone": "us-east-1a",
+                "capacity_reservation_specification": null,
+                "cpu_core_count": null,
+                "cpu_threads_per_core": null,
+                "credit_specification": [],
+                "disable_api_stop": null,
+                "disable_api_termination": null,
+                "ebs_block_device": [],
+                "ebs_optimized": false,
+                "enclave_options": [],
+                "ephemeral_block_device": [],
+                "get_password_data": false,
+                "hibernation": null,
+                "host_id": "",
+                "host_resource_group_arn": null,
+                "iam_instance_profile": "",
+                "id": "i-133bbe9035332521b",
+                "instance_initiated_shutdown_behavior": "",
+                "instance_state": "running",
+                "instance_type": "t2.micro",
+                "ipv6_address_count": 0,
+                "ipv6_addresses": [],
+                "key_name": "None",
+                "launch_template": [],
+                "maintenance_options": [],
+                "metadata_options": [],
+                "monitoring": false,
+                "network_interface": [],
+                "outpost_arn": "",
+                "password_data": null,
+                "placement_group": "",
+                "placement_partition_number": 0,
+                "primary_network_interface_id": "eni-50ca749e",
+                "private_dns": "ip-10-23-169-44.ec2.internal",
+                "private_dns_name_options": [],
+                "private_ip": "10.23.169.44",
+                "public_dns": "ec2-54-214-47-218.compute-1.amazonaws.com",
+                "public_ip": "54.214.47.218",
+                "root_block_device": [
+                  {
+                    "delete_on_termination": true,
+                    "device_name": "/dev/sda1",
+                    "encrypted": false,
+                    "iops": 0,
+                    "kms_key_id": "",
+                    "tags": {},
+                    "throughput": 0,
+                    "volume_id": "vol-1ef9b058",
+                    "volume_size": 8,
+                    "volume_type": "gp2"
+                  }
+                ],
+                "secondary_private_ips": [],
+                "security_groups": [],
+                "source_dest_check": true,
+                "subnet_id": "subnet-cb9adb7e",
+                "tags": null,
+                "tags_all": null,
+                "tenancy": "default",
+                "timeouts": null,
+                "user_data": null,
+                "user_data_base64": null,
+                "user_data_replace_on_change": false,
+                "volume_tags": null,
+                "vpc_security_group_ids": []
+              },
+              "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMCwidXBkYXRlIjo2MDAwMDAwMDAwMDB9LCJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+            }
+          ]
+        },
+        {
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "falshpoint",
+          "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+          "instances": [
+            {
+              "schema_version": 0,
+              "attributes": {
+                "acceleration_status": "",
+                "acl": null,
+                "arn": "arn:aws:s3:::project-flashpoint-paradox",
+                "bucket": "project-flashpoint-paradox",
+                "bucket_domain_name": "project-flashpoint-paradox.s3.amazonaws.com",
+                "bucket_prefix": "",
+                "bucket_regional_domain_name": "project-flashpoint-paradox.s3.amazonaws.com",
+                "cors_rule": [],
+                "force_destroy": false,
+                "grant": [
+                  {
+                    "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
+                    "permissions": [
+                      "FULL_CONTROL"
+                    ],
+                    "type": "CanonicalUser",
+                    "uri": ""
+                  }
+                ],
+                "hosted_zone_id": "Z3AQBSTGFYJSTF",
+                "id": "project-flashpoint-paradox",
+                "lifecycle_rule": [],
+                "logging": [],
+                "object_lock_configuration": [],
+                "object_lock_enabled": false,
+                "policy": "",
+                "region": "us-east-1",
+                "replication_configuration": [],
+                "request_payer": "BucketOwner",
+                "server_side_encryption_configuration": [],
+                "tags": null,
+                "tags_all": {},
+                "timeouts": null,
+                "versioning": [
+                  {
+                    "enabled": false,
+                    "mfa_delete": false
+                  }
+                ],
+                "website": [],
+                "website_domain": null,
+                "website_endpoint": null
+              },
+              "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
+            }
+          ]
+        },
+        {
+          "mode": "managed",
+          "type": "local_file",
+          "name": "reverse-flash",
+          "provider": "provider[\"registry.terraform.io/hashicorp/local\"]",
+          "instances": [
+            {
+              "schema_version": 0,
+              "attributes": {
+                "content": "reverse-flash",
+                "content_base64": null,
+                "content_base64sha256": "Kace3gKIeU2ZCrzpIfitqTpaWRR2kK9h1SfG7HQX9g8=",
+                "content_base64sha512": "B02UG9wp6Czo23pn2gT/+YreJPaAoMf5fvjDpnymQiXsSfNSHvLfhyn4qXmNQUqborgGFq3imi6wMp7GYHQnPg==",
+                "content_md5": "f6cc31cf8b2e4d5868b646567f2c8edb",
+                "content_sha1": "eebf1b0eee8ccea695bf7925def3d540801e16c7",
+                "content_sha256": "29a71ede0288794d990abce921f8ada93a5a59147690af61d527c6ec7417f60f",
+                "content_sha512": "074d941bdc29e82ce8db7a67da04fff98ade24f680a0c7f97ef8c3a67ca64225ec49f3521ef2df8729f8a9798d414a9ba2b80616ade29a2eb0329ec66074273e",
+                "directory_permission": "0777",
+                "file_permission": "0777",
+                "filename": "/root/reverse-flash",
+                "id": "eebf1b0eee8ccea695bf7925def3d540801e16c7",
+                "sensitive_content": null,
+                "source": null
+              }
+            }
+          ]
+        },
+        {
+          "mode": "managed",
+          "type": "local_file",
+          "name": "riddler",
+          "provider": "provider[\"registry.terraform.io/hashicorp/local\"]",
+          "instances": [
+            {
+              "schema_version": 0,
+              "attributes": {
+                "content": "riddler",
+                "content_base64": null,
+                "content_base64sha256": "ZovOaJeJQ6wk+LukJRF4IvHfbvLwrjID3HoP9Mrvo6A=",
+                "content_base64sha512": "ZzOhD2IhUO4zPafhb8xoi1zMpVzfiOcprBlhCY7waUIS1/zHmvtbVYqS5aQdXnTQEFjEmuvjlwqaV9kErD/7TA==",
+                "content_md5": "426c70c360c4b0c5ef58e6dc535cf520",
+                "content_sha1": "4a99c9eed6c660f5874cc2505558d5abf940a498",
+                "content_sha256": "668bce68978943ac24f8bba425117822f1df6ef2f0ae3203dc7a0ff4caefa3a0",
+                "content_sha512": "6733a10f622150ee333da7e16fcc688b5ccca55cdf88e729ac1961098ef0694212d7fcc79afb5b558a92e5a41d5e74d01058c49aebe3970a9a57d904ac3ffb4c",
+                "directory_permission": "0777",
+                "file_permission": "0777",
+                "filename": "/root/riddler",
+                "id": "4a99c9eed6c660f5874cc2505558d5abf940a498",
+                "sensitive_content": null,
+                "source": null
+              }
+            }
+          ]
+        },
+        {
+          "mode": "managed",
+          "type": "local_file",
+          "name": "speed_force",
+          "provider": "provider[\"registry.terraform.io/hashicorp/local\"]",
+          "instances": [
+            {
+              "schema_version": 0,
+              "attributes": {
+                "content": "speed-force",
+                "content_base64": null,
+                "content_base64sha256": "+hI5F86aVJG7nQ6K0VEOJHTIhlj5aRLnpODNbyZExtI=",
+                "content_base64sha512": "COfaah4Goo2T1qerQ8gYg5uR6onGpW1IjlpCtZuOW3UT+MH0rzPSj/LSKTJHHCfYVL0w3Q0B78u8RsRpueUNqg==",
+                "content_md5": "b5db1e5be7170beefea11ae7271a06a8",
+                "content_sha1": "ebeb8b595c8eb4a6e81cacf244146e742fab2981",
+                "content_sha256": "fa123917ce9a5491bb9d0e8ad1510e2474c88658f96912e7a4e0cd6f2644c6d2",
+                "content_sha512": "08e7da6a1e06a28d93d6a7ab43c818839b91ea89c6a56d488e5a42b59b8e5b7513f8c1f4af33d28ff2d22932471c27d854bd30dd0d01efcbbc46c469b9e50daa",
+                "directory_permission": "0777",
+                "file_permission": "0777",
+                "filename": "/root/speed-force",
+                "id": "ebeb8b595c8eb4a6e81cacf244146e742fab2981",
+                "sensitive_content": null,
+                "source": null
+              }
+            }
+          ]
+        },
+        {
+          "mode": "managed",
+          "type": "local_file",
+          "name": "zoom",
+          "provider": "provider[\"registry.terraform.io/hashicorp/local\"]",
+          "instances": [
+            {
+              "schema_version": 0,
+              "attributes": {
+                "content": "zoom",
+                "content_base64": null,
+                "content_base64sha256": "0hu1N3JdYD7i2635w9Hikaa3rtIV02o05YoaOw2qUIQ=",
+                "content_base64sha512": "3Y2YQB1BY5V4oYMn3EG3BuLyLFtEZINT1DQ+37JtqKgecw0RXR4hvh4dfrMJNcD0jYgwfh1k64noe1NNjLZx8w==",
+                "content_md5": "15913c103a5238e5a80ac2f498ee090d",
+                "content_sha1": "92298812107bb17eff1b85e15547ae13b6fee3a1",
+                "content_sha256": "d21bb537725d603ee2dbadf9c3d1e291a6b7aed215d36a34e58a1a3b0daa5084",
+                "content_sha512": "dd8d98401d41639578a18327dc41b706e2f22c5b44648353d4343edfb26da8a81e730d115d1e21be1e1d7eb30935c0f48d88307e1d64eb89e87b534d8cb671f3",
+                "directory_permission": "0777",
+                "file_permission": "0777",
+                "filename": "/root/zoom",
+                "id": "92298812107bb17eff1b85e15547ae13b6fee3a1",
+                "sensitive_content": null,
+                "source": null
+              }
+            }
+          ]
+        }
+      ]
+    }
+    ```
+
+    
+
+    
+
+
+
+
+
+
+
