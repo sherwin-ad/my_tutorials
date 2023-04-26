@@ -2372,13 +2372,1722 @@
     }
     ```
 
+12. We will soon be working with `AWS` services and deploying resources on `AWS` with `Terraform`!
+
+    OK
+
+# Working with Terraform
+
+
+
+## LAB: TERRAFORM COMMANDS
+
+1. Which command can be used to create a visual representation of our `terraform` resources?
+
+   - terraform map
+   - **terraform graph**
+   - terraform console
+   - terraform view
+   - terraform flow
+
+2. We have created a configuration directory `/root/terraform-projects/project-shazam`. The configuration file inside will be used to create an `RSA` type private key and then a `certificate signing request` or a `csr` using this key.
+
+   However, there is an error with the configuration.
+
+   Use the `terraform validate` command, troubleshoot, and fix the issue.
+
+   You don't have to create the resources yet! You only need to fix the errors reported by `terraform validate`.
+
+   Check
+
+   - validation working ?
+
+   ```
+   $ terraform validate
+   
+   Error: Unsupported argument
+   
+     on main.tf line 8, in resource "tls_private_key" "private_key":
+      8:   dsa_bits  = 2048
+   
+   An argument named "dsa_bits" is not expected here. Did you mean "rsa_bits"?
+   ```
+
+   The argument called `dsa_bits` in the resource block for creating the private key is incorrect. For `RSA` algorithm, the correct argument to use is `rsa_bits`.
+
+   main.tf
+
+   ```
+   resource "local_file" "key_data" {
+           filename       = "/tmp/.pki/private_key.pem"
+           content = tls_private_key.private_key.private_key_pem
+           file_permission =  "0400"
+   }
+   resource "tls_private_key" "private_key" {
+     algorithm   = "RSA"
+     rsa_bits  = 2048
+     ecdsa_curve = "P384"
+   }
+   resource "tls_cert_request" "csr" {
+     private_key_pem = file("/tmp/.pki/private_key.pem")
+     depends_on = [ local_file.key_data ]
+   
+     subject {
+       common_name  = "flexit.com"
+       organization = "FlexIT Consulting Services"
+     }
+   }
+   ```
+
+   ```
+   $ terraform validate
+   Success! The configuration is valid.
+   ```
+
+3. Great! If you completed the previous question correctly, `terraform validate` should have passed!
+   Now run `terraform plan` and generate a configuration plan.
+
+   Did it work?
+
+   - NO
+   - **YES**
+
+   ```
+   $ terraform plan
+   Refreshing Terraform state in-memory prior to plan...
+   The refreshed state will be used to calculate this plan, but will not be
+   persisted to local or remote state storage.
+   
+   
+   ------------------------------------------------------------------------
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+     + create
+   
+   Terraform will perform the following actions:
+   
+     # local_file.key_data will be created
+     + resource "local_file" "key_data" {
+         + content              = (known after apply)
+         + content_base64sha256 = (known after apply)
+         + content_base64sha512 = (known after apply)
+         + content_md5          = (known after apply)
+         + content_sha1         = (known after apply)
+         + content_sha256       = (known after apply)
+         + content_sha512       = (known after apply)
+         + directory_permission = "0777"
+         + file_permission      = "0400"
+         + filename             = "/tmp/.pki/private_key.pem"
+         + id                   = (known after apply)
+       }
+   
+     # tls_cert_request.csr will be created
+     + resource "tls_cert_request" "csr" {
+         + cert_request_pem = (known after apply)
+         + id               = (known after apply)
+         + key_algorithm    = (known after apply)
+   
+         + subject {
+             + common_name  = "flexit.com"
+             + organization = "FlexIT Consulting Services"
+           }
+       }
+   
+     # tls_private_key.private_key will be created
+     + resource "tls_private_key" "private_key" {
+         + algorithm                     = "RSA"
+         + ecdsa_curve                   = "P384"
+         + id                            = (known after apply)
+         + private_key_openssh           = (sensitive value)
+         + private_key_pem               = (sensitive value)
+         + private_key_pem_pkcs8         = (sensitive value)
+         + public_key_fingerprint_md5    = (known after apply)
+         + public_key_fingerprint_sha256 = (known after apply)
+         + public_key_openssh            = (known after apply)
+         + public_key_pem                = (known after apply)
+         + rsa_bits                      = 2048
+       }
+   
+   Plan: 3 to add, 0 to change, 0 to destroy.
+   
+   ------------------------------------------------------------------------
+   
+   Note: You didn't specify an "-out" parameter to save this plan, so Terraform
+   can't guarantee that exactly these actions will be performed if
+   "terraform apply" is subsequently run.
+   ```
+
+   
+
+4. Now, try creating the resources with a `terraform apply`.
+
+   Did that work?
+
+   - YES
+   - NO
+
+   ```
+   $ terraform apply
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+     + create
+   
+   Terraform will perform the following actions:
+   
+     # local_file.key_data will be created
+     + resource "local_file" "key_data" {
+         + content              = (known after apply)
+         + content_base64sha256 = (known after apply)
+         + content_base64sha512 = (known after apply)
+         + content_md5          = (known after apply)
+         + content_sha1         = (known after apply)
+         + content_sha256       = (known after apply)
+         + content_sha512       = (known after apply)
+         + directory_permission = "0777"
+         + file_permission      = "0400"
+         + filename             = "/tmp/.pki/private_key.pem"
+         + id                   = (known after apply)
+       }
+   
+     # tls_cert_request.csr will be created
+     + resource "tls_cert_request" "csr" {
+         + cert_request_pem = (known after apply)
+         + id               = (known after apply)
+         + key_algorithm    = (known after apply)
+   
+         + subject {
+             + common_name  = "flexit.com"
+             + organization = "FlexIT Consulting Services"
+           }
+       }
+   
+     # tls_private_key.private_key will be created
+     + resource "tls_private_key" "private_key" {
+         + algorithm                     = "RSA"
+         + ecdsa_curve                   = "P384"
+         + id                            = (known after apply)
+         + private_key_openssh           = (sensitive value)
+         + private_key_pem               = (sensitive value)
+         + private_key_pem_pkcs8         = (sensitive value)
+         + public_key_fingerprint_md5    = (known after apply)
+         + public_key_fingerprint_sha256 = (known after apply)
+         + public_key_openssh            = (known after apply)
+         + public_key_pem                = (known after apply)
+         + rsa_bits                      = 2048
+       }
+   
+   Plan: 3 to add, 0 to change, 0 to destroy.
+   
+   Do you want to perform these actions?
+     Terraform will perform the actions described above.
+     Only 'yes' will be accepted to approve.
+   
+     Enter a value: yes
+   
+   tls_private_key.private_key: Creating...
+   tls_private_key.private_key: Creation complete after 0s [id=4169e6e325ef7afafc28eb09d126fba238a1630e]
+   local_file.key_data: Creating...
+   local_file.key_data: Creation complete after 0s [id=18a09b9e733779d39d6628af9e5f28ed358af16c]
+   
+   Error: Provider produced inconsistent final plan
+   
+   When expanding the plan for tls_cert_request.csr to include new values learned
+   so far during apply, provider "registry.terraform.io/hashicorp/tls" produced
+   an invalid new value for .private_key_pem: inconsistent values for sensitive
+   attribute.
+   
+   This is a bug in the provider, which should be reported in the provider's own
+   issue tracker.
+   ```
+
+5. The `terraform apply` failed in spite of our validation working! This is because the validate command only carries out a general verification of the configuration. It validated the resource block and the argument syntax but not the `values` the arguments expect for a specific resource!
+
+   OK
+
+6. The error in the configuration is inside the resource block for the `tls_private_key` type resource.
+   It contains the configuration that we needed for generating `rsa` type key..
+
+   Inspect the resource block and fix the issue.
+
+   Once done, run `terraform plan and then apply` to created the resources.
+
+   Check
+
+   - Issues fixed and resources created?
+
+   The Algorithm used by the `tls_private_key` is `RSA` but the configuration also mentions `ecdsa_curve` argument.
+
+   main.tf
+
+   ```
+   resource "local_file" "key_data" {
+           filename       = "/tmp/.pki/private_key.pem"
+           content = tls_private_key.private_key.private_key_pem
+           file_permission =  "0400"
+   }
+   resource "tls_private_key" "private_key" {
+     algorithm   = "RSA"
+     rsa_bits  = 2048
+   }
+   resource "tls_cert_request" "csr" {
+     private_key_pem = file("/tmp/.pki/private_key.pem")
+     depends_on = [ local_file.key_data ]
+   
+     subject {
+       common_name  = "flexit.com"
+       organization = "FlexIT Consulting Services"
+     }
+   }
+   ```
+
+7. Now format the `main.tf` file into a canonical format.
+
+   Check
+
+   - Syntax Check
+
+   ```
+   $ terraform fmt
+   main.tf
+   ```
+
+   main.tf
+
+   ```
+   resource "local_file" "key_data" {
+     filename        = "/tmp/.pki/private_key.pem"
+     content         = tls_private_key.private_key.private_key_pem
+     file_permission = "0400"
+   }
+   resource "tls_private_key" "private_key" {
+     algorithm = "RSA"
+     rsa_bits  = 2048
+   }
+   resource "tls_cert_request" "csr" {
+     private_key_pem = file("/tmp/.pki/private_key.pem")
+     depends_on      = [local_file.key_data]
+   
+     subject {
+       common_name  = "flexit.com"
+       organization = "FlexIT Consulting Services"
+     }
+   }
+   ```
+
+8. Now, navigate to the directory `/root/terraform-projects/project-a`. We have already created the resources specified in this configuration.
+
+   Fetch details from the state file and identify the value of the `filename` argument.
+
+   Note: Do not rely on the current value in the configuration file.
+
+   - filename = "/var/codes"
+   - filename = "/opt/log"
+   - filename = "/tmp/apps"
+   - **filename = "/root/codes"**
+
+   Use the `terraform show` command to inspect the `terraform.tfstate` file.
+
+   data.tf
+
+   ```
+   resource "local_file" "data" {
+   	  filename = "/opt/codes"
+   	  content = "You've to write this code."
+   ```
+
+   ```
+   $ terraform show
+   # local_file.data:
+   resource "local_file" "data" {
+       content              = "You've to write this code."
+       content_base64sha256 = "FZy1Bn26UEIGgBj6E/3aMFPPo0z8wmDp4ljqh+WYuWQ="
+       content_base64sha512 = "4pC7k3YFVhg+Cu2fo0I5b1/h1JH9HpbFLHG2MFuCEHh5UYsZyWciDm0KkkwBqvlrYxzbYuCq2fuSvH4hV31i5Q=="
+       content_md5          = "55403026bfc0ce8205d712ed68891251"
+       content_sha1         = "fc307f99d6490d988433ce246d60eb4ca005a87c"
+       content_sha256       = "159cb5067dba5042068018fa13fdda3053cfa34cfcc260e9e258ea87e598b964"
+       content_sha512       = "e290bb93760556183e0aed9fa342396f5fe1d491fd1e96c52c71b6305b82107879518b19c967220e6d0a924c01aaf96b631cdb62e0aad9fb92bc7e21577d62e5"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/codes"
+       id                   = "fc307f99d6490d988433ce246d60eb4ca005a87c"
+   }
+   ```
+
+9. In these `terraform` labs, we have used multiple providers so far. But, what are `providers`?
+
+   - **Plugins**
+   - Registry
+   - None
+   - Protocol
+
+10. Which one is a valid `sub-command` of the `terraform providers` command?
+
+   - list
+   - **mirror**
+   - update
+   - status
+
+   ```
+   $ terraform providers --help
+   
+   Usage: terraform providers [dir]
+   
+     Prints out a tree of modules in the referenced configuration annotated with
+     their provider requirements.
+   
+     This provides an overview of all of the provider requirements across all
+     referenced modules, as an aid to understanding why particular provider
+     plugins are needed and why particular versions are selected.
+   
+   
+   Subcommands:
+       mirror    Mirrors the provider plugins needed for the current configuration
+       schema    Prints the schemas of the providers used in the configuration
+   ```
+
+11. A new configuration directory `/root/terraform-projects/provider` has been created. We have already run the `terraform init` command.
+    Now check the provider plugins that have been downloaded from the command line utility (instead of inspecting the `.terraform` directory). After that choose the correct option.
+
+    - kubernetes && random
+    - azurerm && dns
+    - google && helm
+    - **local && aws**
+
+    project.tf
+
+    ```
+    resource "local_file" "cloud" {
+    	   filename = "/tmp/plugins"
+    	   content = "multiple cloud providers."
     
-
+    }
     
+    resource "aws_ebs_volume" "myvolume" {
+      availability_zone = "us-east-2"
+      size              = 20
+    }
+    ```
+
+    ```
+    $ terraform providers
+    
+    Providers required by configuration:
+    .
+    ├── provider[registry.terraform.io/hashicorp/local]
+    └── provider[registry.terraform.io/hashicorp/aws]
+    ```
+
+
+
+## LAB: LIFECYCLE RULES
+
+1. We have a directory created called `/root/terraform-projects/project-mysterio`. The `main.tf` file already has a couple of resource blocks.
+
+   Which resource types do they use?
+
+   - **local_file && random_string**
+   - random_pet && local_file
+   - local_file && tls_private_Key
+   - random_pet && rls_private_key
+
+   main.tf
+
+   ```
+   resource "local_file" "file" {
+       filename = var.filename
+       file_permission =  var.permission
+       content = random_string.string.id
+       
+   }
+   
+   resource "random_string" "string" {
+       length = var.length
+       keepers = {
+           length = var.length
+       }  
+       
+   }
+   ```
+
+   variables.tf
+
+   ```
+   variable "length" {
+       default = 10
+     
+   }
+   variable "filename" {
+       default = "/root/random_text"
+   }
+   variable "content" {
+       default = "This file contains a single line of data"
+   }
+   variable "permission" {
+       default = 0700
+   }
+   ```
+
+2. Now, create these two resources that have been defined in this configuration file.
+
+   Check
+
+   - resources created?
+
+   ```
+   $ terraform init
+   
+   $ terraform plan
+   
+   $ terraform apply
+   ```
+
+3. Which resource is created first in this case?
+
+   - file
+   - **string**
+
+4. We have modified the resource configuration again. Run a `terraform plan` now. What would happen?
+
+   - resource called string will be replaced
+   - neither will be replaced
+   - resource called file will be replaced
+   - **both resources will be replaced**'
+
+   variables.tf
+
+   ```
+   variable "length" {
+       default = 12
+     
+   }
+   variable "filename" {
+       default = "/root/random_text"
+   }
+   variable "content" {
+       default = "This file contains a single line of data"
+   }
+   variable "permission" {
+       default = 0770
+   }
+   ```
+
+   ```
+   $ terraform plan
+   Refreshing Terraform state in-memory prior to plan...
+   The refreshed state will be used to calculate this plan, but will not be
+   persisted to local or remote state storage.
+   
+   random_string.string: Refreshing state... [id=(eW8A:oVW3]
+   local_file.file: Refreshing state... [id=cf1dba2e2d842e6dda5650074cab3923a611f61b]
+   
+   ------------------------------------------------------------------------
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+   -/+ destroy and then create replacement
+   
+   Terraform will perform the following actions:
+   
+     # local_file.file must be replaced
+   -/+ resource "local_file" "file" {
+         ~ content              = "(eW8A:oVW3" -> (known after apply) # forces replacement
+         ~ content_base64sha256 = "IRdN77C5QwwYaATjlHnIlsICM2BpcxGdmwLHcAk4bNo=" -> (known after apply)
+         ~ content_base64sha512 = "fPBzpAqmBNPSqQ2HLEMHu1FS8QLmCxDwbqXnhn1DhXG0voNi5kDpBngJealJSfvtreZGgfEOyYk5tTcbDQmMRw==" -> (known after apply)
+         ~ content_md5          = "f3328cf0d864e16e73f661abce9de6af" -> (known after apply)
+         ~ content_sha1         = "cf1dba2e2d842e6dda5650074cab3923a611f61b" -> (known after apply)
+         ~ content_sha256       = "21174defb0b9430c186804e39479c896c20233606973119d9b02c77009386cda" -> (known after apply)
+         ~ content_sha512       = "7cf073a40aa604d3d2a90d872c4307bb5152f102e60b10f06ea5e7867d438571b4be8362e640e906780979a94949fbedade64681f10ec98939b5371b0d098c47" -> (known after apply)
+           directory_permission = "0777"
+         ~ file_permission      = "700" -> "770" # forces replacement
+           filename             = "/root/random_text"
+         ~ id                   = "cf1dba2e2d842e6dda5650074cab3923a611f61b" -> (known after apply)
+       }
+   
+     # random_string.string must be replaced
+   -/+ resource "random_string" "string" {
+         ~ id          = "(eW8A:oVW3" -> (known after apply)
+         ~ keepers     = { # forces replacement
+             ~ "length" = "10" -> "12"
+           }
+         ~ length      = 10 -> 12 # forces replacement
+           lower       = true
+           min_lower   = 0
+           min_numeric = 0
+           min_special = 0
+           min_upper   = 0
+           number      = true
+           numeric     = true
+         ~ result      = "(eW8A:oVW3" -> (known after apply)
+           special     = true
+           upper       = true
+       }
+   
+   Plan: 2 to add, 0 to change, 2 to destroy.
+   
+   ------------------------------------------------------------------------
+   
+   Note: You didn't specify an "-out" parameter to save this plan, so Terraform
+   can't guarantee that exactly these actions will be performed if
+   "terraform apply" is subsequently run.
+   ```
+
+5. Why is the `string` resource being re-created?
+
+   - **The value for the argument called keepers has changed**
+   - the resource name was changed
+   - the variable name has changed
+
+6. All the resources for the `random` provider can be recreated by using a `map` type argument called `keepers`. A change in the value will force the resource to be recreated.
+
+   This argument accepts arbitrary key/value pairs and in our example, it is set to the key called length whose value was updated from `10` to `12` in the `variables.tf` file.
+
+   Running a `terraform apply` now will destroy the current `random_string` resource and then create a new one with the length that is `12` characters long.
+
+   OK
+
+7. Let's change the order in which the resource called `string` is recreated. Update the configuration so that when applied, a new `random string` is created first before the old one is destroyed.
+
+   When ready, apply the changes with `terraform apply`
+
+   Check
+
+   - Syntax Check
+
+   Update the `main.tf`as shown:
+
+   ```
+   resource "local_file" "file" {
+       filename = var.filename
+       file_permission =  var.permission
+       content = random_string.string.id
+   
+   }
+   
+   resource "random_string" "string" {
+       length = var.length
+       keepers = {
+           length = var.length
+       }  
+       lifecycle {
+           create_before_destroy =  true
+       }
+   
+   }
+   ```
+
+   ```
+   $ terraform apply
+   random_string.string: Refreshing state... [id=(eW8A:oVW3]
+   local_file.file: Refreshing state... [id=cf1dba2e2d842e6dda5650074cab3923a611f61b]
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+   -/+ destroy and then create replacement
+   +/- create replacement and then destroy
+   
+   Terraform will perform the following actions:
+   
+     # local_file.file must be replaced
+   -/+ resource "local_file" "file" {
+         ~ content              = "(eW8A:oVW3" -> (known after apply) # forces replacement
+         ~ content_base64sha256 = "IRdN77C5QwwYaATjlHnIlsICM2BpcxGdmwLHcAk4bNo=" -> (known after apply)
+         ~ content_base64sha512 = "fPBzpAqmBNPSqQ2HLEMHu1FS8QLmCxDwbqXnhn1DhXG0voNi5kDpBngJealJSfvtreZGgfEOyYk5tTcbDQmMRw==" -> (known after apply)
+         ~ content_md5          = "f3328cf0d864e16e73f661abce9de6af" -> (known after apply)
+         ~ content_sha1         = "cf1dba2e2d842e6dda5650074cab3923a611f61b" -> (known after apply)
+         ~ content_sha256       = "21174defb0b9430c186804e39479c896c20233606973119d9b02c77009386cda" -> (known after apply)
+         ~ content_sha512       = "7cf073a40aa604d3d2a90d872c4307bb5152f102e60b10f06ea5e7867d438571b4be8362e640e906780979a94949fbedade64681f10ec98939b5371b0d098c47" -> (known after apply)
+           directory_permission = "0777"
+         ~ file_permission      = "700" -> "770" # forces replacement
+           filename             = "/root/random_text"
+         ~ id                   = "cf1dba2e2d842e6dda5650074cab3923a611f61b" -> (known after apply)
+       }
+   
+     # random_string.string must be replaced
+   +/- resource "random_string" "string" {
+         ~ id          = "(eW8A:oVW3" -> (known after apply)
+         ~ keepers     = { # forces replacement
+             ~ "length" = "10" -> "12"
+           }
+         ~ length      = 10 -> 12 # forces replacement
+           lower       = true
+           min_lower   = 0
+           min_numeric = 0
+           min_special = 0
+           min_upper   = 0
+           number      = true
+           numeric     = true
+         ~ result      = "(eW8A:oVW3" -> (known after apply)
+           special     = true
+           upper       = true
+       }
+   
+   Plan: 2 to add, 0 to change, 2 to destroy.
+   
+   Do you want to perform these actions?
+     Terraform will perform the actions described above.
+     Only 'yes' will be accepted to approve.
+   
+     Enter a value: yes
+   
+   local_file.file: Destroying... [id=cf1dba2e2d842e6dda5650074cab3923a611f61b]
+   local_file.file: Destruction complete after 0s
+   random_string.string: Creating...
+   random_string.string: Creation complete after 0s [id=2PaIXCzYC}xf]
+   local_file.file: Creating...
+   local_file.file: Creation complete after 0s [id=a78add2c302a2746ecd5112b978639141d0317d8]
+   random_string.string: Destroying... [id=(eW8A:oVW3]
+   random_string.string: Destruction complete after 0s
+   
+   Apply complete! Resources: 2 added, 0 changed, 2 destroyed.
+   ```
+
+8. The resource block for the `file` resource has been updated! This will force the resource to be recreated during the next `apply`! But, before that, let's also add a `lifecycle` rule of `create_before_destroy` to this resource block.
+   When ready, apply the changes with `terraform apply`
+
+   Important: Once the lifecycle rule has been added, only run the `apply` command *once*. We will learn why soon.
+
+   Check
+
+   - Syntax Check
+
+   The `main.tf` file should be:
+
+   ```
+   resource "local_file" "file" {
+       filename = var.filename
+       file_permission =  var.permission
+       content = "This is a random string - ${random_string.string.id}"
+       lifecycle {
+           create_before_destroy =  true
+       }
+   
+   }
+   
+   resource "random_string" "string" {
+       length = var.length
+       keepers = {
+           length = var.length
+       }
+       lifecycle {
+           create_before_destroy =  true
+       }
+   
+   }
+   ```
+
+   ```
+   $ terraform apply
+   random_string.string: Refreshing state... [id=2PaIXCzYC}xf]
+   local_file.file: Refreshing state... [id=a78add2c302a2746ecd5112b978639141d0317d8]
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+   +/- create replacement and then destroy
+   
+   Terraform will perform the following actions:
+   
+     # local_file.file must be replaced
+   +/- resource "local_file" "file" {
+         ~ content              = "2PaIXCzYC}xf" -> "This is a random string - 2PaIXCzYC}xf" # forces replacement
+         ~ content_base64sha256 = "RL7o2H//ybu1tU7UCS8hCmDk5rG0WjjgTjj0VT+ibXg=" -> (known after apply)
+         ~ content_base64sha512 = "E0V9fGgOjPbUasFPuYHxQQdQPpdpW+uwjxoW9gT3BRPirhpWqvcXGSoMiN5xLNcyD1t/IRFf1xN21748Lc3PGA==" -> (known after apply)
+         ~ content_md5          = "f2c9f9e5fd20cc833b158c53543c18fc" -> (known after apply)
+         ~ content_sha1         = "a78add2c302a2746ecd5112b978639141d0317d8" -> (known after apply)
+         ~ content_sha256       = "44bee8d87fffc9bbb5b54ed4092f210a60e4e6b1b45a38e04e38f4553fa26d78" -> (known after apply)
+         ~ content_sha512       = "13457d7c680e8cf6d46ac14fb981f14107503e97695bebb08f1a16f604f70513e2ae1a56aaf717192a0c88de712cd7320f5b7f21115fd71376d7be3c2dcdcf18" -> (known after apply)
+           directory_permission = "0777"
+           file_permission      = "770"
+           filename             = "/root/random_text"
+         ~ id                   = "a78add2c302a2746ecd5112b978639141d0317d8" -> (known after apply)
+       }
+   
+   Plan: 1 to add, 0 to change, 1 to destroy.
+   
+   Do you want to perform these actions?
+     Terraform will perform the actions described above.
+     Only 'yes' will be accepted to approve.
+   
+     Enter a value: yes
+   
+   local_file.file: Creating...
+   local_file.file: Creation complete after 0s [id=3cf9279227e6af3145997610b6e1e2e5838289ef]
+   local_file.file: Destroying... [id=a78add2c302a2746ecd5112b978639141d0317d8]
+   local_file.file: Destruction complete after 0s
+   
+   Apply complete! Resources: 1 added, 0 changed, 1 destroyed.
+   ```
+
+9. Great! We have now added the `lifecycle` rule and forced the resources to be created first and then destroyed.
+
+   What is the `id` of the `file` resource we just created?
+
+   Run `terraform show` or `terraform state show local_file.file` to find out.
+
+   - **3cf9279227e6af3145997610b6e1e2e5838289ef**
+   - fe678f5d15fe678f5d15fe678f5d15
+   - 5bf50b4c68073fe678f5d151259b549ae
+   - ce5bf50b4c68073fe678f5d151259b549aeb41a9
+
+   ```
+   $ terraform state show local_file.file
+   # local_file.file:
+   resource "local_file" "file" {
+       content              = "This is a random string - 2PaIXCzYC}xf"
+       content_base64sha256 = "xZUgmLEtGu6xjhsS/IElYN7/YguSr9eXw6OIZgvogfU="
+       content_base64sha512 = "T1457CEBc9Ew3T4HDAhAUuA1DSxi5gGHZ+m41meI6kLKGmJqIsOKbiH/pcOSMJiBrfcOICQ1HZc12m2unDaNEw=="
+       content_md5          = "a9a95318289acb0fd785d98abc2837dd"
+       content_sha1         = "3cf9279227e6af3145997610b6e1e2e5838289ef"
+       content_sha256       = "c5952098b12d1aeeb18e1b12fc812560deff620b92afd797c3a388660be881f5"
+       content_sha512       = "4f5e39ec210173d130dd3e070c084052e0350d2c62e6018767e9b8d66788ea42ca1a626a22c38a6e21ffa5c392309881adf70e2024351d9735da6dae9c368d13"
+       directory_permission = "0777"
+       file_permission      = "770"
+       filename             = "/root/random_text"
+       id                   = "3cf9279227e6af3145997610b6e1e2e5838289ef"
+   }
+   ```
+
+10. Read the contents of the file `/root/random_text` manually. (Try opening with Visual Studio Code / cat command or a text editor)
+
+   What is the content of this file?
+
+   - **No such file or directory!**
+   - This is the updated content
+   - This file contains a single line of data
+   - This is the new content
+
+11. Where did the file go?!!?
+
+    If you observe the output of the previous apply (scroll up!), you will see that the lifecycle rule we applied caused the local file to the created first and the *same* file to be destroyed during the `recreate` operation.
+
+    This goes to show that it is not always advisable to use this rule!
+
+    In this example, the `filename` argument for the `local_file` resource has to be unique which means that we cannot have two instances of the same file created at the same time!
+    The `random_string` resource on the other hand is a logical resource that is only recorded in the state and does not have such a restriction.
+
+    If you run `terraform apply` again, the `file` resource will be `created` as it does not exist currently.
+
+    OK
+
+12. We have now wiped out the resources that were created in this configuration directory and updated the `main.tf` file.
+    Now, it only contains a single `random_pet` resource called `super_pet`.
+
+    Under which circumstances will a new `pet id` be created?
+
+    - **Both**
+    - change in the length
+    - Neither
+    - change in the prefix
+
+    ```
+    $ terraform plan
+    Refreshing Terraform state in-memory prior to plan...
+    The refreshed state will be used to calculate this plan, but will not be
+    persisted to local or remote state storage.
+    
+    
+    ------------------------------------------------------------------------
+    
+    An execution plan has been generated and is shown below.
+    Resource actions are indicated with the following symbols:
+      + create
+    
+    Terraform will perform the following actions:
+    
+      # random_pet.super_pet will be created
+      + resource "random_pet" "super_pet" {
+          + id        = (known after apply)
+          + length    = 10
+          + prefix    = "Mr"
+          + separator = "-"
+        }
+    
+    Plan: 1 to add, 0 to change, 0 to destroy.
+    
+    ------------------------------------------------------------------------
+    
+    Note: You didn't specify an "-out" parameter to save this plan, so Terraform
+    can't guarantee that exactly these actions will be performed if
+    "terraform apply" is subsequently run.
+    ```
+
+13. Now, update the configuration so that the resource `super_pet` is not destroyed under any circumstances with a `terraform apply` command.
+
+    Check
+
+    - Syntax Check
+
+    Add the lifecycle rule in the `main.tf` as shown:
+
+    ```
+    resource "random_pet" "super_pet" {
+        length = var.length
+        prefix = var.prefix
+        lifecycle {
+          prevent_destroy = true
+        }
+    }
+    ```
+
+    ```
+    $ terraform apply
+    
+    An execution plan has been generated and is shown below.
+    Resource actions are indicated with the following symbols:
+      + create
+    
+    Terraform will perform the following actions:
+    
+      # random_pet.super_pet will be created
+      + resource "random_pet" "super_pet" {
+          + id        = (known after apply)
+          + length    = 10
+          + prefix    = "Mr"
+          + separator = "-"
+        }
+    
+    Plan: 1 to add, 0 to change, 0 to destroy.
+    
+    Do you want to perform these actions?
+      Terraform will perform the actions described above.
+      Only 'yes' will be accepted to approve.
+    
+      Enter a value: yes
+    
+    random_pet.super_pet: Creating...
+    random_pet.super_pet: Creation complete after 0s [id=Mr-heavily-mildly-arguably-possibly-seemingly-early-rapidly-similarly-central-jaguar]
+    
+    Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+    ```
+
+
+
+##  LAB: DATASOURCES
+
+1. A `data source` once created, can be used to create, update, and destroy infrastructure?
+
+   True or False?
+
+   - TRUE
+   - **FALSE**
+
+2. A `data source` can be created using the `data` block.
+
+   True or False?
+
+   - FALSE
+   - **TRUE**
+
+3. A new configuration directory has been created at `/root/terraform-projects/project-lexcorp`. A `data source` block is defined in the `main.tf` file to read the contents of an existing file.
+
+   There is also an output variable that uses reference expression to print the file content using this `data source`. However, there is something wrong!
+   Troubleshoot and fix the issue.
+
+   When ready, run `terraform init, plan and apply` to create the datasource. The configuration should print the output variable correctly.
+
+   Check
+
+   - datasource and output variable created correctly?
+
+   main.tf
+
+   ```
+   output "os-version" {
+     value = data.local_file.content
+   }
+   datasource "local_file" "os" {
+     filename = "/etc/os-release"
+   }
+   ```
+
+   Solution for `main.tf` :-
+
+   ```
+   output "os-version" {
+     value = data.local_file.os.content
+   }
+   data "local_file" "os" {
+     filename = "/etc/os-release"
+   }
+   ```
+
+   ```
+   $ terraform apply
+   data.local_file.os: Refreshing state...
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+   
+   Terraform will perform the following actions:
+   
+   Plan: 0 to add, 0 to change, 0 to destroy.
+   
+   Do you want to perform these actions?
+     Terraform will perform the actions described above.
+     Only 'yes' will be accepted to approve.
+   
+     Enter a value: yes
+   
+   
+   Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+   
+   Outputs:
+   
+   os-version = NAME="Ubuntu"
+   VERSION="18.04.5 LTS (Bionic Beaver)"
+   ID=ubuntu
+   ID_LIKE=debian
+   PRETTY_NAME="Ubuntu 18.04.5 LTS"
+   VERSION_ID="18.04"
+   HOME_URL="https://www.ubuntu.com/"
+   SUPPORT_URL="https://help.ubuntu.com/"
+   BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+   PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+   VERSION_CODENAME=bionic
+   UBUNTU_CODENAME=bionic
+   ```
+
+4. Now let's practice how to work with `data sources` from other providers.
+
+   The next few questions will be based on the `aws` provider.
+   Although we have only predominantly worked with `local` and the `random` provider, this exercise will help you learn how to work with different `data sources` using the documentation.
+
+   Don't worry if the configuration blocks and the arguments are unfamiliar. We will cover them in detail in the upcoming section.
+
+   OK
+
+5. We have now created a new configuration file called `ebs.tf` within the same configuration directory we have been working on.
+
+   What is the resource type that we are working with here?
+
+   - gp2_volume
+   - **aws_ebs_volume**
+   - data
+   - gp2
+
+   ebs.tf
+
+   ```
+   data "aws_ebs_volume" "gp2_volume" {
+     most_recent = true
+   
+     filter {
+       name   = "volume-type"
+       values = ["gp2"]
+     }
+   }
+   ```
+
+6. Once this `data source` is created, how do we fetch the `Volume Id` for the resource that is created in `AWS`?
+
+   You may have to look up the documentation for this one. Documentation tab is available at the top right.
+
+   - **volume_id**
+   - volume_ID
+   - volume_name
+   - volume
+
+7. Another file called `s3.tf` has now been created. It too has a `data source` that will be used to read data of an existing `s3` bucket.
+
+   However, there is a mistake in the argument used. What is wrong here?
+
+   You may have to look up the documentation for this one. Documentation tab is available at the top right.
+
+   - resource_type used is incorrect
+   - resource name is incorrect
+   - datasource cannot be created for aws_s3_bucket
+   - **bucket_name is not a valid argument**
+
+   Replace argument "bucket_name" with "bucket"
+
+   s3.tf
+
+   ```
+   data "aws_s3_bucket" "selected" {
+     bucket_name = "bucket.test.com"
+   }
+   ```
+
+8. We will get more practice with data sources and AWS resources in the upcoming lectures.
+
+   OK
+
+
+
+## LAB: COUNT AND FOR EACH
+
+1. A new configuration directory has been created at `/root/terraform-projects/project-shade`. Inspect it. How many files will be created by this configuration?
+
+   - 2
+   - 0
+   - **1**
+   - 3
+
+   main.tf
+
+   ````
+   resource "local_file" "name" {
+       filename = "/root/user-data"
+       sensitive_content = "password: S3cr3tP@ssw0rd"
+     
+   }
+   ````
+
+2. Now add a `count` argument to create `3` instances of this resource.
+
+   When ready, run `terraform init, plan and apply`
+
+   Check
+
+   - 3 instances of the resource created?
+
+   The `main.tf` file should be updated as provided below:
+
+   ```
+   resource "local_file" "name" {
+       filename = "/root/user-data"
+       sensitive_content = "password: S3cr3tP@ssw0rd"
+       count = 3 
+   }
+   ```
+
+3. The resource `local_file.name` is now created as a:
+
+   - set
+   - map
+   - array
+   - **list**
+
+   Since we used count, the resources are now created as `list`.
+
+4. what is the `id` for the resource element at index 1?
+
+   - b32344cb73c40d126d99b32344cb73c40d126d99
+   - 2309878befca64ce2309878befca64ce
+   - 9ce62309878befca64ce9ce62309878befca64ce
+   - **6b32344cb73c40d126d99ce62309878befca64ce**
+
+   ```
+   $ terraform state show local_file.name[1]
+   # local_file.name[1]:
+   resource "local_file" "name" {
+       content_base64sha256 = "UKHUK6B1218hZ3Ol3r+tIk7sp63j47ZUBa/GKbFWJec="
+       content_base64sha512 = "5Nozea4bZ8PG2K4iZjQYz9wy6ww6stUoezX4xlJqvml7udlB+d0qtLkMfljB/YLPnL493+paeO28lVUlSp//ng=="
+       content_md5          = "fda7d68399be93ab193e02bcaaf1cde3"
+       content_sha1         = "6b32344cb73c40d126d99ce62309878befca64ce"
+       content_sha256       = "50a1d42ba075db5f216773a5debfad224eeca7ade3e3b65405afc629b15625e7"
+       content_sha512       = "e4da3379ae1b67c3c6d8ae22663418cfdc32eb0c3ab2d5287b35f8c6526abe697bb9d941f9dd2ab4b90c7e58c1fd82cf9cbe3ddfea5a78edbc9555254a9fff9e"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/user-data"
+       id                   = "6b32344cb73c40d126d99ce62309878befca64ce"
+       sensitive_content    = (sensitive value)
+   }
+   ```
+
+   OR
+
+   ```
+   $ terraform show
+   # local_file.name[0]:
+   resource "local_file" "name" {
+       content_base64sha256 = "UKHUK6B1218hZ3Ol3r+tIk7sp63j47ZUBa/GKbFWJec="
+       content_base64sha512 = "5Nozea4bZ8PG2K4iZjQYz9wy6ww6stUoezX4xlJqvml7udlB+d0qtLkMfljB/YLPnL493+paeO28lVUlSp//ng=="
+       content_md5          = "fda7d68399be93ab193e02bcaaf1cde3"
+       content_sha1         = "6b32344cb73c40d126d99ce62309878befca64ce"
+       content_sha256       = "50a1d42ba075db5f216773a5debfad224eeca7ade3e3b65405afc629b15625e7"
+       content_sha512       = "e4da3379ae1b67c3c6d8ae22663418cfdc32eb0c3ab2d5287b35f8c6526abe697bb9d941f9dd2ab4b90c7e58c1fd82cf9cbe3ddfea5a78edbc9555254a9fff9e"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/user-data"
+       id                   = "6b32344cb73c40d126d99ce62309878befca64ce"
+       sensitive_content    = (sensitive value)
+   }
+   
+   # local_file.name[1]:
+   resource "local_file" "name" {
+       content_base64sha256 = "UKHUK6B1218hZ3Ol3r+tIk7sp63j47ZUBa/GKbFWJec="
+       content_base64sha512 = "5Nozea4bZ8PG2K4iZjQYz9wy6ww6stUoezX4xlJqvml7udlB+d0qtLkMfljB/YLPnL493+paeO28lVUlSp//ng=="
+       content_md5          = "fda7d68399be93ab193e02bcaaf1cde3"
+       content_sha1         = "6b32344cb73c40d126d99ce62309878befca64ce"
+       content_sha256       = "50a1d42ba075db5f216773a5debfad224eeca7ade3e3b65405afc629b15625e7"
+       content_sha512       = "e4da3379ae1b67c3c6d8ae22663418cfdc32eb0c3ab2d5287b35f8c6526abe697bb9d941f9dd2ab4b90c7e58c1fd82cf9cbe3ddfea5a78edbc9555254a9fff9e"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/user-data"
+       id                   = "6b32344cb73c40d126d99ce62309878befca64ce"
+       sensitive_content    = (sensitive value)
+   }
+   
+   # local_file.name[2]:
+   resource "local_file" "name" {
+       content_base64sha256 = "UKHUK6B1218hZ3Ol3r+tIk7sp63j47ZUBa/GKbFWJec="
+       content_base64sha512 = "5Nozea4bZ8PG2K4iZjQYz9wy6ww6stUoezX4xlJqvml7udlB+d0qtLkMfljB/YLPnL493+paeO28lVUlSp//ng=="
+       content_md5          = "fda7d68399be93ab193e02bcaaf1cde3"
+       content_sha1         = "6b32344cb73c40d126d99ce62309878befca64ce"
+       content_sha256       = "50a1d42ba075db5f216773a5debfad224eeca7ade3e3b65405afc629b15625e7"
+       content_sha512       = "e4da3379ae1b67c3c6d8ae22663418cfdc32eb0c3ab2d5287b35f8c6526abe697bb9d941f9dd2ab4b90c7e58c1fd82cf9cbe3ddfea5a78edbc9555254a9fff9e"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/user-data"
+       id                   = "6b32344cb73c40d126d99ce62309878befca64ce"
+       sensitive_content    = (sensitive value)
+   }
+   ```
+
+5. How many files were actually created when `apply` was run?
+
+   - 3
+   - 0
+   - 2
+   - **1**
+
+6. We have now created a `variables.tf` file in the same configuration directory. Update the `main.tf` file to make use of the list type variable defined for the `filename` argument.
+   Use count to loop through all the elements of this list and do not use hard-coded values.
+
+   Use the variable called `content` for the argument called `sensitive_content`.
+
+   Check
+
+   - Syntax Check
+
+   The `main.tf` should be as provided below:
+
+   ```
+   resource "local_file" "name" {
+       filename = var.users[count.index]
+       sensitive_content = var.content
+       count = length(var.users)
+   
+   }
+   ```
+
+7. We have reverted back to the `old` configuration file and cleaned up the resources created so far.
+   A variable called `users` now has default values added to it.
+
+   What type of variable is it?
+
+   - list
+   - map
+   - **list(string)**
+   - set(string)
+   - set
+
+   main.tf
+
+   ```
+   resource "local_file" "name" {
+       filename = "/root/user-data"
+       sensitive_content = "password: S3cr3tP@ssw0rd"
+     
+   }
+   
+   ```
+
+   variables.tf
+
+   ```
+   variable "users" {
+       type = list(string)
+       default = [ "/root/user10", "/root/user11", "/root/user12", "/root/user10"]
+   }
+   variable "content" {
+       default = "password: S3cr3tP@ssw0rd"
+     
+   }
+   ```
+
+   
+
+8. Can the same elements in this `list` be used as it is for a `set` instead?
+
+   - **No - There are duplicate elements!**
+   - Yes !
+
+9. Let's do the same exercise as before but this time we will make use of the `for_each` meta argument to create the files in this configuration.
+
+
+   Just like before don't use any hard-coded values.
+
+   Use `for_each` to loop through the list type variable called `users`.
+
+   Use the variable called `content` as the value of the argument `sensitive_content`.
+
+   When ready, run `terraform init, plan and apply`.
+
+   Check
+
+   - Syntax Check
+
+   The `main.tf` should be as provided below:
+
+   ```
+   resource "local_file" "name" {
+       filename = each.value
+       for_each = toset(var.users)
+       sensitive_content = var.content
+   
+   }
+   ```
+
+   variables.tf
+
+   ```
+   variable "users" {
+       type = list(string)
+       default = [ "/root/user10", "/root/user11", "/root/user12", "/root/user10"]
+   }
+   variable "content" {
+       default = "password: S3cr3tP@ssw0rd"
+     
+   }
+   ```
+
+10. The resource called `name` is now created as:
+
+    - list
+    - **map**
+    - list(string)
+    - set(string)
+    - set
+
+11. The resource address with the filename - `/root/user11` is now represented as:
+
+    - local_file.name[1]
+    - **local_file.name["/root/user11"]**
+    - local_file.name("/root/user11")
+    - local_file.name[/root/user11]
+    - local_file.name[0]
+
+    ```
+     $ terraform state list
+    local_file.name["/root/user10"]
+    local_file.name["/root/user11"]
+    local_file.name["/root/user12"]
+    ```
+
+
+
+## LAB: VERSION CONSTRAINTS
+
+1. Navigate to the directory `/root/terraform-projects/omega` where we have added a configuration file. Inspect the file and choose the correct `version` of the provider from the below options:
+
+   - 1.1.0
+   - **1.2.2**
+   - 1.4.0
+   - 1.2.0
+
+   main.tf
+
+   ```
+   terraform {
+     required_providers {
+       local = {
+         source  = "hashicorp/local"
+         version = "1.2.2"
+       }
+     }
+   }
+   
+   resource "local_file" "innovation" {
+     filename = var.path
+     content  = var.message
+   }
+   ```
+
+   
+
+2. Now, change to the directory `/root/terraform-projects/rotate`. We have already initialized the configuration directory using the `terraform init` command.
+   Inspect the `rotation.tf` file and find out the correct `version` of the `provider` plugin that is downloaded.
+   Choose the correct `version` from the below options:
+
+   You don't have to create the resources!!
+
+   - **3.47.0**
+   - 3.44.0
+   - 3.45.0
+   - 3.46.0
+
+   ```
+   $ ls -l .terraform/plugins/registry.terraform.io/hashicorp/google/
+   total 4
+   drwxr-xr-x 3 root root 4096 Apr 25 23:31 3.47.0
+   ```
+
+3. Which one of the below is not a valid `version` constraint operator?
+
+   - <=
+   - ->
+   - **==**
+   - \>=
+   - !=
+
+4. We have been working on a project called `nautilus` under the configuration directory `/root/terraform-projects/nautilus`.
+   Due to a version `mismatch`, we don't want to download the `aws` provider version `3.17.0`. Which version constraint can be used to achieve this?
+
+   You can try to add the below options in `nautilus.tf` to verify the correct syntax.
+
+   - version = "=!3.17.0"
+   - **version = "!=3.17.0"**
+   - version = "*=3.17.0"
+   - version = "!3.17.0"
+
+   nautilus.tf
+
+   ```
+   terraform {
+     required_providers {
+       aws = {
+         source  = "hashicorp/aws"
+         version = ""
+       }
+     }
+   }
+   
+   resource "aws_ebs_volume" "soft-volume" {
+     availability_zone = "us-west-2a"
+     size              = 15
+     tags = {
+       Name = "temporary"
+     }
+   }
+   ```
+
+5. Now, navigate to the directory `/root/terraform-projects/lexicorp` where we have added the configuration files. Inspect the file and find out which `version` of providers will be download.
+
+   If unsure, refer to the documentation. Documentation tab is available at the top right panel.
+
+   - helm 1.3.0 && kubernetes 1.13.1
+   - helm 1.3.1 && kubernetes 1.13.2
+   - helm 1.3.2 && kubernetes 1.13.0
+   - **helm 1.2.4 && kubernetes 1.13.2**
+
+   tectn.tf
+
+   ```
+   terraform {
+     required_providers {
+       k8s = {
+         source  = "hashicorp/kubernetes"
+         version = "> 1.12.0, != 1.13.1, < 1.13.3 "
+       }
+   
+       helm = {
+         source  = "hashicorp/helm"
+         version = "~> 1.2.0"
+       }
+     }
+   }
+   ```
+
+   ![image-20230426074109657](images/image-20230426074109657-1682466073603-1-1682466079457-3-1682466083513-5.png)
+
+   ![image-20230426074312003](images/image-20230426074312003.png)
+
+
+
+# Terraform with AWS
+
+
+
+## LAB: AWS CLI AND IAM
+
+1. From this lab onwards, we will be working with `aws` services! In this lab, we will learn how to make use of `aws cli` to explore and deploy `IAM resources` that we learnt in the previous lecture.
+   As explained in the Lab Demonstration video, we are making use of localstack as the mocking framework to work with `AWS`.
+
+   This framework is exposed at ``. Hence, throughout this lab, we will be making use of the command option and parameter like this: `--endpoint http://aws:4566`
+
+   OK
+
+2. First, let's explore the `AWS CLI` configuration.
+   What is the exact `version` of the CLI installed on the `iac-server`?
+
+   - **aws-cli/2.2.20**
+   - aws-cli/1.0.0
+   - aws-cli/3.0.0
+   - aws-cli/2.0.0
+
+   ```
+   $ aws --version
+   aws-cli/2.2.20 Python/3.8.8 Linux/5.4.0-1103-gcp exe/x86_64.ubuntu.18 prompt/off
+   ```
+
+3. Which `command` should be used to interact with `Identity and Access Management` in `AWS` using the `CLI`?
+
+   If unsure, use the CLI help by running: `aws <command> help`
+
+   - access
+   - identiy-and-access
+   - **iam**
+   - identity
+
+4. Which `subcommand` with `iam` can be used to list all the users created in `aws`?
+
+   If unsure, use the CLI help by running: `aws iam <subcommand> help`
+
+   - user-show
+   - user-list
+   - **list-users**
+   - show-users
+
+5. Now, let's learn how to make use of the mocking framework used in the labs.
+
+   Run: `aws iam list-users`
+
+   Does it work?
+
+   - **NO**
+   - YES
+
+   ```
+   $ aws iam list-users
+   
+   An error occurred (InvalidClientTokenId) when calling the ListUsers operation: The security token included in the request is invalid.
+   ```
+
+6. This is because, we have not provided the `--endpoint` option.
+   Now, run the same command but with the `--endpoint http://aws:4566` as the option, like this:
+   `aws --endpoint http://aws:4566 iam list-users`
+
+   OK
+
+7. How many `IAM Users` do you see listed now?
+
+   - **2**
+   - 5
+   - 3
+   - 1
+   - 0
+
+   ```
+   $ aws --endpoint http://aws:4566  iam list-users
+   {
+       "Users": [
+           {
+               "Path": "/",
+               "UserName": "jill",
+               "UserId": "vkfjaw87hqu94bppod7c",
+               "Arn": "arn:aws:iam::000000000000:user/jill",
+               "CreateDate": "2023-04-26T02:33:52.519000+00:00"
+           },
+           {
+               "Path": "/",
+               "UserName": "jack",
+               "UserId": "ed56tzi8wurcbxtsg7sf",
+               "Arn": "arn:aws:iam::000000000000:user/jack",
+               "CreateDate": "2023-04-26T02:33:53.626000+00:00"
+           }
+       ]
+   }
+   ```
+
+8. Now let's add a few more users! To add more users, we need to make use of the `create-user` sub-command.
+   However, we also need to pass in a mandatory option with this command for it to work?
+
+   Which option should we use?
+
+   - --username
+   - --tags
+   - **--user-name**
+   - --user
+
+9. Create a new user called `mary` using the `AWS CLI`.
+
+   Make sure to use the `--endpoint http://aws:4566` option with the command.
+
+   Check
+
+   - User created?
+
+   ```
+   $ aws --endpoint http://aws:4566 iam create-user --user-name mary
+   {
+       "User": {
+           "Path": "/",
+           "UserName": "mary",
+           "UserId": "n6pwol5wnpj39t4fxl9v",
+           "Arn": "arn:aws:iam::000000000000:user/mary",
+           "CreateDate": "2023-04-26T02:48:17.505000+00:00"
+       }
+   }
+   ```
+
+10. Now, inspect the newly created user `mary` and find out its `ARN (Amazon Resource Name)`.
+
+   - "arn:aws:iam::000000000001:user/mary"
+   - **"arn:aws:iam::000000000000:user/mary"**
+   - "arn:aws:iam::000000000022:user/lucy"
+   - "arn:aws:iam::000000000000:user/lucy"
+
+   ```
+   $ aws --endpoint http://aws:4566 iam list-users
+   {
+       "Users": [
+           {
+               "Path": "/",
+               "UserName": "jill",
+               "UserId": "vkfjaw87hqu94bppod7c",
+               "Arn": "arn:aws:iam::000000000000:user/jill",
+               "CreateDate": "2023-04-26T02:33:52.519000+00:00"
+           },
+           {
+               "Path": "/",
+               "UserName": "jack",
+               "UserId": "ed56tzi8wurcbxtsg7sf",
+               "Arn": "arn:aws:iam::000000000000:user/jack",
+               "CreateDate": "2023-04-26T02:33:53.626000+00:00"
+           },
+           {
+               "Path": "/",
+               "UserName": "mary",
+               "UserId": "n6pwol5wnpj39t4fxl9v",
+               "Arn": "arn:aws:iam::000000000000:user/mary",
+               "CreateDate": "2023-04-26T02:48:17.505000+00:00"
+           }
+       ]
+   }
+   ```
+
+11. What is the default region that has been configured for use with the `AWS CLI`?
+
+    - ca-central-1
+    - **us-east-1**
+    - us-west-1
+    - us-east-2
+
+    ```
+    $ cat .aws/c
+    config       credentials  
+    iac-server $ cat .aws/config 
+    [default]
+    region = us-east-1
+    ```
+
+12. What is the `aws_access_key_id` used in the configuration?
+
+    - AKIAI44QH8DHBEXAMPLE
+    - AXXBYYCZZ2567
+    - **foo**
+    - bar
+
+    ```
+    $ cat .aws/credentials 
+    [default]
+    aws_access_key_id = foo
+    aws_secret_access_key = bar
+    ```
+
+13. What is the value of `aws_secret_access_key` used?
+
+    - je7MtGbClwBF2Zp9Utkh3yCo8nvbEXAMPLEKEY
+    - foo
+    - je7MtGbClwBF2Zp9Utkh3
+    - **bar**
+
+    ```
+    $ cat .aws/credentials 
+    [default]
+    aws_access_key_id = foo
+    aws_secret_access_key = bar
+    ```
+
+14. Now that we have a few users created, let's grant them privileges.
+    Let's start with `mary`, grant her full `administrator` access by making use of the policy called `AdministratorAccess`.
+
+    Make use of the subcommand `attach-user-policy`.
+    The `ARN` of the `AdministratorAccess` policy is `arn:aws:iam::aws:policy/AdministratorAccess`.
+
+    Check
+
+    - AdministratorAccess Policy attached to mary ?
+
+    ```
+    $ aws --endpoint http://aws:4566 iam attach-user-policy --user-name mary --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
+    ```
+
+15. `jack` and `jill` are developers and are part of a project called `project-sapphire`.
+    Create a new `IAM Group` called `project-sapphire-developers`.
+
+    Use the subcommand `create-group` to create the group.
+
+    Check
+
+    - Group Created ?
+
+    ```
+    $ aws --endpoint http://aws:4566 iam create-group --group-name project-sapphire-developers
+    {
+        "Group": {
+            "Path": "/",
+            "GroupName": "project-sapphire-developers",
+            "GroupId": "3x5w8a42sqbp73a0ti5r",
+            "Arn": "arn:aws:iam::000000000000:group/project-sapphire-developers",
+            "CreateDate": "2023-04-26T03:09:29.425000+00:00"
+        }
+    }
+    ```
+
+16. Add the IAM users called `jack` and `jill`, who are developers to the new IAM Group called `project-sapphire-developers`.
+
+    Use the subcommand `add-user-to-group` to add users into the group.
+
+    Check
+
+    - Users added to the Group?
+
+    ```
+    $ aws --endpoint http://aws:4566 iam add-user-to-group --user-name jack --group-name project-sapphire-developers
+    
+    $ aws --endpoint http://aws:4566 iam add-user-to-group --user-name jill --group-name project-sapphire-developers
+    ```
+
+17. What privileges are granted for `jack` and `jill` who are part of the group `project-sapphire-developers`?
+
+    Check for their permissions individually and the ones granted to the group.
+
+    - EC2FullAccess
+    - AdminstratorAccess
+    - S3FullAccess
+    - BillingAdministrator
+    - **NONE**
+
+    ```
+    $ aws --endpoint http://aws:4566 iam list-attached-group-policies --group-name project-sapphire-developers
+    {
+        "AttachedPolicies": []
+    }
+    ```
+
+    ```
+    $ aws --endpoint http://aws:4566 iam list-attached-user-policies --user-name jack 
+    {
+        "AttachedPolicies": []
+    }
+    ```
+
+    ```
+    $ aws --endpoint http://aws:4566 iam list-attached-user-policies --user-name jill{
+        "AttachedPolicies": []
+    }
+    ```
+
+18. Both `jack` and `jill` need complete access to the `EC2` service.
+
+    Attach the `AmazonEC2FullAccess` policy with the ARN: `arn:aws:iam::aws:policy/AmazonEC2FullAccess` to the group `project-sapphire-developers`.
+
+    Check
+
+    - AmazonEC2FullAccess Managed Policy added to the group?
+
+    ```
+    $ aws --endpoint http://aws:4566 iam attach-group-policy --group-name project-sapphire-developers --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess
+    ```
 
 
 
 
 
+## LAB: IAM WITH TERRAFORM
 
-
+1. 
