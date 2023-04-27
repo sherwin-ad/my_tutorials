@@ -4090,4 +4090,1002 @@
 
 ## LAB: IAM WITH TERRAFORM
 
-1. 
+1. In this lab, we will learn how to deploy AWS resources using `Terraform` with the same mocking service that we use in the `AWS CLI` lab.
+
+   OK
+
+2. Let's start off by creating an `IAM User` called `mary` but this time by making use of Terraform. In the configuration directory `/root/terraform-projects/IAM`, create a file called `iam-user.tf` with the following specifications:
+
+
+   Resource Type: `aws_iam_user`
+
+   Resource Name: `users`
+
+   Name: `mary`
+
+   Once the file has been created, run `terraform init`.
+
+   Check
+
+   - configuration file created and terraform init run?
+
+   Create a file called `iam-user.tf` and add following contents:
+
+   ```
+   resource "aws_iam_user" "users" {
+        name = "mary"
+   }
+   ```
+
+   ```
+   $ terraform init
+   
+   Initializing the backend...
+   
+   Initializing provider plugins...
+   - Finding latest version of hashicorp/aws...
+   - Installing hashicorp/aws v4.64.0...
+   - Installed hashicorp/aws v4.64.0 (self-signed, key ID 34365D9472D7468F)
+   
+   Partner and community providers are signed by their developers.
+   If you'd like to know more about provider signing, you can read about it here:
+   https://www.terraform.io/docs/plugins/signing.html
+   
+   The following providers do not have any version constraints in configuration,
+   so the latest version was installed.
+   
+   To prevent automatic upgrades to new major versions that may contain breaking
+   changes, we recommend adding version constraints in a required_providers block
+   in your configuration, with the constraint strings suggested below.
+   
+   * hashicorp/aws: version = "~> 4.64.0"
+   
+   Terraform has been successfully initialized!
+   
+   You may now begin working with Terraform. Try running "terraform plan" to see
+   any changes that are required for your infrastructure. All Terraform commands
+   should now work.
+   
+   If you ever set or change modules or backend configuration for Terraform,
+   rerun this command to reinitialize your working directory. If you forget, other
+   commands will detect it and remind you to do so if necessary.
+   ```
+
+3. Great! We now have a configuration file with a simple resource block for creating an IAM User with Terraform!
+
+   Let's check if everything is in order for us to create this resource.
+
+   Run `terraform plan` within this configuration.
+
+   Did that work?
+
+   - **NO**
+   - YES
+
+   ```
+   $ terraform plan
+   Refreshing Terraform state in-memory prior to plan...
+   The refreshed state will be used to calculate this plan, but will not be
+   persisted to local or remote state storage.
+   
+   
+   ------------------------------------------------------------------------
+   
+   Error: configuring Terraform AWS Provider: validating provider credentials: retrieving caller identity from STS: operation error STS: GetCallerIdentity, failed to resolve service endpoint, an AWS region is required, but was not found
+   
+     on <empty> line 0:
+     (source code not available)
+   ```
+
+4. Why did the previous command fail?
+
+   Inspect the error message.
+
+   - Error in the configuration file
+   - Configuration Directory is not initialized
+   - Unable to connect to AWS Cloud
+   - **Region is not set**
+
+5. Let's do that now. We will add the argument `region` in our provider block called `aws`.
+
+   We can do this via other means as well ( like the ones we saw in the lecture).
+
+   However, we will be making use of the provider block to define additional arguments to make use of the mocking framework. We will see those in the later questions of this lab.
+
+   OK
+
+6. Add a new file called `provider.tf` containing a provider block for `aws`.
+   Inside this block add a single argument called `region` with the value `ca-central-1`
+
+   You don't have to run a `terraform plan` or `apply` at this stage.
+
+   Check
+
+   - provider.tf created correctly?
+
+   Create a file `provider.tf` with contents below:
+
+   ```
+   provider "aws" {
+        region = "ca-central-1"
+   
+   }
+   ```
+
+7. Run a `terraform plan` now. Does it work?
+
+   - YES
+   - **NO**
+
+   ```
+    $ terraform plan
+   Refreshing Terraform state in-memory prior to plan...
+   The refreshed state will be used to calculate this plan, but will not be
+   persisted to local or remote state storage.
+   
+   
+   ------------------------------------------------------------------------
+   
+   Error: configuring Terraform AWS Provider: validating provider credentials: retrieving caller identity from STS: operation error STS: GetCallerIdentity, https response error StatusCode: 403, RequestID: 5ff02479-a417-43ad-9185-fe939d9f3b23, api error InvalidClientTokenId: The security token included in the request is invalid.
+   
+     on provider.tf line 1, in provider "aws":
+      1: provider "aws" {
+   ```
+
+8. Since we are making use of the mocking framework, the credentials defined using `aws configure` (stored within the file `/root/.aws/credentials`) do not work as it is.
+
+   We have now updated the `provider.tf` file with additional arguments to make it work. Take a look.
+
+   The `endpoint` argument is similar to the one we saw with the `AWS CLI` where we used the `--endpoint http://aws:4566`. Here we have defined it to make it work with the `IAM` service.
+
+
+   Please note that these additional configurations are not needed when working directly with the AWS Cloud. It is only needed by the lab as it is using an AWS mock framework.
+
+   OK
+
+9. Now, run a `terraform plan` and then a `terraform apply`
+
+   Check
+
+   - IAM User created?
+
+   provider.tf
+
+   ```
+   provider "aws" {
+     region                      = "us-east-1"
+     skip_credentials_validation = true
+     skip_requesting_account_id  = true
+   
+     endpoints {
+       iam                       = "http://aws:4566"
+     }
+   }
+   ```
+
+10. Great! We have added one user called `mary`. However, `project_sapphire` has 5 more people who need access to the `AWS` Account!
+
+   Let's use the `count` meta-argument and the new `variables.tf` file created in the configuration directory to create these additional users!
+
+   Inspect the newly created `variables.tf` file and answer the subsequent questions.
+
+   OK
+
+   variables.tf
+
+   ```
+   variable "project-sapphire-users" {
+        type = list(string)
+        default = [ "mary", "jack", "jill", "mack", "buzz", "mater"]
+   ```
+
+11. What is the name of the variable that has been added to the `variables.tf` file?
+
+    - mary
+    - **project-sapphire-users**
+    - buzz
+    - jill
+    - jack
+
+12. What is the data type used for the variable called `project-sapphire-users`?
+
+    - map
+    - list(number)
+    - any
+    - set
+    - **list(string)**
+
+13. Now, update the `iam-user.tf` to make use of the `count` meta-argument to loop through the `project-sapphire-users` variable and create all the users in the list.
+
+    You may want to make use of the `length` function to get the length of the list.
+
+    Check
+
+    - Syntax Check
+    - Configuration file uses count expression?
+    - All users created?
+
+    Update the `iam-user.tf` with contents as below:
+
+    ```
+    resource "aws_iam_user" "users" {
+         name = var.project-sapphire-users[count.index]
+         count = length(var.project-sapphire-users)
+    }
+    ```
+
+    ```
+    $ terraform plan
+    Refreshing Terraform state in-memory prior to plan...
+    The refreshed state will be used to calculate this plan, but will not be
+    persisted to local or remote state storage.
+    
+    aws_iam_user.users[0]: Refreshing state... [id=mary]
+    
+    ------------------------------------------------------------------------
+    
+    An execution plan has been generated and is shown below.
+    Resource actions are indicated with the following symbols:
+      + create
+    
+    Terraform will perform the following actions:
+    
+      # aws_iam_user.users[1] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "jack"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+      # aws_iam_user.users[2] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "jill"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+      # aws_iam_user.users[3] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "mack"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+      # aws_iam_user.users[4] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "buzz"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+      # aws_iam_user.users[5] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "mater"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+    Plan: 5 to add, 0 to change, 0 to destroy.
+    
+    ------------------------------------------------------------------------
+    
+    Note: You didn't specify an "-out" parameter to save this plan, so Terraform
+    can't guarantee that exactly these actions will be performed if
+    "terraform apply" is subsequently run.
+    ```
+
+    ```
+    $ terraform apply
+    aws_iam_user.users[0]: Refreshing state... [id=mary]
+    
+    An execution plan has been generated and is shown below.
+    Resource actions are indicated with the following symbols:
+      + create
+    
+    Terraform will perform the following actions:
+    
+      # aws_iam_user.users[1] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "jack"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+      # aws_iam_user.users[2] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "jill"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+      # aws_iam_user.users[3] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "mack"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+      # aws_iam_user.users[4] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "buzz"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+      # aws_iam_user.users[5] will be created
+      + resource "aws_iam_user" "users" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "mater"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+    Plan: 5 to add, 0 to change, 0 to destroy.
+    
+    Do you want to perform these actions?
+      Terraform will perform the actions described above.
+      Only 'yes' will be accepted to approve.
+    
+      Enter a value: yes
+    
+    aws_iam_user.users[3]: Creating...
+    aws_iam_user.users[2]: Creating...
+    aws_iam_user.users[4]: Creating...
+    aws_iam_user.users[1]: Creating...
+    aws_iam_user.users[5]: Creating...
+    aws_iam_user.users[1]: Creation complete after 0s [id=jack]
+    aws_iam_user.users[2]: Creation complete after 0s [id=jill]
+    aws_iam_user.users[3]: Creation complete after 0s [id=mack]
+    aws_iam_user.users[4]: Creation complete after 0s [id=buzz]
+    aws_iam_user.users[5]: Creation complete after 0s [id=mater]
+    
+    Apply complete! Resources: 5 added, 0 changed, 0 destroyed.
+    ```
+
+
+
+## LAB: S3
+
+1. In this lab, we will work on `configuration directories` that have been created under `/root/terraform-projects/S3-Buckets`.
+
+   OK
+
+2. Let's first inspect the `configuration files` in the directory called `MCU`.
+
+   What is the `AWS region` configured for use in the provider block? (Assuming we do not pass in additional variables during command execution)
+
+   - us-west-2
+   - **us-east-1**
+   - us-west-1
+   - ca-central-1
+
+   terraform.tfvars
+
+   ```
+   region = "us-east-1"
+   ```
+
+3. There is a resource block configured in the `main.tf` file in this configuration directory. What is the `resource name` that will be provisioned when we run `terraform apply`?
+
+   - mcu-202011121359
+   - MCU
+   - aws_s3_bucket
+   - **marvel-cinematic-universe**
+
+   main.tf
+
+   ```
+   resource "aws_s3_bucket" "marvel-cinematic-universe" {
+     bucket = "mcu-202011121359"
+   
+   }
+   
+   ```
+
+4. What is the current state of this `configuration` directory?
+
+   - Directory Initialized
+   - Directory is not initialized
+   - **Resources provisioned**
+   - Resource not provisioned
+
+5. What is the name of the `s3 bucket` that has been created by this configuration?
+
+   - marvel-cinematic-universe
+   - aws_s3_bucket.marvel-cinematic-universe.mcu-202011121359
+   - **mcu-202011121359**
+   - mcu-202011122340
+
+   ```
+   $ terraform show
+   # aws_s3_bucket.marvel-cinematic-universe:
+   resource "aws_s3_bucket" "marvel-cinematic-universe" {
+       arn                         = "arn:aws:s3:::mcu-202011121359"
+       bucket                      = "mcu-202011121359"
+       bucket_domain_name          = "mcu-202011121359.s3.amazonaws.com"
+       bucket_regional_domain_name = "mcu-202011121359.s3.amazonaws.com"
+       force_destroy               = false
+       hosted_zone_id              = "Z3AQBSTGFYJSTF"
+       id                          = "mcu-202011121359"
+       object_lock_enabled         = false
+       region                      = "us-east-1"
+       request_payer               = "BucketOwner"
+       tags                        = {}
+       tags_all                    = {}
+   
+       grant {
+           id          = "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a"
+           permissions = [
+               "FULL_CONTROL",
+           ]
+           type        = "CanonicalUser"
+       }
+   
+       versioning {
+           enabled    = false
+           mfa_delete = false
+       }
+   }
+   ```
+
+6. What is the DNS domain name that is created for this bucket?
+
+   - marvel-cinematic-universe.amazonaws.com
+   - mcu-202011121359.ca-central-1.amazonaws.com
+   - **mcu-202011121359.s3.amazonaws.com**
+   - arn:aws:s3:::mcu-202011121359
+
+   Run `terraform show` inside this configuration directory and inspect the attribute called `bucket_domain_name`.
+
+   ```
+   $ terraform show
+   # aws_s3_bucket.marvel-cinematic-universe:
+   resource "aws_s3_bucket" "marvel-cinematic-universe" {
+       arn                         = "arn:aws:s3:::mcu-202011121359"
+       bucket                      = "mcu-202011121359"
+       bucket_domain_name          = "mcu-202011121359.s3.amazonaws.com"
+       bucket_regional_domain_name = "mcu-202011121359.s3.amazonaws.com"
+       force_destroy               = false
+       hosted_zone_id              = "Z3AQBSTGFYJSTF"
+       id                          = "mcu-202011121359"
+       object_lock_enabled         = false
+       region                      = "us-east-1"
+       request_payer               = "BucketOwner"
+       tags                        = {}
+       tags_all                    = {}
+   
+       grant {
+           id          = "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a"
+           permissions = [
+               "FULL_CONTROL",
+           ]
+           type        = "CanonicalUser"
+       }
+   
+       versioning {
+           enabled    = false
+           mfa_delete = false
+       }
+   }
+   ```
+
+7. Now, let's move on and work on a different configuration directory called `DC`.
+
+   OK
+
+8. The `main.tf` file is empty. Use it to create a new S3 with the following specifications:
+   resource name: `dc_bucket`
+   bucket name: `dc_is_better_than_marvel`
+
+   Once the resource block is complete, run a `terraform init, plan and apply` to try and create the bucket.
+
+   If unsure, refer to the documentation. The documentation tab is available at the top right panel.
+
+   (it's ok if you get an error! Move on to the next question!)
+
+   Check
+
+   - Resource block created as per the specifications?
+   - terraform init, plan and apply run?
+
+   Solution for `main.tf` :-
+
+   ```
+   resource "aws_s3_bucket" "dc_bucket" {
+     bucket = "dc_is_better_than_marvel"
+     }
+   ```
+
+9. Why did the `terraform apply` command fail?
+
+   - ACL should not be public-read-write
+   - Incorrect Arguments used
+   - **Invalid Bucket Name**
+   - Syntax error in the resource block
+
+   ```
+   $ terraform apply
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+     + create
+   
+   Terraform will perform the following actions:
+   
+     # aws_s3_bucket.dc_bucket will be created
+     + resource "aws_s3_bucket" "dc_bucket" {
+         + acceleration_status         = (known after apply)
+         + acl                         = (known after apply)
+         + arn                         = (known after apply)
+         + bucket                      = "dc_is_better_than_marvel"
+         + bucket_domain_name          = (known after apply)
+         + bucket_regional_domain_name = (known after apply)
+         + force_destroy               = false
+         + hosted_zone_id              = (known after apply)
+         + id                          = (known after apply)
+         + object_lock_enabled         = (known after apply)
+         + policy                      = (known after apply)
+         + region                      = (known after apply)
+         + request_payer               = (known after apply)
+         + tags_all                    = (known after apply)
+         + website_domain              = (known after apply)
+         + website_endpoint            = (known after apply)
+   
+         + cors_rule {
+             + allowed_headers = (known after apply)
+             + allowed_methods = (known after apply)
+             + allowed_origins = (known after apply)
+             + expose_headers  = (known after apply)
+             + max_age_seconds = (known after apply)
+           }
+   
+         + grant {
+             + id          = (known after apply)
+             + permissions = (known after apply)
+             + type        = (known after apply)
+             + uri         = (known after apply)
+           }
+   
+         + lifecycle_rule {
+             + abort_incomplete_multipart_upload_days = (known after apply)
+             + enabled                                = (known after apply)
+             + id                                     = (known after apply)
+             + prefix                                 = (known after apply)
+             + tags                                   = (known after apply)
+   
+             + expiration {
+                 + date                         = (known after apply)
+                 + days                         = (known after apply)
+                 + expired_object_delete_marker = (known after apply)
+               }
+   
+             + noncurrent_version_expiration {
+                 + days = (known after apply)
+               }
+   
+             + noncurrent_version_transition {
+                 + days          = (known after apply)
+                 + storage_class = (known after apply)
+               }
+   
+             + transition {
+                 + date          = (known after apply)
+                 + days          = (known after apply)
+                 + storage_class = (known after apply)
+               }
+           }
+   
+         + logging {
+             + target_bucket = (known after apply)
+             + target_prefix = (known after apply)
+           }
+   
+         + object_lock_configuration {
+             + object_lock_enabled = (known after apply)
+   
+             + rule {
+                 + default_retention {
+                     + days  = (known after apply)
+                     + mode  = (known after apply)
+                     + years = (known after apply)
+                   }
+               }
+           }
+   
+         + replication_configuration {
+             + role = (known after apply)
+   
+             + rules {
+                 + delete_marker_replication_status = (known after apply)
+                 + id                               = (known after apply)
+                 + prefix                           = (known after apply)
+                 + priority                         = (known after apply)
+                 + status                           = (known after apply)
+   
+                 + destination {
+                     + account_id         = (known after apply)
+                     + bucket             = (known after apply)
+                     + replica_kms_key_id = (known after apply)
+                     + storage_class      = (known after apply)
+   
+                     + access_control_translation {
+                         + owner = (known after apply)
+                       }
+   
+                     + metrics {
+                         + minutes = (known after apply)
+                         + status  = (known after apply)
+                       }
+   
+                     + replication_time {
+                         + minutes = (known after apply)
+                         + status  = (known after apply)
+                       }
+                   }
+   
+                 + filter {
+                     + prefix = (known after apply)
+                     + tags   = (known after apply)
+                   }
+   
+                 + source_selection_criteria {
+                     + sse_kms_encrypted_objects {
+                         + enabled = (known after apply)
+                       }
+                   }
+               }
+           }
+   
+         + server_side_encryption_configuration {
+             + rule {
+                 + bucket_key_enabled = (known after apply)
+   
+                 + apply_server_side_encryption_by_default {
+                     + kms_master_key_id = (known after apply)
+                     + sse_algorithm     = (known after apply)
+                   }
+               }
+           }
+   
+         + versioning {
+             + enabled    = (known after apply)
+             + mfa_delete = (known after apply)
+           }
+   
+         + website {
+             + error_document           = (known after apply)
+             + index_document           = (known after apply)
+             + redirect_all_requests_to = (known after apply)
+             + routing_rules            = (known after apply)
+           }
+       }
+   
+   Plan: 1 to add, 0 to change, 0 to destroy.
+   
+   Do you want to perform these actions?
+     Terraform will perform the actions described above.
+     Only 'yes' will be accepted to approve.
+   
+     Enter a value: yes
+   
+   aws_s3_bucket.dc_bucket: Creating...
+   
+   Error: error creating S3 Bucket (dc_is_better_than_marvel): InvalidBucketName: The specified bucket is not valid.
+           status code: 400, request id: 3BCA0C8738E7159C, host id: MzRISOwyjmnup3BCA0C8738E7159C7/JypPGXLh0OVFGcJaaO3KW/hRAqKOpIEEp
+   
+     on main.tf line 1, in resource "aws_s3_bucket" "dc_bucket":
+      1: resource "aws_s3_bucket" "dc_bucket" {
+   ```
+
+10. That's right! The `bucket name` we used does not conform to a DNS Name standard as it uses `underscores`.
+
+    OK
+
+11. Let's fix that now and change the bucket name so that it uses `dashes (-)` instead of `underscore(_)`.
+
+    resource name: `dc_bucket`
+    bucket name: `dc-is-better-than-marvel`
+
+    Once the resource block is complete, run a `terraform init, plan and apply` to try and create the bucket.
+
+    Check
+
+    - Resource block created as per the new specifications?
+    - resource created successfully?
+
+    Solution for `main.tf` :-
+
+    ```
+    resource "aws_s3_bucket" "dc_bucket" {
+         bucket = "dc-is-better-than-marvel" 
+    }
+    ```
+
+12. Let's move on to the next `configuration directory` called `Pixar`.
+    Same as the directory called `DC`, we have the `provider.tf`, `variables.tf`, `terraform.tfvars` and an empty `main.tf` file that is already created.
+
+    Change directory to `Pixar` and move on to the next question.
+
+    OK
+
+13. We have a file called `woody.jpg` stored at `/root` that has to be uploaded to a bucket called `pixar-studios-2020`. This bucket already exists though and was created using the `AWS CLI`.
+
+    OK
+
+14. Let's do that now and upload this image to the s3 bucket! Update the `main.tf` file with the following specifications:
+    Bucket: `pixar-studios-2020`
+    Key: `woody.jpg`
+    Source: `/root/woody.jpg`
+
+    Once ready, proceed to run `terraform init, plan and apply`.
+
+    Check
+
+    - Syntax Check
+
+    Solution for `main.tf` :-
+
+    ```
+    resource "aws_s3_object" "upload" {
+      bucket = "pixar-studios-2020"
+      key    = "woody.jpg"
+      source = "/root/woody.jpg"
+    }
+    ```
+
+
+
+## LAB: DYNAMODB
+
+1. In this lab, we will work with `DynamoDB` tables using `terraform`.
+
+   The configuration directories have been created under `/root/terraform-projects/DynamoDB`.
+
+   OK
+
+2. We have already created a resource block for a `DynamoDB` table inside `/root/terraform-projects/DynamoDB/project-sapphire-user-data/`.
+
+   But something is wrong with this configuration. Try running a `terraform plan or validate` and identify the cause of the failure.
+
+   - Primary Key not Defined
+   - **Attribute for Primary Key is Missing**
+   - Range Key not Defined
+   - Hash Key not Defined
+
+   Refer the resource documentation here: `https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table`
+
+3. That's right! At a minimum, the `Primary Key` should be defined as an `attribute` when creating a `DynamoDB` table.
+   In this configuration, we should add the attribute for `UserId` for it to work.
+
+   OK
+
+4. Let's fix that now! Update the `main.tf` file so that it uses an `attribute` for the `Primary/Hash Key`.
+   Note that the `UserId` should be a number.
+
+   Once ready, run a `terraform init, plan and apply`.
+
+   Check
+
+   - main.tf created correctly?
+   - terraform init, plan and apply run?
+
+   The solution to update `main.tf` is provided below:
+
+   ```
+   resource "aws_dynamodb_table" "project_sapphire_user_data" {
+     name           = "userdata"
+     billing_mode   = "PAY_PER_REQUEST"
+     hash_key       = "UserId"
+   
+     attribute {
+       name = "UserId"
+       type = "N"
+     }
+   }
+   ```
+
+5. Another table has been created using the configuration in the directory `/root/terraform-projects/DynamoDB/project-sapphire-inventory`.
+
+   Navigate to this directory and inspect the configuration.
+
+   OK
+
+6. What is the name of the `DynamoDB` table resource that is created by this configuration?
+
+   - project-sapphire-user-data
+   - inventory
+   - userdata
+   - dynamo_db_table
+   - **project_sapphire_inventory**
+
+   main.tf
+
+   ```
+   resource "aws_dynamodb_table" "project_sapphire_inventory" {
+     name           = "inventory"
+     billing_mode   = "PAY_PER_REQUEST"
+     hash_key       = "AssetID"
+   
+     attribute {
+       name = "AssetID"
+       type = "N"
+     }
+     attribute {
+       name = "AssetName"
+       type = "S"
+     }
+     attribute {
+       name = "age"
+       type = "N"
+     }
+     attribute {
+       name = "Hardware"
+       type = "B"
+     }
+     global_secondary_index {
+       name             = "AssetName"
+       hash_key         = "AssetName"
+       projection_type    = "ALL"
+       
+     }
+     global_secondary_index {
+       name             = "age"
+       hash_key         = "age"
+       projection_type    = "ALL"
+       
+     }
+     global_secondary_index {
+       name             = "Hardware"
+       hash_key         = "Hardware"
+       projection_type    = "ALL"
+       
+     }
+   }
+   ```
+
+7. What is the name of the `DynamoDB Table` that is created this configuration?
+
+   - AssetId
+   - **inventory**
+   - project_sapphire_inventory
+   - project_sapphire_user_data
+   - userdata
+   - UserId
+
+8. How many attributes are defined in this table currently?
+
+   - **4**
+   - 2
+   - 1
+   - 6
+
+9. What is the name and type of the Primary Key used by this table?
+
+   - Hardware - Boolean
+   - AssetName - String
+   - **AssetId - Number**
+   - AssetId - String
+
+10. Now, let's add an item to this table called `inventory`. Use the following specifications and update the `main.tf` file:
+
+   Resource Name: `upload`
+
+   Table = Use reference expression to the table called `inventory`
+
+   Hash Key = Use reference expression to use the primary key used by the table `inventory`
+
+   Use the below data for item:
+
+   {
+
+   "AssetID": {"N": "1"},
+
+   "AssetName": {"S": "printer"},
+
+   "age": {"N": "5"},
+
+   "Hardware": {"B": "true" }
+
+   }
+
+   when ready, run `terraform init, plan and apply`
+
+   Check
+
+   - item uploaded to the table?
+
+   The updated solution main.tf file:
+
+   ```
+   resource "aws_dynamodb_table" "project_sapphire_inventory" {
+     name           = "inventory"
+     billing_mode   = "PAY_PER_REQUEST"
+     hash_key       = "AssetID"
+   
+     attribute {
+       name = "AssetID"
+       type = "N"
+     }
+     attribute {
+       name = "AssetName"
+       type = "S"
+     }
+     attribute {
+       name = "age"
+       type = "N"
+     }
+     attribute {
+       name = "Hardware"
+       type = "B"
+     }
+     global_secondary_index {
+       name             = "AssetName"
+       hash_key         = "AssetName"
+       projection_type    = "ALL"
+   
+     }
+     global_secondary_index {
+       name             = "age"
+       hash_key         = "age"
+       projection_type    = "ALL"
+   
+     }
+     global_secondary_index {
+       name             = "Hardware"
+       hash_key         = "Hardware"
+       projection_type    = "ALL"
+   
+     }
+   }
+   resource "aws_dynamodb_table_item" "upload" {
+     table_name = aws_dynamodb_table.project_sapphire_inventory.name
+     hash_key   = aws_dynamodb_table.project_sapphire_inventory.hash_key
+     item = <<EOF
+    {
+     "AssetID": {"N": "1"},
+     "AssetName": {"S": "printer"},
+     "age": {"N": "5"},
+     "Hardware": {"B": "true" }
+   }
+   EOF
+   }
+   ```
