@@ -5089,3 +5089,954 @@
    EOF
    }
    ```
+
+
+
+# Remote State
+
+## LAB: REMOTE STATE
+
+1. In this lab, we will work with `remote terraform state` files.
+   We will first start with the `local` state and then migrate it to `remote` state with an `S3` backend.
+
+   The configuration directory we will work with is `/root/terraform-projects/RemoteState`
+
+   OK
+
+2. First, create a simple configuration to create a `local_file` resource within the directory called `RemoteState`. The resource block should be created inside the `main.tf` file. Follow the below specifications for provisioning this resource:
+
+   Resource Name: `state`
+
+   filename: /root/`<variable local-state>`
+
+   content: "This configuration uses `<variable local-state>` state"
+
+   Use the variable called `local-state` in the `variables.tf` file which is already created for you and make use of `variable interpolation` syntax `${..}`.
+
+   Once the configuration is ready, run a `terraform init, plan and apply`.
+
+   CheckCompleteIncomplete
+
+   - main.tf created correctly?
+   - terraform init, plan and apply run?
+
+   Solution for `main.tf` :-
+
+   ```
+   resource "local_file" "state" {
+     filename = "/root/${var.local-state}"
+     content  = "This configuration uses ${var.local-state} state"
+   
+   }
+   ```
+
+3. Has a `state` file been created after you run `terraform apply`?
+
+   - NO
+   - **YES**
+
+4. What is the name of the state file created for this configuration?
+
+   - terraform.state
+   - **terraform.tfstate**
+   - .terraform/plugins/state
+   - .terraform
+
+5. Let's now move the `state` to a remote `S3` backend. For this, we will make use of an `S3` compatible storage called `minio`.
+
+   \```Minio` provides an S3-compatible API and allows us to configure the `s3` backend in the same way as the actual S3 service in AWS Cloud.
+
+   To explore `minio` and the S3 bucket that has been created, click on the `Minio Browser` tab on the top of the `terminal` window..
+
+   Use the following credentials to login:
+
+   Access Key: `foofoo`
+
+   Secret Key: `barbarbar`
+
+   **Minio Browser**
+
+   https://30080-port-0529af433e13448b.labs.kodekloud.com/buckets
+
+   OK
+
+6. We have already created an `s3` bucket that we will use to store the `remote state`. From the `Minio Browser`, identify the name of this bucket. (There is only one bucket created as of now)
+
+   - kodekloud-bucket
+   - minio-remote-state
+   - s3-remote-state-bucket
+   - state-bucket
+   - **remote-state**
+
+   Click on the `Minio Browser` tab in the `terminal` window and identify the name of the single bucket that is available (Look under the `Buckets` tab).
+
+7. Before we add the configuration for the `s3` backend, let's first change the local file resource. Change the variable used to `remote-state` instead of `local-state`.
+
+   Once done, run `terraform plan and apply`.
+
+   Check
+
+   - s3 backend configuration created correctly?
+
+   Solution for `main.tf` :-
+
+   ```
+   resource "local_file" "state" {
+     filename = "/root/${var.remote-state}"
+     content  = "This configuration uses ${var.remote-state} state"
+   
+   }
+   ```
+
+   variables.tf
+
+   ```
+   variable remote-state {
+       type = string
+       default = "remote"
+   }
+   variable local-state {
+       type = string
+       default = "local"
+   }
+   ```
+
+8. Great! Now, let us configure the remote backend with `s3`. Add a terraform block in a new file called `terraform.tf` with the following arguments:
+
+   bucket: `remote-state`
+
+   key: `terraform.tfstate`
+
+   region: `us-east-1`
+
+   Do not run `terraform init` yet! Since we are making use of `minio` we also have to add a couple of additional arguments to get this to work!
+   We will do that in the next step. When using the regular `s3` service from AWS the above arguments should be sufficient to configure remote state.
+
+   Check
+
+   - s3 backend configuration created correctly?
+
+   Backend configuration for `terraform.tf` :-
+
+   ```
+   terraform {
+     backend "s3" {
+       key = "terraform.tfstate"
+       region = "us-east-1"
+       bucket = "remote-state"
+   
+     }
+   }
+   ```
+
+9. To make the `s3` backend with `Minio` to work, we have to add a few additional arguments. The `terraform.tf` file has been updated. Check it out.
+
+   Please note that these arguments are optional and not needed when working with the regular S3 service in AWS.
+
+   OK
+
+   terraform.tf
+
+   ```
+   terraform {
+     backend "s3" {
+       key = "terraform.tfstate"
+       region = "us-east-1"
+       bucket = "remote-state"
+       endpoint = "http://172.16.238.105:9000"
+       force_path_style = true
+   
+   
+       skip_credentials_validation = true
+   
+       skip_metadata_api_check = true
+       skip_region_validation = true
+     }
+   }
+   ```
+
+10. Try running `terraform apply`, are you able to do it? If not why?
+
+- Error in backend configuration
+
+   - remote-state bucket does not exist
+   - Syntax error in main.tf
+   - **Backend reinitialization required**
+
+   ```
+   $ terraform apply
+   Backend reinitialization required. Please run "terraform init".
+   Reason: Initial configuration of the requested backend "s3"
+   
+   The "backend" is the interface that Terraform uses to store state,
+   perform operations, etc. If this message is showing up, it means that the
+   Terraform configuration you're using is using a custom configuration for
+   the Terraform backend.
+   
+   Changes to backend configurations require reinitialization. This allows
+   Terraform to setup the new configuration, copy existing state, etc. This is
+   only done during "terraform init". Please run that command now then try again.
+   
+   If the change reason above is incorrect, please verify your configuration
+   hasn't changed and try again. At this point, no changes to your existing
+   configuration or state have been made.
+   
+   
+   Error: Initialization required. Please see the error message above.
+   ```
+
+11. Run `terraform init` in our configuration directory now.
+
+    Once done you can proceed to delete the `terraform.tfstate` file from the local directory.
+
+    From the `Minio Browser`, you should now be able to see the state file uploaded to the bucket called `remote-state`.
+    Login credentials -
+    Access Key: `foofoo`
+    Secret Key: `barbarbar`
+
+    Check
+
+    - Syntax Check
+
+    ```
+    $ terraform init
+    
+    Initializing the backend...
+    Do you want to copy existing state to the new backend?
+      Pre-existing state was found while migrating the previous "local" backend to the
+      newly configured "s3" backend. No existing state was found in the newly
+      configured "s3" backend. Do you want to copy this state to the new "s3"
+      backend? Enter "yes" to copy and "no" to start with an empty state.
+    
+      Enter a value: yes
+    
+    
+    Successfully configured the backend "s3"! Terraform will automatically
+    use this backend unless the backend configuration changes.
+    
+    Initializing provider plugins...
+    - Using previously-installed hashicorp/local v2.4.0
+    
+    The following providers do not have any version constraints in configuration,
+    so the latest version was installed.
+    
+    To prevent automatic upgrades to new major versions that may contain breaking
+    changes, we recommend adding version constraints in a required_providers block
+    in your configuration, with the constraint strings suggested below.
+    
+    * hashicorp/local: version = "~> 2.4.0"
+    
+    Terraform has been successfully initialized!
+    
+    You may now begin working with Terraform. Try running "terraform plan" to see
+    any changes that are required for your infrastructure. All Terraform commands
+    should now work.
+    
+    If you ever set or change modules or backend configuration for Terraform,
+    rerun this command to reinitialize your working directory. If you forget, other
+    commands will detect it and remind you to do so if necessary.
+    ```
+
+
+
+## LAB: TERRAFORM STATE COMMANDS
+
+1. We have created a few resources in the configuration directory `/root/terraform-projects/project-anime`. Inspect it.
+
+   Which of the following resources names are not part of the `terraform state`?
+
+   - **super_pets**
+   - top10
+   - hall_of_fame
+   - classics
+   - new_shows
+
+   ```
+   $ terraform state list
+   local_file.classics
+   local_file.hall_of_fame
+   local_file.new_shows
+   local_file.top10
+   ```
+
+   main.tf
+
+   ```
+   resource "local_file" "top10" {
+       filename = "/root/anime/top10.txt"
+       content  = "1. Naruto\n2. DragonBallZ\n3. Death Note\nFullmetal Alchemist\nOne-Punch Man\n"
+     
+   }
+   resource "local_file" "hall_of_fame" {
+     filename = "/root/anime/hall-of-fame.txt"
+     content = "1.Attack On Titan\n2. Naruto\n3. Bleach\n"
+   
+   }
+   resource "local_file" "new_shows" {
+     filename = "/root/anime/new_shows.txt"
+     content = "1. Cannon Busters\n2. Last Hope\n3. Lost Song\n"
+   
+   }
+   resource "local_file" "classics" {
+     filename = "/root/anime/classic_shows.txt"
+     content = "1. DragonBall\n"
+   
+   }
+   
+   ```
+
+   
+
+2. Which command would you use to show the attributes of the resource called `classics` stored in the `terraform state`?
+
+   - terraform show classics
+   - **terraform state show local_file.classics**
+   - terraform list local_file.classics
+   - terraform state show classics
+
+   ```
+   $ terraform state show local_file.classics
+   # local_file.classics:
+   resource "local_file" "classics" {
+       content              = <<~EOT
+           1. DragonBall
+       EOT
+       content_base64sha256 = "6Ity8EEWB9hY2pJUjJQsdyBi7iDtrqnHg7E0VR9KS4A="
+       content_base64sha512 = "lRKrxM4reT5okTZxIy6k/HdgLiXIJ+L1LIr2FUWcLldv44rFq/kOmiB6qOO0ny3Yl6w6C+79BdTy3TLHG0G5fg=="
+       content_md5          = "13d46e58bee23e8d0560d9cf3cef8966"
+       content_sha1         = "69f539876d8db4e6873466ab5b4d56ebf32667b2"
+       content_sha256       = "e88b72f0411607d858da92548c942c772062ee20edaea9c783b134551f4a4b80"
+       content_sha512       = "9512abc4ce2b793e68913671232ea4fc77602e25c827e2f52c8af615459c2e576fe38ac5abf90e9a207aa8e3b49f2dd897ac3a0beefd05d4f2dd32c71b41b97e"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/anime/classic_shows.txt"
+       id                   = "69f539876d8db4e6873466ab5b4d56ebf32667b2"
+   }
+   ```
+
+3. What is the value of the attribute called `id` that is created for the local file resource called `top10`?
+
+   - "274856702c7d532583e312e12647232"
+   - "456274702c7d532583e312e123a216e357222113321f"
+   - "9988c5n502c7d532583e312e123a216e35721021f"
+   - "a96174702c7d532583e312e123a216e35721021f"
+
+   ```
+   $ terraform state show local_file.top10
+   # local_file.top10:
+   resource "local_file" "top10" {
+       content              = <<~EOT
+           1. Naruto
+           2. DragonBallZ
+           3. Death Note
+           Fullmetal Alchemist
+           One-Punch Man
+       EOT
+       content_base64sha256 = "E1+CvFzTzYIFBGHKR7PslnAA/Fy5GsdbD0DF32Vvh1c="
+       content_base64sha512 = "qhCSaRzN1IBed4NY9elGp28ybdw+zbQD9DCTsQatrrnFtanJP9UgMaj39r4Zq65vHNmAmC1kc4CHvxgw4hiRJQ=="
+       content_md5          = "dd34c45437f5a7a0c66835a80ed8c58e"
+       content_sha1         = "a96174702c7d532583e312e123a216e35721021f"
+       content_sha256       = "135f82bc5cd3cd82050461ca47b3ec967000fc5cb91ac75b0f40c5df656f8757"
+       content_sha512       = "aa1092691ccdd4805e778358f5e946a76f326ddc3ecdb403f43093b106adaeb9c5b5a9c93fd52031a8f7f6be19abae6f1cd980982d64738087bf1830e2189125"
+       directory_permission = "0777"
+       file_permission      = "0777"
+       filename             = "/root/anime/top10.txt"
+       id                   = "a96174702c7d532583e312e123a216e35721021f"
+   }
+   ```
+
+4. We no longer wish to manage the file located at `/root/anime/hall-of-fame.txt` by `Terraform`. Remove the resource responsible for this file completely from the management of `terraform`.
+
+   Check
+
+   - Resource removed?
+
+   Remove the resource block called `hall_of_fame` from the `main.tf` and also remove it from the state file by running `terraform state rm local_file.hall_of_fame`.
+
+   ```
+   $ terraform state rm local_file.hall_of_fame
+   Removed local_file.hall_of_fame
+   Successfully removed 1 resource instance(s).
+   ```
+
+5. Now navigate to the directory `/root/terraform-projects/super-pets`. Just like the previous configuration directory, we have already created the resource. Inspect the configuration and identify the only resource type used.
+
+   - aws_s3_bucket
+   - random_pet
+   - tls_private_key
+   - aws_dynamodb_table
+   - local_file
+
+   Either inspect the `main.tf` file (which contains the configuration) or run `terraform state list` and identify the resource type from the resource address.
+
+   ```
+   $ terraform state list
+   random_pet.super_pet_1
+   random_pet.super_pet_2
+   ```
+
+   main.tf
+
+   ```
+   resource "random_pet" "super_pet_1" {
+       length = var.length1
+       prefix = var.prefix1
+   }
+   resource "random_pet" "super_pet_2" {
+       length = var.length2
+       prefix = var.prefix2
+   }
+   ```
+
+6. Within this configuration the `terraform state` commands are working (Try it!) but there is no `terraform.tfstate` file present!
+
+   What is the reason for this behavior?
+
+   - state file is hidden
+   - "terraform apply" not run
+   - **We are using remote state**
+   - State file deleted using "terraform state rm"
+
+   terraform.tf
+
+   ```
+   terraform {
+     backend "s3" {
+       key = "terraform.tfstate"
+       region = "us-east-1"
+       bucket = "remote-state"
+       endpoint = "http://172.16.238.105:9000"
+       force_path_style = true
+   
+   
+       skip_credentials_validation = true
+   
+       skip_metadata_api_check = true
+       skip_region_validation = true
+     }
+   }
+   ```
+
+7. What is the `id` of the `random_pet` resource called `super_pet_2` in the state file?
+
+   - Super-kitty
+   - **"Wonder-noble-mule"**
+   - Ultra-mad-goat
+   - Ultra-bull
+
+   Run `terraform state show random_pet.super_pet_2` and inspect the `id`.
+
+   ```
+   $ terraform state show random_pet.super_pet_2
+   # random_pet.super_pet_2:
+   resource "random_pet" "super_pet_2" {
+       id        = "Wonder-noble-mule"
+       length    = 2
+       prefix    = "Wonder"
+       separator = "-"
+   }
+   ```
+
+8. Rename the resource from `super_pet_1` to `ultra_pet`.
+
+   Change the name in the `main.tf` file as well as the state.
+
+   Check
+
+   - Resource renamed?
+
+   Change the name in the `main.tf` and also run `terraform state mv random_pet.super_pet_1 random_pet.ultra_pet`.
+
+   main.tf
+
+   ```
+   resource "random_pet" "ultra_pet" {
+       length = var.length1
+       prefix = var.prefix1
+   }
+   resource "random_pet" "super_pet_2" {
+       length = var.length2
+       prefix = var.prefix2
+   }
+   ```
+
+   ```
+   $ terraform state mv random_pet.super_pet_1 random_pet.ultra_pet
+   Move "random_pet.super_pet_1" to "random_pet.ultra_pet"
+   Successfully moved 1 object(s).
+   ```
+
+   ```
+   $ terraform state list
+   random_pet.super_pet_2
+   random_pet.ultra_pet
+   ```
+
+
+
+# TERRAFORM PROVISIONERS
+
+## LAB: AWS EC2 AND PROVISIONERS
+
+1. Navigate to the directory `/root/terraform-projects/project-cerberus`. We have an empty `main.tf` file in this directory.
+   Using this configuration file write a resource block to provision a simple EC2 instance with the following specifications:
+
+
+   Resource Name: `cerberus`
+
+   AMI: `ami-06178cf087598769c`, use variable named `ami`
+
+   region: `eu-west-2`, use variable named `region`
+
+   Instance Type: `m5.large`, use variable named `instance_type`
+
+   Once ready, run terraform `init, plan and apply` to provision this EC2 instance.
+
+   Check
+
+   - ec2 instance created correctly?
+
+   Solution for `main.tf` :-
+
+   ```
+   variable "ami" {
+     default = "ami-06178cf087598769c"
+   }
+   
+   variable "instance_type" {
+     default = "m5.large"
+   }
+   
+   variable "region" {
+     default = "eu-west-2"
+   }
+   
+   resource "aws_instance" "cerberus" {
+     ami           = var.ami
+     instance_type = var.instance_type
+   }
+   ```
+
+2. Perfect! The instance has been created by `terraform`. To inspect the details of this instance, you can run `terraform show` command from the configuration directory.
+
+   This will print the resource attributes from the `state` file in a human-readable format.
+
+   OK
+
+3. The AMI ID we have used is an `RHEL 8` image in the `London` region that only accepts SSH-Key based authentication. However, when we created the instance, we did not make use of a key!
+
+   Let's create a new key-pair!
+
+   OK
+
+4. A new SSH key pair has been created in the directory `/root/terraform-projects/project-cerberus/.ssh`.
+
+   The private key is called `cerberus` and the public key is called `cerberus.pub`
+
+
+   Using the public key, create a new key-pair in `AWS` with the following specifications:
+
+   Resource Name: `cerberus-key`
+
+   key_name: `cerberus`
+
+   Use the `file` functions to read the public key `cerberus.pub`
+
+
+   When ready, run a `terrafom plan and apply` to create this `key pair`.
+
+   If unsure, refer to the documentation to create a key-pair. Documentation tab is available at the top right.
+
+   Check
+
+   - Syntax Check
+
+   Solution for `main.tf` :-
+
+   ```
+   variable "ami" {
+     default = "ami-06178cf087598769c"
+   }
+   variable "instance_type" {
+       default = "m5.large"
+   
+   }
+   variable "region" {
+     default = "eu-west-2"
+   }
+   resource "aws_instance" "cerberus" {
+       ami = var.ami
+       instance_type = var.instance_type
+   
+   }
+   #You can also use variable for key_name
+   resource "aws_key_pair" "cerberus-key" {
+       key_name = "cerberus"
+       public_key = file(".ssh/cerberus.pub")
+   }
+   ```
+
+5. Let us now configure the `cerberus` resource to make use of this key. Update the resource block to make use of the key called `cerberus`.
+
+   Once the configuration is updated, run a `terraform plan` and `terraform apply`. This will trigger the replacement of the instance with the new one having the **key-pair** created in our previous step.
+
+   Check
+
+   - Syntax Check
+
+   Add an argument called `key_name` with the value `cerberus` :-
+
+   ```
+   resource "aws_instance" "cerberus" {
+     ami           = var.ami
+     instance_type = var.instance_type
+     key_name      = "cerberus"
+   }
+   ```
+
+   main.tf
+
+   ```
+   variable "ami" {
+     default = "ami-06178cf087598769c"
+   }
+   
+   variable "instance_type" {
+     default = "m5.large"
+   }
+   
+   variable "region" {
+     default = "eu-west-2"
+   }
+   
+   resource "aws_instance" "cerberus" {
+     ami           = var.ami
+     instance_type = var.instance_type
+     key_name      = "cerberus"
+   }
+   #You can also use variable for key_name
+   resource "aws_key_pair" "cerberus-key" {
+       key_name = "cerberus"
+       public_key = file(".ssh/cerberus.pub")
+   }
+   ```
+
+6. Let us now install `nginx` with EC2 instance. To do this, let's make use of the `user_data` argument.
+
+   Using the `file` function again or by making use of the `heredoc` syntax, use the script called `install-nginx.sh` as the value for the `user_data` argument.
+
+   Do not run `terraform apply` yet!
+
+   Check
+
+   - user_data added ?
+
+   Solution for `main.tf` :-
+
+   ```
+   variable "ami" {
+     default = "ami-06178cf087598769c"
+   }
+   variable "instance_type" {
+       default = "m5.large"
+   
+   }
+   variable "region" {
+     default = "eu-west-2"
+   }
+   resource "aws_instance" "cerberus" {
+       ami = var.ami
+       instance_type = var.instance_type
+       key_name  = "cerberus"
+       user_data = file("./install-nginx.sh")
+   
+   }
+   resource "aws_key_pair" "cerberus-key" {
+       key_name = "cerberus"
+       public_key = file(".ssh/cerberus.pub")
+   }
+   ```
+
+   install-nginx.sh
+
+   ```
+   #!/bin/bash
+   sudo yum update -y
+   sudo yum install nginx -y
+   sudo systemctl start nginx
+   ```
+
+   ```
+   $ terraform apply
+   aws_key_pair.cerberus-key: Refreshing state... [id=cerberus]
+   aws_instance.cerberus: Refreshing state... [id=i-10c5d24fe1ded3c4e]
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+     ~ update in-place
+   
+   Terraform will perform the following actions:
+   
+     # aws_instance.cerberus will be updated in-place
+     ~ resource "aws_instance" "cerberus" {
+           ami                          = "ami-06178cf087598769c"
+           arn                          = "arn:aws:ec2:eu-west-2::instance/i-10c5d24fe1ded3c4e"
+           associate_public_ip_address  = true
+           availability_zone            = "eu-west-2a"
+           disable_api_termination      = false
+           ebs_optimized                = false
+           get_password_data            = false
+           id                           = "i-10c5d24fe1ded3c4e"
+           instance_state               = "running"
+           instance_type                = "m5.large"
+           ipv6_address_count           = 0
+           ipv6_addresses               = []
+           key_name                     = "cerberus"
+           monitoring                   = false
+           primary_network_interface_id = "eni-323a67d4"
+           private_dns                  = "ip-10-230-29-42.eu-west-2.compute.internal"
+           private_ip                   = "10.230.29.42"
+           public_dns                   = "ec2-54-214-167-209.eu-west-2.compute.amazonaws.com"
+           public_ip                    = "54.214.167.209"
+           secondary_private_ips        = []
+           security_groups              = []
+           source_dest_check            = true
+           subnet_id                    = "subnet-d74a832a"
+           tags                         = {}
+           tags_all                     = {}
+           tenancy                      = "default"
+         + user_data                    = "ace853dfcd5deb36a3802184e0347bf471f627ed"
+           user_data_replace_on_change  = false
+           vpc_security_group_ids       = []
+   
+           root_block_device {
+               delete_on_termination = true
+               device_name           = "/dev/sda1"
+               encrypted             = false
+               iops                  = 0
+               tags                  = {}
+               throughput            = 0
+               volume_id             = "vol-a4fd80e2"
+               volume_size           = 8
+               volume_type           = "gp2"
+           }
+       }
+   
+   Plan: 0 to add, 1 to change, 0 to destroy.
+   
+   Do you want to perform these actions?
+     Terraform will perform the actions described above.
+     Only 'yes' will be accepted to approve.
+   
+     Enter a value: yes
+   
+   aws_instance.cerberus: Modifying... [id=i-10c5d24fe1ded3c4e]
+   aws_instance.cerberus: Still modifying... [id=i-10c5d24fe1ded3c4e, 10s elapsed]
+   aws_instance.cerberus: Still modifying... [id=i-10c5d24fe1ded3c4e, 20s elapsed]
+   aws_instance.cerberus: Modifications complete after 20s [id=i-10c5d24fe1ded3c4e]
+   ```
+
+7. What will happen if we run `terraform apply` now?
+
+   - **current server will be modified, but nginx will not be installed**
+   - no changes to be applied
+   - nginx will be installed on the current server
+   - configuration error
+   - current server will be destroyed and nginx will be installed on the new server
+
+8. In this case, an instance will be modified, but nginx will not be installed. It is due to the fact that **User data scripts** only run at `first boot` whereas the instance modification causes a reboot.
+
+   Let's apply the updated configuration in the next step!
+
+   OK
+
+9. Run `terraform apply` and let the EC2 instance be modified.
+
+   Check
+
+   - Syntax Check
+
+   ```
+   $ terraform apply
+   aws_key_pair.cerberus-key: Refreshing state... [id=cerberus]
+   aws_instance.cerberus: Refreshing state... [id=i-10c5d24fe1ded3c4e]
+   
+   Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+   ```
+
+10. Where should you add a `provisioner` block?
+
+    - Outside the resource block
+    - **Nested block inside the resource block**
+    - Inside the terraform block
+    - Nested block inside the provider block
+
+11. Which of the following provisioners does not need a `connection` block defined?
+
+    - **local-exec**
+    - file provisioner
+    - remote-exec
+
+    `local-exec` provisioner does not need a connection block as it does not connect to a remote instance to run tasks.
+
+12. What is the `public IPv4` address that has been allocated to this `EC2` instance?
+
+    - 10.234.120.132
+    - 1.1.1.1
+    - 100.24.6.20
+    - 172.17.0.33
+    - **54.214.63.136**
+
+    Inspect the output of `terraform show` and lookup the value for `public_ip`.
+
+    ```
+    $ terraform show | grep public_ip
+        associate_public_ip_address  = true
+        public_ip                    = "54.214.63.136"
+    ```
+
+13. We use the `public IPv4` address to access this server. However, when this server is rebooted or recreated, this IP address would change.
+
+    To fix this, let's create an `Elastic IP Address`.
+
+    An Elastic IP address is a static IPv4 address which does not change over time.
+
+
+    Create an `Elastic IP` resource with the following specifications:
+
+    1. Resource Name: `eip`
+    2. vpc: `true`
+    3. instance: id of the `EC2` instance created for resource `cerberus` (use a reference expression)
+    4. create a local-exec provisioner for the `eip` resource and use it to print the attribute called `public_dns` to a file `/root/cerberus_public_dns.txt` on the `iac-server`.
+
+    If unsure, refer to the documentation. Documentation tab is available at the top right.
+
+    Check
+
+    - Elastic IP created and associated with EC2?
+
+    Solution for `main.tf` :-
+
+    ```
+    resource "aws_instance" "cerberus" {
+      ami           = var.ami
+      instance_type = var.instance_type
+      user_data     = file("./install-nginx.sh")
+    
+    }
+    resource "aws_key_pair" "cerberus-key" {
+      key_name   = "cerberus"
+      public_key = file(".ssh/cerberus.pub")
+    }
+    resource "aws_eip" "eip" {
+      vpc      = true
+      instance = aws_instance.cerberus.id
+      provisioner "local-exec" {
+        command = "echo ${aws_eip.eip.public_dns} >> /root/cerberus_public_dns.txt"
+      }
+    
+    }
+    variable "ami" {
+      default = "ami-06178cf087598769c"
+    }
+    variable "instance_type" {
+      default = "m5.large"
+    
+    }
+    variable "region" {
+      default = "eu-west-2"
+    }
+    ```
+
+    ```
+    $ terraform apply
+    aws_key_pair.cerberus-key: Refreshing state... [id=cerberus]
+    aws_instance.cerberus: Refreshing state... [id=i-10c5d24fe1ded3c4e]
+    
+    An execution plan has been generated and is shown below.
+    Resource actions are indicated with the following symbols:
+      + create
+    
+    Terraform will perform the following actions:
+    
+      # aws_eip.eip will be created
+      + resource "aws_eip" "eip" {
+          + allocation_id        = (known after apply)
+          + association_id       = (known after apply)
+          + carrier_ip           = (known after apply)
+          + customer_owned_ip    = (known after apply)
+          + domain               = (known after apply)
+          + id                   = (known after apply)
+          + instance             = "i-10c5d24fe1ded3c4e"
+          + network_border_group = (known after apply)
+          + network_interface    = (known after apply)
+          + private_dns          = (known after apply)
+          + private_ip           = (known after apply)
+          + public_dns           = (known after apply)
+          + public_ip            = (known after apply)
+          + public_ipv4_pool     = (known after apply)
+          + tags_all             = (known after apply)
+          + vpc                  = true
+        }
+    
+    Plan: 1 to add, 0 to change, 0 to destroy.
+    
+    Do you want to perform these actions?
+      Terraform will perform the actions described above.
+      Only 'yes' will be accepted to approve.
+    
+      Enter a value: yes
+    
+    aws_eip.eip: Creating...
+    aws_eip.eip: Provisioning with 'local-exec'...
+    aws_eip.eip (local-exec): Executing: ["/bin/sh" "-c" "echo ec2-127-74-124-172.eu-west-2.compute.amazonaws.com >> /root/cerberus_public_dns.txt"]
+    aws_eip.eip: Creation complete after 0s [id=eipalloc-16fc6871]
+    
+    Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+    ```
+
+14. What is the `public` ip address that was created for this `Elastic IP`?
+
+    - 25.36.44.2
+    - **127.74.124.172**
+    - 100.112.22.54
+    - 192.168.1.1
+    - 54.34.26.4
+
+    Run: `terraform show` and inspect the public ip for the `eip` resource.
+
+    Or, just inspect the file `/root/cerberus_public_dns.txt`.
+
+    ```
+    $ terraform show 
+    # aws_eip.eip:
+    resource "aws_eip" "eip" {
+        allocation_id     = "eipalloc-16fc6871"
+        association_id    = "eipassoc-0fd60e00"
+        domain            = "vpc"
+        id                = "eipalloc-16fc6871"
+        instance          = "i-10c5d24fe1ded3c4e"
+        network_interface = "eni-323a67d4"
+        public_dns        = "ec2-127-74-124-172.eu-west-2.compute.amazonaws.com"
+        public_ip         = "127.74.124.172"
+        tags_all          = {}
+        vpc               = true
+    }
+    ```
+
+    OR
+
+    cerberus_public_dns.txt
+
+    ```
+    ec2-127-74-124-172.eu-west-2.compute.amazonaws.com
+    ```
+
+15. In the current configuration, which `dependency` is NOT true?
+
+    - **Resource called eip depends on the resource called cerberus**
+    - Resource called cerberus depends on the resource called eip
+    - Resource cerberus depends on the cerberus-key
+
+
+
