@@ -5903,20 +5903,20 @@
 
 
     Create an `Elastic IP` resource with the following specifications:
-
+    
     1. Resource Name: `eip`
     2. vpc: `true`
     3. instance: id of the `EC2` instance created for resource `cerberus` (use a reference expression)
     4. create a local-exec provisioner for the `eip` resource and use it to print the attribute called `public_dns` to a file `/root/cerberus_public_dns.txt` on the `iac-server`.
-
+    
     If unsure, refer to the documentation. Documentation tab is available at the top right.
-
+    
     Check
-
+    
     - Elastic IP created and associated with EC2?
-
+    
     Solution for `main.tf` :-
-
+    
     ```
     resource "aws_instance" "cerberus" {
       ami           = var.ami
@@ -5947,7 +5947,7 @@
       default = "eu-west-2"
     }
     ```
-
+    
     ```
     $ terraform apply
     aws_key_pair.cerberus-key: Refreshing state... [id=cerberus]
@@ -6037,6 +6037,181 @@
     - **Resource called eip depends on the resource called cerberus**
     - Resource called cerberus depends on the resource called eip
     - Resource cerberus depends on the cerberus-key
+
+
+
+# TERRAFORM IMPORT, TAINTING RESOURCES AND DEBUGGING
+
+
+
+## LAB: TAINT AND DEBUGGING
+
+1. Which environment variable should be used to export the logs to a specific path?
+
+   If unsure, refer to the documentation. Documentation tab is available at the top right.
+
+   - VAR_TF_LOG
+   - var.TF_LOG
+   - **TF_LOG_PATH**
+   - TF_LOG
+
+2. Can you export the debug logs from `terraform` just by setting `TF_LOG_PATH` environment variable and providing a path as the value to this variable?
+
+   - **NO**
+   - YES
+
+3. We have a configuration directory called `/root/terraform-projects/ProjectA`. Enable logging with the log level set to `ERROR` and then export the logs the path `/tmp/ProjectA.log`.
+
+   Once the environment variables are set, run a `terraform init and apply`.
+
+   It's OK if this results in an error. Do not change any configuration files before you export the logs!
+
+   Check
+
+   - Logs exported?
+
+   Run: `export TF_LOG=ERROR` and `export TF_LOG_PATH=/tmp/ProjectA.log`
+
+   Then run command such as `terraform init; terraform apply` inside the directory called `/root/terraform-projects/ProjectA`
+
+   Main.tf
+
+   ```
+   resource "aws_instance" "ProjectA" {
+       ami = "ami-0c9bfc21ac5bf10eb"
+       instance_type = "t2.large"
+     
+   }
+   ```
+
+   Provider.tf
+
+   ```
+   terraform {
+     required_providers {
+       aws = {
+         source = "hashicorp/aws"
+         version = "4.15.0"
+       }
+     }
+   }
+   
+   provider "aws" {
+     region                      = "ca-central-1"
+     skip_credentials_validation = true
+     skip_requesting_account_id  = true
+   
+     endpoints {
+       iam                       = "http://aws:4566"
+     }
+   }
+   ```
+
+   
+
+4. Which Log Level provides the most details when you run `terraform` commands?
+
+   - ERROR
+   - **TRACE**
+   - LOG_LEVEL=5
+   - --v=5
+   - WARN
+
+5. Now navigate to `/root/terraform-projects/ProjectB`. We already have a `main.tf` file created for provisioning an `AWS EC2` instance with the tag `Name: projectb_webserver`.
+
+   Run a `terraform init and apply` to provision this instance.
+
+   Check
+
+   - ProjectB webserver created?
+
+   main.tf
+
+   ```
+   resource "aws_instance" "ProjectB" {
+       ami = "ami-0c9bfc21ac5bf10eb"
+       instance_type = "t2.large"
+       tags = {
+           Name = "projectb_webserver"
+           Description = "Oversized Webserver"
+       }
+     
+   }
+   ```
+
+   provider.tf
+
+   ```
+   terraform {
+     required_providers {
+       aws = {
+         source = "hashicorp/aws"
+         version = "4.15.0"
+       }
+     }
+   }
+   
+   provider "aws" {
+     region                      = "ca-central-1"
+     skip_credentials_validation = true
+     skip_requesting_account_id  = true
+   
+     endpoints {
+       ec2                       = "http://aws:4566"
+     }
+   }
+   ```
+
+   Run: `terraform init` and `terraform apply` from the configuration directory.
+
+6. Now, try running a `terraform plan` again. What is the effect?
+
+   - No Changes
+   - **Resource will be replaced**
+   - Resource will be destroyed
+   - Another EC2 instance will be created
+
+   ```
+   $ terraform plan
+   Refreshing Terraform state in-memory prior to plan...
+   The refreshed state will be used to calculate this plan, but will not be
+   persisted to local or remote state storage.
+   
+   aws_instance.ProjectB: Refreshing state... [id=i-055123d402a8e3a4e]
+   
+   ------------------------------------------------------------------------
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+   -/+ destroy and then create replacement
+   
+   Terraform will perform the following actions:
+   
+     # aws_instance.ProjectB is tainted, so must be replaced
+   -/+ resource "aws_instance" "ProjectB" {
+   ```
+
+   
+
+7. Why is the resource called `ProjectB` being replaced?
+
+   - ProjectB configuration updated
+   - ProjectB instance was manually updated
+   - **ProjectB resource is tainted**
+   - Provider was updated
+
+8. Untaint the resource called `ProjectB` so that the resource is not replaced any more.
+
+   The resource is currently tainted.
+
+   Check
+
+   - Resource Untainted?
+
+   ```
+   $ terraform untaint aws_instance.ProjectB
+   Resource instance aws_instance.ProjectB has been successfully untainted.
+   ```
 
 
 

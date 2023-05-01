@@ -53,5 +53,53 @@ Goto IAM & Admin > Roles
 
 
 
-Goto IAM & Admin > Roles
+# Service Accounts
+
+**Lists credential accounts.**
+
+```
+$ gcloud auth list
+                  Credentialed Accounts
+ACTIVE  ACCOUNT
+*       102439239747-compute@developer.gserviceaccount.com
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+**Impersonate service account to user**
+
+```
+$ gcloud compute instances list --project [project_name] --impersonate-service-account [service_account_name]
+```
+
+**Service Accout RSA private keys**
+
+1. Create service account 
+2. Give roles to the service account
+3. Create new key
+
+```
+$ gcloud config unset project
+```
+
+Activate service account using keys created
+
+```
+$ gcloud auth activate-service-account --key-file=gcp-devops-379408-8a0d9c5f201c.json
+Activated service account credentials for: [sa-demo@gcp-devops-379408.iam.gserviceaccount.com]
+
+$ gcloud auth list
+                  Credentialed Accounts
+ACTIVE  ACCOUNT
+*       sa-demo@gcp-devops-379408.iam.gserviceaccount.com
+        sherwin@mybusybee.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+```
+$ gcloud compute instances list --project gcp-devops
+```
 
