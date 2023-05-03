@@ -6215,3 +6215,1519 @@
 
 
 
+## Lab Terrraform import
+
+1. Navigate to the directory `/root/terraform-projects/project-jade`. We have a few resources created using the configuration files.
+
+   Inspect them first.
+
+   OK
+
+   main.tf
+
+   ```
+   resource "aws_instance" "ruby" {
+     ami           = var.ami
+     instance_type = var.instance_type
+     for_each      = var.name
+     key_name      = var.key_name
+     tags = {
+       Name = each.value
+     }
+   }
+   output "instances" {
+     value = aws_instance.ruby
+   }
+   ```
+
+   provider.tf
+
+   ```
+   terraform {
+     required_providers {
+       aws = {
+         source = "hashicorp/aws"
+         version = "4.15.0"
+       }
+     }
+   }
+   
+   provider "aws" {
+     region                      = "us-east-1"
+     skip_credentials_validation = true
+     skip_requesting_account_id  = true
+   
+     endpoints {
+       ec2 = "http://aws:4566"
+     }
+   }
+   ```
+
+   variables.tf
+
+   ```
+   variable "name" {
+     type    = set(string)
+     default = ["jade-webserver", "jade-lbr", "jade-app1", "jade-agent", "jade-app2"]
+   
+   }
+   variable "ami" {
+     default = "ami-0c9bfc21ac5bf10eb"
+   }
+   variable "instance_type" {
+     default = "t2.nano"
+   }
+   variable "key_name" {
+     default = "jade"
+   
+   }
+   ```
+
+   
+
+2. Which of the below resources is not part of this configuration?
+
+   - **EC2 Instance named jade-mw**
+   - EC2 Instance named jade-app2
+   - EC2 Instance named jade-app1
+   - EC2 Instance named jade-lbr
+   - EC2 Instance named jade-webserver
+
+   ```
+   Run terraform show to see details of all the resources. To see just the list of resources from the state run terraform state list.
+   
+   You can inspect also inspect the instances created using the terraform output command.
+   
+   We are making use of for_each expression to create the ec2 instances which creates the resources in the form of a map.
+   
+   
+   This configuration loops through the variable called name and creates 5 ec2 instances.
+   The ec2-instance called jade-mw is not created by this configuration.
+   ```
+
+   ```
+   $ terraform state list
+   aws_instance.ruby["jade-agent"]
+   aws_instance.ruby["jade-app1"]
+   aws_instance.ruby["jade-app2"]
+   aws_instance.ruby["jade-lbr"]
+   aws_instance.ruby["jade-webserver"]
+   ```
+
+3. What is the name of the `ssh key` which is used by all of these instances?
+
+   - **jade**
+   - jade.pem
+   - jade.pub
+   - ruby
+
+   variables.tf
+
+   ```
+   variable "name" {
+     type    = set(string)
+     default = ["jade-webserver", "jade-lbr", "jade-app1", "jade-agent", "jade-app2"]
+   
+   }
+   variable "ami" {
+     default = "ami-0c9bfc21ac5bf10eb"
+   }
+   variable "instance_type" {
+     default = "t2.nano"
+   }
+   variable "key_name" {
+     default = "jade"
+   
+   }
+   ```
+
+4. Is the `key pair` resource created by this `terraform` configuration?
+
+   - **NO**
+   - YES
+
+   Inspect the configuration files. There is no resource of the type `aws_key_pair` created by the configuration in this directory.
+
+   A better way would be to inspect the resource listed in the state.
+
+   Run: `terraform state list`. This should only list the ec2 instances.
+
+5. That's right, the key called `jade` has been created using the `AWS CLI`.
+
+   The command used to create this key is `aws ec2 create-key-pair --endpoint http://aws:4566 --key-name jade --query 'KeyMaterial' --output text > /root/terraform-projects/project-jade/jade.pem`.
+   The private key is created in the same configuration directory we have been working on.
+
+   OK
+
+6. We have another `EC2` instance created called `jade-mw` using the the `AWS CLI`.
+
+   Using the `AWS CLI` inspect this `EC2` instance and find the ID that is created by it.
+
+   Here are some of the specifications of this `EC2` Instance:
+
+   AMI: `ami-082b3eca746b12a89`
+
+   Instance Type: `t2.large`
+
+   Key Name: `jade`
+
+   Remember the syntax to use the `AWS CLI`: aws command sub-command options
+
+   Also make sure to pass in the `--endpoint http://aws:4566` (As we are using the `AWS` test framework. This is not required to interact with actual `EC2` instances)
+
+   - i-07205755ce4370109
+   - i-50322383708d02401
+   - i-24062383708d01401
+   - i-24062383708d01401
+
+   Run the command: `aws ec2 describe-instances --endpoint http://aws:4566`
+
+   Alternatively to just get the `id` of the `EC2` created with this AMI and Instance Type, use filters and `jq` tool to filter the data: -
+
+   ```
+   aws ec2 describe-instances --endpoint http://aws:4566 --filters "Name=image-id,Values=ami-082b3eca746b12a89" | jq -r '.Reservations[].Instances[].InstanceId'
+   ```
+
+   ```
+   $ aws ec2 describe-instances --endpoint http://aws:4566 --filters "Name=image-id,Values=ami-082b3eca746b12a89" | jq -r '.Reservations[].Instances[].InstanceId'
+   i-07205755ce4370109
+   ```
+
+7. Let's manage this instance called `jade-mw` with `Terraform`! First, create an empty resource block for this instance in the `main.tf` file in the configuration directory `/root/terraform-projects/project-jade`
+
+   Use `jade-mw` as the resource name.
+
+   We will fill in the arguments for this block later.
+
+   Check
+
+   - resource block created?
+
+   The updated config file should be:
+
+   ```
+   resource "aws_instance" "ruby" {
+     ami           = var.ami
+     instance_type = var.instance_type
+     for_each      = var.name
+     key_name      = var.key_name
+     tags = {
+       Name = each.value
+     }
+   }
+   output "instances" {
+    value = aws_instance.ruby
+   }
+   resource "aws_instance" "jade-mw" {
+   
+   }
+   ```
+
+8. Now, import this instance into the `terraform state`.
+
+   The resource name should be the same as the one used in the previous question - `jade-mw`
+
+   Check
+
+   - resource imported?
+
+   Run the `terraform import` command: `terraform import aws_instance.jade-mw id-of-the-resource`.
+
+   Where, `id-of-the-resource` is the id of the instance that we determined in the previous question.
+
+   Here is the command to fetch the id of the resource: -
+
+   ```sh
+   $ aws ec2 describe-instances --endpoint http://aws:4566 --filters "Name=image-id,Values=ami-082b3eca746b12a89" | jq -r '.Reservations[].Instances[].InstanceId'
+   i-07205755ce4370109
+   ```
+
+   ```
+    $ terraform import aws_instance.jade-mw i-07205755ce4370109aws_instance.jade-mw: Importing from ID "i-07205755ce4370109"...
+   aws_instance.jade-mw: Import prepared!
+     Prepared aws_instance for import
+   aws_instance.jade-mw: Refreshing state... [id=i-07205755ce4370109]
+   
+   Import successful!
+   
+   The resources that were imported are shown above. These resources are now in
+   your Terraform state and will henceforth be managed by Terraform.
+   ```
+
+9. Great! We are nearly there. What would happen if we run `terraform apply`?
+
+   - Resource will be created
+   - Resource will be replaced
+   - **Error - Resource Arguments not defined**
+   - Resource will be destroyed
+
+   If we run `terraform plan or apply` now, we will run into an error as the resource block is incomplete.
+
+   ```
+   $ terraform plan
+   
+   Error: Missing required argument
+   
+     on main.tf line 13, in resource "aws_instance" "jade-mw":
+     13: resource "aws_instance" "jade-mw" {
+   
+   "ami": one of `ami,launch_template` must be specified
+   
+   
+   Error: Missing required argument
+   
+     on main.tf line 13, in resource "aws_instance" "jade-mw":
+     13: resource "aws_instance" "jade-mw" {
+   
+   "instance_type": one of `instance_type,launch_template` must be specified
+   
+   
+   Error: Missing required argument
+   
+     on main.tf line 13, in resource "aws_instance" "jade-mw":
+     13: resource "aws_instance" "jade-mw" {
+   
+   "launch_template": one of `ami,instance_type,launch_template` must be
+   specified
+   ```
+
+10. Let us fix that now. Complete the resource block for `jade-mw`. Inspect the state to make sure all the arguments used to create this resource are defined in the resource block.
+
+   If unsure, run `terraform apply` after filling in the arguments and correct them until a plan shows no changes to apply.
+
+   Check
+
+   - resource configuration updated?
+
+   You can use the `jq` tool to display the details of a specific resource instance from the `terraform show` command.
+
+   We are doing this for the `jade-mw` instance.
+
+   ```sh
+   terraform show -json | jq '.values.root_module.resources[] | select(.type == "aws_instance" and .name == "jade-mw")'
+   ```
+
+   Or
+
+   You can check the instance details from the aws cli, also: -
+
+   ```sh
+   aws ec2 describe-instances --filters "Name=tag:Name,Values=jade-mw" --query "Reservations[*].Instances[*].[ImageId, InstanceType, KeyName, Tags]" --endpoint http://aws:4566
+   ```
+
+   Define the required arguments to create this resource looks like the below: -
+
+   ```sh
+   ...
+   resource "aws_instance" "jade-mw" {
+     ami           = "ami-082b3eca746b12a89"
+     instance_type = "t2.large"
+     key_name      = "jade"
+     tags = {
+       Name = "jade-mw"
+     }
+   ```
+
+   Here `ami` and `instance_type` values could be different in your lab environment.
+
+
+
+# Terraform Modules
+
+## LAB: TERRAFORM MODULES
+
+1. A configuration directory has been created at the path `/root/terraform-projects/project-sapphire`. Inspect the `main.tf` file created in this directory and answer the following questions.
+
+   OK
+
+   main.tf
+
+   ```
+   module "iam_iam-user" {
+     source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+     version = "3.4.0"
+     # insert the 1 required variable here
+   }
+   ```
+
+2. Which configuration block is defined in the `main.tf` file at the moment?
+
+   - resource
+   - provider
+   - variable
+   - data
+   - terraform
+   - **module**
+   - provisioner
+
+3. What is the source of the `module` used in this configuration?
+
+   - local module
+   - private terraform registry
+   - **public terraform registry**
+
+4. What is the version of the module used?
+
+   - 3.0.0
+   - 3.2.0
+   - 3.3.0
+   - **3.4.0**
+
+5. How many `required` arguments does this module expect?
+
+   You may need to look up the documentation to figure this one out.
+   Refer: `https://registry.terraform.io/modules/terraform-aws-modules/iam/aws/latest/submodules/iam-user`
+
+   - 5
+   - 2
+   - 3
+   - **1**
+   - 4
+
+6. Which `argument` is to be specified, just to create an `IAM User with this module?`
+
+   You may need to look up the documentation to figure this one out.
+   Refer: `https://registry.terraform.io/modules/terraform-aws-modules/iam/aws/latest/submodules/iam-user`
+
+   - **name**
+   - password_length
+   - iam_user_name
+   - password_reset_required
+   - tags
+
+7. Now, update this module block that will allow it to create an `IAM User` called `max`. Adhere to the following requirements:
+
+   1. Only use the `module` block in the `main.tf` file, do not add a separate `resource` block.
+
+   2. Module Name - `iam_iam-user`
+
+   3. Only add the single `required` argument at this time.
+
+      
+      The `provider.tf` and `variables.tf` files have been added to this configuration directory now.
+
+   When ready, run a `terraform init and plan`. You don't have to provision the resources at this moment but you can try should you wish to!
+
+   Check
+
+   - configuration updated and init run?
+
+   The solution is provided below:
+
+   Update the main.tf file:
+
+   ```
+   module "iam_iam-user" {
+     source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+     version = "3.4.0"
+     # insert the 1 required variable here
+     name = "max"
+   }
+   ```
+
+   provider.tf
+
+   ```
+   terraform {
+     required_providers {
+       aws = {
+         source = "hashicorp/aws"
+         version = "4.15.0"
+       }
+     }
+   }
+   
+   provider "aws" {
+     region                      = var.region
+     skip_credentials_validation = true
+     skip_requesting_account_id  = true
+     s3_force_path_style = true
+     endpoints {
+       iam = "http://aws:4566"
+       ec2 = "http://aws:4566"
+       s3 = "http://aws:4566"
+     }
+   }
+   ```
+
+   variables.tf
+
+   ```
+   variable "region" {
+       default = "us-east-1"
+   }
+   ```
+
+8. How many resources are set to be created in the `execution plan` ?
+
+   Inspect the output of the `terraform plan` command.
+
+   - 1
+   - 0
+   - 2
+   - 5
+   - **3**
+
+   ```
+   $ terraform plan
+   Refreshing Terraform state in-memory prior to plan...
+   The refreshed state will be used to calculate this plan, but will not be
+   persisted to local or remote state storage.
+   
+   
+   ------------------------------------------------------------------------
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+     + create
+   
+   Terraform will perform the following actions:
+   
+     # module.iam_iam-user.aws_iam_access_key.this_no_pgp[0] will be created
+     + resource "aws_iam_access_key" "this_no_pgp" {
+         + create_date                    = (known after apply)
+         + encrypted_secret               = (known after apply)
+         + encrypted_ses_smtp_password_v4 = (known after apply)
+         + id                             = (known after apply)
+         + key_fingerprint                = (known after apply)
+         + secret                         = (sensitive value)
+         + ses_smtp_password_v4           = (sensitive value)
+         + status                         = "Active"
+         + user                           = "max"
+       }
+   
+     # module.iam_iam-user.aws_iam_user.this[0] will be created
+     + resource "aws_iam_user" "this" {
+         + arn           = (known after apply)
+         + force_destroy = false
+         + id            = (known after apply)
+         + name          = "max"
+         + path          = "/"
+         + tags_all      = (known after apply)
+         + unique_id     = (known after apply)
+       }
+   
+     # module.iam_iam-user.aws_iam_user_login_profile.this[0] will be created
+     + resource "aws_iam_user_login_profile" "this" {
+         + encrypted_password      = (known after apply)
+         + id                      = (known after apply)
+         + key_fingerprint         = (known after apply)
+         + password                = (known after apply)
+         + password_length         = 20
+         + password_reset_required = true
+         + user                    = "max"
+       }
+   
+   Plan: 3 to add, 0 to change, 0 to destroy.
+   
+   Warning: Argument is deprecated
+   
+   Use s3_use_path_style instead.
+   
+   
+   ------------------------------------------------------------------------
+   
+   Note: You didn't specify an "-out" parameter to save this plan, so Terraform
+   can't guarantee that exactly these actions will be performed if
+   "terraform apply" is subsequently run.
+   ```
+
+9. Which resources are set to be created?
+
+   - none
+   - aws_iam_user and aws_iam_user_login_profile
+   - aws_iam_user
+   - **aws_iam_access_key, aws_iam_user and aws_iam_user_login_profile**
+
+10. Why is the module creating additional resources, when only the `name` for creating an `IAM User` was defined in the `main.tf` file?
+
+   Inspect the `Inputs` for this module in the documentation:
+   `https://registry.terraform.io/modules/terraform-aws-modules/iam/aws/latest/submodules/iam-user`
+
+   - **the three resources will be created by default as per the module configuration**
+   - incorrect module used
+   - bug in the module
+   - module not available
+
+11. We only want to create the `IAM User`. Update the `module` block to only allow `create_user`. Disable `create_iam_access_key` and `create_iam_user_login_profile`.
+
+    When ready, run the `terraform` workflow to create the resources.
+
+    Check
+
+    - Syntax Check
+
+    The solution is provided below:
+
+    Update the main.tf file as shown
+
+    ```
+    module "iam_iam-user" {
+      source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+      version = "3.4.0"
+      # insert the 1 required variable here
+      name                          = "max"
+      create_iam_user_login_profile = false
+      create_iam_access_key         = false
+    }
+    ```
+
+    ```
+    $ terraform apply
+    
+    An execution plan has been generated and is shown below.
+    Resource actions are indicated with the following symbols:
+      + create
+    
+    Terraform will perform the following actions:
+    
+      # module.iam_iam-user.aws_iam_user.this[0] will be created
+      + resource "aws_iam_user" "this" {
+          + arn           = (known after apply)
+          + force_destroy = false
+          + id            = (known after apply)
+          + name          = "max"
+          + path          = "/"
+          + tags_all      = (known after apply)
+          + unique_id     = (known after apply)
+        }
+    
+    Plan: 1 to add, 0 to change, 0 to destroy.
+    
+    
+    Warning: Argument is deprecated
+    
+    Use s3_use_path_style instead.
+    
+    Do you want to perform these actions?
+      Terraform will perform the actions described above.
+      Only 'yes' will be accepted to approve.
+    
+      Enter a value: yes
+    
+    module.iam_iam-user.aws_iam_user.this[0]: Creating...
+    module.iam_iam-user.aws_iam_user.this[0]: Creation complete after 1s [id=max]
+    
+    Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+    ```
+
+
+
+# TERRAFORM FUNCTIONS AND CONDITIONAL EXPRESSIONS
+
+## LAB: FUNCTIONS AND CONDITIONAL EXPRESSIONS
+
+1. In this lab, we will work on functions. Just like we did in the lecture, make use of the `terraform console` command through this lab to test different functions, and see how they transform and manipulate values.
+
+   OK
+
+2. What value does `floor(10.9)` produce?
+
+   - **10**
+   - 10.5
+   - 10.9
+   - 11
+
+   ```
+   $ echo "floor(10.9)" | terraform console
+   10
+   ```
+
+3. What value does `title("user-generated password file")` produce?
+
+   - user-generated password file
+   - User-generated password file
+   - User-generated Password File
+   - **User-Generated Password File**
+
+   ```
+   $ echo 'title("user-generated password file")' | terraform console
+   User-Generated Password File
+   ```
+
+4. Which type of variable does the function `lookup` working with?
+
+   - string
+   - set
+   - **map**
+   - list
+   - tuple
+
+   lookup retrieves the value of a single element from a `map`.
+
+5. Navigate to the configuration directory `/root/terraform-projects/project-sonic`. Here, we have a number of variables declared in the `variables.tf` file.
+   What type of variable is `cloud_users`?
+
+   - **string**
+   - set
+   - map
+   - list
+   - tuple
+
+   variables.tf
+
+   ```
+   variable "region" {
+     default = "ca-central-1"
+   }
+   variable "cloud_users" {
+        type = string
+        default = "andrew:ken:faraz:mutsumi:peter:steve:braja"
+     
+   }
+   variable "bucket" {
+     default = "sonic-media"
+     
+   }
+   
+   variable "media" {
+     type = set(string)
+     default = [ 
+       "/media/tails.jpg",
+       "/media/eggman.jpg",
+       "/media/ultrasonic.jpg",
+       "/media/knuckles.jpg",
+       "/media/shadow.jpg",
+         ]
+     
+   }
+   variable "sf" {
+     type = list
+     default = [
+       "ryu",
+       "ken",
+       "akuma",
+       "seth",
+       "zangief",
+       "poison",
+       "gen",
+       "oni",
+       "thawk",
+       "fang",
+       "rashid",
+       "birdie",
+       "sagat",
+       "bison",
+       "cammy",
+       "chun-li",
+       "balrog",
+       "cody",
+       "rolento",
+       "ibuki"
+   
+     ]
+   }
+   ```
+
+6. This variable contains the names of the developers for `project-sonic` with the names separated by a `:`.
+   Using this variable and the `count` meta-argument, create `IAM` users for all developers. Write the resource block in the `main.tf` file.
+
+   Convert this variable from a `string` to a `list`.
+   Do not change the variable defined in `variables.tf`.
+
+   When ready, create the users by running a `terraform init, plan, apply`
+
+   Check
+
+   - Users created as specified?
+
+   The `main.tf` file should be:
+
+   ```
+   resource "aws_iam_user" "cloud" {
+        name = split(":",var.cloud_users)[count.index]
+        count = length(split(":",var.cloud_users))
+   
+   }
+   ```
+
+   variables.tf
+
+   ```
+   variable "region" {
+     default = "ca-central-1"
+   }
+   variable "cloud_users" {
+        type = string
+        default = "andrew:ken:faraz:mutsumi:peter:steve:braja"
+     
+   }
+   variable "bucket" {
+     default = "sonic-media"
+     
+   }
+   
+   variable "media" {
+     type = set(string)
+     default = [ 
+       "/media/tails.jpg",
+       "/media/eggman.jpg",
+       "/media/ultrasonic.jpg",
+       "/media/knuckles.jpg",
+       "/media/shadow.jpg",
+         ]
+     
+   }
+   variable "sf" {
+     type = list
+     default = [
+       "ryu",
+       "ken",
+       "akuma",
+       "seth",
+       "zangief",
+       "poison",
+       "gen",
+       "oni",
+       "thawk",
+       "fang",
+       "rashid",
+       "birdie",
+       "sagat",
+       "bison",
+       "cammy",
+       "chun-li",
+       "balrog",
+       "cody",
+       "rolento",
+       "ibuki"
+   
+     ]
+   }
+   
+   ```
+
+   providers.tf
+
+   ```
+   terraform {
+     required_providers {
+       aws = {
+         source = "hashicorp/aws"
+         version = "4.15.0"
+       }
+     }
+   }
+   
+   provider "aws" {
+     region                      = var.region
+     skip_credentials_validation = true
+     skip_requesting_account_id  = true
+     s3_use_path_style = true
+     endpoints {
+       ec2 = "http://aws:4566"
+       iam = "http://aws:4566"
+       s3 = "http://aws:4566"
+     }
+   }
+   
+   ```
+
+   ```
+   $ terraform apply
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+     + create
+   
+   Terraform will perform the following actions:
+   
+     # aws_iam_user.cloud[0] will be created
+     + resource "aws_iam_user" "cloud" {
+         + arn           = (known after apply)
+         + force_destroy = false
+         + id            = (known after apply)
+         + name          = "andrew"
+         + path          = "/"
+         + tags_all      = (known after apply)
+         + unique_id     = (known after apply)
+       }
+   
+     # aws_iam_user.cloud[1] will be created
+     + resource "aws_iam_user" "cloud" {
+         + arn           = (known after apply)
+         + force_destroy = false
+         + id            = (known after apply)
+         + name          = "ken"
+         + path          = "/"
+         + tags_all      = (known after apply)
+         + unique_id     = (known after apply)
+       }
+   
+     # aws_iam_user.cloud[2] will be created
+     + resource "aws_iam_user" "cloud" {
+         + arn           = (known after apply)
+         + force_destroy = false
+         + id            = (known after apply)
+         + name          = "faraz"
+         + path          = "/"
+         + tags_all      = (known after apply)
+         + unique_id     = (known after apply)
+       }
+   
+     # aws_iam_user.cloud[3] will be created
+     + resource "aws_iam_user" "cloud" {
+         + arn           = (known after apply)
+         + force_destroy = false
+         + id            = (known after apply)
+         + name          = "mutsumi"
+         + path          = "/"
+         + tags_all      = (known after apply)
+         + unique_id     = (known after apply)
+       }
+   
+     # aws_iam_user.cloud[4] will be created
+     + resource "aws_iam_user" "cloud" {
+         + arn           = (known after apply)
+         + force_destroy = false
+         + id            = (known after apply)
+         + name          = "peter"
+         + path          = "/"
+         + tags_all      = (known after apply)
+         + unique_id     = (known after apply)
+       }
+   
+     # aws_iam_user.cloud[5] will be created
+     + resource "aws_iam_user" "cloud" {
+         + arn           = (known after apply)
+         + force_destroy = false
+         + id            = (known after apply)
+         + name          = "steve"
+         + path          = "/"
+         + tags_all      = (known after apply)
+         + unique_id     = (known after apply)
+       }
+   
+     # aws_iam_user.cloud[6] will be created
+     + resource "aws_iam_user" "cloud" {
+         + arn           = (known after apply)
+         + force_destroy = false
+         + id            = (known after apply)
+         + name          = "braja"
+         + path          = "/"
+         + tags_all      = (known after apply)
+         + unique_id     = (known after apply)
+       }
+   
+   Plan: 7 to add, 0 to change, 0 to destroy.
+   
+   Do you want to perform these actions?
+     Terraform will perform the actions described above.
+     Only 'yes' will be accepted to approve.
+   
+     Enter a value: yes
+   
+   aws_iam_user.cloud[2]: Creating...
+   aws_iam_user.cloud[3]: Creating...
+   aws_iam_user.cloud[5]: Creating...
+   aws_iam_user.cloud[4]: Creating...
+   aws_iam_user.cloud[1]: Creating...
+   aws_iam_user.cloud[6]: Creating...
+   aws_iam_user.cloud[0]: Creating...
+   aws_iam_user.cloud[5]: Creation complete after 0s [id=steve]
+   aws_iam_user.cloud[1]: Creation complete after 1s [id=ken]
+   aws_iam_user.cloud[4]: Creation complete after 1s [id=peter]
+   aws_iam_user.cloud[0]: Creation complete after 1s [id=andrew]
+   aws_iam_user.cloud[2]: Creation complete after 1s [id=faraz]
+   aws_iam_user.cloud[6]: Creation complete after 1s [id=braja]
+   aws_iam_user.cloud[3]: Creation complete after 1s [id=mutsumi]
+   
+   Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
+   ```
+
+7. What is the name of the IAM User that is created at the `Index 6`, of the `IAM` User at address `aws_iam_user.cloud` ?
+
+   Use the `terraform console` to find out.
+
+   - matt
+   - **braja**
+   - kevin
+   - fraser
+   - andrew
+
+   ```
+   $ echo 'aws_iam_user.cloud[6].name' | terraform console
+   braja
+   ```
+
+8. Locate the index of the element called `oni` in the variable called `sf`.
+
+   - 6
+   - 13
+   - 4
+   - 11
+   - 9
+   - **7**
+
+   Use terraform console and check `index(var.sf,"oni")` OR to use a one liner:
+   `echo "index(var.sf,\"oni\")" | terraform console`
+
+   ```
+   $ echo "index(var.sf,\"oni\")" | terraform console
+   7
+   ```
+
+9. What type is the variable called `media`?
+
+   - list
+   - list(strings)
+   - **set(string)**
+   - set
+   - list(numbers)
+   - tuple
+
+   Inspect the `variables.tf` file and look at the type argument for `media`.
+
+   variables.tf
+
+   ```
+   variable "region" {
+     default = "ca-central-1"
+   }
+   variable "cloud_users" {
+        type = string
+        default = "andrew:ken:faraz:mutsumi:peter:steve:braja"
+     
+   }
+   variable "bucket" {
+     default = "sonic-media"
+     
+   }
+   
+   variable "media" {
+     type = set(string)
+     default = [ 
+       "/media/tails.jpg",
+       "/media/eggman.jpg",
+       "/media/ultrasonic.jpg",
+       "/media/knuckles.jpg",
+       "/media/shadow.jpg",
+         ]
+     
+   }
+   variable "sf" {
+     type = list
+     default = [
+       "ryu",
+       "ken",
+       "akuma",
+       "seth",
+       "zangief",
+       "poison",
+       "gen",
+       "oni",
+       "thawk",
+       "fang",
+       "rashid",
+       "birdie",
+       "sagat",
+       "bison",
+       "cammy",
+       "chun-li",
+       "balrog",
+       "cody",
+       "rolento",
+       "ibuki"
+   
+     ]
+   }
+   
+   ```
+
+10. We have now, updated the `main.tf` in this configuration directory and added a new resource block to create a `S3` bucket called `sonic-media`.
+
+   Create an additional resource called `upload_sonic_media` to upload the files listed in the variable called `media` to this bucket.
+
+   Use the following specifications:
+
+   1. Use the `for_each` meta-argument to upload all the elements of the `media` variable.
+   2. bucket: Use reference expression to the bucket `sonic-media`.
+   3. source: Each element in the variable called `media`.
+   4. key: Should be the name of the files being uploaded (minus the `/root`). For an example, `eggman.jpg, shadow.jpg` e.t.c.
+
+   Do not alter the variables!
+   When ready, run `terraform apply` to create the bucket and upload the items.
+
+   Check
+
+   - Bucket created and items uploaded?
+
+   Use substr with the `each.value` expression. Choose `7` as the offset and a length greater than the longest element.
+
+   Update the `main.tf` as shown:
+
+   ```
+   resource "aws_iam_user" "cloud" {
+        name = split(":",var.cloud_users)[count.index]
+        count = length(split(":",var.cloud_users))
+   
+   }
+   resource "aws_s3_bucket" "sonic_media" {
+        bucket = var.bucket
+   
+   }
+   resource "aws_s3_object" "upload_sonic_media" {
+        bucket = aws_s3_bucket.sonic_media.id
+        key =  substr(each.value, 7, 20)
+        source = each.value
+        for_each = var.media 
+   
+   }
+   ```
+
+   ```
+   $ terraform apply
+   aws_iam_user.cloud[1]: Refreshing state... [id=ken]
+   aws_iam_user.cloud[2]: Refreshing state... [id=faraz]
+   aws_iam_user.cloud[5]: Refreshing state... [id=steve]
+   aws_iam_user.cloud[0]: Refreshing state... [id=andrew]
+   aws_iam_user.cloud[6]: Refreshing state... [id=braja]
+   aws_iam_user.cloud[4]: Refreshing state... [id=peter]
+   aws_iam_user.cloud[3]: Refreshing state... [id=mutsumi]
+   
+   An execution plan has been generated and is shown below.
+   Resource actions are indicated with the following symbols:
+     + create
+   
+   Terraform will perform the following actions:
+   
+     # aws_s3_bucket.sonic_media will be created
+     + resource "aws_s3_bucket" "sonic_media" {
+         + acceleration_status         = (known after apply)
+         + acl                         = (known after apply)
+         + arn                         = (known after apply)
+         + bucket                      = "sonic-media"
+         + bucket_domain_name          = (known after apply)
+         + bucket_regional_domain_name = (known after apply)
+         + force_destroy               = false
+         + hosted_zone_id              = (known after apply)
+         + id                          = (known after apply)
+         + object_lock_enabled         = (known after apply)
+         + policy                      = (known after apply)
+         + region                      = (known after apply)
+         + request_payer               = (known after apply)
+         + tags_all                    = (known after apply)
+         + website_domain              = (known after apply)
+         + website_endpoint            = (known after apply)
+   
+         + cors_rule {
+             + allowed_headers = (known after apply)
+             + allowed_methods = (known after apply)
+             + allowed_origins = (known after apply)
+             + expose_headers  = (known after apply)
+             + max_age_seconds = (known after apply)
+           }
+   
+         + grant {
+             + id          = (known after apply)
+             + permissions = (known after apply)
+             + type        = (known after apply)
+             + uri         = (known after apply)
+           }
+   
+         + lifecycle_rule {
+             + abort_incomplete_multipart_upload_days = (known after apply)
+             + enabled                                = (known after apply)
+             + id                                     = (known after apply)
+             + prefix                                 = (known after apply)
+             + tags                                   = (known after apply)
+   
+             + expiration {
+                 + date                         = (known after apply)
+                 + days                         = (known after apply)
+                 + expired_object_delete_marker = (known after apply)
+               }
+   
+             + noncurrent_version_expiration {
+                 + days = (known after apply)
+               }
+   
+             + noncurrent_version_transition {
+                 + days          = (known after apply)
+                 + storage_class = (known after apply)
+               }
+   
+             + transition {
+                 + date          = (known after apply)
+                 + days          = (known after apply)
+                 + storage_class = (known after apply)
+               }
+           }
+   
+         + logging {
+             + target_bucket = (known after apply)
+             + target_prefix = (known after apply)
+           }
+   
+         + object_lock_configuration {
+             + object_lock_enabled = (known after apply)
+   
+             + rule {
+                 + default_retention {
+                     + days  = (known after apply)
+                     + mode  = (known after apply)
+                     + years = (known after apply)
+                   }
+               }
+           }
+   
+         + replication_configuration {
+             + role = (known after apply)
+   
+             + rules {
+                 + delete_marker_replication_status = (known after apply)
+                 + id                               = (known after apply)
+                 + prefix                           = (known after apply)
+                 + priority                         = (known after apply)
+                 + status                           = (known after apply)
+   
+                 + destination {
+                     + account_id         = (known after apply)
+                     + bucket             = (known after apply)
+                     + replica_kms_key_id = (known after apply)
+                     + storage_class      = (known after apply)
+   
+                     + access_control_translation {
+                         + owner = (known after apply)
+                       }
+   
+                     + metrics {
+                         + minutes = (known after apply)
+                         + status  = (known after apply)
+                       }
+   
+                     + replication_time {
+                         + minutes = (known after apply)
+                         + status  = (known after apply)
+                       }
+                   }
+   
+                 + filter {
+                     + prefix = (known after apply)
+                     + tags   = (known after apply)
+                   }
+   
+                 + source_selection_criteria {
+                     + sse_kms_encrypted_objects {
+                         + enabled = (known after apply)
+                       }
+                   }
+               }
+           }
+   
+         + server_side_encryption_configuration {
+             + rule {
+                 + bucket_key_enabled = (known after apply)
+   
+                 + apply_server_side_encryption_by_default {
+                     + kms_master_key_id = (known after apply)
+                     + sse_algorithm     = (known after apply)
+                   }
+               }
+           }
+   
+         + versioning {
+             + enabled    = (known after apply)
+             + mfa_delete = (known after apply)
+           }
+   
+         + website {
+             + error_document           = (known after apply)
+             + index_document           = (known after apply)
+             + redirect_all_requests_to = (known after apply)
+             + routing_rules            = (known after apply)
+           }
+       }
+   
+     # aws_s3_object.upload_sonic_media["/media/eggman.jpg"] will be created
+     + resource "aws_s3_object" "upload_sonic_media" {
+         + acl                    = "private"
+         + bucket                 = (known after apply)
+         + bucket_key_enabled     = (known after apply)
+         + content_type           = (known after apply)
+         + etag                   = (known after apply)
+         + force_destroy          = false
+         + id                     = (known after apply)
+         + key                    = "eggman.jpg"
+         + kms_key_id             = (known after apply)
+         + server_side_encryption = (known after apply)
+         + source                 = "/media/eggman.jpg"
+         + storage_class          = (known after apply)
+         + tags_all               = (known after apply)
+         + version_id             = (known after apply)
+       }
+   
+     # aws_s3_object.upload_sonic_media["/media/knuckles.jpg"] will be created
+     + resource "aws_s3_object" "upload_sonic_media" {
+         + acl                    = "private"
+         + bucket                 = (known after apply)
+         + bucket_key_enabled     = (known after apply)
+         + content_type           = (known after apply)
+         + etag                   = (known after apply)
+         + force_destroy          = false
+         + id                     = (known after apply)
+         + key                    = "knuckles.jpg"
+         + kms_key_id             = (known after apply)
+         + server_side_encryption = (known after apply)
+         + source                 = "/media/knuckles.jpg"
+         + storage_class          = (known after apply)
+         + tags_all               = (known after apply)
+         + version_id             = (known after apply)
+       }
+   
+     # aws_s3_object.upload_sonic_media["/media/shadow.jpg"] will be created
+     + resource "aws_s3_object" "upload_sonic_media" {
+         + acl                    = "private"
+         + bucket                 = (known after apply)
+         + bucket_key_enabled     = (known after apply)
+         + content_type           = (known after apply)
+         + etag                   = (known after apply)
+         + force_destroy          = false
+         + id                     = (known after apply)
+         + key                    = "shadow.jpg"
+         + kms_key_id             = (known after apply)
+         + server_side_encryption = (known after apply)
+         + source                 = "/media/shadow.jpg"
+         + storage_class          = (known after apply)
+         + tags_all               = (known after apply)
+         + version_id             = (known after apply)
+       }
+   
+     # aws_s3_object.upload_sonic_media["/media/tails.jpg"] will be created
+     + resource "aws_s3_object" "upload_sonic_media" {
+         + acl                    = "private"
+         + bucket                 = (known after apply)
+         + bucket_key_enabled     = (known after apply)
+         + content_type           = (known after apply)
+         + etag                   = (known after apply)
+         + force_destroy          = false
+         + id                     = (known after apply)
+         + key                    = "tails.jpg"
+         + kms_key_id             = (known after apply)
+         + server_side_encryption = (known after apply)
+         + source                 = "/media/tails.jpg"
+         + storage_class          = (known after apply)
+         + tags_all               = (known after apply)
+         + version_id             = (known after apply)
+       }
+   
+     # aws_s3_object.upload_sonic_media["/media/ultrasonic.jpg"] will be created
+     + resource "aws_s3_object" "upload_sonic_media" {
+         + acl                    = "private"
+         + bucket                 = (known after apply)
+         + bucket_key_enabled     = (known after apply)
+         + content_type           = (known after apply)
+         + etag                   = (known after apply)
+         + force_destroy          = false
+         + id                     = (known after apply)
+         + key                    = "ultrasonic.jpg"
+         + kms_key_id             = (known after apply)
+         + server_side_encryption = (known after apply)
+         + source                 = "/media/ultrasonic.jpg"
+         + storage_class          = (known after apply)
+         + tags_all               = (known after apply)
+         + version_id             = (known after apply)
+       }
+   
+   Plan: 6 to add, 0 to change, 0 to destroy.
+   
+   Do you want to perform these actions?
+     Terraform will perform the actions described above.
+     Only 'yes' will be accepted to approve.
+   
+     Enter a value: yes
+   
+   aws_s3_bucket.sonic_media: Creating...
+   aws_s3_bucket.sonic_media: Creation complete after 1s [id=sonic-media]
+   aws_s3_object.upload_sonic_media["/media/ultrasonic.jpg"]: Creating...
+   aws_s3_object.upload_sonic_media["/media/knuckles.jpg"]: Creating...
+   aws_s3_object.upload_sonic_media["/media/tails.jpg"]: Creating...
+   aws_s3_object.upload_sonic_media["/media/eggman.jpg"]: Creating...
+   aws_s3_object.upload_sonic_media["/media/shadow.jpg"]: Creating...
+   aws_s3_object.upload_sonic_media["/media/shadow.jpg"]: Creation complete after 0s [id=shadow.jpg]
+   aws_s3_object.upload_sonic_media["/media/knuckles.jpg"]: Creation complete after 0s [id=knuckles.jpg]
+   aws_s3_object.upload_sonic_media["/media/ultrasonic.jpg"]: Creation complete after 0s [id=ultrasonic.jpg]
+   aws_s3_object.upload_sonic_media["/media/tails.jpg"]: Creation complete after 0s [id=tails.jpg]
+   aws_s3_object.upload_sonic_media["/media/eggman.jpg"]: Creation complete after 0s [id=eggman.jpg]
+   
+   Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
+   ```
+
+11. For the final question, navigate to the configuration directory called `/root/terraform-projects/project-mario`.
+
+    We have an empty `main.tf` file here. The `provider` and `variables` have already been configured for you.
+
+    OK
+
+    provider.tf
+
+    ```
+    terraform {
+      required_providers {
+        aws = {
+          source = "hashicorp/aws"
+          version = "4.15.0"
+        }
+      }
+    }
+    
+    provider "aws" {
+      region                      = var.region
+      skip_credentials_validation = true
+      skip_requesting_account_id  = true
+      s3_use_path_style = true
+      endpoints {
+        ec2 = "http://aws:4566"
+        iam = "http://aws:4566"
+        s3 = "http://aws:4566"
+      }
+    }
+    
+    ```
+
+    variables.tf
+
+    ```
+    variable "region" {
+        default = "us-east-1"
+    }
+    variable  "name" {
+        type = string
+    }
+    variable "ami" {
+        type = string
+        default = "ami-09331245601cf"
+    }
+    variable "small" {
+        type = string
+        default = "t2.nano"
+    }
+    variable "large" {
+        type = string
+        default = "t2.2xlarge"
+    }
+    ```
+
+12. What is the value of the variable called `small`?
+
+    - **t2.nano**
+    - t2.small
+    - t2.micro
+    - small
+
+    Run: `terraform init` and then `echo 'var.small' | terraform console` or simply inspect the `variables.tf` file.
+
+    variables.tf
+
+    ```
+    variable "region" {
+        default = "us-east-1"
+    }
+    variable  "name" {
+        type = string
+    }
+    variable "ami" {
+        type = string
+        default = "ami-09331245601cf"
+    }
+    variable "small" {
+        type = string
+        default = "t2.nano"
+    }
+    variable "large" {
+        type = string
+        default = "t2.2xlarge"
+    }
+    ```
+
+13. What is the current value for the variable called `name`?
+
+    - **undefined**
+    - tiny
+    - t2.2xlarge
+    - large
+    - t2.nano
+
+14. Create an `EC2 Instance` with the resource name `mario_servers`.
+
+    Use the following specifications:
+
+    `AMI`: Use variable called `ami`.
+
+    
+    `Tags`: Create a tag with key `Name` and value set to the `variable` called `name`.
+
+    
+    `Instance_type`: Use a conditional expression so that - If the instance is created with a tag `Name = "tiny"`, it should use the variable called `small` else the variable called `large`.
+
+    We will supply the variable called `name` using the `-var` command line flag.
+
+    Check
+
+    - resource created as specified?
+
+    The `main.tf` file should be:
+
+    ```
+    resource "aws_instance" "mario_servers" {
+         ami = var.ami
+         instance_type = var.name == "tiny" ? var.small : var.large
+         tags = {
+              Name = var.name
+    
+         }
+    
+    }
+    ```
+
+    
+
+## LAB: TERRAFORM WORKSPACES
+
+1. When we start off and create a configuration in `terraform`, what is the workspace that is created, to begin with?
+
+   - cloud
+   - cloud
+   - **default**
+   - remote
+
+2. Navigate to the configuration directory `/root/terraform-projects/project-sapphire`. We have a few configuration files already created here. How may `workspaces` are created for this configuration currently?
+
+   - 0
+   - 4
+   - 2
+   - 1
+   - 3
+
+   ```
+   $ terraform workspace list
+   * default
+   ```
+
+3. Create three new workspaces called `us-payroll`, `uk-payroll` and `india-payroll`.
+
+   Check
+
+   - workspaces created?
+
+   Run the following commands:
+
+   ```
+   terraform workspace new us-payroll
+   terraform workspace new uk-payroll
+   terraform workspace new india-payroll
+   ```
+
+4. Now, switch to the workspace called `us-payroll`.
+
+   Check
+
+   - Syntax Check
+
+   ```
+   $ terraform workspace select us-payroll
+   Switched to workspace "us-payroll".
+   ```
+
+5. 
+
