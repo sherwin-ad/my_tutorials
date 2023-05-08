@@ -7696,7 +7696,7 @@
    - 0
    - 4
    - 2
-   - 1
+   - **1**
    - 3
 
    ```
@@ -7729,5 +7729,194 @@
    Switched to workspace "us-payroll".
    ```
 
-5. 
+5. Where would the state file for the workspace called `india-payroll` be stored??
 
+   Choose the correct path relative to the current configuration directory (`/root/terraform-projects/project-sapphire`)
+
+   - ./terraform.tfstate.d
+   - terraform.tfstate
+   - **./terraform.tfstate.d/india-payroll**
+   - .terraform/india-payroll
+
+6. Let's now write the `main.tf` file to make use of the same module that we saw in the `terraform modules` lecture.
+
+   The `project-sapphire` configuration directory will be used to deploy the same payroll application stack in different regions.
+
+   The module is located at the path `/root/terraform-projects/modules/payroll-app`.
+
+   OK
+
+7. Inside the configuration directory, we have already added the `variables.tf` and the `provider.tf` file. Inspect them.
+
+   What type of variable is `region`?
+
+   - **map**
+   - string
+   - set
+   - list
+   - array
+
+   Inspect the `variables.tf` file.
+
+   variables.tf
+
+   ```
+   variable "region" {
+       type = map
+       default = {
+           "us-payroll" = "us-east-1"
+           "uk-payroll" = "eu-west-2"
+           "india-payroll" = "ap-south-1"
+       }
+   
+   }
+   variable "ami" {
+       type = map
+       default = {
+           "us-payroll" = "ami-24e140119877avm"
+           "uk-payroll" = "ami-35e140119877avm"
+           "india-payroll" = "ami-55140119877avm"
+       }
+   }
+   ```
+
+8. What is the default value of the `key` called `india-payroll` for the variable `region`?
+
+   - ami-55140119877avm
+   - **ap-south-1**
+   - ami-24e140119877avm
+   - ap-south-2
+
+   Inspect the variable block for `region`.
+
+   variables.tf
+
+   ```
+   variable "region" {
+       type = map
+       default = {
+           "us-payroll" = "us-east-1"
+           "uk-payroll" = "eu-west-2"
+           "india-payroll" = "ap-south-1"
+       }
+   
+   }
+   variable "ami" {
+       type = map
+       default = {
+           "us-payroll" = "ami-24e140119877avm"
+           "uk-payroll" = "ami-35e140119877avm"
+           "india-payroll" = "ami-55140119877avm"
+       }
+   }
+   ```
+
+9. What is the default value of the `key` called `india-payroll` for the variable `ami`?
+
+   - **ami-55140119877avm**
+   - us-east-1
+   - ap-south-1
+   - ami-35e140119877avm
+
+   Inspect the variable block for `ami`.
+
+   variables.tf
+
+   ```
+   variable "region" {
+       type = map
+       default = {
+           "us-payroll" = "us-east-1"
+           "uk-payroll" = "eu-west-2"
+           "india-payroll" = "ap-south-1"
+       }
+   
+   }
+   variable "ami" {
+       type = map
+       default = {
+           "us-payroll" = "ami-24e140119877avm"
+           "uk-payroll" = "ami-35e140119877avm"
+           "india-payroll" = "ami-55140119877avm"
+       }
+   }
+   ```
+
+10. Now, update the `main.tf` of the `root module` to call the `child module` located at `/root/terraform-projects/modules/payroll-app`. Adhere to the following specifications:
+
+   1. module name: `payroll_app`
+
+   2. This module expects two mandatory arguments:
+
+      a. `app_region` - use the values from variable called `region`
+
+      b. `ami` - use the values from the variable called `ami`
+
+   3. The values for these two arguments should be selected based on the workspace you are on.
+
+      
+      For example, if on `us-payroll` workspace, the `app_region` should be `us-east-1` and the ami `ami-24e140119877avm` OR for `uk-payroll`, the `app_region` should be `eu-west-2` and the ami `ami-35e140119877avm` e.t.c .
+
+   Once ready, run `terraform init`. You don't have to create(`apply`) the resources yet!
+   Refer to the `README.md` file located at `/root/terraform-projects/modules/payroll-app` to see how to use this module.
+
+   Check
+
+   - main.tf created with the module block as specified?
+
+   Use the `lookup` function and `terraform.workspace` expression to lookup the correct values from the map.
+
+   Solution for `main.tf` :-
+
+   ```
+   module "payroll_app" {
+     source = "/root/terraform-projects/modules/payroll-app"
+     app_region = lookup(var.region, terraform.workspace)
+     ami        = lookup(var.ami, terraform.workspace)
+   }
+   ```
+
+11. Now, using the same configuration, create the resources on all three workspaces that you created earlier!
+
+    Check
+
+    - resources created in all 3 workspaces?
+    - single configuration used?
+
+    ```
+    Run: 
+    
+    $ terraform workspace select us-payroll; terraform apply
+    
+    $ terraform workspace select uk-payroll; terraform apply
+    
+    $ terraform workspace select india-payroll; terraform apply
+    ```
+
+    provider.tf
+
+    ```
+    terraform {
+      required_providers {
+        aws = {
+          source = "hashicorp/aws"
+          version = "4.15.0"
+        }
+      }
+    }
+    
+    
+    provider "aws" {
+      region                      = lookup(var.region, terraform.workspace)
+      skip_credentials_validation = true
+      skip_requesting_account_id  = true
+      s3_force_path_style = true
+      endpoints {
+        ec2 = "http://aws:4566"
+        dynamodb = "http://aws:4566"
+        s3 = "http://aws:4566"
+      }
+    }
+    ```
+
+    
