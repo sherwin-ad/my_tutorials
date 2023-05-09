@@ -1,5 +1,9 @@
 # AZ-104: MICROSOFT AZURE ADMINISTRATOR
 
+**Course Git Repository**
+
+https://github.com/rithinskaria/kodekloud-azure
+
 # Managing Azure Active Directory
 
 ## QUIZ: AZURE ACTIVE DIRECTORY
@@ -199,3 +203,108 @@
    - Logical boundary for our resources.
 
    - All resources will be mapped to a subscription.
+
+
+
+# Implementing virtual networking
+
+## QUIZ: IMPLEMENTING VIRTUAL NETWORKING
+
+1. You are setting up a service endpoint between your VM-1 deployed in East US and storage account in West US. Which IP address will be used by the VM to connect to the storage account using service endpoint?
+
+   - Public IP of the VM
+
+   - Cross region is not possible with Service Endpoints
+
+   - **Private IP of the VM**
+
+   - NAT IP of the VM
+
+2. You need to assign a static zone redundant IP address to one of your DNS servers to ensure that the IP address is not getting changed during planned reboot events. Which Public IP SKU should be selected for this IP?
+
+   - Reserved
+
+   - Premium
+
+   - Basic
+
+   - **Standard**
+
+3. Which of the following statements is false? Select all that apply.
+
+   - Azure Firewall has built in threat intelligence
+
+   - **Azure Firewall is a Layer 4 firewall-as-a-service solution**
+
+   - **Azure Firewall doesn’t require dedicated subnet**
+
+   - Azure Firewall supports public IP
+
+4. In Azure, without the need for deploying a NAT gateway, all VMs can communicate to the internet. What is the reason for this?
+
+   - **System route**
+
+   - VPN
+
+   - Built in internet gateway
+
+   - Built in NAT gateway
+
+5. You have created a DNS zone in Azure called “[kodekloudlabs.com](http://kodekloudlabs.com/)”. You added records of your public-facing webservers to the DNS zone. When you try to resolve the DNS names from your Windows computer, they are not getting resolved. What could be the reason?
+
+   - You need to change the visibility of your Azure zone to public
+
+   - **You need to make sure that the requests are going to the Azure provided name servers for resolution**
+
+   - Try ipconfig /flushdns and retry querying the record
+
+   - You need to create an on-premises DNS server to resolve the domain name
+
+6. VM1 is deployed to subnet-1 in VNet-1. We have NSG-1 assigned to subnet-1 and NSG-2 assigned to NIC of VM1. You need to confirm if inbound RDP traffic will be allowed by looking at the following inbound rules: ![question-image](https://res.cloudinary.com/dezmljkdo/image/upload/v1656356062/az104/table3_c4e1xa.png) Select true if traffic is allowed, else select false.
+
+   - False
+
+   - **True**
+
+7. You are setting up a hybrid environment. Your webservers are deployed in on-premises infrastructure, and you have a SQL Database deployed in Azure. You have already setup the VPN connection and the webserver can connect to resources in the Azure virtual network. Since Azure SQL Database is a PaaS solution and it’s not directly integrated to the virtual network, you cannot connect to it using a private IP. Your security asked you to find a way to connect to PaaS services via private IP. What is your recommendation?
+
+   - **Use Private Link**
+
+   - Use ExpressRoute
+
+   - Use Private DB Connection
+
+   - Use Service Endpoint
+
+8. You are not able to connect to one of your VMs on port 22. Following is the NSG inbound rules attached to VM NIC: ![question-image](https://res.cloudinary.com/dezmljkdo/image/upload/v1656356062/az104/table2_clnmvy.png) What should be done to establish SSH connectivity to the VM?
+
+   - Change Action of 101 to Allow
+
+   - Add a new rule with priority of 105 to allow SSH (22)
+
+   - Add a new rule with priority of 1 to allow SSH (22)
+
+   - **Change priority to 102 to 100**
+
+9. Your organization is planning to host DNS in Azure by which VMs can resolve names of other VMs. Which of the following services should be used to create a DNS zone for name resolution in an Azure virtual network?
+
+   - Virtual DNS
+
+   - Delegated DNS zone
+
+   - DNS zones
+
+   - **Private DNS zones**
+
+10. Which of the following statement is false?
+
+    - Virtual Networks are representation of cloud network.
+
+    - **Virtual Network is a global service in Azure used to connect to other virtual networks and on-premises environment.**
+
+    - A subscription is required to create an Azure virtual network.
+
+    - Virtual network can be divided to small sub networks called subnets.
+
+# Configure VMs
+
