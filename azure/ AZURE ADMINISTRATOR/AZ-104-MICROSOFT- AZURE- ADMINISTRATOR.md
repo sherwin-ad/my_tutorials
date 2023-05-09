@@ -308,3 +308,134 @@ https://github.com/rithinskaria/kodekloud-azure
 
 # Configure VMs
 
+## Create VM using Powershell
+
+1. Create resource group
+
+```
+PS /home/sherwin> New-AzResourceGroup -Name 'vm-from-ps' -Location 'East US'
+
+ResourceGroupName : vm-from-ps
+Location          : eastus
+ProvisioningState : Succeeded
+Tags              : 
+ResourceId        : /subscriptions/09be15e8-0638-4e99-8dc6-b53367de0941/resourceGroups/vm-from-ps
+```
+
+2. Create VM
+
+```
+PS /home/sherwin> New-AzVM -ResourceGroupName 'vm-from-ps' `                                 
+>> -Name "vm-ps" `
+>> -VirtualNetworkName "ps-vnet" `
+>> -SubnetName "default" `
+>> -SecurityGroupName "ps-nsg"
+```
+
+
+
+## Create VM using Azure CLI
+
+1. Create resource group
+
+```
+PS /home/sherwin> az group create -n vm-from-cli -l westus                                                 {                                                                                       
+  "id": "/subscriptions/09be15e8-0638-4e99-8dc6-b53367de0941/resourceGroups/vm-from-cli",
+  "location": "westus",
+  "managedBy": null,
+  "name": "vm-from-cli",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null,
+  "type": "Microsoft.Resources/resourceGroups"
+}
+```
+
+2. Create VM
+
+```
+PS /home/sherwin> az vm create -n vm-from-cli -g vm-from-cli --image UbuntuLTS --admin-username sherwinowen --admin-password "P@$$w0rd1234"  
+```
+
+## QUIZ: CONFIGURE VMS
+
+1. You are setting up Windows Server in Azure and would like to establish command line connectivity to the Windows VM. Which is the default port used for this?
+
+   - 3389
+
+   - **5986**
+
+   - 21
+
+   - 22
+
+2. What is the SLA offered by Microsoft if you are deploying two or more Virtual Machines across an availability set?
+
+   - **99.95%**
+
+   - 99.00%
+
+   - 99.99%
+
+   - 99.90%
+
+3. Currently, your organization’s web application is running on single VMs and in Microsoft documentation, you found that there is a service called Virtual Machine Scale Set. What are the advantages of using Virtual Machine Scale Set compared to Virtual Machines? Select all that apply.
+
+   - **Marketplace and custom images can be scaled with Virtual Machine Scaleset.**
+
+   - **Virtual Machine scale set can be easily integrated with Azure Load Balancer or Application Gateway and there is no need to update the backend pool if the number of instances change.**
+
+   - **Virtual Machine Scale Set can automatically change the number of instances based on demand**
+
+   - **Cost optimization**
+
+4. Which of the following statements about Azure Bastion is true? Select all that apply.
+
+   - Azure Bastion can be used for Windows VMs only.
+
+   - **Azure Bastion can automatically scale in and out based on the number of requests.**
+
+   - **Azure Bastion is PaaS solution.**
+
+   - Azure Bastion can be deployed to any subnet where your VMs are deployed to connect to the VMs.
+
+5. Your organization needs to encrypt data-in-use due to the sensitivity of the data your organization is handling. Which of the following computing options should you use to achieve this?
+
+   - Transparent Data Encryption
+
+   - **Confidential Computing**
+
+   - Storage Service Encryption
+
+   - Azure Disk Encryption
+
+6. You are using Availability Set and your application team is insisting on creating the availability to 99.99%. What is the best way to increase SLA for your application?
+
+   - Increase the number of fault domains and update domains
+
+   - Deploy more instances
+
+   - Roll back to single VMs and use Azure Load Balancer
+
+   - **Use Availability Zones**
+
+7. You are deploying DS2v2 VM in East US with a single disk, and your application is quite I/O intensive. Which disk tier will be ideal for your virtual machine?
+
+   - **Premium SSD**
+
+   - Super Fast SSD
+
+   - Standard SSD
+
+   - Ultra SSD
+
+8. Currently, your organization is using jumpbox VMs to connect to the virtual machines that are deployed in the VNet. Your security team would like to eliminate these jumpbox VMs and replace them with a PaaS solution for better security. Which solution would you suggest?
+
+   - **Azure Bastion**
+
+   - Azure Load Balancer
+
+   - Azure Private Link
+
+   - Azure Firewall
