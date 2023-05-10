@@ -439,3 +439,32 @@ PS /home/sherwin> az vm create -n vm-from-cli -g vm-from-cli --image UbuntuLTS -
    - Azure Private Link
 
    - Azure Firewall
+
+# Load Balancing
+
+## Azure Load Balancer
+
+**Git**
+
+kodekloud-azure/Azure Load Balancer
+
+```
+ls -l 
+total 40
+-rw-rw-r-- 1 sherwinowen sherwinowen  562 May 10 09:03 jumpbox.sh
+-rw-rw-r-- 1 sherwinowen sherwinowen 4402 May 10 09:03 lab-infra.ps1
+-rw-rw-r-- 1 sherwinowen sherwinowen  117 May 10 09:03 sample.html
+```
+
+## Azure Application Gateway
+
+kodekloud-azure/AppGateway
+
+```
+$ ls -l 
+total 44
+-rw-rw-r-- 1 sherwinowen sherwinowen 1795 May 10 09:03 jumpbox.sh
+-rw-rw-r-- 1 sherwinowen sherwinowen 8206 May 10 09:03 lab-infra.ps1
+-rw-rw-r-- 1 sherwinowen sherwinowen  127 May 10 09:03 sample.html
+```
+
