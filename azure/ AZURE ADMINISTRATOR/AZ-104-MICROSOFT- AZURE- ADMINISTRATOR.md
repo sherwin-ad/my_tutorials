@@ -468,3 +468,111 @@ total 44
 -rw-rw-r-- 1 sherwinowen sherwinowen  127 May 10 09:03 sample.html
 ```
 
+
+
+## QUIZ: LOAD BALANCING
+
+1. Azure Application Gateway is a Layer ____ load balancer.
+
+   - 6
+
+   - 4
+
+   - **7**
+
+   - 5
+
+2. If we take all the load balancing solutions in Azure, which of the following can be used for public facing non-Azure applications? Select all that apply.
+
+   - **Azure Front Door**
+
+   - **Azure Traffic Manager**
+
+   - **Azure Application Gateway**
+
+   - Azure Load Balancer
+
+3. Azure Load Balancer is a Layer ________ load balancer.
+
+   - 7
+
+   - 5
+
+   - 3
+
+   - **4**
+
+4. You created two App Services in East US region and are trying to load balance the request with the help of Azure Load Balancer. However, when you configure the backend pool for load balancer, you are not able to find the App Services. You confirmed that these are deployed in the same subscription, resource group and region as load balancer.
+
+   - Ensure you are using the Standard or Premium tier of App Service Plan
+
+   - Make sure App Service is not in stopped state.
+
+   - Contact Microsoft support
+
+   - **Azure Load Balancer only supports Virtual Machines and Virtual Machine Scale Set**
+
+5. One of your applications behind Application Gateway was attacked by attackers and your security team found that they used cross-site scripting to attack the application. Which optional component of Application Gateway should be enabled to avoid these kinds of attacks?
+
+   - **Web Application Firewall**
+
+   - Application Proxy
+
+   - DDOS Protection
+
+   - Azure Firewall
+
+6. Which of the following is considered as a DNS resolver in Azure?
+
+   - Azure Application Gateway
+
+   - Azure Front Door
+
+   - **Azure Traffic Manager**
+
+   - Azure Load Balancer
+
+7. You are setting up a load balancer with the default session persistence settings. What are the factors that will be considered for routing the traffic to backend servers with the default session persistence settings?
+
+   - **Source IP, Destination IP, Protocol, Source Port, Destination Port**
+
+   - Source, Destination IP, Source Port, Destination Port
+
+   - Source IP, Destination IP
+
+   - Source IP, Destination IP, Protocol
+
+8. Which of the following statements about Azure Application Gateway is true? Select all that apply
+
+   - **Azure Application Gateway supports Azure Virtual Machines, Azure VMSS, App Services and App Service deployment slots as backend pools.**
+
+   - Azure Application Gateway cannot be used to load balance requests to on-premises application.
+
+   - **Behind a single Application Gateway, multiple sites can be hosted.**
+
+   - We cannot create empty backend pools in Application Gateway.
+
+9. While deploying Azure Load Balancer, you came to know there are multiple SKUs for Azure Load Balancer. Your application is a production application that requires 99.99% SLA. Which SKU would you choose?
+
+   - Production
+
+   - Basic
+
+   - Premium
+
+   - **Standard**
+
+10. Which of the following features are supported by Azure Application Gateway? Select all that apply.
+
+    - **URL Redirect**
+
+    - **SSL termination**
+
+    - **Custom error pages**
+
+    - **HTTP header rewrite**
+
+
+
+# Intersite connectivity
+
