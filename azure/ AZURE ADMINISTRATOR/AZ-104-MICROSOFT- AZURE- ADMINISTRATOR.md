@@ -22,7 +22,7 @@ https://github.com/rithinskaria/kodekloud-azure
    - Free
    - Premium P1
 
-3. Which users will be part of the “Finance” group if the dynamic query for the group is user.department –eq “Finance” –and user.country –eq “US”? ![question-image](https://res.cloudinary.com/dezmljkdo/image/upload/v1656356062/az104/table1_qqyxc9.png)
+3. Which users will be part of the “Finance” group if the dynamic query for the group is user.department –eq “Finance” –and user.country –eq “US”? ![question-image](images/table1_qqyxc9.png)
 
    - **3 and 5**
 
@@ -72,7 +72,7 @@ https://github.com/rithinskaria/kodekloud-azure
 
    - **30 days**
 
-8. Which type of user account is owned by Abigail Richards? ![question-image](https://res.cloudinary.com/dezmljkdo/image/upload/v1655214383/az104/az1041_swnnph.png)
+8. Which type of user account is owned by Abigail Richards? ![question-image](images/az1041_swnnph.png)
 
    - Member identity
 
@@ -260,7 +260,7 @@ https://github.com/rithinskaria/kodekloud-azure
 
    - You need to create an on-premises DNS server to resolve the domain name
 
-6. VM1 is deployed to subnet-1 in VNet-1. We have NSG-1 assigned to subnet-1 and NSG-2 assigned to NIC of VM1. You need to confirm if inbound RDP traffic will be allowed by looking at the following inbound rules: ![question-image](https://res.cloudinary.com/dezmljkdo/image/upload/v1656356062/az104/table3_c4e1xa.png) Select true if traffic is allowed, else select false.
+6. VM1 is deployed to subnet-1 in VNet-1. We have NSG-1 assigned to subnet-1 and NSG-2 assigned to NIC of VM1. You need to confirm if inbound RDP traffic will be allowed by looking at the following inbound rules: ![question-image](images/table3_c4e1xa.png) Select true if traffic is allowed, else select false.
 
    - False
 
@@ -276,7 +276,7 @@ https://github.com/rithinskaria/kodekloud-azure
 
    - Use Service Endpoint
 
-8. You are not able to connect to one of your VMs on port 22. Following is the NSG inbound rules attached to VM NIC: ![question-image](https://res.cloudinary.com/dezmljkdo/image/upload/v1656356062/az104/table2_clnmvy.png) What should be done to establish SSH connectivity to the VM?
+8. You are not able to connect to one of your VMs on port 22. Following is the NSG inbound rules attached to VM NIC: ![question-image](images/table2_clnmvy.png) What should be done to establish SSH connectivity to the VM?
 
    - Change Action of 101 to Allow
 
@@ -575,4 +575,78 @@ total 44
 
 
 # Intersite connectivity
+
+## QUIZ: INTERSITE CONNECTIVITY
+
+1. XYZ Inc. has offices in NYC, LAX and DAL. In addition to deployments in these on-premises offices they have deployment in Azure as well. They need to set-up Site-to-Site connection from Azure to each of their offices. As of now, they only have one virtual network in Azure; how many Virtual Network Gateways and Local Network Gateways are required in Azure to set-up the connectivity?
+
+   - 3 VPN Gateways and 1 Local Network Gateways
+
+   - **1 VPN Gateway and 3 Local Network Gateways**
+
+   - 3 VPN Gateways and 3 Local Network Gateways
+
+   - 1 VPN Gateway and 1 Local Network Gateway1 VPN Gateway and 3 Local Network Gateways
+
+2. There are three virtual networks in Azure, vnet-a is peered with vnet-b and vnet-b is peered with vnet-c. The resources deployed in vnet-a can communicate with resources in vnet-c.
+
+   - **False**
+
+   - True
+
+3. Which of the following connections can be used as a failover path for ExpressRoute to on-premise site?
+
+   - Gateway transit
+
+   - **Site-to-Site**
+
+   - ExpressRoute failover
+
+   - Point-to-Site
+
+4. ## We have the following VNets in Azure. For which scenarios can we establish peering? ![question-image](images/az104-vnet_smp2ym.png)
+
+   - A and B
+
+   - A, C, and D
+
+   - **A and C**
+
+   - A, B, C and D
+
+   In scenario B, the address spaces are overlapping so we cannot establish peering. In scenario-D, the CIDR for VNet-a is /30; in Azure we can only create till /29. Since the network itself cannot be created, peering cannot be established.
+
+5. Which would be the cheapest method to establish private connectivity between two virtual networks in Azure? The estimated data transfer is 10 GB per month.
+
+   - Site-to-Site connection
+
+   - VNet-to-VNet connection
+
+   - **Virtual Network Peering**
+
+   - ExpressRoute
+
+6. What is the maximum number of peering a single virtual network can have?
+
+   - 400
+
+   - **500**
+
+   - 200
+
+   - 100
+
+7. You would like to set up an architecture where you can use the gateway deployed in the peered network to send traffic to another destination, say, on-premises. Which feature should you enable while setting up peering?
+
+   - Route table
+
+   - **Gateway transit**
+
+   - Gateway transfer
+
+   - Transit route
+
+
+
+# Automating deployment and configuration
 
