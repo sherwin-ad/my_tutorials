@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for vnet"
+            }
+        },
+        "userInput": {
+            "type": "string",
+            "minLength":3,
+            "maxLength":8,
+            "metadata": {
+                "description": "description"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "vnet-name": "[concat(parameters('userInput'),'-vnet')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('vnet-name')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "location": "[parameters('location')]",
+            "tags": {
+                "created-from": "ARM template",
+                "location": "[parameters('location')]",
+                "userinput":"[parameters('userInput')]"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "192.168.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "web-subnet",
+                        "properties": {
+                            "addressPrefix": "192.168.1.0/24"
+                        }
+                    },
+                    {
+                        "name": "data-subnet",
+                        "properties": {
+                            "addressPrefix": "192.168.2.0/24"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

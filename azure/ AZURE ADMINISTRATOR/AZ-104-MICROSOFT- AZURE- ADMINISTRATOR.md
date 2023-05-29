@@ -650,3 +650,208 @@ total 44
 
 # Automating deployment and configuration
 
+## Creating ARM template
+
+- Use Visual Studio Code
+
+- Install **Azure Resource Manager (ARM) Tools** extension in Visual Studio Code
+
+- type "arm" to show the different ARM template 
+
+- azure quickstart templates
+
+## Deploying ARM template
+
+1. Azure Portal
+
+   - Goto Deploy a custom template
+
+   - Load the template 
+
+     Vent-template
+
+     ```
+     {
+         "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+         "contentVersion": "1.0.0.0",
+         "parameters": {},
+         "functions": [],
+         "variables": {},
+         "resources": [
+             {
+                 "name": "arm-template-vnet",
+                 "type": "Microsoft.Network/virtualNetworks",
+                 "apiVersion": "2020-11-01",
+                 "location": "[resourceGroup().location]",
+                 "tags": {
+                     "created-from": "ARM template"
+                 },
+                 "properties": {
+                     "addressSpace": {
+                         "addressPrefixes": [
+                             "192.168.0.0/16"
+                         ]
+                     },
+                     "subnets": [
+                         {
+                             "name": "web-subnet",
+                             "properties": {
+                                 "addressPrefix": "192.168.1.0/24"
+                             }
+                         },
+                         {
+                             "name": "data-subnet",
+                             "properties": {
+                                 "addressPrefix": "192.168.2.0/24"
+                             }
+                         }
+                     ]
+                 }
+             }
+         ],
+         "outputs": {}
+     }
+     ```
+
+     
+
+     
+
+2. Azure CLI
+
+   ```
+   $ az group deployment create \
+   -g <resource group name>
+   --template file <path to file>
+   
+   PS /home/sherwin> az group deployment create --resource-group arm-sg --template-file vnet-template.json
+   This command is implicitly deprecated because command group 'group deployment' is deprecated and will be removed in a future release. Use 'deployment group' instead.
+   Please provide string value for 'location' (? for help): eastus
+   Please provide string value for 'userInput' (? for help): owen
+   ```
+
+3. Azure Powershell
+
+   ```
+   $ New AzResourceGroupDeployment -ResourceGroupName <resourcegroup> 
+   -TemplateFile <path to file>
+   ```
+
+
+
+## Exporting deployments as ARM template
+
+1. Azure Portal
+
+   - Goto Resource Group > Export Template
+
+2. Azure CLI
+
+   ```
+   $ az group export --name <resource group name>
+   ```
+
+3. Azure Powershell
+
+   ```
+   $ Export-AzResourceGroup -ResourceGroupName <resource group> --resource
+   ```
+
+   
+
+## **Creating VHD Templates**
+
+![image-20230529101010202](images/image-20230529101010202.png)
+
+![image-20230529101137663](images/image-20230529101137663-5326299.png)
+
+## QUIZ: AUTOMATING DEPLOYMENT AND CONFIGURATION
+
+1. What is the maximum run window we have for Custom Script Extension before it hits timeout?
+
+   - 30 minutes
+
+   - **1.5 hours**
+
+   - 1 hour
+
+   - 15 minutes
+
+   CSE can run scripts up to 90 minutes, anything more that will be returned as a timed out operation.
+
+2. Your Windows administrator would like to create multiple domain controllers and file servers using Azure VMs. They already have a PowerShell script for this, the script requires reboot and has complex installation. Which extension would you prefer to accomplish this task?
+
+   - **Desired State Configuration Extension**
+
+   - Custom Script Extension
+
+   - PowerShell Remoting Extension
+
+   - Configuration Management Extension
+
+   DSC extension can be used for complex installations that require reboot.
+
+3. Which PowerShell command is used to deploy an ARM template?
+
+   - New-AzGroupTemplateDeployment
+
+   - **New-AzResourceGroupDeployment**
+
+   - New-AzTemplateDeployment
+
+   - New-AzResourceGroupTemplate
+
+   New-AzResourceGroupDeployment command can be used to deploy an ARM template using PowerShell.
+
+4. In your organization, there is a need to create a custom Linux image. This image should contain the Apache, PHP and MySQL installation. Also, the default files should be modified with your own HTML files. This custom image will be used with Virtual Machine Scale Set. Your Azure administrator already created a VM with the required software and files. What type of image should you create?
+
+   - Backup image
+
+   - Snapshot
+
+   - Specialized image
+
+   - **Generalized image**
+
+   Generalized image needs to be created. VMs created from this image require a hostname, admin user, and other VM related setup. This image can be used to create VMs or VMSS.
+
+5. You would like to export all the resources in a resource group to an ARM template. Which of the following methods can be used. Select all that apply.
+
+   - **Use Export template option in Resource Group blade**
+
+   - Use Deployments in Resource Group blade and export the templates
+
+   - Use Export-AzResourceGroupTemplate command in Azure PowerShell
+
+   - **Use az group export command in Azure CLI**
+
+   We can use the export option in Azure Portal or use the az group export command in Azure CLI. If you want to export using Azure PowerShell, then you need to use the Export-AzResourceGroup command.
+
+6. You need to pass a value during the ARM template deployment. How do we define this in the template?
+
+   - Create a dynamic variable
+
+   - **Use parameters**
+
+   - Create a function which accepts the value
+
+   - Store as a variable and modify as required
+
+   With the help of parameters, we can provide values at the time of template execution.
+
+7. Which of the following connections can be used as a failover path for ExpressRoute to on-premise site?
+
+   - ExpressRoute failover
+
+   - **Site-to-Site**
+
+   - Point-to-Site
+
+   - Gateway transit
+
+   Site-to-site and ExpressRoute connections can co-exist and S2S can act as a failover path for ExpressRoute.
+
+
+
+# Securing storage
+
