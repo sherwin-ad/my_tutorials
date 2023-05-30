@@ -967,3 +967,185 @@ total 44
 
 # Administering Azure Blobs and Azure Files
 
+## QUIZ: ADMINISTERING AZURE BLOBS AND AZURE FILES
+
+1. Your storage administrator created a file share for you and when you mount it to your on-premises Windows server which is behind a firewall, you are not able to connect to the share. What should be done?
+
+   - **Open port 445 on the firewall**
+
+   - Put the Windows server in DMZ
+
+   - Provide the Azure AD credentials to complete the setup
+
+   - Add Windows file server role to the server
+
+2. Your storage administrator has set the public access level of a blob container to “Blob”. What does that mean?
+
+   - Users will have read access to all blobs in the storage account
+
+   - Users will have anonymous read access to a single blob
+
+   - **Users will have read access to blobs in the container**
+
+   - Users will have read access to all containers and blobs
+
+3. Which one of the following is not a use case of Azure Blob Storage?
+
+   - Embed images or documents in webpages
+
+   - Store files for distributed access in websites
+
+   - **Mount as a common storage for virtual machines**
+
+   - Stream video and audio directly to browser
+
+4. You started using blob access tier, however, the manual conversion of access tiers is not feasible considering the amount of data. You are looking for a solution by which you can automatically transition between the access tiers. What do you recommend?
+
+   - **Lifecycle management**
+
+   - Import/Export tool
+
+   - AzCopy
+
+   - CORS
+
+5. To which all-storage account services can we enable anonymous access?
+
+   - Files
+
+   - Queues
+
+   - **Blobs**
+
+   - Tables
+
+6. One of your applications is writing a lot of data to an Azure Storage account. Only a part of it’s accessed regularly, rest of the data remain in the storage account. You should consider which feature of blob storage to optimize the cost of the storage?
+
+   - Use Blob Scavenging option
+
+   - Use Blob Clean up tool
+
+   - **Use Blob Access Tiers**
+
+   - Use Blob Access Policy
+
+7. Now that you are aware of Lifecycle Management, you started implementing it for all storage accounts from Azure Portal. One of your old storage accounts, which is a Premium General Purpose v1 storage account deployed in East US, cannot use this feature. What could be the reason?
+
+   - You need to have dedicated storage permission like Storage Blob Data Contributor to enable this feature
+
+   - **GPv1 doesn’t support lifecycle management**
+
+   - You cannot enable from Azure Portal, v1 account requires PowerShell or CLI to enable lifecycle management
+
+   - By default, lifecycle management is disabled for GPv1, however, this can be enabled from storage account properties
+
+   GPv1 storage accounts don't support lifecycle management.
+
+# Managing Storage
+
+## Azure Storage Explorer
+
+https://azure.microsoft.com/en-us/products/storage/storage-explorer/
+
+## AZCopy
+
+https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10#download-azcopy
+
+### Upload file using SAS key
+
+**SAS Token**
+
+![image-20230530174602543](images/image-20230530174602543.png)
+
+**Container URL**
+
+![image-20230530174902160](images/image-20230530174902160-5440144.png)
+
+
+
+azcopy copy <source> <container-url + sas-token>
+
+```
+$ ./azcopy copy ~/Pictures/service_type.png "https://owenstorage02.blob.core.windows.net/images?sv=2022-11-02&ss=b&srt=sco&sp=rwdlaciytfx&se=2023-05-30T17:38:16Z&st=2023-05-30T09:38:16Z&spr=https&sig=%2BtLi2nrsxi%2BhmtoRJYIuTR0cOR1Mw7Ezev4%2BOvtTRas%3D"
+INFO: Scanning...
+INFO: Any empty folders will not be processed, because source and/or destination doesn't have full folder support
+
+Job e0c683c3-86ab-8242-7dcc-b80bc9b3571e has started
+Log file is located at: /Users/sherwinowen/.azcopy/e0c683c3-86ab-8242-7dcc-b80bc9b3571e.log
+
+0.0 %, 0 Done, 0 Failed, 1 Pending, 0 Skipped, 1 Total, 2-sec Throughput (Mb/s):100.0 %, 1 Done, 0 Failed, 0 Pending, 0 Skipped, 1 Total,
+```
+
+### Upload file using Azure AD
+
+**Add role assignment**
+
+![image-20230530180203008](images/image-20230530180203008-5440924.png)
+
+**Tenant ID**
+
+![image-20230530180701662](images/image-20230530180701662.png)
+
+**Azcopy login**
+
+```
+% ./azcopy login --tenant-id 19536135-463a-411c-96f4-1f13cfd99a30
+To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code I765ZC3JL to authenticate.
+```
+
+![image-20230530181013006](images/image-20230530181013006-5441415.png)
+
+```
+$ ./azcopy copy ~/Pictures/fisheries_tor.png https://owenstorage02.blob.core.windows.net/images
+INFO: Scanning...
+INFO: Autologin not specified.
+INFO: Authenticating to destination using Azure AD
+INFO: Any empty folders will not be processed, because source and/or destination doesn't have full folder support
+
+Job 02f9cfd0-39b2-e94f-6b2e-7d631937ca92 has started
+Log file is located at: /Users/sherwinowen/.azcopy/02f9cfd0-39b2-e94f-6b2e-7d631937ca92.log
+
+100.0 %, 1 Done, 0 Failed, 0 Pending, 0 Skipped, 1 Total,
+
+
+Job 02f9cfd0-39b2-e94f-6b2e-7d631937ca92 summary
+Elapsed Time (Minutes): 0.1336
+Number of File Transfers: 1
+Number of Folder Property Transfers: 0
+Number of Symlink Transfers: 0
+Total Number of Transfers: 1
+Number of File Transfers Completed: 1
+Number of Folder Transfers Completed: 0
+Number of File Transfers Failed: 0
+Number of Folder Transfers Failed: 0
+Number of File Transfers Skipped: 0
+Number of Folder Transfers Skipped: 0
+TotalBytesTransferred: 270644
+Final Job Status: Completed
+```
+
+
+
+## QUIZ: MANAGING STORAGE
+
+1. Which tool is used to prepare the disks in the Import/Export tool?
+
+   - **WAImportExport tool**
+
+   - ImportExport tool
+
+   - PSImportExport tool
+
+   - AzImportExport tool
+
+   The WAImportExport tool is used to prepare the disks, copy the contents and generate the journal files.
+
+2. You have a few GBs of data that needs to be copied to Azure Blobs everyday at 4:00 AM. Which tool do you recommend for this?
+
+   - Storage Explore
+
+   - **AZCopy**
+
+   - Import/Export tool
+
+   - Azure Portal
