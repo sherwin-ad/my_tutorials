@@ -1149,3 +1149,19 @@ Final Job Status: Completed
    - Import/Export tool
 
    - Azure Portal
+
+# Azure App Services
+
+## Creating an App Service
+
+1. Create App Service Plan
+
+   - Goto App Service Plans
+
+   ![image-20230531063842018](images/image-20230531063842018-1685486326855-1.png)
+
+2. Create App Service
+
+   - Goto App Service
+   
+   ![image-20230531064443560](images/image-20230531064443560-1685486685166-3.png)
