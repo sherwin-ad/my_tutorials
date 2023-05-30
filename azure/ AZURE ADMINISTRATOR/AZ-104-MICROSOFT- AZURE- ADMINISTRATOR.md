@@ -855,3 +855,115 @@ total 44
 
 # Securing storage
 
+## QUIZ: SECURING STORAGE
+
+1. What type of encryption is used by Storage Service Encryption?
+
+   - 512 bit AES
+
+   - 128 bit AES
+
+   - 128 bit RSA
+
+   - **256 bit AES**
+
+2. Your organization follows the principle of least privilege and uses custom RBAC roles to segregate the roles and responsibilities. You need to make sure that your storage admins are able to view, read, and copy the storage account keys. Which action should you add to your custom role?
+
+   - **Microsoft.Storage/storageAccounts/listkeys/action**
+
+   - Microsoft.Storage/storageAccounts/keys/action
+
+   - Microsoft.Storage/storageAccounts/keys/*
+
+   - Microsoft.Storage/storageAccounts/listkeys
+
+   Users with Microsoft.Storage/storageAccounts/listkeys/action permission will be able to view, read, and copy the storage account keys.
+
+3. Which of the following statement is incorrect?
+
+   - Customer-managed keys only supports encryption of files and blobs
+
+   - **SSE can be disabled for testing purposes from Azure Portal if required**
+
+   - SSE allows you to use Microsoft-managed keys and Customer-managed keys
+
+   - SSE automatically decrypts the data when you want to access it
+
+   SSE cannot be disabled.
+
+4. In Azure Disk Encryption for Linux VMs, which tool is used for encryption?
+
+   - Crypto
+
+   - BitLocker
+
+   - Crypt-Linux
+
+   - **DM-Crypt**
+
+5. As per your organizational policy, you need to rotate the storage account keys every 60 days. What all things you need to consider before making this change? Select all that apply.
+
+   - No impact on storage account
+
+   - **All applications using the storage account keys will no longer be able to access the storage account**
+
+   - There will be a minor downtime during the process and users accessing storage account using Azure AD will be affected.
+
+   - **All SAS token generated with the keys will be revoked**
+
+   Rotating the storage account keys will revoke all SAS tokens and stop applications from accessing the storage account as they are still using old keys. You can consider storing the keys in Key Vault so that the application can obtain the keys from the vault. Users using Azure AD will not be impacted as storage account keys are not used in Azure AD authentication.
+
+6. In your development environment, your developers require a storage account which offers at least 99.999999999999 (12 “9s”) of durability. Which type of redundancy should you choose? Make sure your choice is the cheapest one.
+
+   - GRS
+
+   - LRS
+
+   - **ZRS**
+
+   - GZRS
+
+7. You have successfully set up the storage account with GZRS redundancy. How many copies of data will be created by Azure for this redundancy?
+
+   - 5
+
+   - 3
+
+   - 4
+
+   - **6**
+
+8. To which all-storage account services can we enable anonymous access?
+
+   - Files
+
+   - **Blobs**
+
+   - Tables
+
+   - Queues
+
+9. You are partnering with another organization to develop a C# application for your organization. They need a storage account to write logs from development and they need access to the storage account for 31 days. Due to organizational policies, you cannot set up guest accounts for these developers in your tenant. Which authorization method should you use?
+
+   - Storage keys
+
+   - Just in time access
+
+   - Azure AD + RBAC
+
+   - **Storage Access Signature**
+
+10. Your organization would like to set-up Geo-Zone-Redundant storage account. Which type of storage account do you recommend for this redundancy?
+
+    - Premium Blob Storage
+
+    - **StorageV2**
+
+    - Premium File Storage
+
+    - StorageV1
+
+    General Purpose v2 or StorageV2 accounts are needed to use GZRS or RA-GZRS redundancy.
+
+# Administering Azure Blobs and Azure Files
+
