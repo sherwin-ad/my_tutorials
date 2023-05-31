@@ -1165,3 +1165,30 @@ Final Job Status: Completed
    - Goto App Service
    
    ![image-20230531064443560](images/image-20230531064443560-1685486685166-3.png)
+
+## Securing an App Service
+
+Goto App Services > Authentication > Add an identity provider
+
+![image-20230531090930026](images/image-20230531090930026-5495372.png)
+
+![image-20230531091148459](images/image-20230531091148459-5495511.png)
+
+
+
+## Custom Domains
+
+Goto App Services > Custom Domains
+
+![image-20230531092434166](images/image-20230531092434166.png)
+
+## Backup App Service
+
+Goto App Services > Backups
+
+![image-20230531162436998](images/image-20230531162436998-5521479.png)
+
+
+
+## CI/CD and Deployment slots
+
