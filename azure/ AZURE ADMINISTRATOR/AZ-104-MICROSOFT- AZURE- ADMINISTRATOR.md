@@ -1192,3 +1192,101 @@ Goto App Services > Backups
 
 ## CI/CD and Deployment slots
 
+
+
+## QUIZ: AZURE APP SERVICES
+
+1. You have a webapp with the URL: [kodekloud-courses.azurewebsites.net](http://kodekloud-courses.azurewebsites.net/). You created a deployment slot named “dev”. What would be the URL to the slot?
+
+   - [dev-kodekloud-courses.azurewebsites.net](http://dev-kodekloud-courses.azurewebsites.net/)
+
+   - [kodekloud-courses.dev.azurewebsites.net](http://kodekloud-courses.dev.azurewebsites.net/)
+
+   - **[kodekloud-courses-dev.azurewebsites.net](http://kodekloud-courses-dev.azurewebsites.net/)**
+
+   - [dev.kodekloud-courses.azurewebsites.net](http://dev.kodekloud-courses.azurewebsites.net/)
+
+   The name of the slot will be added as a suffix to the production slot.
+
+2. One of your production applications requires App Service Backup. The connected MySQL PaaS database is of size 8.3 GB. How can we back this up?
+
+   - Use App Service Backup which supports backup of application and connected database
+
+   - **Use Azure Backup for Database**
+
+   - Use Azure Site Recovery and setup backup for the database
+
+   - Databases cannot be used with Azure App Services
+
+   The maximum backup database size supported by Azure App Service is 4 GB since the size is larger than that, you need to use Azure Backup for Database.
+
+3. You have a production application with the name kodekloud and the URL for the app is [https://kodekloudsales.azurewebsites.net](https://kodekloudsales.azurewebsites.net/). You would like to set up a custom domain name [sales.kodekloud.com](http://sales.kodekloud.com/). Which record type should you add to verify the ownership before you configure the alias?
+
+   - SRV
+
+   - CNAME
+
+   - A
+
+   - **TXT**
+
+   You need to add the unique ID as the value of the TXT record in your domain to verify the domain ownership.
+
+4. Out of the following CI/CD methods, which are considered as manual deployment methods? Select all that apply.
+
+   - Bitbucket
+
+   - **Dropbox**
+
+   - **OneDrive**
+
+   - **External Git**
+
+   All choices except Bitbucket are manual deployment methods. Bitbucket, Git, GitHub, and Azure Repos are considered as automated deployment options.
+
+5. Following the PaaS first approach, you started using Azure App Services. Before moving to production, you need to test your applications on Azure App Service. As per your development team, they require dedicated compute which is ideal for development and testing. What tier do you suggest? Make sure your suggestion is the cheapest option.
+
+   - **Basic**
+
+   - Free
+
+   - Standard
+
+   - Shared
+
+   The Basic plan provides dedicated compute and is recommended for all development and testing purposes. Even though Free and Shared are recommended for development and they are cheap, they are using shared compute.
+
+6. What factor determines the number of deployment slots you can have for an App Service?
+
+   - Runtime of the webapp
+
+   - **Tier of the App Service Plan**
+
+   - Location of the webapp
+
+   - Operating System of the plan
+
+   App Service Plan tier decides the number of deployment slots you can have for a webapp. Deployment slot is supported only from Standard plan onwards.
+
+7. Your production application is facing performance issues while too many users are accessing your application. Currently, your application is running on a Basic App Service Plan. As per your analysis, you require five instances to handle the load. Suggest a solution for this and make sure your choice is the cheapest one.
+
+   - Enable autoscaling for Basic tier
+
+   - **Upgrade to Standard tier**
+
+   - Upgrade to Premium tier
+
+   - Upgrade to Isolated tier
+
+8. Which of the following can be swapped during a deployment slot swap?
+
+   - CORS
+
+   - Custom domain names
+
+   - **Connection strings**
+
+   - TLS/SSL settings
+
+   Connection strings can be swapped during a deployment slot swap, rest of the choices cannot be swapped.
+
