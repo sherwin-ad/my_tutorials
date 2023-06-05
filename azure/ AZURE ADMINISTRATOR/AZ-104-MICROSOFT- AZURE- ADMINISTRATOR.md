@@ -1290,3 +1290,228 @@ Goto App Services > Backups
 
    Connection strings can be swapped during a deployment slot swap, rest of the choices cannot be swapped.
 
+
+
+# CONFIGURING CONTAINERS
+
+## Azure Container Instances
+
+**Using Azure Cloud Shell**
+
+1. Create resource group
+
+   ```
+   PS /home/sherwin> az group create -n az-acr-aci-demo -l eastus                                                       {                                                               
+     "id": "/subscriptions/09be15e8-0638-4e99-8dc6-b53367de0941/resourceGroups/az-acr-aci-demo",
+     "location": "eastus",
+     "managedBy": null,
+     "name": "az-acr-aci-demo",
+     "properties": {
+       "provisioningState": "Succeeded"
+     },
+     "tags": null,
+     "type": "Microsoft.Resources/resourceGroups"
+   }
+   ```
+
+2. Create azure container registries
+
+   ```
+   PS /home/sherwin> az acr create -n azaciowenrepo -g az-acr-aci-demo --sku Standard --admin-enabled true  
+   {
+     "adminUserEnabled": true,
+     "anonymousPullEnabled": false,
+     "creationDate": "2023-06-05T07:51:24.025582+00:00",
+     "dataEndpointEnabled": false,
+     "dataEndpointHostNames": [],
+     "encryption": {
+       "keyVaultProperties": null,
+       "status": "disabled"
+     },
+     "id": "/subscriptions/09be15e8-0638-4e99-8dc6-b53367de0941/resourceGroups/az-acr-aci-demo/providers/Microsoft.ContainerRegistry/registries/azaciowenrepo",
+     "identity": null,
+     "location": "eastus",
+     "loginServer": "azaciowenrepo.azurecr.io",
+     "name": "azaciowenrepo",
+     "networkRuleBypassOptions": "AzureServices",
+     "networkRuleSet": null,
+     "policies": {
+       "azureAdAuthenticationAsArmPolicy": {
+         "status": "enabled"
+       },
+       "exportPolicy": {
+         "status": "enabled"
+       },
+       "quarantinePolicy": {
+         "status": "disabled"
+       },
+       "retentionPolicy": {
+         "days": 7,
+         "lastUpdatedTime": "2023-06-05T07:51:30.853172+00:00",
+         "status": "disabled"
+       },
+       "softDeletePolicy": {
+         "lastUpdatedTime": "2023-06-05T07:51:30.853172+00:00",
+         "retentionDays": 7,
+         "status": "disabled"
+       },
+       "trustPolicy": {
+         "status": "disabled",
+         "type": "Notary"
+       }
+     },
+     "privateEndpointConnections": [],
+     "provisioningState": "Succeeded",
+     "publicNetworkAccess": "Enabled",
+     "resourceGroup": "az-acr-aci-demo",
+     "sku": {
+       "name": "Standard",
+       "tier": "Standard"
+     },
+     "status": null,
+     "systemData": {
+       "createdAt": "2023-06-05T07:51:24.025582+00:00",
+       "createdBy": "sherwin.adriano@outlook.com",
+       "createdByType": "User",
+       "lastModifiedAt": "2023-06-05T07:51:24.025582+00:00",
+       "lastModifiedBy": "sherwin.adriano@outlook.com",
+       "lastModifiedByType": "User"
+     },
+     "tags": {},
+     "type": "Microsoft.ContainerRegistry/registries",
+     "zoneRedundancy": "Disabled"
+   }
+   ```
+
+3. Create Dockerfile
+
+   ```
+   PS /home/sherwin> code Dockerfile  
+   ```
+
+   Dockerfile
+
+   ```
+   FROM nginx:latest
+   COPY ./index.html /usr/share/nginx/html/index.html
+   ```
+
+   index.html
+
+   ```
+   <html>
+     <body style="background-color:green">
+         <h1 style="color:white;"> Hello from container instances :)</h1>
+     </body>    
+   </html>
+   ```
+
+   
+
+4. Build docker container
+
+   ```
+   PS /home/sherwin/aci> az acr build --file Dockerfile --registry azaciowenrepo --image greenweb:v1 .                          Packing source code into tar to upload...                   
+   Uploading archived source code from '/tmp/build_archive_fbf48d0867d84ba7a480b984995dce42.tar.gz'...
+   Sending context (520.000 Bytes) to registry: azaciowenrepo...
+   Queued a build with ID: ca1
+   Waiting for an agent...
+   2023/06/05 08:23:32 Downloading source code...
+   2023/06/05 08:23:32 Finished downloading source code
+   2023/06/05 08:23:33 Using acb_vol_972886c9-aca1-42b1-9182-510722b76ef0 as the home volume
+   2023/06/05 08:23:33 Setting up Docker configuration...
+   2023/06/05 08:23:33 Successfully set up Docker configuration
+   2023/06/05 08:23:33 Logging in to registry: azaciowenrepo.azurecr.io
+   2023/06/05 08:23:34 Successfully logged into azaciowenrepo.azurecr.io
+   2023/06/05 08:23:34 Executing step ID: build. Timeout(sec): 28800, Working directory: '', Network: ''
+   2023/06/05 08:23:34 Scanning for dependencies...
+   2023/06/05 08:23:35 Successfully scanned dependencies
+   2023/06/05 08:23:35 Launching container with name: build
+   Sending build context to Docker daemon  4.096kB
+   Step 1/2 : FROM nginx:latest
+   latest: Pulling from library/nginx
+   f03b40093957: Pulling fs layer
+   eed12bbd6494: Pulling fs layer
+   fa7eb8c8eee8: Pulling fs layer
+   7ff3b2b12318: Pulling fs layer
+   0f67c7de5f2c: Pulling fs layer
+   831f51541d38: Pulling fs layer
+   7ff3b2b12318: Waiting
+   0f67c7de5f2c: Waiting
+   831f51541d38: Waiting
+   fa7eb8c8eee8: Download complete
+   7ff3b2b12318: Verifying Checksum
+   7ff3b2b12318: Download complete
+   0f67c7de5f2c: Verifying Checksum
+   0f67c7de5f2c: Download complete
+   eed12bbd6494: Verifying Checksum
+   eed12bbd6494: Download complete
+   f03b40093957: Verifying Checksum
+   f03b40093957: Download complete
+   831f51541d38: Verifying Checksum
+   831f51541d38: Download complete
+   f03b40093957: Pull complete
+   eed12bbd6494: Pull complete
+   fa7eb8c8eee8: Pull complete
+   7ff3b2b12318: Pull complete
+   0f67c7de5f2c: Pull complete
+   831f51541d38: Pull complete
+   Digest: sha256:af296b188c7b7df99ba960ca614439c99cb7cf252ed7bbc23e90cfda59092305
+   Status: Downloaded newer image for nginx:latest
+    ---> f9c14fe76d50
+   Step 2/2 : COPY ./index.html /usr/share/nginx/html/index.html
+    ---> 283c84a6d7b7
+   Successfully built 283c84a6d7b7
+   Successfully tagged azaciowenrepo.azurecr.io/greenweb:v1
+   2023/06/05 08:23:39 Successfully executed container: build
+   2023/06/05 08:23:39 Executing step ID: push. Timeout(sec): 3600, Working directory: '', Network: ''
+   2023/06/05 08:23:39 Pushing image: azaciowenrepo.azurecr.io/greenweb:v1, attempt 1
+   The push refers to repository [azaciowenrepo.azurecr.io/greenweb]
+   ff02847e6121: Preparing
+   4fd834341303: Preparing
+   5e099cf3f3c8: Preparing
+   7daac92f43be: Preparing
+   e60266289ce4: Preparing
+   4b8862fe7056: Preparing
+   8cbe4b54fa88: Preparing
+   4b8862fe7056: Waiting
+   8cbe4b54fa88: Waiting
+   7daac92f43be: Pushed
+   ff02847e6121: Pushed
+   4fd834341303: Pushed
+   5e099cf3f3c8: Pushed
+   e60266289ce4: Pushed
+   4b8862fe7056: Pushed
+   8cbe4b54fa88: Pushed
+   v1: digest: sha256:99507f4c9421e920f774c9e8481fd0541814401023d3dd6a492a52867761c345 size: 1778
+   2023/06/05 08:23:51 Successfully pushed image: azaciowenrepo.azurecr.io/greenweb:v1
+   2023/06/05 08:23:51 Step ID: build marked as successful (elapsed time in seconds: 4.850013)
+   2023/06/05 08:23:51 Populating digests for step ID: build...
+   2023/06/05 08:23:52 Successfully populated digests for step ID: build
+   2023/06/05 08:23:52 Step ID: push marked as successful (elapsed time in seconds: 11.736186)
+   2023/06/05 08:23:52 The following dependencies were found:
+   2023/06/05 08:23:52 
+   - image:
+       registry: azaciowenrepo.azurecr.io
+       repository: greenweb
+       tag: v1
+       digest: sha256:99507f4c9421e920f774c9e8481fd0541814401023d3dd6a492a52867761c345
+     runtime-dependency:
+       registry: registry.hub.docker.com
+       repository: library/nginx
+       tag: latest
+       digest: sha256:af296b188c7b7df99ba960ca614439c99cb7cf252ed7bbc23e90cfda59092305
+     git: {}
+   
+   Run ID: ca1 was successful after 21s
+   ```
+
+5. Create container instance
+
+   Goto Container Instances > Create container instance
+
+   ![image-20230605163515995](images/image-20230605163515995.png)
+
+   ![image-20230605164049745](images/image-20230605164049745.png)
+
+![image-20230605164143287](images/image-20230605164143287.png)
