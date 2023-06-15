@@ -74,6 +74,54 @@ GO
 
 - If the result is 0, it means that both authentications are enabled. If it is 1, only Windows Authentication is enabled.
 
+## Create user and grant privilege
+
+Created a new login user, "Herong", and granted full permission to "Herong" to use database, AdventureWorks2014:
+
+```
+herong> sqlcmd -S localhost -U sa -P HerongY@ng
+
+1> -- Set AdventureWorks as the current database
+2> USE AdventureWorks2014;
+3> GO
+Changed database context to 'AdventureWorks2014'.
+
+1> -- Create a new server login name: Herong
+2> CREATE LOGIN Herong WITH PASSWORD = 'T0pSecret';
+3> GO
+
+1> -- Create a new database user linked to the login name
+2> CREATE USER Herong FOR LOGIN Herong;
+3> GO
+
+1> -- Grant database ALTER permision to the user
+2> GRANT ALTER To Herong;
+3> GO
+
+1> -- Grant database CONTROL permision to the user
+2> GRANT CONTROL To Herong;
+3> GO
+```
+
+Here is what I did to test this new login name and user: Herong
+
+```
+herong> sqlcmd -S localhost -U Herong -P TopSecret
+
+1> -- Set AdventureWorks as the current database
+2> USE AdventureWorksLT;
+3> GO
+Changed database context to 'AdventureWorksLT'.
+
+1> -- Create a new table
+2> CREATE TABLE Test (ID INT);
+3> GO
+
+1> -- Drop the table
+2> DROP TABLE Test;
+3> GO
+```
+
 
 
 ## List all the variables set

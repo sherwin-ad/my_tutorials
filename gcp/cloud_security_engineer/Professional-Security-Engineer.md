@@ -226,5 +226,14 @@ $ gcloud compute instances list --project gcp-devops
    print("Plaintext: {}".format(payload))
    ```
 
-    
+   
+   
+   
+   
+   # Cloud Armor
+   
+   1.  Create VM - nginx installed
+   2. Create Unmanaged instance group from VM
+   3. Create Load Balancer with Unmanaged Instance Group as backend
+   4. 
 
