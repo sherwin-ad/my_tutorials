@@ -576,6 +576,39 @@ total 44
 
 # Intersite connectivity
 
+## Azure-to-Azure Connectivity
+![image-20230626064407407](images/image-20230626064407407.png)
+
+### Virtual Network Peering
+
+![image-20230626071223233](images/image-20230626071223233.png)
+
+**1. Add peering**
+
+Goto Virtual Network > [Vnet Name] > Peerings click "Add"
+
+![image-20230626085943968](images/image-20230626085943968.png)
+
+**WUS to EUS Connection**
+
+![image-20230626090652541](images/image-20230626090652541.png)
+
+**EUS to WUS Connection**
+
+![image-20230626090801737](images/image-20230626090801737.png)
+
+
+
+## Azure-to-on premises Connectivity
+
+![image-20230626064658290](images/image-20230626064658290.png)
+
+
+
+## VPN Gateway
+
+![image-20230626092435656](images/image-20230626092435656.png)
+
 ## QUIZ: INTERSITE CONNECTIVITY
 
 1. XYZ Inc. has offices in NYC, LAX and DAL. In addition to deployments in these on-premises offices they have deployment in Azure as well. They need to set-up Site-to-Site connection from Azure to each of their offices. As of now, they only have one virtual network in Azure; how many Virtual Network Gateways and Local Network Gateways are required in Azure to set-up the connectivity?
