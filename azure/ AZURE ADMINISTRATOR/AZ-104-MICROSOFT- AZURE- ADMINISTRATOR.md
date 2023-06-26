@@ -577,37 +577,31 @@ total 44
 # Intersite connectivity
 
 ## Azure-to-Azure Connectivity
-![image-20230626064407407](images/image-20230626064407407.png)
 
-### Virtual Network Peering
+![image-20230626093132043](images/image-20230626093132043.png)
 
-![image-20230626071223233](images/image-20230626071223233.png)
+## Virtual Network Peering
 
-**1. Add peering**
+![image-20230626093424551](images/image-20230626093424551.png)
 
-Goto Virtual Network > [Vnet Name] > Peerings click "Add"
+### Creating Virtual Network Peering
 
-![image-20230626085943968](images/image-20230626085943968.png)
+1. Goto Virtual Networks > [Vnet Name] > Peerings and Add
 
-**WUS to EUS Connection**
+   ![image-20230626112858034](images/image-20230626112858034.png)
 
-![image-20230626090652541](images/image-20230626090652541.png)
+   **wus-eus peerings connection**
+   ![image-20230626113225691](images/image-20230626113225691.png)
 
-**EUS to WUS Connection**
+   **eus-wus peerings connection**
 
-![image-20230626090801737](images/image-20230626090801737.png)
-
-
+   ![image-20230626113332646](images/image-20230626113332646.png)
 
 ## Azure-to-on premises Connectivity
 
-![image-20230626064658290](images/image-20230626064658290.png)
+![image-20230626093305892](images/image-20230626093305892.png)
 
 
-
-## VPN Gateway
-
-![image-20230626092435656](images/image-20230626092435656.png)
 
 ## QUIZ: INTERSITE CONNECTIVITY
 
