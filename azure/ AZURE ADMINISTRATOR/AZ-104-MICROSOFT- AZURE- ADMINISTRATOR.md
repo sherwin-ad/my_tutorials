@@ -603,6 +603,94 @@ total 44
 
 
 
+## VPN GATEWAY
+
+![image-20230626113613344](images/image-20230626113613344.png)
+
+
+
+## VPN Gateway SKUs
+
+![image-20230626114021194](images/image-20230626114021194.png)
+
+
+
+## Steps VNet-to-VNet Connection
+
+1. Create Gateway Subnet in both virtual networks.
+
+   Goto Virtual networks > [Vnet Name] >  Gateway Subnet
+
+   ![image-20230626144621691](images/image-20230626144621691.png)
+
+   - **Gateway Subnet**
+     - VPN Gateways requires a dedicated subnet to deploy the gateway. First, we need to create Gateway Subnet in both of our virtual networks.
+
+2. Create the VPN gateway in both virtual networks
+
+   Goto Virtual network gateways > and click Create
+
+   ![image-20230626151705525](images/image-20230626151705525.png)
+
+   - **VPN Gateway**
+     - Once the Gateway Subnet is created, we will deploy the VPN gateway to the subnet.
+     - Creating a VPN gateway would take around approx.: 40 minutes.
+
+3. Create the VPN connection
+
+   Goto Virtual network gateways > [VNet GW Name] > Connections > and Click Add
+
+   ![image-20230626155421521](images/image-20230626155421521.png)
+
+   ![image-20230626155512061](images/image-20230626155512061.png)
+
+   **Check connections**
+
+   ![image-20230626160616115](images/image-20230626160616115.png)
+
+   
+
+   - **VNet-to-VNet connection**
+     - After creating the VPN gateway, then we need to create VNet-to-VNet connection from the VPN Gateway
+
+## VNet Peering v/s VNet-to-VNet Connection
+
+![image-20230626161001820](images/image-20230626161001820.png)
+
+## Site-to-Site connection
+
+- Connecting to your virtual network to an on-premises site or non-Azure site.
+
+1. Create Gateway Subnet in Azure Virtual Network to deploy the VPN Gateway.
+
+   Goto Virtual networks > [Vnet Name] >  Gateway Subnet
+
+   ![image-20230626144621691](images/image-20230626144621691.png)
+
+2. Deploy VPN Gateway to the Gateway Subnet in Azure virtual network
+
+   ![image-20230626151705525](images/image-20230626151705525.png)
+
+   
+
+3. Create Local Network Gateway (LNG) in Azure by providing the IP address or FQDN of your on-premises VPN device
+
+   
+
+4. Provide Public IP address of your Azure VPN Gateway in on-premises VPN device
+
+5. Create Site-to-Site VPN connection
+
+
+
+## Point-to-Site connection
+
+1. Create Gateway Subnet in Azure Virtual Network to deploy the VPN Gateway.
+2. Deploy VPN Gateway to the Gateway Subnet in Azure virtual network
+3. Configure your Point-to-Site in VPN gateway by selecting the address pool and authentication method
+4. Download the VPN client configuration to your client machine
+5. From your Windows, Linux, macOS or mobile clients; connect to the VPN
+
 ## QUIZ: INTERSITE CONNECTIVITY
 
 1. XYZ Inc. has offices in NYC, LAX and DAL. In addition to deployments in these on-premises offices they have deployment in Azure as well. They need to set-up Site-to-Site connection from Azure to each of their offices. As of now, they only have one virtual network in Azure; how many Virtual Network Gateways and Local Network Gateways are required in Azure to set-up the connectivity?
