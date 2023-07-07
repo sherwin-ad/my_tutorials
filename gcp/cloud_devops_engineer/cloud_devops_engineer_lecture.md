@@ -3147,7 +3147,7 @@ sherwinowen@cloudshell:~/devops/python-docs-samples/appengine/standard_python3/c
   - Not applicable to other machine type
 
 - If you use at least 25% of month
-    
+  
 - Only on GKE & VM Instances
 
 ## Committed use discounts[CUD]
@@ -3172,3 +3172,87 @@ sherwinowen@cloudshell:~/devops/python-docs-samples/appengine/standard_python3/c
   - Provision Resources with no minimum commitment (Expect few service feature)
   - Cost include (Pay as you go model)
   - Operation Cost
+
+
+
+
+
+
+
+# Add code to your repository
+
+## SSH Authentication
+
+1. Setup SSH key.
+
+   Learn how 
+
+   If you already have a SSH key on your machine, skip to step 2. [Find SSH Keys on your machine ](https://cloud.google.com/source-repositories/docs/authentication#use_existing_keys).
+
+2. [Register the SSH key ](https://source.cloud.google.com/user/ssh_keys?register=true)with Google Cloud.
+
+3. Clone this repository to a local Git repository:
+
+   - Clone with command line
+
+     ```
+     git clone ssh://sherwin@mybusybee.net@source.developers.google.com:2022/p/pag-ibig-001/r/hdmf-web-repo
+     ```
+
+     
+
+   - Or clone with VS Code [Clone](vscode://vscode.git/clone?url=ssh://sherwin@mybusybee.net@source.developers.google.com:2022/p/pag-ibig-001/r/hdmf-web-repo)
+
+   Note: This may display the following message that is safe to ignore:
+   "warning: You appear to have cloned an empty repository."
+
+4. Switch to your new local Git repository:
+
+   ```
+   $ cd hdmf-web-repo
+   ```
+
+5. After you've committed code to your local Git repository, push it to this repository:
+
+   ```
+   $ git push -u origin master content_copy
+   ```
+
+6. If you are using a version of Git with main as the default branch instead of master, after you've committed code to your local Git repository, push it to this repository using:
+
+   ```
+   $ git push -u origin main content_copy
+   ```
+
+   
+
+7. Once you've completed all these steps, refresh your browser.
+
+
+
+## Google Cloud SDK
+
+1. Install the [Google Cloud SDK ](https://cloud.google.com/sdk).
+
+2. Provide your authentication credentials:$gcloud init content_copy
+
+3. Clone this repository to a local Git repository:
+
+   $gcloud source repos clone hdmf-web-repo --project=pag-ibig-001 content_copy
+
+   Note: This may display the following message that is safe to ignore:
+   "Warning: remote HEAD refers to a nonexistent ref, unable to checkout."
+
+4. Switch to your new local Git repository:
+
+   $cd hdmf-web-repo content_copy
+
+5. After you've committed code to your local Git repository, push it to this repository:
+
+   $git push -u origin master content_copy
+
+6. If you are using a version of Git with main as the default branch instead of master, after you've committed code to your local Git repository, push it to this repository using:
+
+   $git push -u origin main content_copy
+
+7. Once you've completed all these steps, refresh your browser.
