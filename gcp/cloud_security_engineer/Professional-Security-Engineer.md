@@ -202,12 +202,7 @@ $ gcloud compute instances list --project gcp-devops
    $ gsutil -o 'GSUtil:encryption_key='72aZSTvuc5F8amsxoN3bQt5Coxcunuj2+t5NNrFmVWA= cat gs://csek-255/sample.txt
    This file is using CSEK.
    ```
-
-   
-
-   # Secret Manager
-
-   
+# Secret Manager
 
    Install secret manager
 
@@ -225,13 +220,8 @@ $ gcloud compute instances list --project gcp-devops
    payload = response.payload.data.decode("UTF-8")
    print("Plaintext: {}".format(payload))
    ```
+# Cloud Armor
 
-   
-   
-   
-   
-   # Cloud Armor
-   
    1.  Create VM - nginx installed
    2. Create Unmanaged instance group from VM
    3. Create Load Balancer with Unmanaged Instance Group as backend

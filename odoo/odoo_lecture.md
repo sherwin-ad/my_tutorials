@@ -438,23 +438,29 @@ a2enmod proxy_http
 Once this is done, open a new configuration file for your domain with the following command:
 
 ```
-nano /etc/apache2/sites-available/yourdomain.com.conf
-
-And enter the following:
-ServerName yourdomain.com
-ServerAlias www.yourdomain.com
-
-ProxyRequests Off
-
-Order deny,allow
-Allow from all
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+  ServerName erp.beesuite.ph
+  ServerAlias erp.beesuite.ph
+  SSLProxyEngine on
+  SSLEngine on
 
 
-ProxyPass / http://yourdomain.com:8069/
-ProxyPassReverse / http://yourdomain.com:8069/
+  SSLCertificateFile /etc/letsencrypt/live/erp.beesuite.ph/fullchain.pem
+  SSLCertificateKeyFile /etc/letsencrypt/live/erp.beesuite.ph/privkey.pem
+  Include /etc/letsencrypt/options-ssl-apache.conf
 
-Order allow,deny
-Allow from all
+  # RequestHeader set "X-Forwarded-Proto" "https"
+
+   SetEnv proxy-nokeepalive 1
+        ProxyPass / http://127.0.0.1:8069/
+        ProxyPassReverse / http://127.0.0.1:8069/
+   ProxyErrorOverride off
+   #TransferLog /var/log/apache2/transfer.your.domain.log
+   #Fix IE problem (httpapache proxy dav error 408/409)
+   SetEnv proxy-nokeepalive 1
+</VirtualHost>
+</IfModule>
 ```
 
 Remember to replace ‘yourdomain.com‘ with your actual domain name.
