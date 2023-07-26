@@ -1,6 +1,6 @@
 # AZ-104: MICROSOFT AZURE ADMINISTRATOR
 
-**Course Git Repository**
+## Course Git Repository
 
 https://github.com/rithinskaria/kodekloud-azure
 
@@ -1429,7 +1429,7 @@ Goto App Services > Backups
    }
    ```
 
-2. Create azure container registries
+2. Create azure container registries/repository
 
    ```
    PS /home/sherwin> az acr create -n azaciowenrepo -g az-acr-aci-demo --sku Standard --admin-enabled true  
@@ -1509,6 +1509,10 @@ Goto App Services > Backups
    ```
    FROM nginx:latest
    COPY ./index.html /usr/share/nginx/html/index.html
+   ```
+
+   ```
+   PS /home/sherwin> code index.html
    ```
 
    index.html
@@ -1630,3 +1634,400 @@ Goto App Services > Backups
    ![image-20230605164049745](images/image-20230605164049745.png)
 
 ![image-20230605164143287](images/image-20230605164143287.png)
+
+
+
+## Container Groups
+
+- Collection of containers that get scheduled on the same container host machine they share resources, lifecycle, local network, and storage volumes.
+
+
+
+## Azure Kubernetes Service
+
+See Az-104-azure-administrator.pdf
+
+
+
+## AKS Networking
+
+- Services in Kubernetes provide internal and external network connectivity to pods
+
+See Az-104-azure-administrator.pdf
+
+
+
+## AKS Storage
+
+See Az-104-azure-administrator.pdf
+
+
+
+## AKS Scaling
+
+See Az-104-azure-administrator.pdf
+
+
+
+## AKS Bursting
+
+See Az-104-azure-administrator.pdf
+
+
+
+## AKS Demonstration
+
+1. Create Kubernetes Cluster
+
+​	Go to Kubernetes Services > and Click Create Kubernetes cluster
+
+![image-20230725141335855](images/image-20230725141335855.png)
+
+Select the container registry we created
+
+![image-20230725142104459](images/image-20230725142104459.png)
+
+2. Get the credentials of kubernetes cluster and add to opur context
+
+   ```
+   PS /home/andrea> az aks get-credentials -n az-aks-cluster -g az-aks-demo                Merged "az-aks-cluster" as current context in /home/andrea/.kube/config
+   ```
+
+   ```
+   PS /home/andrea> cat .kube/config 
+   apiVersion: v1
+   clusters:
+   - cluster:
+       certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUU2VENDQXRHZ0F3SUJBZ0lSQVBISzNtcFlGZDRJU1paQU01MC80WTR3RFFZSktvWklodmNOQVFFTEJRQXcKRFRFTE1Ba0dBMVVFQXhNQ1kyRXdJQmNOTWpNd056STFNRFl4TkRFM1doZ1BNakExTXpBM01qVXdOakkwTVRkYQpNQTB4Q3pBSkJnTlZCQU1UQW1OaE1JSUNJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBZzhBTUlJQ0NnS0NBZ0VBCm1IUE9ZS0pKNGM5dlNVTmVFcXpvMTlUdXU1RXNtUUlkeStPUDNjUkgxZjBGeCtaak9NdFkzM293WEpkUHVxdGQKUEFGRG9xMGxYN3RCYlBZZTVNMlNVVHE2KzBQYmZIL1lQQzNOOVVkaDZFUXJweU9NT21qSjRLUmFyT0liZlA0SQpLbkRsVm5MdXNJcDJCTFVBaGJWWVk0MmZFc1NESytROTNOS2wzdGxPMWhnNGF2TWJBTDlZbWlMSjhka200ajIxCldKazNtclJNYW1ESnJ1Z2pGRU5CWG9SVmhWT3g4S2ZoVjdkQXJpRUJrTXdLbGxrWWRaazQ4dXZYMVJMNnI1OVEKY3dMQXRFa3cxakpRWWpleFY3eXFTTys5TWx1MmhxRmNkdG1vWmNpWUw1cDlRaDZHVUkxb2tTZ2ZQSnJXSlp1dwo5T2pXQnZBME1SbzJxbStBRnhMa2hhV09yRU9aT0J5RTlxc21lRzQzYXIrSDRBQ0FIUlV3M2lrZlI5UmM0Z2lRCk1OeFFLNi90UnI1MmplSzhiR2FIckpDdHZlTEM1RTFDNGczMWxNRUlhVWlHM1RjUnh4dis5c3BNWk5qL2FGY1AKN2U3VFJaQXFtOENKWG5KQTA3RVFySkdsRndKRGNOT1EvdEhsbnkzOU9MbU5GWVV1SW9WMkl5K2M2bjIwNkEzRwptenYxREdFSlh1bmhucXVhN1hLUUxXdjVNaUVzakRkSWhyYXJyR0RmelpDUGp5ODMxaGNLbUo3WmJuOStvbmo3CldCeC9ZT3R3aG5lbjlQRkVydEp6MURXc2FvdjlrNzdIdHk3b3ArZEVwUUs3Y2pib1ovRWhwZjZFZ2liMzNkVjQKL3doU2tMNlRyUG5KVUFQU2o3Z2FzSExyTkNDN2lpNHo4SVRlS0ZnN3d2TUNBd0VBQWFOQ01FQXdEZ1lEVlIwUApBUUgvQkFRREFnS2tNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGRUpMNk03ZjFLL1hGVWZuCisrSHBaU0dhbWtkS01BMEdDU3FHU0liM0RRRUJDd1VBQTRJQ0FRQXJteUQ1amQ2YlI0amlLV2c5ZXdoc2dTQTAKZHN6S3pZNHhqTkVOUzB4WlVudlFDWEIvWnBIcjE0bXBnYklIVVA0QzZFdy9xTnU0eHVITnhWd1laSXBvTDFmdApXOHF6RnRpckZtOW9nRmprUk4zYVQvRXJDU3hBaHE0c3FkQmFzdmJ5QXRPM1ZnSVFxMUtLMW96ODM3bm1YSUZYCkpGM0RjNTVqWURjc1JjMTU3dVUrcHkxN2JBeGdHWGYzK2Z5K0MzSFZHRER6VVN0bTcybmFSZjBrMEtldnd0RWkKWWpOT084RVZvTTExNW5MeStQc1l3dSsvSzVUMVZCcEFCVXh3VzVDVkZnWjN0L1lOUXkyREdwNkU4cG1yQ1k5aQpMUE9hd1YvTlhIMTNML0FBN3FFaUVZanI3OUM2dkpjdUtuazhOaFdqN1ZRWUcrdUNZZXFubWdrcHdSbk5jWllxCjZ3c3QvSFdseGRobDJ2T3ZCa0ZwMlRhRmx5NjB1YmxtbldUaG1VSEs0NVhPeFpZVTJUWFlRSDNrTFFjWk5TWW4KWStLNXM0dGxzT2tzU2Vyd2FXOUJySTNQTFBQMHdDVVFzd2NEcjFuekxBN0wzQnNrVWZvREoyb1Y1MVNudEtlKwplcGp3Qm50YTVnZjVJVnlyWnVqTmRVdHo2eDZRQnJFRE5VUGhscjhiODlWT3RZZDA2MFJSZVk4UHhFL2d3VVROClErRFk2VDRqUjdxbVkwNGNKVXNFUldiV1IvVEc3Q2YwNFhvc0dwd3dvTzFRUUV3eEFXc2Rzd2VLeGxxTlliTUoKZVV6eElBWXRWbDBSZkIvemhBUmpSdGp6VjFCbHZUYnJPOE0yZUpGcktEMnRpV01ON0h6Q3NUa3hHRzR2dHJhMAp1RVFmdEo2WlBmZ0tjbWR4MHc9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+       server: https://az-aks-cluster-dns-p9x5xnip.hcp.eastus.azmk8s.io:443
+     name: az-aks-cluster
+   contexts:
+   - context:
+       cluster: az-aks-cluster
+       user: clusterUser_az-aks-demo_az-aks-cluster
+     name: az-aks-cluster
+   current-context: az-aks-cluster
+   kind: Config
+   preferences: {}
+   users:
+   - name: clusterUser_az-aks-demo_az-aks-cluster
+     user:
+       client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZIakNDQXdhZ0F3SUJBZ0lSQUlnK1BhbnZCb1dsTnpyK1BCdFhpZUl3RFFZSktvWklodmNOQVFFTEJRQXcKRFRFTE1Ba0dBMVVFQXhNQ1kyRXdIaGNOTWpNd056STFNRFl4TkRFM1doY05NalV3TnpJMU1EWXlOREUzV2pBdwpNUmN3RlFZRFZRUUtFdzV6ZVhOMFpXMDZiV0Z6ZEdWeWN6RVZNQk1HQTFVRUF4TU1iV0Z6ZEdWeVkyeHBaVzUwCk1JSUNJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBZzhBTUlJQ0NnS0NBZ0VBemMwcmxtK1dicGZoeG9jQUxPWXYKZmV0aFljSzFmSDA0c2tzQUVlanNwc3hNaUZydnlKaEh2SWRLUytIaWg2SUJtMks5a3ZIc1BKTXNua08rRFVFVwpDbUMzdm85VUo2OFJLN081eWE4ZHVzL01HOXd3SE9NRkRHdTZSOXVDbEdHYjBxUXdLV1RTblV0SkJwMjVoVTBGCnNzWnQwdTVPUk4xL0VzYSs0SUw1TjlQMUNXdVcvd2ZUYnhNZC9peVQxdzV1SXNjamxmeVhUREEzdGpJMW1oeFMKeHFiTVE1ck5tZnFJbW85YjFNY1NHbEtJNjVmRkdiaTVNeXNIYUN0LzczajNLTEppcHhydWQ2dXllcmFGMFd5UApxY2k2eDJ4MGR2Z1A1NFhvT1pIbHpIQVpQck1GamZzb25pNG91UUtObGE4MU9kdkc3cUFtMWlIUUNrRDFLQ3NkCk16bnVWZm9xbVNMVHVvTHJlRVNWQnNFVnYzTXhjMEFrMWQzUzFPRVZwZkpmS292c1pxUmVXMjl6cUQ4VjMzQmgKelJYRXZKUit5d2pjY2JiY2NHMmtidTdoR21IWDJUazMzcEFHSlNkTC9vT2lmWE8xZUplNFhwNUdQbmEyY0ZSMwpJRkZ4YUk2MEpzWTJXaHhySjhZNFR1NDRVZkl1T05PTWZyaWxETGQ4WlFMQ1RpWWorcGJkNG0yOFQyVm5GUHVkCkZvLzdVZkJ1bitTQytMT0J5Q0VDdVd4WnkyWnl2T3Q3UlRZWGZsbmVVbjY4QUJDazB3MEFxeEZTNnQzRk53MWIKYyt6NFA3dy90WGxOZTYwa2dwRU90U00zd01aU3FOblI0M2xWaGQ3ZU43OEREbzQwVW9wYm5ZQmhpWFFNbDZVbwpSTklrWHN2NGc4YkxSYzd4RXdjMngwRUNBd0VBQWFOV01GUXdEZ1lEVlIwUEFRSC9CQVFEQWdXZ01CTUdBMVVkCkpRUU1NQW9HQ0NzR0FRVUZCd01DTUF3R0ExVWRFd0VCL3dRQ01BQXdId1lEVlIwakJCZ3dGb0FVUWt2b3p0L1UKcjljVlIrZjc0ZWxsSVpxYVIwb3dEUVlKS29aSWh2Y05BUUVMQlFBRGdnSUJBQTcxQ0NYeGo5dlA1cFYzOFlSeApja1l5ZXlHK2cyVG4rM2tiZnpBRk5BZjZGc1k0OXB1UEZVOE8xdFVqa1BROC9YdHdIaFFobGRReGh1L2szL3pXCmZrRVRWMXY1djdrVmpkQW1xTkNHWDdKc3cxWnRNYjRJZUlYRmllUDJFSzArRzhUNUVZcG8xMTNhcWJDeUhVTEQKaFBkcTB2ZjhCem84MG9ZOEszYW5WTUlFYUZhK2o5NG1oMmp2aG54MFA3bXhLbFdOL3d5OXZoMUY3SlRpSW1KeQpEYzZSekVSc0lGRk40VzgzMk9LVndLWTIzbzRIWmJ0WC9Xc1hPZXZ1UmdQalN2ZTYxelBaVXE1YXl5V3RoeE9wCm9MSjlDL3BCZDZzWS9xY0dxL0t0L1k2MHMxekJlT0FMTWRDQUpjUFZpT2V3KzFaMTlUYXhleTUrYkFvRHlHUGUKdXgzMW9waWZsS2ZiYnhKWDMyMlhhQUhlWXFhNUc2cVJvOG5ydFY2VlVLRGFXNVZCZDFWcnFyZHBtQW5nVEFnOAo5WjFQWm0zQkpqQVAyUENxSEJrU2llSWRxbDBVa0lOeXBlVU5OMU5RMVIxb01EdWV3NVVBMjV5djcrcXRZWE9ECmNTeFpyc2l1QUZmVFBDM0Uzd0FLRXNvS3BmUkpEcFliM1hYZHdXOXpMZG1hLzNGSDFXa015RnBSbksyV0loa08KbkhFbmZDYlpEZlVIUUtYcDIraUhqUW0wZHR3WlJlQlZMemJqMm5WOGRpMTFVb3lRcG5PZjBza2NVTTM0YlRCOAoreCt0bE1yYk5mL2tsb3hCUHgvTFN4Qk5NLzhHcjMwOTV0em1lSENQRjF0blRCSzJTQjlBSnlPaXVsNWVGbWU3CjBoM1Bwa2M2dkRiWnVlRFJReUNQRytGWQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+       client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlKS1FJQkFBS0NBZ0VBemMwcmxtK1dicGZoeG9jQUxPWXZmZXRoWWNLMWZIMDRza3NBRWVqc3BzeE1pRnJ2CnlKaEh2SWRLUytIaWg2SUJtMks5a3ZIc1BKTXNua08rRFVFV0NtQzN2bzlVSjY4Uks3TzV5YThkdXMvTUc5d3cKSE9NRkRHdTZSOXVDbEdHYjBxUXdLV1RTblV0SkJwMjVoVTBGc3NadDB1NU9STjEvRXNhKzRJTDVOOVAxQ1d1Vwovd2ZUYnhNZC9peVQxdzV1SXNjamxmeVhUREEzdGpJMW1oeFN4cWJNUTVyTm1mcUltbzliMU1jU0dsS0k2NWZGCkdiaTVNeXNIYUN0LzczajNLTEppcHhydWQ2dXllcmFGMFd5UHFjaTZ4MngwZHZnUDU0WG9PWkhsekhBWlByTUYKamZzb25pNG91UUtObGE4MU9kdkc3cUFtMWlIUUNrRDFLQ3NkTXpudVZmb3FtU0xUdW9McmVFU1ZCc0VWdjNNeApjMEFrMWQzUzFPRVZwZkpmS292c1pxUmVXMjl6cUQ4VjMzQmh6UlhFdkpSK3l3amNjYmJjY0cya2J1N2hHbUhYCjJUazMzcEFHSlNkTC9vT2lmWE8xZUplNFhwNUdQbmEyY0ZSM0lGRnhhSTYwSnNZMldoeHJKOFk0VHU0NFVmSXUKT05PTWZyaWxETGQ4WlFMQ1RpWWorcGJkNG0yOFQyVm5GUHVkRm8vN1VmQnVuK1NDK0xPQnlDRUN1V3haeTJaeQp2T3Q3UlRZWGZsbmVVbjY4QUJDazB3MEFxeEZTNnQzRk53MWJjK3o0UDd3L3RYbE5lNjBrZ3BFT3RTTTN3TVpTCnFOblI0M2xWaGQ3ZU43OEREbzQwVW9wYm5ZQmhpWFFNbDZVb1JOSWtYc3Y0ZzhiTFJjN3hFd2MyeDBFQ0F3RUEKQVFLQ0FnQk1JUEJWeHRONzk1MGlKa0JQVzVzSDFuR0FpMWs5UXNrZFV4Y2tpT2c1ejJza0taZDN1YlVYcldnegpaOHkzWlp0NGttOFVFMy9TN0pKZHZTdHBsY0VFZDhDZ3NqNXNLNXVMY2dGdzlPRm5nSVM5YlpjeXFGdnV1MDcrClU5b2E3M3lIMEFxczFVbi91NkM0M05HSzJQSVpyc05qZXBuamFaZ2ZKdnZtNnl3cmxiR1lHWCtTdVo5aUFFMWcKLzdaMG9EYm5rSWkrYStDLzR6cElvSXdwaFA2dDAzZk9MazZOL2hwWUtsM0srUlRlUGRlK1pyY1hpN2llai9VKwplSkRyMGZDRDBuRWg1WmwvRlRtQm9WRWhKaXFDb09sTzZmU3ZLWllnaSsxYWxuak9SazFnWHpMWDBhZTEwOWRtCmtPWTFEOG45ckNvTGpaeXdLM1BjeHlpcEFrSGJUZ0dFcFh4bTlyT3dLbnppRnJXMHNoQi9sNEp6SG5uUDNEdFYKeS9KSmV5L3B1VVZrb0FTL1pWemxBM1UwaDgwYnNkM0lPSEJ6QmFlUGFWcW96NVplNWw4NWVnRUZwN3czYTBEcwpjd2FHclZKYUpzTlZWS0V3Y3kxK0pVMFh6UVorcWFLK3ZCWW5Nenl5alBqUnBnSjd1V0RsQTdNWnUrQWxhenN0CmJlT0JYVHdicmdIczRONjFyOHhTeUZVTmUvakFtcG1MWWtPWTJlR3ErWW9rT3I2RTJ6eGtnVnl3U2JZVUxlY1YKZVZSZmc4TFV6VVZTRytUejk2OFZhakZzUXByb0FjcVVMQkRsUlpCM09hVitXa3huVWdibTBrVnVkUmtuSTNNOAoxRVBoNFc1Tlp6MFNaTTBhQkJsSnJaNnJtTlNBcVB6NnJUS2xVQWdTVjBCU1NkbCtUUUtDQVFFQTlnN0ZSYmtxClJZelJ2WFZ6K28vaHIwMm1lNkwzcDM3RUowZVBSYTIxSWZSR0Nka00yM1h1cEwxYlVXemhLZnM4ZGtJc21HQTMKV2hwcWg0eERIenNTSFN4M2I2Q3dSZk9OWUpHZkwwQWR6N3RCWHNxYmtvbnVmNityZ2dpN21ZaGQ5azFCdzZJZgpBYlNYajRrUEI2cWlpR0JvcDk2UnA0SEhUSTNBdVJmZ0Vmanc0NUFOMDhueXc1VFlqbURIZXBmcHROUkZPZ1NNClppN2I5TkpqOXZXazM2UVZMejQ2bXF4dFRsdlN3WE50SVZnM21KWnlIei8wa3dzRldER3NrQTVFTCtoR1hvaVkKczZTcXM3MlcrYUJ0dFh1ZUxqQXFWdElEb0x6N3JQZGQ0NmhCNHkyamNsTkhnTUtKQnN0bmluaVUvbXE4S3dUcgo0UWxUN1J4QWdlRGZQd0tDQVFFQTFoMzgwM3BKdHMwS1pFZHo1a0QySlBUQ0lsVnIvV0QraS9HbCs2QWxUVGdVCmZWcXBiQTFXWkxrVmxMdnl1UHBOR0FDVTRkbXJiakNBNHdkZ1ZzWGh4NWsvQVpzM21XVHAxN3RScXNLRnRnUFEKbjk0NDdCQ1lZL2RoNWJreG8rWVNZeEU1ZkZ2M2VFUTl1UVRmdVRnbkgrdTNuR2JEZzhDZG1ZTkRhRzh4U2ZyVAp1b3B1enJnVTVKb3Q0QzZCY25kazJjYzRXUE5Cc3FnK1NuNjJtRWwzRXg5S2QzQWlFZU9kbFhyODQvbGtEeXVKCk1hSEVnVUF1V2F0dWhXTlNBLy82U2N2cXVUUkl1anlQV3RHVmxhWVVySWdJOFZ5by82RTVrTjY4ODBrV09VQUMKMnVDOGNWZDQvYzAycHUybHZzQ0dRam5seEFjU0dTdEEyRFJVWDAwNWZ3S0NBUUVBcm9mdm1mTXJic1hpQi9jRgoyeGF2eUg3VnRpRDBkWlJQWW1VNTFQelAzRk8rVWtIcEFzbjJDbGhlSzdXRlNSZngzUmczTmFZWjNRbWJ3cVhVCi9wUVIxeXV4VkRhd2tnMmRuSC91WDcrazViSTNQaHVNbWpiSU96M0o4NlJxSFE5RFJ1K3AxREJzdWZMMUJsVDcKbWo2SXB4OXJYSmRjeldvYWljeUtoVC9RS2k5Zi9xb3hoS1pjVWlxRUtRbXd0TjZJWVVHb0VPMGxBVjMvbXZxWQorWlZuNjFJaHpLN2hOdEZUZng5V3NPMUUzVUFMdjJvSGJPOGFkaXA5RWYrNkhUeGhWWEgyYUJ1UDVPektRRkFjCmhOZ3N1V3dEMlZORTFPeUdzajhhYmFmUXF5aXdBNHBkd3p3YkhkUGZDampCS3RFNUxmVmJuMUFRV0VFYmpMWmIKYzBTa1ZRS0NBUUJZMzBXTGVaeVRGWFFVdjF1cDNKak9LaEZTTXVhSjJ2S01uNVpuWk1kV3o4b2haYm9nc1VDRQp1aFh0RUQzazdXK0dZT2RxL3ZBYTRtTDgySmp5SzF4VmZwUWFWSlMxUkorUy9ac2VKM05jWXlUNjFrQUdLN1UwCitQOVhYSkR3R0pUVkxkY1FlUk8waFk2Zzl4YnRTQk5sT20rUnFVM0pwKzlDUXF0OTgza2YzYzU0QlBHTk4vYmsKRStLcXhHTFNZaUFvREhxazRRTUo1cTlFT0dnTnVhQ0UvVjNwU1UrNjRTRU5aR2tITHdLTEVXVDJodENMWFZwZgp1Ym83LzBlUmhYUWJvVm9oMlVPK21WaGZOOUxBdEppc0xDS2FHLzNCYk9mNTY1bTkyVDR5TVJGK1MvMnJoY1VnCmcwY0Y3bW4zVE8zdEd4NzFTSUlJbEYxcjMveU5PZjU5QW9JQkFRQ2o1c3plczU4aFpiMHRkR29YY0pXcGpDREYKME16QXQvcHdoOVBGYlliSG4zc0ZMb2krcXJ5ZnBYRklBdW83QXpoeHZ6dEtLZHVXb3QrSDNlSVR2bkoxV1BveApKL0dSMzVmbXE5MUwySzBYRjF5MWN1eXgzSTNLR0llV0UvUnE2NjQwUEQzVHNjNVVyQisyUVJUYithaUMxWk5FClBGYUNWQ242TUlwL0xlOHFHMnpBdlhHZEx2T2FKV01BM2JPaVcyaldER0J0ZnZxNU9RTG43Uk1SbVNTcXM1UzcKNzAxbkNGSUtVMnBkL1B1SEZvM2piVUVzNFJjK0RMMlVqc1N1QTZMNjdzZThVOUwzVHM4SFNUdm5sWlFNNTBrSgp6cGNVdG1lTGxPQW5hcnlTQW1CSC9ycHcweFJyYStFb2ZJbXZnUFhTcS9STzZCZGs4QXdtQVIrUnNZc3AKLS0tLS1FTkQgUlNBIFBSSVZBVEUgS0VZLS0tLS0K
+       token: gub49ibnjy2hrnlzzxd5mv6570t1r9pmihf10hnjcny4gxynfm98ktnc734kqp25d4x3k8ztmgi270nvgrpmeom952355i1u9iquaf8fewa7y86uiwric13x0vwn7xoi
+   ```
+
+   **List nodes**
+
+   ```
+   PS /home/andrea> kubectl get nodes
+   NAME                                STATUS   ROLES   AGE   VERSION
+   aks-agentpool-26991424-vmss000000   Ready    agent   76m   v1.25.6
+   aks-agentpool-26991424-vmss000001   Ready    agent   76m   v1.25.6
+   aks-agentpool-26991424-vmss000002   Ready    agent   76m   v1.25.6
+   ```
+
+   **Create pod**
+
+   ```
+   PS /home/andrea> code pod.yaml
+   ```
+
+   pod.yaml
+
+   ```
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: first-pod-nginx
+   spec:
+     containers:
+     - name: nginx
+       image: nginx:1.14.2
+       ports:
+       - containerPort: 80
+   ```
+
+   ```
+   PS /home/andrea> kubectl apply -f pod.yaml
+   pod/first-pod-nginx created
+   
+   PS /home/andrea> kubectl get pods    
+   NAME              READY   STATUS    RESTARTS   AGE
+   first-pod-nginx   1/1     Running   0          14s
+   ```
+
+   **Create Deployment**
+
+   deployment.yaml
+
+   ````
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: first-deployment
+     labels:
+       app: nginx
+   spec:
+     replicas: 3
+     selector:
+       matchLabels:
+         app: nginx
+     template:
+       metadata:
+         labels:
+           app: nginx
+       spec:
+         containers:
+         - name: nginx
+           image: nginx:1.14.2
+           ports:
+           - containerPort: 80
+   ````
+
+   ```
+   PS /home/andrea> kubectl apply -f deploymentt.yaml
+   deployment.apps/first-deployment created
+   
+   PS /home/andrea> kubectl get deployment
+   NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+   first-deployment   3/3     3            3           7m40s
+   
+   PS /home/andrea> kubectl get pods      
+   NAME                                READY   STATUS    RESTARTS   AGE
+   first-deployment-7fb96c846b-49f59   1/1     Running   0          12m
+   first-deployment-7fb96c846b-m8xb2   1/1     Running   0          12m
+   first-deployment-7fb96c846b-mgqch   1/1     Running   0          12m
+   first-pod-nginx                     1/1     Running   0          29m
+   ```
+   
+   **Edit deployment**
+   
+   - Change replica numbers
+   
+   ```
+   PS /home/andrea> kubectl edit deployment first-deployment
+   ```
+   
+   app.yaml
+   
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: db
+     labels:
+       app: words-db
+   spec:
+     ports:
+       - port: 5432
+         targetPort: 5432
+         name: db
+     selector:
+       app: words-db
+     clusterIP: None
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: db
+     labels:
+       app: words-db
+   spec:
+     selector:
+       matchLabels:
+         app: words-db
+     template:
+       metadata:
+         labels:
+           app: words-db
+       spec:
+         containers:
+         - name: db
+           image: dockersamples/k8s-wordsmith-db
+           ports:
+           - containerPort: 5432
+             name: db
+   ---
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: words
+     labels:
+       app: words-api
+   spec:
+     ports:
+       - port: 8080
+         targetPort: 8080
+         name: api
+     selector:
+       app: words-api
+     clusterIP: None
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: words
+     labels:
+       app: words-api
+   spec:
+     replicas: 5
+     selector:
+       matchLabels:
+         app: words-api
+     template:
+       metadata:
+         labels:
+           app: words-api
+       spec:
+         containers:
+         - name: words
+           image: dockersamples/k8s-wordsmith-api
+           ports:
+           - containerPort: 8080
+             name: api
+   ---
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: web
+     labels:
+       app: words-web
+   spec:
+     ports:
+       - port: 8081
+         targetPort: 80
+         name: web
+     selector:
+       app: words-web
+     type: LoadBalancer
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: web
+     labels:
+       app: words-web
+   spec:
+     selector:
+       matchLabels:
+         app: words-web
+     template:
+       metadata:
+         labels:
+           app: words-web
+       spec:
+         containers:
+         - name: web
+           image: dockersamples/k8s-wordsmith-web
+           ports:
+           - containerPort: 80
+             name: words-web
+   ```
+   
+   ```
+   PS /home/andrea> kubectl apply -f app.yaml        
+   service/db created
+   deployment.apps/db created
+   service/words created
+   deployment.apps/words created
+   service/web created
+   deployment.apps/web created
+   ```
+   
+   **Check Load Balancer Service**
+   
+   ![image-20230725174740030](images/image-20230725174740030.png)
+   
+   **List services**
+   
+   ```
+   PS /home/andrea> kubectl get services     
+   NAME         TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)          AGE
+   db           ClusterIP      None           <none>          5432/TCP         14m
+   kubernetes   ClusterIP      10.0.0.1       <none>          443/TCP          3h22m
+   web          LoadBalancer   10.0.133.195   20.72.178.205   8081:31152/TCP   14m
+   words        ClusterIP      None           <none>          8080/TCP         14m
+   ```
+   
+   **Browse**
+   
+   http://20.72.178.205:8081/
+   
+   ![image-20230725175948010](images/image-20230725175948010.png)
+
+## QUIZ: CONFIGURING CONTAINERS
+
+1. Which of the following statement is incorrect?
+
+   - You can use Azure Files as persistent storage for ACI
+
+   - **You can only have public IPs for ACI**
+
+   - ACI can use images stored in Azure Container Registry
+
+   - Azure Container Instances is a PaaS solution
+
+2. Which of the following methods can be used to deploy a container group? Select all that apply.
+
+   - Azure PowerShell
+
+   - **Azure Resource Manager templates**
+
+   - **YAML**
+
+   - Azure Portal
+
+3. Which service is used for AKS bursting?
+
+   - Azure Virtual Machines
+
+   - Azure Virtual Machines Scale Set
+
+   - Azure Container Registry
+
+   - **Azure Container Instances**
+
+4. What do we call the smallest unit of application instance which is a collection of one or more containers?
+
+   - Replica Set
+
+   - Service
+
+   - Deployment
+
+   - **Pod**
+
+5. For creating a Kubernetes object, you need to write the manifest files. Which extensions are supported for the manifest file? Select all that apply.
+
+   - **JSON**
+
+   - **YAML**
+
+   - ARM
+
+   - XML
+
+   Kubernetes supports YAML and JSON languages for writing manifests.
+
+6. You are planning to deploy Azure Kubernetes Services. As per specifications, you would require a three node cluster. How the pricing for AKS is calculated for compute resources?
+
+   - Pay for Azure managed node only
+
+   - **Pay for the three nodes**
+
+   - Pay for the number of nodes and Azure managed nodes
+
+   - Pay for AKS, based on the tier you will be charged. There is no additional compute cost
+
+   You need to pay only for the number of customer managed nodes, there is no cost for the Microsoft managed node.
+
+7. You need to open a specific port in your AKS cluster for internal communication. Which service should you use?
+
+   - NodePort
+
+   - Ingress Controller
+
+   - LoadBalancer
+
+   - ClusterIP
