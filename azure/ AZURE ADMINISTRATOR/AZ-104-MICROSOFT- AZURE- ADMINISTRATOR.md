@@ -2031,3 +2031,128 @@ Select the container registry we created
    - LoadBalancer
 
    - ClusterIP
+
+# Implement backup and recovery
+
+
+
+## File and Folder Backup
+
+![image-20230726133744713](images/image-20230726133744713.png)
+
+### Backup Files and Folders in Azure File Share
+
+1. Create Vault
+
+   Goto Recovery Services vaults > and click Create
+
+2. Create backup Azure File Share
+
+### Backup Files and Folders in Virtual Machine
+
+1. Create Vault
+
+   Goto Recovery Services vaults > and click Create
+
+2. Create backup Files and Folders in Virtual Machine
+
+3. Install **MARS - Microsoft Azure Recovery Service Agent** in Virtual Machine
+
+
+
+## Virtual Machine Backup
+
+2 ways to backup Virtual Machine
+
+1. Go to Virtual Machine > (VM name) > Backup
+2. Go to Recovery Services vault > (Vault name) > Backup > select Azure and Virtual Machine
+
+### Virtual Machine Backup - on-prem VM
+
+1. Go to Recovery Services vault > (Vault name) > Backup > select On-Premises and Virtual Machine
+2. Install **Microsoft Azure Backup Server (MABS)**
+3. Download vault credentials to register the server to the vault. Vault credentials will expire after 10 days.
+
+**Backup center**
+
+- Azure service to monitor backup jobs
+
+Go to Backup center
+
+![image-20230726150651032](images/image-20230726150651032.png)
+
+
+
+## Azure Site Recovery
+
+- is a plan to recover our application in regional outages
+
+![image-20230726160254432](images/image-20230726160254432.png)
+
+
+
+## QUIZ: IMPLEMENT BACKUP AND RECOVERY
+
+1. You have the following resources in Azure: Blob container – imgfilesFile share – executablesVM – VM-01Azure Database for MySQL – wordpress Which of the following can be backed up to a recovery services vault?
+
+   - File share, VM, and Azure Database for MySQL
+
+   - VM and Azure Database for MySQL
+
+   - Blob container, file share, VM, and Azure Database for MySQL
+
+   - **File share and VM**
+
+2. Which agent should you use to back-up on-premises files and folders?
+
+   - waagent
+
+   - MMA
+
+   - **MARS**
+
+   - MABS
+
+3. We have the following resources in Azure. Which of the following can be backed up to vault-01? ![question-image](https://res.cloudinary.com/dezmljkdo/image/upload/v1661187961/az104/azure5_kldth8.png)
+
+   - db-vm, share01, and web-vm
+
+   - **db-vm and share01**
+
+   - share01 and web-vm
+
+   - db-vm only
+
+   Since the vault-01 is in East US, we will be able to select the resources that are there in East US only.
+
+4. What is the default redundancy for a newly created Recovery Services Vault?
+
+   - GZRS
+
+   - **GRS**
+
+   - LRS
+
+   - ZRS
+
+   Recovery Service Vaults are created with the default redundancy as Geo-redundant storage.
+
+5. Following is the contents of Recovery Services vaults in one of the subscriptions: ![question-image](https://res.cloudinary.com/dezmljkdo/image/upload/v1656356062/az104/table6_d8wqto.png) All of these vaults were created with the default redundancy GRS. Which all vaults can be converted to LRS vaults?
+
+   - Vault-04 only
+
+   - **Vault-03 only**
+
+   - Vault-02 and Vault-03
+
+   - Vault-01 and Vault-02
+
+6. You have on-premises and Azure VMs that require backup. You are planning to use Microsoft Azure Backup Server to configure the backup. Which of the following on-premises workloads are not supported by MABS?
+
+   - **Oracle workloads**
+
+   - Exchange servers
+
+   - Windows Server
+
+   - Linux Servers on Hyper-V
