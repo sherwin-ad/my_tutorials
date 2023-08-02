@@ -2624,3 +2624,773 @@ Goto App Services > click Create
 
 
 
+# Mock Exam 1
+
+1. Which table in Log Analytics should you check if the agent is sending data to the Log Analytics workspace?
+
+   - **Heartbeat**
+
+   - Syslog
+
+   - Health
+
+   - AgentLogs
+
+2. Your organization has two subscriptions, prod-sub and dev-sub. In prod-sub, you have all your production resources and they are protected using resource locks to avoid any accidental changes or deletion. However, the dev-sub doesn’t have any locks, you need to make sure all the resources in the subscription are protected from accidental deletion and at the same time users should be able to modify the resources as required. What is the easiest solution for this?
+
+   - Use Delete lock for all resource groups
+
+   - Use ReadOnly resource lock at the subscription scope
+
+   - Use ReadOnly resource lock for all resource groups
+
+   - **Use Delete lock at the subscription scope**
+
+3. Your organization wants to use the self-service password reset option for all cloud identities in Azure AD. Which license should you choose?
+
+   - Microsoft 365 Apps
+
+   - Azure AD Free
+
+   - **Azure AD Premium P2**
+
+   - Azure AD Premium P1
+
+4. Which of the following statements about custom domains is true?
+
+   - **You can use MX record to verify the domain**
+
+   - You can have only domain attached to the Azure AD tenant
+
+   - You can remove [onmicrosoft.com](http://onmicrosoft.com/) domain from Azure AD after adding a custom domain
+
+   - **You can use TXT record to verify the domain**
+
+5. What is the retention period for the metrics collected by Azure Monitor?
+
+   - 60 days
+
+   - 120 days
+
+   - **90 days**
+
+   - 30 days
+
+6. You are planning to create an Azure Virtual Machine Scale Set using PowerShell. Which command should you use?
+
+   - New-AzVMScaleSet
+
+   - Set-AzVMScaleSet
+
+   - New-AzVM -Type ScaleSet
+
+   - **New-AzVMSS**
+
+7. Your team hired a new VM administrator to manage the production VMs which are deployed in PROD-RG. You need to assign a role to the new hire by which the administrator should be able to manage all aspects of the VMs including network and storage in PROD-RG. Which of the following roles gives the right amount of access to the user?
+
+   - Provide Virtual Machine Contributor role at the resource group level
+
+   - **Provide Contributor role at the resource group level**
+
+   - Provide Virtual Machine Operator role at the subscription level
+
+   - Provide Owner role at the resource group level
+
+   The Owner role will give additional rights to the user such as access delegation. In this case, the Contributor is the least privilege we can give.
+
+8. Which of the following statements about scaling is correct. Select all that apply.
+
+   - Vertical scaling is same as autoscaling
+
+   - **Vertical scaling would require VM reboot**
+
+   - Vertical scaling can be done on selected VM sizes only
+
+   - **Vertical scaling has an upper limit, you cannot scale beyond that**
+
+9. You purchased a domain called [kodekloud.com](http://kodekloud.com/) from a domain registrar and created a DNS zone in Azure DNS. You added an A record for www which will resolve to 13.11.13.12, which is one of your public facing web servers. You asked your users to test if they are able to access [www.kodekloud.com](http://www.kodekloud.com/). The clients were not able to resolve the name. What should you do? Select all that apply.
+
+   - **Add the name servers in Azure DNS to domain registrar**
+
+   - Reboot the client machines to flush the cache
+
+   - Create a Private Azure DNS zone
+
+   - Make sure public access is enabled in Azure DNS
+
+10. Your organization deployed an AKS cluster in Azure and the operations team started to create pods in the cluster. One of the Kubernetes administrators needs to access the cluster from his local computer. The user is able to run kubectl commands from cloud shell, but when the user tries from the Linux terminal, it says kubectl is not recognized. User reached out to you to fix this, how can you resolve this? Azure CLI is already installed on the computer
+
+    - Update AKS cluster
+
+    - **Install AKS CLI tools using az aks install-cli**
+
+    - SSH to the node and verify if the kube-proxy service is running
+
+    - Download the credentials using az aks get-credentials command and try again
+
+11. You added a ReadOnly lock to one of your Azure VMs running SQL database. Which of the following operations cannot be performed on the database? Select all that apply.
+
+    - **Restart the VM**
+
+    - Drop a table
+
+    - **Delete VM**
+
+    - Delete database
+
+12. You have a VM named VM-1 in the East US region. VM-1 has a network interface named NIC1, this interface is attached to a subnet called “default” which is part of virtual network VNET-01. VM-1 is using a managed disk. You have another virtual network in the West US called VNET-02, you need to move the VM to VNET-02. Which of the following two actions should you perform?
+
+    - Deallocate the VM-1
+
+    - **Create a new VM using the disk in West US**
+
+    - Add a new NIC in VNET-02, attach to VM-1 and remove the one in VNET-01 
+
+    - **Delete VM-1 and retain the disk**
+
+13. Your organization would like to create some containers using Azure Container Instances. These containers require persistent storage. Which Azure services can be used to create persistent storage for the containers?
+
+    - Azure Container
+
+    - Azure Data Lake Storage Gen2
+
+    - Azure Data Box
+
+    - **Azure Files**
+
+14. Your development team wants to use Azure Queue Storage for their application. One of the development teams asked to share the access key and endpoint for the service. You created a storage account called “devkodekloudapp”. You were able to find the access key from Azure Portal. What will be endpoint to access queue storage?
+
+    - [https://devkodekloudapp.table.azure.net](https://devkodekloudapp.table.azure.net/)
+
+    - **[https://devkodekloudapp.table.core.windows.net](https://devkodekloudapp.table.core.windows.net/)**
+
+    - [https://devkodekloudapp.core.table.windows.net](https://devkodekloudapp.core.table.windows.net/)
+
+    - [https://storage.devkodekloudapp.core.table.windows.net](https://storage.devkodekloudapp.core.table.windows.net/)
+
+15. Which service is responsible for providing cost recommendations?
+
+    - **Azure Advisor**
+
+    - Azure Cost Advisor
+
+    - Azure Cost Management
+
+    - Azure Monitor
+
+16. Your application development team wants to use Azure Storage Service where they can store application binaries, embed them in a webpage and access via HTTP/HTTPS. Which service should you recommend?
+
+    - Queue
+
+    - File
+
+    - **Blob**
+
+    - Table
+
+17. If you are using the Microsoft Azure Recovery Services Agent, how many backups will be taken per day?
+
+    - **3**
+
+    - 1
+
+    - 4
+
+    - 2
+
+18. You are planning to use Azure Virtual WAN for connecting your branch offices to Azure via S2S VPN. Due to the cost constraints, you were asked by the management to choose the cheapest SKU that supports S2S. Which SKU will you choose?
+
+    - Standard
+
+    - **Basic**
+
+    - Standard V2
+
+    - Premium
+
+19. Your business unit uses different virtual machines for your applications. You were asked by your manager to consolidate the cost for these VMs. These VMs are part of different resource groups. What is the easiest way to track the cost for these VMs in Azure Cost Management?
+
+    - Assign tags at the resource group level
+
+    - Calculate the cost individually and sum up the cost
+
+    - Use Azure Policy to group the VMs and calculate the cost
+
+    - **Assign tags at the resource level**
+
+    Tags assigned at the resource group level will not be visible in Azure Cost Management, we need to use tags at the resource level to track cost.
+
+20. Your security team is planning to audit the sign-in logs in Azure AD by ingesting that to a Log Analytics workspace. Which of the following configurations should be done to achieve this?
+
+    - Data source setting
+
+    - **Diagnostic setting**
+
+    - Ingestion configuration
+
+    - Data monitor setting
+
+21. In an ARM template, what’s the right way to declare a variable “role” with the value “database”?
+
+    - variable: {“role” : “database”}
+
+    - **variables: {“role” : “database”}**
+
+    - variable: [“role” : “database”]
+
+    - variables: (“role” : “database”)
+
+
+
+# Mock Exam 2
+
+1. What is the key length of the key pairs used for Azure Linux virtual machines?
+
+   - **2048-bit**
+
+   - 128-bit
+
+   - 4096-bit
+
+   - 1024-bit
+
+   Azure uses a 2048-bit key length and SSH-RSA format for public and private keys.
+
+2. Which of the following user types cannot be created from the Azure portal? (Select all that apply.)
+
+   - Cloud identities
+
+   - **Directory synchronized users**
+
+   - Guest accounts
+
+   - M365 cloud identities
+
+3. You want to use an ARM template to deploy a VM. You need to make sure that the password should be added as a parameter to the template. What parameter type should you choose to make sure that the password is secure?
+
+   - secureObject
+
+   - passwordString
+
+   - notClearTextString
+
+   - **secureString**
+
+4. You are planning to restore an Azure VM that you were backing up to a Recovery Services Vault. As part of the restore process, you would like to mount the restore point as a drive to our VM and recover files. Which option should you select while restoring the VM?
+
+   - **File recovery**
+
+   - Folder recovery
+
+   - Volume recovery
+
+   - File system recovery
+
+   Using File Recovery, you will be able to mount the restore point as a drive to your VM and recover files without the need to restore the entire VM.
+
+5. Which of the following facts about resource groups is true? (Select all that apply.)
+
+   - **Resource groups can act as a scope for managing access.**
+
+   - A resource group is a global service and can be used to group resources from multiple regions.
+
+   - **Resource groups will help manage the lifecycle of resources.**
+
+   - **Deleting the resource group deletes all the resources that are part of the resource group.**
+
+   Though we can use resource groups to group resources from multiple regions, a resource group is not a global service. Every resource group will have a region where it will store the metadata about the resources that are part of the group.
+
+6. Which of the statements about MARS is not true?
+
+   - MARS can back up files without the need to deploy the Backup server.
+
+   - **MARS can back up files stored in RedHat VMs.**
+
+   - MARS can be used to back up files and folders stored in physical Windows servers.
+
+   - File, folder, and volume level restore is available in MARS.
+
+7. Which of the following facts about Azure AD is not true?
+
+   - **Kerberos and OpenID Connect authentication are supported.**
+
+   - Azure AD uses a flat hierarchy.
+
+   - Group Policy doesn’t exist.Azure Storage account
+
+   - LDAP is not used in Azure AD.
+
+   Though OpenID Connect is used for authentication, Azure AD doesn’t use Kerberos. So, option B is not true.
+
+8. You would like to ingest metrics from the VM host and analyze them using Metrics Explorer. What should you do to collect these metrics from the VM?
+
+   - Metrics are collected by default without any additional configuration.
+
+   - **You need to create a Log Analytics workspace to collect these metrics.**
+
+   - Data sources.
+
+   - **During VM deployment, you can enable log collection. By default, this will be enabled.**
+
+   The Log Analytics cost is calculated using the amount of data ingested and the number of days the data is retained for (data retention). Thirty-one days of retention is free.
+
+9. Which of the following data can be collected using Azure Monitor? (Select all that apply.)
+
+   - **Subscription monitoring data**
+
+   - **Application monitoring data**
+
+   - **Resource monitoring data**
+
+   - **Guest OS monitoring data**
+
+   Azure Monitor can collect all the aforementioned data sources along with tenant monitoring data.
+
+10. Cost data exported from Azure Cost Management will be stored in the ____________________.
+
+    - Azure Event Hub
+
+    - Azure Log Analytics workspace
+
+    - **Azure Storage account**
+
+    - Power BI workspace
+
+    The export feature in Azure Cost Management can be used to export the billing data to an Azure storage account.
+
+11. Your organization has decided to migrate from IaaS to an App Service offering. For your apps, management requires high performance, security, and isolation. Which App Service Plan tier should you use?
+
+    - Premium V2
+
+    - **Isolated**
+
+    - Standard
+
+    - Premium
+
+    An isolated plan offers high performance, security, isolation, and native virtual network deployment.
+
+12. After creating the load balancer when you reviewed the Azure NSG for the VM, what can you see?
+
+    - SNAT rule
+
+    - Load balancing rule
+
+    - DNAT rule
+
+    - **Inbound NAT rule**
+
+13. Select the correct sequence for setting up a virtual network to virtual network connection.
+
+    - **Create virtual networks, add gateway subnets, deploy VPN gateways, establish a connection**
+
+    - Create a VPN gateway, select the virtual networks to connect, create the connection
+
+    - Create virtual networks, create gateway virtual networks, deploy gateways to gateway virtual network
+
+    - Create a VPN gateway and then create a site-to-site connection
+
+    The process is to first create virtual networks, then add gateway subnets, and then deploy VPN gateways. Finally, you establish a connection.
+
+14. To create a hybrid environment, you are planning to deploy a basic VPN gateway. To get zone redundancy, your manager asked you to use a standard SKU public IP address for the VPN gateway. When you were creating a VPN gateway, you were not able to see the option to attach a standard SKU public IP address. What could be the reason?
+
+    - **A standard SKU is not supported for VPN gateways.**
+
+    - You don’t have permission to attach a standard SKU to the VPN gateway.
+
+    - You need to upgrade to VpnGw1 or higher to use a standard SKU.
+
+    - The public IP is deployed in a different region. You can only select the IP address that is in the same region as the gateway.
+
+15. For using Azure Bastion, you need to create a dedicated subnet. What should be the name and minimum size of the subnet?
+
+    - AzureBastionSubnets (minimum /26)
+
+    - BastionSubnet (minimum /26)
+
+    - AzureBastion (minimum /27)
+
+    - **AzureBastionSubnet (minimum /27)**
+
+16. You need to connect to Linux virtual machines using a key pair from the Windows Terminal application. The key name is vm-01, and it is stored in ~/.ssh/key. What is the right syntax for connecting to a VM called vm-01 using the username admin?
+
+    - ssh -p ~/.ssh/key/ -i vm-01 admin@vm-01
+
+    - **ssh -i ~/.ssh/key/vm-01 admin@vm-01**
+
+    - ssh -c ~/.ssh/key/vm-01 admin@vm-01
+
+    - ssh -k ~/.ssh/key/vm-01 admin@vm-01
+
+17. You have implemented alerts for all your critical workloads. As of now, you are using ServiceNow for creating internal IT tickets. Which action in action groups offers the easiest way to connect to ServiceNow?
+
+    - ITIL
+
+    - **ITSM**
+
+    - Email/SMS/push
+
+    - Email Azure Resource Manager role
+
+18. Which of the following PowerShell commands can be used to create a virtual network? (Select all that apply.)
+
+    - New-AzureVirtualNetwork
+
+    - **New-AzVirtualNetwork**
+
+    - New-AzureVNet
+
+    - New-AzNetwork
+
+    The New-AzVirtualNetwork command is used to create a virtual network.
+
+19. You need to establish a highly available site-to-site connection to an on-premises environment. Which of the following topologies offers the highest availability?
+
+    - Passive-passive
+
+    - **Active-active**
+
+    - Active-passive
+
+    - Active-cold standby
+
+20. Your organization would like to use self-service password reset, and hybrid users should be able to reset their on-premises password. However, you are not able to use this feature due to licensing issues. Which license should you purchase to use this feature?
+
+    - Azure AD Free
+
+    -  Azure AD P1
+
+    - **Azure AD P2**
+
+    - Azure AD M2
+
+21. Which of the following is an example of manual deployment in App Services?
+
+    - Local Git
+
+    - GitHub
+
+    - **External Git**
+
+    - BitBucket
+
+22. Which of the following bulk operations are available for users in Azure AD? (Select all that apply.)
+
+    - **Bulk invite**
+
+    - **Bulk delete**
+
+    - **Download all users**
+
+    - **Bulk create**
+
+    All of the options are considered as bulk operations for users.
+
+23. Your organization wants to store binaries and executables for downloads over HTTP/HTTPS. However, they are confused with the storage options in Azure. Which storage service would you suggest?
+
+    - Files
+
+    - Queues
+
+    - **Blobs**
+
+    - Tables
+
+24. Which is the cheapest licensing option if you have fewer than 500,000 users and require single sign-on?
+
+    - Azure AD P2
+
+    - Azure AD M2
+
+    - **Azure AD Free**
+
+    - Azure AD P1
+
+    Azure AD Free edition offers 500,000 directory objects, SSO, and B2B collaboration.
+
+25. Your management has requested to collect all logs related to health events for resources that are part of your subscription. Which category should you select to get this data from the Activity Log?
+
+    - Service health
+
+    - Administrative
+
+    - **Resource health**
+
+    - Subscription health
+
+26. You would like to control the way the traffic is getting distributed to the backend VMs. Which option in Azure Load Balancer should be configured to control this?
+
+    - Session stickiness
+
+    - Session affinity
+
+    - TCP timeout
+
+    - **Session persistence**
+
+    The distribution mode of the load balancer can be changed using session persistence.
+
+27. Which of the following facts about management groups is true? (Select all that apply.)
+
+    - **You can easily apply policies and access a set of subscriptions.**
+
+    - **Budgets can be created at the management group level, which is ideal for teams and projects having multiple subscriptions.**
+
+    - The management group can be created to isolate the resources that you don’t want to be part of any subscription.
+
+    - **Using the management group, you can logically group subscriptions.**
+
+28. Which of the following statements is false?
+
+    - **The ARM template can be used for creating Azure resources only; resource groups and subscriptions should be deployed using PowerShell or the CLI.**
+
+    - The ARM template is an example of declarative automation.
+
+    - The ARM templates can be exported and reused in different subscriptions.
+
+    - The ARM template has an option to preview the changes before the deployment.
+
+    ARM templates can be used to create resources, resource groups, and subscriptions.
+
+29. What is the maximum number of gateways you can add to a virtual network?
+
+    - **1**
+
+    - 500
+
+    - 100
+
+    - 10
+
+30. Which of the following statements is not true? (Select all that apply.)
+
+    - Azure Bastion can be used to establish a connection from the Azure portal over SSL.
+
+    - **The Azure Bastion host is charged only when you are connecting to VMs using RDP/SSH.**
+
+    - The Azure Bastion service requires a dedicated subnet.
+
+    - **The Azure Bastion host requires you to create RDP access to the host machine to establish an RDP/SSH connection to other VMs.**
+
+    Azure Bastion can be used to establish a connection from the Azure portal over SSL; there is no need to download any clients. You will be charged for the entire hour regardless of whether you are using Azure Bastion. The only way to stop being billed is to delete the Azure Bastion service.
+
+31. Your company has a virtual network with the specifications below. When you were writing a PowerShell script, you needed to provide the resource ID of the virtual network. Which of the following is the right one?
+
+    ```
+    Name: vnet-hub
+    Resource Group: clz-01
+    Subscription ID: 00000-00001-00002-00003
+    ```
+
+    - /subscription/00000-00001-00002-00003/clz-01/providers/Microsoft.Network/virtualNetworks/vnet-hub
+
+    - **/subscriptions/00000-00001-00002-00003/resourcegroups/clz-01/providers/Microsoft.Network/virtualNetworks/vnet-hub**
+
+    - /subscription/00000-00001-00002-00003/resourcegroups/clz-01/providers/Microsoft.Network/virtualNetworks/vnet-hub
+
+    - /subscriptions/00000-00001-00002-00003/resourcegroups/clz-01 /Microsoft.Network/virtualNetworks/vnet-hub
+
+    If you have a virtual network with the name vnet-hub, then the resource ID will be /subscriptions/<subscriptionId>/resourcegroups/<resouceGroupName>/ providers/Microsoft.Network/virtualNetworks/vnet-hub.
+
+32. You have been asked to access the table named `customers` in the storage account `axfg03`. Which is the right endpoint to access the table?
+
+    - https:// [axfg03.table.core.windows.net/tables/customers](http://axfg03.table.core.windows.net/tables/customers)
+
+    - https:// [axfg03.table.core.windows.net/Customers](http://axfg03.table.core.windows.net/Customers)
+
+    - https:// [axfg03.table.core.windows.net/CUSTOMERS](http://axfg03.table.core.windows.net/CUSTOMERS)
+
+    - **https:// [axfg03.table.core.windows.net/customers](http://axfg03.table.core.windows.net/customers)**
+
+33. You have an on-premises endpoint that is publicly exposed. You want to check the latency and connectivity from a virtual machine to the FQDN. Which service should you choose?
+
+    - **Connection Monitor**
+
+    - Topology
+
+    - VPN diagnostics
+
+    - IP Flow Verify
+
+    Connection Monitor will verify if the destination is reachable or not. It will also show the hops taken to reach the destination and latency.
+
+34. ARM is an example of a(n) ____________________________ solution for Azure.
+
+    - Template
+
+    - Infrastructure-as-a-service
+
+    - **Infrastructure-as-code**
+
+    - Platform-as-a-service
+
+35. Which action will a User Access administrator be able to perform? (Select all that apply.)
+
+    - **Delegate access**
+
+    - **View resources**
+
+    - Modify resources
+
+    - Create resources
+
+    A User Access administrator can delegate access to other users; however, this role cannot manage any resources.
+
+36. After creating the load balancer when you reviewed the Azure NSG for the VM, what would you be able to see?
+
+    - SNAT rule
+
+    - Load balancing rule
+
+    - **Inbound NAT rule**
+
+    - DNAT rule
+
+37. You are using deployment slots for your web apps. Currently, you are using the Standard plan, and when you swapped the slots, CORS settings were not swapped. What could be the reason?
+
+    - CORS swap is supported only from the Premium tier onward.
+
+    - Enable the CORS Across Slots option from app configuration settings.
+
+    - Enable CORS Across Slots option from the app general settings.
+
+    - **CORS settings cannot be swapped during slot swap.**
+
+    CORS settings cannot be swapped during a deployment slot swap.
+
+38. What is the maximum number of nodes that can be added to an AKS cluster with the Standard Load Balancer?
+
+    - 100
+
+    - 2,000
+
+    - 1,500
+
+    - **1,000**
+
+    Refer to the following: https://docs.microsoft.com/en-us/azure/aks/quotas-skus-regions#service-quotas-and-limits
+
+39. Your organization is creating a virtual machine with a public IP address. You need to make sure that the public IP address is zone redundant. Which of the following SKU and assignment types should you select to achieve this?
+
+    - **Standard static**
+
+    - Standard dynamic
+
+    - Basic static
+
+    - Basic dynamic
+
+40. Your organization wants to store binaries and executables for downloads over HTTP/HTTPS. However, they are confused with the storage options in Azure. Which storage service would you suggest?
+
+    - Files
+
+    - Tables
+
+    - Queues
+
+    - **Blobs**
+
+41. Does Azure App Service support Azure Marketplace images?
+
+    - **Yes**
+
+    - No
+
+42. ## What is the durability offered by GRS storage?
+
+    - **99.9999999999999999 (16 nines)**
+
+    - 99.99999999999 (11 nines)
+
+    - 99.999999999999999999 (18 nines)
+
+    - 99.99999999999999 (14 nines)
+
+43. You are setting up Azure Load Balancer, and you would like to implement cookie affinity. However, you are not able to find this while configuring the load balancer. What could be the reason?
+
+    - Ensure that you are using Azure Load Balancer Standard as cookie affinity is available only on Standard.
+
+    - Cookie affinity is also known as session persistence; use it instead.
+
+    - **Cookie affinity requires an L7 load balancer; use an application gateway instead of Azure Load Balancer.**
+
+    - Set session persistence to a two-tuple hash to enable cookie persistence.
+
+    To use cookie affinity, you need to have an L7 load balancer like Azure Application Gateway.
+
+44. Which port is used to establish WinRM to Windows machines?
+
+    - 5987
+
+    - 5999
+
+    - **5986**
+
+    - 3389
+
+45. Your organization has a requirement that all Azure VM backups stored in Azure should be encrypted. What needs to be done to enable encryption at rest?
+
+    - File system recovery
+
+    - **File recovery**
+
+    - Volume recovery
+
+    - Folder recovery
+
+    Using File Recovery, you will be able to mount the restore point as a drive to your VM and recover files without the need to restore the entire VM.
+
+46. Which of the following statements is correct?
+
+    - **RBAC targets authorization, and a policy targets resource properties.**
+
+    - RBAC and a policy are required to grant access.
+
+    - RBAC always supersedes the policy.
+
+    - A policy is not required when you are using RBAC.
+
+    RBAC targets authorization and access to a specific resource, while a policy targets resource properties such as size, location, type, etc.
+
+47. In which of the following backup scenarios can you use the MARS agent?
+
+    - VMware backup
+
+    - **On-premises files and folders**
+
+    - SharePoint backup
+
+    - Azure Files backup
+
+48. You are planning to set up a Log Analytics workspace for collecting logs. Your manager asked you to prepare a budget for Log Analytics. What are two meters you should include as part of the Log Analytics cost calculation?
+
+    - **Data retention**
+
+    - Data sources
+
+    - Data queries
+
+    - **Data ingestion**
+
+49. You want to use allowedValues for one of your parameters. How can you supply values to allowedValues?
+
+    - “allowedValues”: “one”, “two”, “three”
+
+    - **“allowedValues”: [“one”, “two”, “three”]**
+
+    - “allowedValues”: {“one”, “two”, “three”}
+
+    - “allowedValues”: (“one”, “two”, “three”)
+
+50. What is the maximum throughput offered by a VPN gateway?
+
+    - 1 Gbps
+
+    - **10 Gbps**
+
+    - 100 Gbps
+
+    - 1000 Gbps
+
+    The bandwidth of the VPN gateway is limited to 10 Gbps.
+
