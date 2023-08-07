@@ -2916,7 +2916,7 @@ Goto App Services > click Create
 
    - Azure AD uses a flat hierarchy.
 
-   - Group Policy doesn’t exist.Azure Storage account
+   - Group Policy doesn’t exist.
 
    - LDAP is not used in Azure AD.
 
@@ -3296,7 +3296,7 @@ Goto App Services > click Create
 
     - No
 
-42. ## What is the durability offered by GRS storage?
+42. What is the durability offered by GRS storage?
 
     - **99.9999999999999999 (16 nines)**
 
@@ -3394,3 +3394,293 @@ Goto App Services > click Create
 
     The bandwidth of the VPN gateway is limited to 10 Gbps.
 
+# Mock Exam 3
+
+1. Your organization added a ReadOnly lock to one of your production SQL databases. Which of the following operations cannot be accomplished?
+
+   - Modify queries in the SQL database
+
+   - Create a new table in the SQL database
+
+   - **Resize the SQL database**
+
+   - Delete the table from the SQL database
+
+   Locks prevent changes to a resource, but they don’t restrict how resources perform their own functions. Any operations done within the SQL database cannot be prevented using locks.
+
+2. How long will the metrics be retained by Microsoft?
+
+   - 91 days
+
+   - 90 days
+
+   - 92 days
+
+   - **93 days**
+
+   There is no limit to the amount of metric data you can collect, but this data is stored for a maximum of 93 days.
+
+3. Your manager has asked you to remove a deployment from the deployment history. How can you achieve this?
+
+   - The deployment history cannot be cleared; Azure stores it for 90 days.
+
+   - Use the az group deployment cancel command.
+
+   - Use the az group deployment remove command.
+   - **Use the az group deployment delete command.**
+
+   You can use the "az group deployment delete" command to delete a deployment from the deployment history.
+
+4. What are the additional cost implications if you are setting up an active-active configuration for a VPN gateway?
+
+   - **There is no change in the cost as the redundant instances need to be deployed for passive as well.**
+
+   - The cost will be comparatively higher as data transfer happens via both tunnels.
+
+   - The VPN gateway cost will be doubled for VPN gateway as your second instance is active.
+
+   - The cost will be double for data transfer as the data is transferred via both tunnels simultaneously.
+
+   There won’t be any billing implications or additional cost for switching to active-active. The redundant instances are always running regardless of active-passive or active-active, so the cost of that is always included in the price of the VPN gateway.
+
+5. Which of the following statements about custom domains is true? (Select all that apply.)
+
+   - **You need to add a TXT/MX record to validate the domain.**
+
+   - **You can add multiple domains.**
+
+   - You can remove a domain where users are mapped to the domain.
+
+   - You can delete the [onmicrosoft.com](http://onmicrosoft.com/) domain after adding the custom domain.
+
+   You can add multiple custom domains to your Azure AD tenant by adding the TXT/MX record to your DNS domain for validation.
+
+6. Your organization wants to bring your own keys for SSE. Which service should you use to store these keys?
+
+   - **Azure Key Vault**
+
+   - Key Management Service
+
+   - Windows Key Store
+
+   - Recovery Services Vault
+
+   Azure Key Vault can be used to store SSE and ADE keys.
+
+7. You have implemented a policy-based VPN gateway and set up an S2S connection. Later, you decide to switch to a route-based VPN. What’s the right approach to change from a policy-based VPN to a route-based VPN?
+
+   - Delete the S2S connection and update the VPN gateway; then re-create the connection.
+
+   - **Delete the connection, delete the gateway, and create a new route-based VPN.**
+
+   - Changing via the portal is not supported; use PowerShell to change the gateway type.
+
+   - Disable the connection, update the gateway, and enable the connection again.
+
+   You cannot change a policy-based VPN to route-based VON without redeploying the VPN gateway. Deleting the connection, deleting the gateway, and creating a new route-based VPN is the right approach.
+
+8. MARS takes a backup _____ time(s) per day.
+
+   - 4
+
+   - 1
+
+   - 2
+
+   - **3**
+
+9. What option do you have if the region doesn’t support availability zones?
+
+   - Flexible orchestration.
+
+   - Azure Spot instance.
+
+   - The availability zone is available for all regions.
+
+   - **Use an availability set.**
+
+   Use an availability set in regions where availability zones are not available.
+
+10. Your security wants to make sure that public access to the storage account from all networks should be denied. All communications should happen via a VPN S2S connection from on-premises. What needs to be done about this requirement?
+
+   - Create network rules and add the on-premises network to the storage account
+
+   - **Create a private endpoint**
+
+   - Create a service endpoint
+
+   - Create Azure Firewall
+
+   Private endpoints can be created for the storage account that will create an interface for the storage account in the virtual network that can be accessed privately.
+
+11. Which one of the following can be used as a persistent storage for Azure Container Instances?
+
+    - Azure Data Lake Storage
+
+    - **Azure Files**
+
+    - Azure Container Storage plug-in
+
+    - Azure Blob Storage
+
+12. Your organization is planning to save VHD files in Azure Blob Storage. Which type of blob should be selected for this?
+
+    - Block blob
+
+    - General blob
+
+    - **Page blob**
+
+    - Append blob
+
+    A page blob is ideal for frequent read/write operations and can be up to 8 TB in size. Azure stores virtual machine OS disks and data disks in page blob format.
+
+13. One of your Linux virtual machines has the following NSGs attached to it. ![question-image](https://res.cloudinary.com/dezmljkdo/image/upload/v1658341172/az104/az1042_xvcrzk.png) You are not able to connect to the VM over SSH. How can you fix this?
+
+    - Delete the NIC level NSG
+
+    - Change the priority of rule 1 of subnet level NSG to 100
+
+    - Change the source of rule 1 of subnet level NSG
+
+    - **Delete rule 1 from NIC level NSG**
+
+    Delete rule 1 from the NIC level so NSG will allow SSH traffic.
+
+14. Select the correct syntax to declare a variable with the name vmName and a value of webserver-01.
+
+    - variables: { “vmName” = “webserver-01”}
+
+    - variables: [ “vmName”: “webserver-01”]
+
+    - **variables: { “vmName”: “webserver-01”}**
+
+    - variables: ( “vmName”: “webserver-01”)
+
+15. You are planning to implement an Azure VPN gateway, and you would like to direct packets through IPsec tunnels based on the combinations of address prefixes between your on-premises network and the Azure VNet. What configuration should you select to achieve this?
+
+    - Zone-redundant VPN
+
+    - IPsec VPN
+
+    - Route-based VPN
+
+    - **Policy-based VPN**
+
+    Policy-based gateways implement policy-based VPNs. Policy-based VPNs encrypt and direct packets through IPsec tunnels based on the combinations of address prefixes between your on-premises network and the Azure virtual network. The policy (or traffic selector) is usually defined as an access list in the VPN configuration.
+
+16. You are trying to add dynamic devices under M365 groups, and for some reason you are not able to perform that action. What could be the reason?
+
+    - You should have only Windows 10 and Windows Server 2019 devices to add to M365 groups.
+
+    - Dynamic devices are not supported for M365 groups.
+
+    - You need to have a Premium P2 license to add dynamic devices under M365 groups.
+
+    - **You need to have the Device Administrator role assigned to group devices in Azure AD.**
+
+17. What is the maximum duration of the script that can be run using Custom Script Extension for Linux machines?
+
+    - **90 minutes**
+
+    - 9 minutes
+
+    - 20 minutes
+
+    - 95 minutes
+
+18. You have deployed an AKS cluster and have downloaded the credentials; however, when using kubectl, you are not able to get the node information from your local computer. As per the terminal, kubectl is not recognized as a known command. What needs to be done to resolve this problem? (Select all that apply.)
+
+    - **Install the AKS CLI tools using az aks install-cli**
+
+    - Download the credentials again and save them to your home directory
+
+    - SSH to the nodes and verify if the kube-proxy service is running
+
+    - **Try accessing the cluster from the cloud shell**
+
+    You can install the kubectl binaries to your local computer by executing "az aks install-cli". Kubectl is already installed in the cloud shell, so verify if you can get the node information to rule out any provisioning issues.
+
+19. Which component in AKS managed nodes is responsible for managing requests coming from the master node?
+
+    - api-server
+
+    - **kubelet**
+
+    - kube-proxy
+
+    - docker
+
+    Kubelet is responsible for processing the requests that are coming from the Azure managed node or the master node.
+
+20. Which table should you query to verify if the data collection from the Log Analytics agent is stopped or not?
+
+    - Syslog
+
+    - **Heartbeat**
+
+    - Event
+
+    - AgentLogs
+
+    The Heartbeat table will help you identify computers that haven’t had a heartbeat in a specific time frame.
+
+21. You need to create a storage account using an ARM template. As per the naming conventions, you should take the name of the resource group and append that with a string that will be provided by the user during runtime. Assume that the string shared by the user will be stored in `name`. For example, if the name of the resource group is `rg-01` and the string provided by the user is storage, then the name should be `rg-01-storage`. What is the right format to construct the storage account name while writing the resource block?
+
+    - [concat(resourceGroup().name(),’-’, variables(‘name’)]
+
+    - [concat([resourceGroup.name](http://resourcegroup.name/)(),’-’, parameters(‘name’)]
+
+    - [concat([resourceGroup.name](http://resourcegroup.name/)(),’-’, variables(‘name’)]
+
+    - **[concat(resourceGroup().name,’-’, parameters(‘name’)]**
+
+    As the user is providing the value during the runtime, you cannot use variables; you need to use parameters. The resource group name can be captured using resourcegroup().name. The values can be appended using the concat function.
+
+22. You created a web app named azwebapp. What will the default URL of the web app be?
+
+    - [https://azwebapp.azurewebapp.net](https://azwebapp.azurewebapp.net/)
+
+    - [https://azwebapp.azure.websites.net](https://azwebapp.azure.websites.net/)
+
+    - [https://azwebapp.app.azurewebsites.net](https://azwebapp.app.azurewebsites.net/)
+
+    - **[https://azwebapp.azurewebsites.net](https://azwebapp.azurewebsites.net/)**
+
+    The default domain will be azurewebsites.net
+
+23. Your organization wants to ingest logs from Azure AD to a Log Analytics workspace. Which setting should be configured for this?
+
+    - Ingestion setting
+
+    - Data collection setting
+
+    - **Diagnostic setting**
+
+    - Data source setting
+
+    Azure AD logs can be streamed to Azure Log Analytics by enabling the diagnostic settings.
+
+24. Your security wants to make sure that public access to the storage account from all networks should be denied. All communications should happen via a VPN S2S connection from on-premises. What needs to be done about this requirement?
+
+    - **Create a private endpoint**
+
+    - Use Azure Firewall
+
+    - Create network rules and add the on-premises network to the storage account
+
+    - Create a service endpoint
+
+    Private endpoints can be created for the storage account that will create an interface for the storage account in the virtual network that can be accessed privately.
+
+25. You would like to enable Network Watcher for your subscription to view the topology. What needs to be done to enable Network Watcher?
+
+    - **Network Watcher is enabled automatically for every subscription.**
+
+    - You need to deploy the Network Watcher service manually in the region where your deployment is.
+
+    - Manual deployment is required for only one region as Network Watcher is a global service.
+
+    - Network Watcher gets enabled when you create a virtual network.
+
+26. 
