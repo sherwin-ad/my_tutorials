@@ -580,11 +580,26 @@ total 44
 
 ![image-20230626093132043](images/image-20230626093132043.png)
 
-## Virtual Network Peering
+### Virtual Network Peering
 
-![image-20230626093424551](images/image-20230626093424551.png)
+![image-20230808085342298](images/image-20230808085342298.png)
 
-### Creating Virtual Network Peering
+- High speed data transfer, easy configuration and great performance
+- Uses Microsoft backbone network for data transfer, so privacy and low latency is offered in peering
+- Provides connectivity between Azure virtual networks. The virtual networks can reside in the same region, different region, same subscription, different subscription, same tenant or different tenant
+
+
+
+#### Types of peering
+
+1. **Global VNet Peering**
+   - Peering of virtual network between region to another region
+2. **Regional VNet Peering**
+   - Peering of virtual network on the same region
+
+
+
+#### Creating Virtual Network Peering
 
 1. Goto Virtual Networks > [Vnet Name] > Peerings and Add
 
@@ -603,40 +618,58 @@ total 44
 
 
 
-## VPN GATEWAY
+### VPN GATEWAY
 
 ![image-20230626113613344](images/image-20230626113613344.png)
 
 
 
-## VPN Gateway SKUs
+#### VPN Gateway SKUs
 
 ![image-20230626114021194](images/image-20230626114021194.png)
 
+**SKU selection**
 
+- SKU is selected based on the number of connections and throughput you require.
+
+**Resizing**
+
+- Within generation, we can resize the VPN gateway based on the requirement.
+
+**Basic SKU**
+
+- In addition to the above SKUs, we have Basic SKU which is considered as legacy and should not be used. 
 
 ## Steps VNet-to-VNet Connection
 
 1. Create Gateway Subnet in both virtual networks.
 
+   **Gateway Subnet**
+
+   - VPN Gateways requires a dedicated subnet to deploy the gateway. First, we need to create Gateway Subnet in both of our virtual networks.
+
    Goto Virtual networks > [Vnet Name] >  Gateway Subnet
 
    ![image-20230626144621691](images/image-20230626144621691.png)
 
-   - **Gateway Subnet**
-     - VPN Gateways requires a dedicated subnet to deploy the gateway. First, we need to create Gateway Subnet in both of our virtual networks.
-
 2. Create the VPN gateway in both virtual networks
+
+   **VPN Gateway**
+
+   - Once the Gateway Subnet is created, we will deploy the VPN gateway to the subnet.
+   - Creating a VPN gateway would take around approx.: 40 minutes.
 
    Goto Virtual network gateways > and click Create
 
    ![image-20230626151705525](images/image-20230626151705525.png)
 
-   - **VPN Gateway**
-     - Once the Gateway Subnet is created, we will deploy the VPN gateway to the subnet.
-     - Creating a VPN gateway would take around approx.: 40 minutes.
+   
 
 3. Create the VPN connection
+
+   **VNet-to-VNet connection**
+
+   - After creating the VPN gateway, then we need to create VNet-to-VNet connection from the VPN Gateway
 
    Goto Virtual network gateways > [VNet GW Name] > Connections > and Click Add
 
@@ -650,8 +683,6 @@ total 44
 
    
 
-   - **VNet-to-VNet connection**
-     - After creating the VPN gateway, then we need to create VNet-to-VNet connection from the VPN Gateway
 
 ## VNet Peering v/s VNet-to-VNet Connection
 
@@ -675,6 +706,8 @@ total 44
 
 3. Create Local Network Gateway (LNG) in Azure by providing the IP address or FQDN of your on-premises VPN device
 
+   Goto Local network gateways > Create
+
    
 
 4. Provide Public IP address of your Azure VPN Gateway in on-premises VPN device
@@ -686,10 +719,124 @@ total 44
 ## Point-to-Site connection
 
 1. Create Gateway Subnet in Azure Virtual Network to deploy the VPN Gateway.
+
 2. Deploy VPN Gateway to the Gateway Subnet in Azure virtual network
+
 3. Configure your Point-to-Site in VPN gateway by selecting the address pool and authentication method
+
+   Documentation
+   https://learn.microsoft.com/en-us/azure/vpn-gateway/openvpn-azure-ad-tenant
+
 4. Download the VPN client configuration to your client machine
+
 5. From your Windows, Linux, macOS or mobile clients; connect to the VPN
+
+## Gateway transit
+
+- Hub spoke architecture
+
+![image-20230808102630052](images/image-20230808102630052.png)
+
+
+
+# High Availability
+
+1. Active/Standby
+2. Active/Active
+
+![image-20230808110226157](images/image-20230808110226157.png)
+
+**Default count**
+
+- There will be always two instances of VPN Gateway, default selection is Active/standby
+
+**Cost**
+
+- The cost of the gateway includes the cost of two instances. Regardless of whether it’s active/standby or active/active cost will be same.
+
+**High availability**
+
+- High availability can be ensured by enabling Active/active configuration. You should make sure that you have similar setup in on-premises.
+
+  
+
+# ExpressRoute
+
+- Redundant L3 connectivity
+- Within a geography, connectivity is available to all regions
+- Bandwidth options vary from 50 Mbps to 100 Gbps
+- ExpressRoute circuit is offered in Local, Standard and Premium SKUs
+- In Local SKU, you will be charged under the Unlimited plan. In unlimited outbound data transfer is free.
+- With Standard and Premium SKU, you can select between a Metered or an Unlimited data plan. In metered, you will be charged for outbound data transfer.
+- With the addition of premium add-on, you can get global  connectivity.
+
+![image-20230808130624314](images/image-20230808130624314.png)
+
+**Private connectivity**  
+
+- ExpressRoute offers private connectivity between on-premises infrastructure and Microsoft datacenters.
+
+**Partner network**
+
+- Traffic is routed with the help of partner network and public internet is not used.
+
+**Features**
+
+- Reliable, secure, low latency and high-speed connection.
+
+![image-20230808131413755](/home/sherwinowen/Documents/my_tutorials/azure/ AZURE ADMINISTRATOR/images/image-20230808131413755.png)
+
+**Co-located at a cloud exchange**
+
+- If your facility is already co-located with cloud exchange, then virtual cross connections to Microsoft cloud can be provisioned through the co-location provider’s Ethernet exchange. L2 and
+  managed L3 cross connections are supported.
+
+**Point-to-Point Ethernet connection**
+
+- By leveraging point-to-point Ethernet links, you can connect your on-premises network to Microsoft cloud. L2 or managed L3 connections are supported.
+
+**Any-to-Any (IPVPN)**
+
+- With the integration of your WAN to Microsoft cloud, you can make it look like Microsoft cloud is one of your branch offices. Supports managed L3 connectivity.
+
+**Direct model**
+
+- Establish connectivity by directly connecting to Microsoft’s global network at a peering location nearby.
+
+## Co-existing ExpressRoute and Site-to-Site
+
+![image-20230808132034452](images/image-20230808132034452.png)
+
+**Failover path**
+
+- Though ExpressRoute has redundant connection, we can use S2S connection as a failover path for ExpressRoute
+
+**Branch office connectivity**
+
+- We can use S2S connectivity to connect to branch offices or other sites which are not connected to ExpressRoute.
+
+**Separate gateways**
+
+- ExpressRoute and VPN requires separate gateways for communication.
+
+# Virtual WAN
+
+![image-20230808132432795](images/image-20230808132432795.png)
+
+**Brings together all connections**
+
+- We can connect Point-to-Site, Site-to-Site, Virtual Network and ExpressRoute connections to VWAN.
+
+**Seamless connectivity**
+
+- Connects Azure virtual networks and resources to the hub seamlessly.
+
+**Advanced architecture**
+
+- With the help VWAN, we can advance our hub-spoke architecture. End-to-end traffic flow can be
+  visualized.
+
+
 
 ## QUIZ: INTERSITE CONNECTIVITY
 
