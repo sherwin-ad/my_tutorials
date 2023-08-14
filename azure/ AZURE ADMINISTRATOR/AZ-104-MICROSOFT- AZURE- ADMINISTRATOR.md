@@ -456,6 +456,117 @@ total 40
 -rw-rw-r-- 1 sherwinowen sherwinowen  117 May 10 09:03 sample.html
 ```
 
+- Azure Load Balancer is a Layer 4 load balancer which supports Azure Virtual Machines and Azure Virtual Machine Scale Sets as backend.
+
+- Supports all TCP/UDP protocols 
+
+- Load Balancer is offered in two SKUs: Standard and Basic SKU
+
+  **Basic Load Balancer**
+
+  - Ideal for testing and development. No SLA offered
+
+  **Standard Load Balancer**
+
+  - Recommended for production scenarios because of the SLA. Offers  HTTPS health probe
+
+  | **Feature**       | **Basic**                        | **Standard**                             |
+  | ----------------- | -------------------------------- | ---------------------------------------- |
+  | Backend pool size | Up to 300 instances              | Up to 1000 instances                     |
+  | Health probes     | TCP, HTTP                        | TCP, HTTP, HTTPS                         |
+  | Redundancy        | Not available                    | Zone redundant and zonal redundant       |
+  | Multiple frontend | Inbound only                     | Inbound and outbound                     |
+  | Security          | Open by default. NSG is optional | Closed, unless traffic is allowed by NSG |
+  | SLA               | Not applicable                   | 99.99%                                   |
+
+- Security is managed with the help of Network Security Groups
+
+### Public Load Balancer
+
+![image-20230814092852033](images/image-20230814092852033.png)
+
+- Ideal for public facing workloads
+
+- Public load balancer will have public IP address
+
+- Incoming traffic’s public IP address and port number will be mapped to the private IP address and port number of the backend servers.
+
+- With the help of load balancing rules, we can distribute the traffic across backend servers.
+
+- Used in all public facing workloads which require load balancing.
+
+  
+
+### Internal Load Balancer
+
+![image-20230814093212501](images/image-20230814093212501.png)
+
+- Ideal for internal workloads
+- Internal load balancer doesn’t have public IP address as frontend
+- Incoming traffic inside the virtual network or from a VPN can be distributed across the backend servers
+- This load balancer is never exposed to the internet, so the IP addresses and port numbers are not visible to the internet.
+- Used in internal resources that needs to be accessed from Azure or on-premises via VPN connection.
+
+### Load Balancer Rules
+
+![image-20230814093819036](images/image-20230814093819036.png)
+
+**Load balancing rules**
+
+- The incoming traffic to backend pools is distributed with the help of load balancing rules. We can create frontend IP to backend IP port mapping and the traffic is distributed accordingly.
+
+**Inbound NAT rules**
+
+- Instead of backend pool, we can target a specific virtual machine and create a NAT rule. Frontend IP and port combination is used to send traffic to IP and port of the designated VM.
+
+**Outbound rule**
+
+- Allows instances in the backend pool to communicate to the Internet and other endpoint. 
+
+### Session Persistence
+
+**None (default)**
+
+- Request will be routed based on a 5-tuple hash. Five tuple comprises of Source IP, Source Port, Destination IP, Destination port, and Protocol. Requests can be handled by any VM and the chances of getting a new VM for every session is very high.
+
+**Client IP**
+
+- Client IP is called two-tuple where the hash of source IP and destination IP is used to route the traffic. Requests will be handled by the same VM if the source IP or destination IP doesn’t change. 
+
+**Client IP and protocol**
+
+- This is also called as three-tuple hash, where the hash of source IP, destination IP and protocol is used to route the traffic to the VM. Requests coming from same IP and protocol will be handled by the same VM.
+
+
+
+### Create Load Balancer
+
+1. Goto > Load Balancer > and click Create load balancer
+
+![image-20230814100925000](images/image-20230814100925000.png)
+
+2. Frontend IP configuration
+
+![image-20230814101400384](images/image-20230814101400384.png)
+
+3. Backend pools > Add backend pool
+
+![image-20230814101838199](/Users/sherwinowen/my_doc/my_tutorials/azure/ AZURE ADMINISTRATOR/images/image-20230814101838199.png)
+
+4. inbound rules > Add a load balancing rule
+
+![image-20230814102701576](images/image-20230814102701576.png)
+
+5. Add inbound security rule
+
+   Goto Vrtual machine > Networking > Add inbound port rule 
+
+![image-20230814105526465](images/image-20230814105526465.png)
+
+
+
+
+
 ## Azure Application Gateway
 
 kodekloud-azure/AppGateway
@@ -467,6 +578,92 @@ total 44
 -rw-rw-r-- 1 sherwinowen sherwinowen 8206 May 10 09:03 lab-infra.ps1
 -rw-rw-r-- 1 sherwinowen sherwinowen  127 May 10 09:03 sample.html
 ```
+
+![image-20230814110950315](images/image-20230814110950315.png)
+
+**Layer 7 Load Balancer**
+
+- Manages HTTP, HTTPS, HTTP/2, and WebSocket requests. Requests will be routed to the backend pool. Web Application Firewall can be added to Application Gateway as an option component.
+
+**Routing and features** 
+
+- Requests can be routed to the backend pool based on URL also known as path-based routing. Also, we can host multiple sites behind an application gateway. Features includes URL Redirect, SSL termination, Rewrite HTTP headers and Custom error pages. 
+
+**Backend pools**
+
+- The web servers can be hosted in Azure Virtual Machines, Azure Virtual Machine Scale Sets, Azure App Services, and even on-premises servers.
+
+
+
+### Application Gateway - Components
+
+![image-20230814111442653](images/image-20230814111442653.png)
+
+
+
+### Application Gateway – Routing Rules
+
+**Path based routing**
+
+- Based on the path in the URL, we can route the request to different backend pools. Ideal for routing requests to different backend pools optimized for different paths.
+
+![image-20230814112652574](images/image-20230814112652574.png)
+
+**Multiple-site routing**
+
+- Multiple sites can be hosted behind a single application gateway. Based on the domain, the request can be routed to the backend pool hosting the requested domain.
+
+![image-20230814112807794](images/image-20230814112807794.png)
+
+### Create Application Gateway
+
+1. Goto Application gateway > Click Create
+
+  ![image-20230814143741725](images/image-20230814143741725.png)
+
+2. Create Application Gateway subnet
+
+   Click Manage subnet configuration > Click Subnet
+
+   ![image-20230814144225342](images/image-20230814144225342.png)
+
+![image-20230814144839699](images/image-20230814144839699.png)
+
+3. Frontends
+
+   ![image-20230814145126047](images/image-20230814145126047.png)
+
+4. Backends
+
+   Click Add a backend pool
+
+   ###### ![image-20230814150129566](images/image-20230814150129566.png)
+
+5. Configuration > Add a routing rule
+
+   Click Add a routing rule
+
+   **Listener**
+
+   ![image-20230814151205773](images/image-20230814151205773.png)
+
+   **Backend targets**
+
+   ![image-20230814151835262](images/image-20230814151835262.png)
+
+
+
+  Click Backend settings > Add new
+
+   ![image-20230814151735242](images/image-20230814151735242.png)
+
+**Add multiple targets to create a path-based rule**
+
+![image-20230814153730330](images/image-20230814153730330.png)
+
+![image-20230814153849471](images/image-20230814153849471.png)
+
+
 
 
 
