@@ -663,9 +663,98 @@ total 44
 
 ![image-20230814153849471](images/image-20230814153849471.png)
 
+6. Add Backend pool targets
+
+   Goto Application gateway > color-app-gw > Click Backend pools
+
+   ![image-20230814182507567](/home/sherwinowen/Documents/my_tutorials/azure/ AZURE ADMINISTRATOR/images/image-20230814182507567.png)
+
+   ![image-20230814182420059](images/image-20230814182420059.png)
+
+## Other load balancing solutions
+
+### Azure Front Door
+
+- Modern CDN solution that provides reliable, fast content delivery.
+- Azure Front Door is a global solution which leverages the Microsoft’s global edge network with hundreds of global and local point-of-presence locations. These endpoints are distributed across the globe and closer to your customers.
+- We can deploy our solutions in multiple regions and load balance using the Azure Front Door. Path based routing and multiple-site routing is available.
+- Web Application Firewall can be added as an optional component.
+
+### Azure Traffic Manager
+
+- ATM or Azure Traffic Manager is a DNS based load balancer. Traffic coming to your public facing applications can be distributed across the globe with the help of ATM.
+- As this is a DNS load balancer, it uses DNS to direct the client request to an endpoint based on the routing rule we configure. Traffic Manager finds the best endpoint for you based on the routing and returns a DNS response with the endpoint name. Client then directly reaches out to the endpoint.
+- ATM can be used with the public facing services deployed in Azure or non-Azure environments. Routing methods includes Priority, Weighted, Geography, Performance and Nested Profile.
+
+### Comparing Load Balancing Solutions
 
 
 
+| Feature          | Application Gateway                                          | Front Door                                                   | Load Balancer                                                | Traffic Manager                                              |
+| ---------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Usage            | Optimize delivery from application server farms while increasing application security with web application firewall. | Scalable, security-enhanced delivery point for global, micro service-based web applications. | Balance inbound and outbound connections and requests to your applications or server endpoints. | Distribute traffic optimally to services across global Azure regions, while providing high availability and responsiveness. |
+| Protocols        | HTTP, HTTPS, HTTP2                                           | HTTP, HTTPS, HTTP2                                           | TCP, UDP                                                     | Any                                                          |
+| Internal support | Yes                                                          |                                                              | Yes                                                          |                                                              |
+| Cross Region     | No                                                           | Yes                                                          | Preview                                                      | Yes                                                          |
+| Environment      | Azure, non-Azure cloud, on premises                          | Azure, non-Azure cloud, on premises                          | Azure                                                        | Azure, non-Azure cloud, on premises                          |
+| Security         | WAF                                                          | WAF, NSG                                                     | NSG                                                          |                                                              |
+
+https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/load-balancing-overview#reference-architecture-examples
+
+## Azure Bastion
+
+![image-20230815094815097](images/image-20230815094815097.png)
+
+**Direct RDP and SSH in Azure Portal**
+
+- No need to deploy or download SSH and RDP clients to your computer, you can RDP/SSH from browser.
+
+**Public IP is not required**
+
+- Since we are connecting via Bastion Host, there is no need to main public IP addresses for our virtual machines.
+
+**No need to tweak NSGs**
+
+- No need to manage and write complex rules in your NSG as Bastion is connecting to private IP address
+
+**Port scanning protection**
+
+- Since we are not exposing any public IPs, attackers cannot perform port scanning.
+
+**Hardening**
+
+- Bastion is a platform managed service and hardening in one place only.
+
+**Basic and Standard SKUs**
+
+- Basic SKU provides base functionality as in direct RDP/SSH access. 
+- The Standard SKU enables premium features that allow Azure Bastion to manage remote connectivity at a larger scale.
+
+### Create Bastion
+
+1. Goto Bastion > Click Create
+
+   ![image-20230815100134708](images/image-20230815100134708.png)
+
+2. Create Bastion subnet
+
+      Click Manage subnet configuration
+
+      ![image-20230815100428997](images/image-20230815100428997.png)
+
+      
+
+      ![image-20230815100617200](images/image-20230815100617200.png)
+
+3. Connec to VM thru Bastion
+
+      Goto Virtual Machine > [VM Name] > Click Connect > Click Go to Bastion 
+
+      ![image-20230815102300087](images/image-20230815102300087.png)
+
+      ![image-20230815102427562](/home/sherwinowen/Documents/my_tutorials/azure/ AZURE ADMINISTRATOR/images/image-20230815102427562.png)
+
+      
 
 ## QUIZ: LOAD BALANCING
 
@@ -3901,6 +3990,8 @@ Goto App Services > click Create
 
     - variables: ( “vmName”: “webserver-01”)
 
+    Variables are declared in the format "variables": { "name": "value"}.
+
 15. You are planning to implement an Azure VPN gateway, and you would like to direct packets through IPsec tunnels based on the combinations of address prefixes between your on-premises network and the Azure VNet. What configuration should you select to achieve this?
 
     - Zone-redundant VPN
@@ -3937,11 +4028,11 @@ Goto App Services > click Create
 
     - **Install the AKS CLI tools using az aks install-cli**
 
-    - Download the credentials again and save them to your home directory
+    - **Download the credentials again and save them to your home directory**
 
     - SSH to the nodes and verify if the kube-proxy service is running
 
-    - **Try accessing the cluster from the cloud shell**
+    - Try accessing the cluster from the cloud shell
 
     You can install the kubectl binaries to your local computer by executing "az aks install-cli". Kubectl is already installed in the cloud shell, so verify if you can get the node information to rule out any provisioning issues.
 
@@ -4027,4 +4118,130 @@ Goto App Services > click Create
 
     - Network Watcher gets enabled when you create a virtual network.
 
-26. 
+26. Your organization wants to use Custom Script Extension stored in one of the source controls to be executed on a Linux machine. Which property should be used to specify the command that needs to be executed?
+
+    - commandsToExecute
+
+    - **commandToExecute**
+
+    - fileUris
+
+    - scriptToExecute
+
+    The URL to the script can be added using the fileUris property, and then you can execute the script using the commandToExecute option.
+
+27. You have an Azure subscription named `az-sub01` that contains an Azure Log Analytics workspace named `la-workspace-01`. You need to view the error events from a table named Event. Which query should you run in `la-workspace-01`?
+
+    - search in (Event) * | where EventType -eq “error”
+
+    - **search in (Event) “error”**
+
+    - Get-Event Event | where {$_.EventType == “error”}
+
+    - select * from Event where EventType == “error”
+
+    You can use search in followed by the table name and keyword for searching in a table. You can also use Event | search "error" or Event | where EventType == "error".
+
+28. When you compare the features between Azure Application Gateway and Azure Front Door, you find that most of the features are the same. What is the key difference between Azure Front Door and Azure Application Gateway?
+
+    - Azure Application Gateway is an L7 load balancer, while Azure Front Door is a DNS load balancer.
+
+    - **Azure Application Gateway is a regional service, and Azure Front Door is a global service.**
+
+    - Application Gateway supports only VMs, and Azure Front Door supports only App Services.
+
+    - Azure Application Gateway supports path-based and multiple site routing, which is not supported by Azure Front Door.
+
+    Azure Application Gateway is a regional service, and Azure Front Door is a global service.
+
+29. Azure Hybrid Benefit can be used with which of the following services? (Select all that apply.)
+
+    - **SQL servers**
+
+    - **Linux servers**
+
+    - **Windows VMs**
+
+    - Azure Functions
+
+    Azure Hybrid Benefit can be applied to Windows, SQL, and Linux servers. Azure Functions is a serverless service.
+
+30. Which parameters are taken into consideration for a three-tuple hash?
+
+    - Protocol, destination IP address, and destination port
+
+    - Source IP address, source port, and destination IP address
+
+    - **Source IP address, destination IP address, and protocol**
+
+    - Source IP address, destination IP address, and destination port
+
+31. You have been asked to access the table named customers in the storage account axfg03. Which is the right endpoint to access the table?
+
+    - https:// [axfg03.table.core.windows.net/CUSTOMERS](http://axfg03.table.core.windows.net/CUSTOMERS)
+
+    - **https:// [axfg03.table.core.windows.net/customers](http://axfg03.table.core.windows.net/customers)**
+
+    - https:// [axfg03.table.core.windows.net/Customers](http://axfg03.table.core.windows.net/Customers)
+
+    - https:// [axfg03.table.core.windows.net/tables/customers](http://axfg03.table.core.windows.net/tables/customers)
+
+    Table names are case sensitive. The right approach is to use the table endpoint followed by the table name.
+
+32. Which of the following statements about custom domains is true? (Select all that apply.)
+
+    - You can delete the [onmicrosoft.com](http://onmicrosoft.com/) domain after adding the custom domain.
+
+    - **You can add multiple domains.**
+
+    - You can remove a domain where users are mapped to the domain.
+
+    - **You need to add a TXT/MX record to validate the domain.**
+
+33. You are using Azure DNS, and one of your colleagues has asked you to add the IPv6 address of a server to the DNS zone. What should you do?
+
+    - Inform the colleague that Azure DNS only supports IPv4 records
+
+    - Create a CNAME recording pointing to the IPv6 address
+
+    - **Create an AAAA record**
+
+    - Create an A record pointing to the IPv6 address
+
+34. You are planning to implement an Azure VPN gateway, and you would like to direct packets through IPsec tunnels based on the combinations of address prefixes between your on-premises network and the Azure VNet. What configuration should you select to achieve this?- 
+
+    - Zone-redundant VPN\
+
+    - **Policy-based VPN**
+
+    - Route-based VPN
+
+    - IPsec VPN
+
+    Policy-based gateways implement policy-based VPNs. Policy-based VPNs encrypt and direct packets through IPsec tunnels based on the combinations of address prefixes between your on-premises network and the Azure virtual network. The policy (or traffic selector) is usually defined as an access list in the VPN configuration.
+
+35. Your organization wants to use a virtual WAN with an S2S VPN. Which is the cheapest WAN type you can use?
+
+    - Advanced
+
+    - Standard
+
+    - **Basic**
+
+    - Premium
+
+    Basic Virtual WAN supports S2S VPN, and this is the cheapest option.
+
+36. You need to use Azure Storage in AKS; what are the storage options available to you via Storage classes? (Select all that apply.)
+
+    - **Azure Premium File Storage**
+
+    - **Azure Standard SSD**
+
+    - Azure Tables
+
+    - **Azure Premium SSD**
+
+    Azure Managed SSD Disks (Standard, Premium) and Azure Files (Standard, Premium) are supported for AKS Storage classes.
+
+37. 
