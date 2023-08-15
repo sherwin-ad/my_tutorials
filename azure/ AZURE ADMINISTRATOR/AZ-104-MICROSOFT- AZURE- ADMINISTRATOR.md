@@ -4028,9 +4028,9 @@ Goto App Services > click Create
 
     - **Install the AKS CLI tools using az aks install-cli**
 
-    - **Download the credentials again and save them to your home directory**
+    - Download the credentials again and save them to your home directory
 
-    - SSH to the nodes and verify if the kube-proxy service is running
+    - **SSH to the nodes and verify if the kube-proxy service is running**
 
     - Try accessing the cluster from the cloud shell
 
@@ -4244,4 +4244,176 @@ Goto App Services > click Create
 
     Azure Managed SSD Disks (Standard, Premium) and Azure Files (Standard, Premium) are supported for AKS Storage classes.
 
-37. 
+37. You have several Linux virtual machines running in a virtual network. Your management wants to deploy an Azure Firewall for securing the workloads. As soon as you deployed the firewall, the Linux machines are not able to download the updates. What needs to be done to make sure that the updates are allowed? Choose a solution that will have the lowest management overhead.
+
+    - Ignore manual updates as Azure automatically updates all virtual machines
+
+    - Whitelist IP addresses of update repositories to the firewall
+
+    - Add a NAT rule to enable updates
+
+    - **Add an application rule and whitelist the domains**
+
+    Adding IP addresses is not an efficient solution as chances of these IP addresses getting changed are high. It’s easy to add the FQDNs to an application rule so that requests to these domains are not blocked.
+
+38. In your organization, administrators created Azure DNS zones, and most of the production zones are hosted on an on-premises Windows DNS server. You want to implement name resolution for your on-premises servers; they should be able to resolve DNS names from both Azure DNS zones and on-premises DNS zones. The on-premises infrastructure is dynamic where VMs are created and deleted dynamically based on the demand. What would be the easiest solution to make the name resolution happen without management overhead?
+
+    - Migrate the on-premises zones to Azure
+
+    - Add Azure DNS servers to all the VMs
+
+    - **Create a conditional forwarder on the on-premises domain controller**
+
+    - Synchronize Azure DNS zones to on-premises
+
+    Though you can add Azure DNS to all the VMs and make the name resolution happen, as the VMs are dynamically created, it’s not a feasible solution. The easiest way is to add a conditional forwarder to the on-premises DNS server, which will forward all the requests matching the condition to the Azure DNS for name resolution.
+
+39. Which of the following is not mandatory for an ARM template? (Select all that apply.)
+
+    - **variables**
+
+    - **apiProfile**
+
+    - **functions**
+
+    - **parameters**
+
+    The only required fields for an ARM template are $schema, contentVersion, and resources.
+
+40. Which classic role is equivalent to the Contributor role?
+
+    - Global administrator
+
+    - Service administrator
+
+    - **Co-administrator**
+
+    - Account administrator
+
+41. Which of the following facts are correct? (Select all that apply.)
+
+    - **There is a size limit to which you can vertically scale; no further scaling will be possible beyond that.**
+
+    - **A VM requires a reboot during vertical scaling.**
+
+    - Vertical scaling can be used to implement true autoscaling.
+
+    - Vertical scaling will increase the number of instances without changing the hardware.
+
+    A VM requires a reboot during vertical scaling, and there is a size limit to which you can vertically scale; no further scaling will be possible beyond that.
+
+42. You are setting up a VPN gateway and would like to add your custom DNS servers. Where will you configure this?
+
+    - Under VPN configuration, you can specify the DNS servers.
+
+    - **A VPN gateway inherits the DNS configuration of the virtual network.**
+
+    - A VPN uses the DNS servers mentioned in the local network gateway.
+
+    - A private DNS needs to be created to link the VPN gateway to use custom DNS.
+
+    If you specified a DNS server or servers when you created your virtual network, the VPN gateway will use the DNS servers that you specified.
+
+43. You would like to have VMs of different configurations in a virtual machine scale set. Which configuration should you select to achieve this?
+
+    - Spreading algorithm
+
+    - Azure Spot instance
+
+    - **Flexible orchestration**
+
+    - Uniform orchestration
+
+44. Your reliability team wants to distribute the instances of a virtual machine scale set across fault domains. Which option do you need to configure to accomplish this requirement?
+
+    - Scaling policy
+
+    - Availability set
+
+    - Uniform distribution
+
+    - **Spreading algorithm**
+
+45. Which Azure CLI command is used to validate if the ARM template is syntactically correct?
+
+    - az group deployment whatif
+
+    - **az group deployment validate**
+
+    - az group template whatif
+
+    - az group template validate
+
+    In Azure CLI, you can use "az group deployment validate" to validate whether a template is syntactically correct.
+
+46. You have linked a virtual network to a private zone with autoregistration enabled. In the virtual network there are 150 VMs, and you accidentally deleted all the DNS records. You need to recover these DNS records as soon as possible to avoid a DNS outage for the virtual network. What needs to be done?
+
+    - Create a new zone and register the VMs there.
+
+    - Export the VM and IP addresses to a CSV file and import to the zone.
+
+    - The records cannot be recovered.
+
+    - **No action is required.**
+
+    The automatic registration happens again as long as the virtual machine still exists and has a private IP address attached to it. The DNS record is re-created automatically in the zone.
+
+47. One of the previous administrators of your Azure environment created a General Purpose v1 Hot Standard Storage account in Azure. This account is used to store tables and blobs. Now your management is asking you to implement Lifecycle Management for blobs. However, you are not able to find this option in the Azure portal. What needs to be done?
+
+    - Change the account to the Cool tier
+
+    - Enable Lifecycle Management from Advanced Properties
+
+    - **Upgrade to General Purpose v2**
+
+    - Change the tier to Premium
+
+    Only General Purpose v2 storage accounts support the Lifecycle Management option, so you need to upgrade your storage account.
+
+48. You are trying to connect your Cost Management data to Power BI, and you are not able to do so. Currently, you have five pay-as-you-go subscriptions that run production workloads. What could be the reason for this failure?
+
+    - **Only the subscription offer doesn’t support the Power BI connector.**
+
+    - You need to generate the API key to connect to Power BI.
+
+    - You need to sign in as the administrator to use the Power BI integration.
+
+    - You need to enable Power BI access in Cost Management to download the data.
+
+    The Power BI connector supports only the Enterprise Agreement and Microsoft Customer Agreement subscriptions.
+
+49. ###### What does reclaimPolicy in AKS Storage do?
+
+    - Helps to claim the pod configuration
+
+    - Maps the underlying storage to the node pool
+
+    - **Controls the persistence of the disk**
+
+    - Chooses the type of storage used for the cluster
+
+    When you delete the pod and the persistent volume is no longer required, reclaimPolicy controls the behavior of the underlying Azure storage resource. The underlying storage resource can be either deleted or kept for use with a future pod.
+
+50. You have an Azure subscription. You are deploying an Azure Kubernetes Service (AKS) cluster that will contain multiple pods. The pods will use Kubernetes networking; you need to restrict network traffic between the pods. What should you configure on the AKS cluster?
+
+    - Services
+
+    - Kubernetes ingress policy
+
+    - Security policy
+
+    - **Azure network policy**
+
+    An Azure network policy needs to be created to restrict the traffic between the pods.
+
+51. Azure Cost Management can generate cost recommendations based on your usage. Which of the following services is responsible for deriving these recommendations?
+
+    - **Azure Advisor**
+
+    - Azure Cost Management Recommendations
+
+    - Azure Cost Advisor
+
+    - Azure Monitor
+
+52. 
