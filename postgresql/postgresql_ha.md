@@ -27,7 +27,7 @@
    We first need to initialize database before starting. Use the following command:
 
    ```
-   $ sudo /usr/pgsql-12/bin/postgresql-12-setup initdb
+   sudo /usr/pgsql-12/bin/postgresql-12-setup initdb
    Initializing database --- OK
    ```
 
