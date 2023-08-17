@@ -502,7 +502,7 @@ demo=# select count(*) from test;
 
 ## 2. Download, install and configure repmgr for Failover
 
-**Install repmgr**
+### 1. Install repmgr
 
 ```
 [root@postgresql sherwinowen]# yum install repmgr12
@@ -540,14 +540,14 @@ Installed:
   repmgr_12-5.4.1-1PGDG.rhel8.x86_64
 ```
 
-**Create user "repmgr" and database "repmgr"**
+### 2. Create user "repmgr" and database "repmgr"
 
 ```
 [postgres@postgresql ~]$ createuser -s repmgr
 [postgres@postgresql ~]$ createdb repmgr -O repmgr
 ```
 
-**Modify postgresql.conf**
+### 3. Modify postgresql.conf
 
 ```
 vim /var/lib/pgsql/12/data/postgresql.conf
@@ -565,7 +565,7 @@ To this line
 shared_preload_libraries = 'repmgr'     # (change requires restart)
 ```
 
-**Modify pg_hba.conf**
+### 4. Modify pg_hba.conf
 
 ```
 vim /var/lib/pgsql/12/data/pg_hba.conf
@@ -607,13 +607,13 @@ host    replication     replicator      10.2.0.0/24             md5
 host    replication     all             ::1/128                 ident
 ```
 
-**Restart postgresql service**
+### 5. Restart postgresql service
 
 ```
 [sherwinowen@postgresql ~]$ sudo systemctl restart postgresql-12.service
 ```
 
-Connect from Server2 to Server1
+**Connect from Server2 to Server1**
 
 ```
 [postgres@postgresql1 ~]$ psql -h 10.2.0.12 -d repmgr -U repmgr
@@ -622,5 +622,672 @@ Type "help" for help.
 
 repmgr=# \dt
 Did not find any relations.
+```
+
+### 6. Copy repmgr.conf.sample to /var/lib/pgsql/repmgr.conf
+
+```
+[sherwinowen@postgresql ~]$ sudo cp repmgr-5.4.1/repmgr.conf.sample /var/lib/pgsql/repmgr.conf
+```
+
+**Change the owner to postgres of the file repmgr.conf**
+
+```
+[sherwinowen@postgresql ~]$ sudo chown postgres:postgres /var/lib/pgsql/repmgr.conf
+```
+
+**Edit repmgr.conf**
+
+Need to modify the following lines:
+
+```
+# =============================================================================
+# Required configuration items
+# =============================================================================
+
+node_id=1                        
+
+node_name='postgresql'                                               
+
+conninfo='host=10.2.0.12 port=5432 dbname=repmgr user=repmgr'   
+
+data_directory='/var/lib/pgsql/12/data'          
+
+#------------------------------------------------------------------------------
+# "standby follow" settings
+#------------------------------------------------------------------------------
+
+primary_follow_timeout=10 
+
+#------------------------------------------------------------------------------
+# Failover and monitoring settings (repmgrd)
+#------------------------------------------------------------------------------
+
+failover='automatic'
+
+#------------------------------------------------------------------------------
+# Failover and monitoring settings (repmgrd)
+#------------------------------------------------------------------------------
+
+promote_command='repmgr standby promote -f /var/lib/pgsql/repmgr.conf' 
+
+follow_command='repmgr standby follow -f /var/lib/pgsql/repmgr.conf -W --upstream-node-id=2'  
+
+```
+
+### 7. Copy repmgr.conf from Server1 to Server2
+
+```
+[postgres@postgresql ~]$ scp repmgr.conf postgres@10.2.0.13:/var/lib/pgsql/
+```
+
+### 8. Install repmgr in Server2
+
+```
+[root@postgresql1 sherwinowen]# yum install repmgr12
+```
+
+### 9. Modify repmgr.conf in Server2
+
+```
+# =============================================================================
+# Required configuration items
+# =============================================================================
+
+node_id=2                        
+
+node_name='postgresql1'                                               
+
+conninfo='host=10.2.0.13 port=5432 dbname=repmgr user=repmgr'   
+
+#------------------------------------------------------------------------------
+# Failover and monitoring settings (repmgrd)
+#------------------------------------------------------------------------------
+
+promote_command='repmgr standby promote -f /var/lib/pgsql/repmgr.conf' 
+
+follow_command='repmgr standby follow -f /var/lib/pgsql/repmgr.conf -W --upstream-node-id-1'  
+
+```
+
+### 10. Stop postgresql service in Server2
+
+```
+[root@postgresql1 sherwinowen]# systemctl stop postgresql-12.service
+```
+
+
+
+## 3. Register nodes
+
+### 1. Register Server1
+
+**Check the repmgr in /usr/pgsql-12/bin/**
+
+```
+postgres@postgresql ~]$ ls -l /usr/pgsql-12/bin/
+total 11764
+-rwxr-xr-x. 1 root root   73080 Aug  9 13:16 clusterdb
+-rwxr-xr-x. 1 root root   69016 Aug  9 13:16 createdb
+-rwxr-xr-x. 1 root root   73544 Aug  9 13:16 createuser
+-rwxr-xr-x. 1 root root   68768 Aug  9 13:16 dropdb
+-rwxr-xr-x. 1 root root   68736 Aug  9 13:16 dropuser
+-rwxr-xr-x. 1 root root  136192 Aug  9 13:16 initdb
+-rwxr-xr-x. 1 root root   42960 Aug  9 13:16 pg_archivecleanup
+-rwxr-xr-x. 1 root root  124088 Aug  9 13:16 pg_basebackup
+-rwxr-xr-x. 1 root root  161168 Aug  9 13:16 pgbench
+-rwxr-xr-x. 1 root root   64168 Aug  9 13:16 pg_checksums
+-rwxr-xr-x. 1 root root   42864 Aug  9 13:16 pg_config
+-rwxr-xr-x. 1 root root   59560 Aug  9 13:16 pg_controldata
+-rwxr-xr-x. 1 root root   72552 Aug  9 13:16 pg_ctl
+-rwxr-xr-x. 1 root root  419208 Aug  9 13:16 pg_dump
+-rwxr-xr-x. 1 root root  103016 Aug  9 13:16 pg_dumpall
+-rwxr-xr-x. 1 root root   68704 Aug  9 13:16 pg_isready
+-rwxr-xr-x. 1 root root   86096 Aug  9 13:16 pg_receivewal
+-rwxr-xr-x. 1 root root   68288 Aug  9 13:16 pg_resetwal
+-rwxr-xr-x. 1 root root  179312 Aug  9 13:16 pg_restore
+-rwxr-xr-x. 1 root root  106384 Aug  9 13:16 pg_rewind
+-rwxr-xr-x. 1 root root   47328 Aug  9 13:16 pg_test_fsync
+-rwxr-xr-x. 1 root root   38800 Aug  9 13:16 pg_test_timing
+-rwxr-xr-x. 1 root root  148488 Aug  9 13:16 pg_upgrade
+-rwxr-xr-x. 1 root root   97928 Aug  9 13:16 pg_waldump
+-rwxr-xr-x. 1 root root 7892536 Aug  9 13:16 postgres
+-rwxr-xr-x. 1 root root    2170 Aug  9 13:14 postgresql-12-check-db-dir
+-rwxr-xr-x. 1 root root    9413 Aug  9 13:14 postgresql-12-setup
+lrwxrwxrwx. 1 root root       8 Aug  9 13:14 postmaster -> postgres
+-rwxr-xr-x. 1 root root  657952 Aug  9 13:16 psql
+-rwxr-xr-x. 1 root root   73208 Aug  9 13:16 reindexdb
+-rwxr-xr-x. 1 root root  552424 Jul 24 17:27 repmgr
+-rwxr-xr-x. 1 root root  306472 Jul 24 17:27 repmgrd
+-rwxr-xr-x. 1 root root   81752 Aug  9 13:16 vacuumdb
+```
+
+**Add the directory path of repmgr to $PATH**
+
+```
+[postgres@postgresql ~]$ echo "PATH=$PATH:/usr/pgsql-12/bin/" >> .bash_profile 
+
+[postgres@postgresql ~]$ . .bash_profile 
+```
+
+**Register Server1 as master**
+
+```
+[postgres@postgresql ~]$ repmgr -f repmgr.conf  master register
+INFO: connecting to primary database...
+NOTICE: attempting to install extension "repmgr"
+NOTICE: "repmgr" extension successfully installed
+NOTICE: primary node record (ID: 1) registered
+```
+
+**Check repmgr database**
+
+```
+[postgres@postgresql ~]$ psql -d repmgr -U repmgr
+psql (12.16)
+Type "help" for help.
+repmgr-# \dt
+              List of relations
+ Schema |        Name        | Type  | Owner  
+--------+--------------------+-------+--------
+ repmgr | events             | table | repmgr
+ repmgr | monitoring_history | table | repmgr
+ repmgr | nodes              | table | repmgr
+ repmgr | voting_term        | table | repmgr
+(4 rows)
+
+repmgr=# select * from events;
+ node_id |      event       | successful |        event_timestamp        | details 
+---------+------------------+------------+-------------------------------+---------
+       1 | cluster_created  | t          | 2023-08-17 02:16:07.018497+00 | 
+       1 | primary_register | t          | 2023-08-17 02:16:07.025857+00 | 
+(2 rows)
+
+repmgr=# select * from nodes;
+ node_id | upstream_node_id | active | node_name  |  type   | location | priority |                      conninfo                      | repluser | slot_name |       
+ config_file         
+---------+------------------+--------+------------+---------+----------+----------+----------------------------------------------------+----------+-----------+-------
+---------------------
+       1 |                  | t      | postgresql | primary | default  |      100 | host=10.2.0.12 port=5432 dbname=repmgr user=repmgr | repmgr   |           | /var/l
+ib/pgsql/repmgr.conf
+(1 row)
+```
+
+### 2. Register Server2
+
+**Add the directory path of repmgr to $PATH**
+
+```
+[postgres@postgresql ~]$ echo "PATH=$PATH:/usr/pgsql-12/bin/" >> .bash_profile 
+
+[postgres@postgresql ~]$ . .bash_profile 
+```
+
+**Check if all prerequisite are met to clone the master**
+
+```
+[postgres@postgresql1 ~]$ repmgr -h 10.2.0.12 -U repmgr -d repmgr -f repmgr.conf standby clone --dry-run
+NOTICE: destination directory "/var/lib/pgsql/12/data" provided
+INFO: connecting to source node
+DETAIL: connection string is: host=10.2.0.12 user=repmgr dbname=repmgr
+DETAIL: current installation size is 311 MB
+INFO: "repmgr" extension is installed in database "repmgr"
+WARNING: target data directory appears to be a PostgreSQL data directory
+DETAIL: target data directory is "/var/lib/pgsql/12/data"
+HINT: use -F/--force to overwrite the existing data directory
+INFO: replication slot usage not requested;  no replication slot will be set up for this standby
+INFO: parameter "max_wal_senders" set to 10
+NOTICE: checking for available walsenders on the source node (2 required)
+INFO: sufficient walsenders available on the source node
+DETAIL: 2 required, 10 available
+NOTICE: checking replication connections can be made to the source server (2 required)
+INFO: required number of replication connections could be made to the source server
+DETAIL: 2 replication connections required
+WARNING: data checksums are not enabled and "wal_log_hints" is "off"
+DETAIL: pg_rewind requires "wal_log_hints" to be enabled
+NOTICE: standby will attach to upstream node 1
+HINT: consider using the -c/--fast-checkpoint option
+INFO: would execute:
+  pg_basebackup -l "repmgr base backup"  -D /var/lib/pgsql/12/data -h 10.2.0.12 -p 5432 -U repmgr -X stream 
+INFO: all prerequisites for "standby clone" are met
+```
+
+**Clone master**
+
+```
+[postgres@postgresql1 ~]$ repmgr -h 10.2.0.12 -U repmgr -d repmgr -f repmgr.conf standby clone -F
+NOTICE: destination directory "/var/lib/pgsql/12/data" provided
+INFO: connecting to source node
+DETAIL: connection string is: host=10.2.0.12 user=repmgr dbname=repmgr
+DETAIL: current installation size is 311 MB
+INFO: replication slot usage not requested;  no replication slot will be set up for this standby
+NOTICE: checking for available walsenders on the source node (2 required)
+NOTICE: checking replication connections can be made to the source server (2 required)
+WARNING: data checksums are not enabled and "wal_log_hints" is "off"
+DETAIL: pg_rewind requires "wal_log_hints" to be enabled
+WARNING: directory "/var/lib/pgsql/12/data" exists but is not empty
+NOTICE: -F/--force provided - deleting existing data directory "/var/lib/pgsql/12/data"
+NOTICE: starting backup (using pg_basebackup)...
+HINT: this may take some time; consider using the -c/--fast-checkpoint option
+INFO: executing:
+  pg_basebackup -l "repmgr base backup"  -D /var/lib/pgsql/12/data -h 10.2.0.12 -p 5432 -U repmgr -X stream 
+NOTICE: standby clone (using pg_basebackup) complete
+NOTICE: you can now start your PostgreSQL server
+HINT: for example: pg_ctl -D /var/lib/pgsql/12/data start
+HINT: after starting the server, you need to register this standby with "repmgr standby register"
+```
+
+**Start postgresql service**
+
+```
+[root@postgresql1 sherwinowen]# systemctl start postgresql-12.service 
+```
+
+**Register Server2 as standby**
+
+```
+[postgres@postgresql1 ~]$ repmgr -f repmgr.conf standby register
+INFO: connecting to local node "postgresql1" (ID: 2)
+INFO: connecting to primary database
+WARNING: --upstream-node-id not supplied, assuming upstream node is primary (node ID: 1)
+INFO: standby registration complete
+NOTICE: standby node "postgresql1" (ID: 2) successfully registered
+```
+
+
+
+### 3. Check Sever1 and Server2 are sync
+
+**Server1**
+
+**Check "repmgr" database**
+
+```
+repmgr=# \x
+Expanded display is on.
+repmgr=# select * from nodes;
+-[ RECORD 1 ]----+---------------------------------------------------
+node_id          | 1
+upstream_node_id | 
+active           | t
+node_name        | postgresql
+type             | primary
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.12 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+-[ RECORD 2 ]----+---------------------------------------------------
+node_id          | 2
+upstream_node_id | 1
+active           | t
+node_name        | postgresql1
+type             | standby
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.13 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+
+```
+
+```
+repmgr=# select * from events;
+-[ RECORD 1 ]---+----------------------------------------------------------------------------------
+node_id         | 1
+event           | cluster_created
+successful      | t
+event_timestamp | 2023-08-17 02:16:07.018497+00
+details         | 
+-[ RECORD 2 ]---+----------------------------------------------------------------------------------
+node_id         | 1
+event           | primary_register
+successful      | t
+event_timestamp | 2023-08-17 02:16:07.025857+00
+details         | 
+-[ RECORD 3 ]---+----------------------------------------------------------------------------------
+node_id         | 2
+event           | standby_clone
+successful      | t
+event_timestamp | 2023-08-17 02:36:40.880174+00
+details         | cloned from host "10.2.0.12", port 5432; backup method: pg_basebackup; --force: Y
+-[ RECORD 4 ]---+----------------------------------------------------------------------------------
+node_id         | 2
+event           | standby_register
+successful      | t
+event_timestamp | 2023-08-17 02:43:46.293042+00
+details         | standby registration succeeded; upstream node ID is 1
+```
+
+**Check "demo" database**
+
+```
+demo=# \dt+
+                                  List of relations
+  Schema  |      Name       | Type  |  Owner   |  Size   |        Description        
+----------+-----------------+-------+----------+---------+---------------------------
+ bookings | aircrafts_data  | table | postgres | 16 kB   | Aircrafts (internal data)
+ bookings | airports_data   | table | postgres | 56 kB   | Airports (internal data)
+ bookings | boarding_passes | table | postgres | 33 MB   | Boarding passes
+ bookings | bookings        | table | postgres | 13 MB   | Bookings
+ bookings | flights         | table | postgres | 3160 kB | Flights
+ bookings | seats           | table | postgres | 88 kB   | Seats
+ bookings | test            | table | postgres | 64 kB   | 
+ bookings | ticket_flights  | table | postgres | 68 MB   | Flight segment
+ bookings | tickets         | table | postgres | 48 MB   | Tickets
+(9 rows)
+```
+
+**Insert records**
+
+```
+demo=# insert into test (select generate_series(1,1000));
+INSERT 0 1000
+
+```
+
+**Displays records in test table**
+
+```
+demo=# select count(8) from test;
+ count 
+-------
+  2000
+(1 row)
+```
+
+
+
+**Server2**
+
+**Check "repmgr" database**
+
+```
+repmgr=# select * from nodes;
+-[ RECORD 1 ]----+---------------------------------------------------
+node_id          | 1
+upstream_node_id | 
+active           | t
+node_name        | postgresql
+type             | primary
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.12 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+-[ RECORD 2 ]----+---------------------------------------------------
+node_id          | 2
+upstream_node_id | 1
+active           | t
+node_name        | postgresql1
+type             | standby
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.13 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+```
+
+```
+repmgr=# select * from events;
+-[ RECORD 1 ]---+----------------------------------------------------------------------------------
+node_id         | 1
+event           | cluster_created
+successful      | t
+event_timestamp | 2023-08-17 02:16:07.018497+00
+details         | 
+-[ RECORD 2 ]---+----------------------------------------------------------------------------------
+node_id         | 1
+event           | primary_register
+successful      | t
+event_timestamp | 2023-08-17 02:16:07.025857+00
+details         | 
+-[ RECORD 3 ]---+----------------------------------------------------------------------------------
+node_id         | 2
+event           | standby_clone
+successful      | t
+event_timestamp | 2023-08-17 02:36:40.880174+00
+details         | cloned from host "10.2.0.12", port 5432; backup method: pg_basebackup; --force: Y
+-[ RECORD 4 ]---+----------------------------------------------------------------------------------
+node_id         | 2
+event           | standby_register
+successful      | t
+event_timestamp | 2023-08-17 02:43:46.293042+00
+details         | standby registration succeeded; upstream node ID is 1
+```
+
+**Check "demo" database**
+
+```
+demo=# \dt+
+                                  List of relations
+  Schema  |      Name       | Type  |  Owner   |  Size   |        Description        
+----------+-----------------+-------+----------+---------+---------------------------
+ bookings | aircrafts_data  | table | postgres | 16 kB   | Aircrafts (internal data)
+ bookings | airports_data   | table | postgres | 56 kB   | Airports (internal data)
+ bookings | boarding_passes | table | postgres | 33 MB   | Boarding passes
+ bookings | bookings        | table | postgres | 13 MB   | Bookings
+ bookings | flights         | table | postgres | 3160 kB | Flights
+ bookings | seats           | table | postgres | 88 kB   | Seats
+ bookings | test            | table | postgres | 64 kB   | 
+ bookings | ticket_flights  | table | postgres | 68 MB   | Flight segment
+ bookings | tickets         | table | postgres | 48 MB   | Tickets
+(9 rows)
+```
+
+**Insert records**
+
+```
+demo=# insert into test (select generate_series(1,1000));
+ERROR:  cannot execute INSERT in a read-only transaction
+```
+
+**Displays records in test table**
+
+```
+demo=# select count(*) from test;
+ count 
+-------
+  2000
+(1 row)
+```
+
+## 4. Failover
+
+### 1. Stop the postgresql service in Server1
+
+```
+[root@postgresql sherwinowen]# systemctl stop postgresql-12.service 
+```
+
+
+
+### 2. Monitor the events in repmgr of master and  standby server
+
+**Master**
+
+```
+[postgres@postgresql ~]$ repmgrd -f repmgr.conf --verbose
+[2023-08-17 03:05:47] [NOTICE] using provided configuration file "repmgr.conf"
+[2023-08-17 03:05:47] [NOTICE] repmgrd (repmgrd 5.4.1) starting up
+[2023-08-17 03:05:47] [INFO] connecting to database "host=10.2.0.12 port=5432 dbname=repmgr user=repmgr"
+[postgres@postgresql ~]$ [2023-08-17 03:05:47] [ERROR] PID file "/tmp/repmgrd.pid" exists and seems to contain a valid PID
+[2023-08-17 03:05:47] [HINT] if repmgrd is no longer alive, remove the file and restart repmgrd
+```
+
+**Stanby**
+
+```
+[postgres@postgresql1 ~]$ repmgrd -f repmgr.conf --verbose
+[2023-08-17 03:07:32] [NOTICE] using provided configuration file "repmgr.conf"
+[2023-08-17 03:07:32] [NOTICE] repmgrd (repmgrd 5.4.1) starting up
+[2023-08-17 03:07:32] [INFO] connecting to database "host=10.2.0.13 port=5432 dbname=repmgr user=repmgr"
+[postgres@postgresql1 ~]$ [2023-08-17 03:07:32] [ERROR] PID file "/tmp/repmgrd.pid" exists and seems to contain a valid PID
+[2023-08-17 03:07:32] [HINT] if repmgrd is no longer alive, remove the file and restart repmgrd
+[2023-08-17 03:09:33] [WARNING] unable to ping "host=10.2.0.12 port=5432 dbname=repmgr user=repmgr"
+[2023-08-17 03:09:33] [DETAIL] PQping() returned "PQPING_REJECT"
+[2023-08-17 03:09:33] [WARNING] unable to connect to upstream node "postgresql" (ID: 1)
+[2023-08-17 03:09:33] [INFO] checking state of node "postgresql" (ID: 1), 1 of 6 attempts
+[2023-08-17 03:09:33] [WARNING] unable to ping "user=repmgr dbname=repmgr host=10.2.0.12 port=5432 connect_timeout=2 fallback_application_name=repmgr"
+[2023-08-17 03:09:33] [DETAIL] PQping() returned "PQPING_REJECT"
+[2023-08-17 03:09:33] [INFO] sleeping up to 10 seconds until next reconnection attempt
+[2023-08-17 03:09:43] [INFO] checking state of node "postgresql" (ID: 1), 2 of 6 attempts
+[2023-08-17 03:09:43] [WARNING] unable to ping "user=repmgr dbname=repmgr host=10.2.0.12 port=5432 connect_timeout=2 fallback_application_name=repmgr"
+[2023-08-17 03:09:43] [DETAIL] PQping() returned "PQPING_NO_RESPONSE"
+[2023-08-17 03:09:43] [INFO] sleeping up to 10 seconds until next reconnection attempt
+[2023-08-17 03:09:53] [INFO] checking state of node "postgresql" (ID: 1), 3 of 6 attempts
+[2023-08-17 03:09:53] [WARNING] unable to ping "user=repmgr dbname=repmgr host=10.2.0.12 port=5432 connect_timeout=2 fallback_application_name=repmgr"
+[2023-08-17 03:09:53] [DETAIL] PQping() returned "PQPING_NO_RESPONSE"
+[2023-08-17 03:09:53] [INFO] sleeping up to 10 seconds until next reconnection attempt
+[2023-08-17 03:10:03] [INFO] checking state of node "postgresql" (ID: 1), 4 of 6 attempts
+[2023-08-17 03:10:03] [WARNING] unable to ping "user=repmgr dbname=repmgr host=10.2.0.12 port=5432 connect_timeout=2 fallback_application_name=repmgr"
+[2023-08-17 03:10:03] [DETAIL] PQping() returned "PQPING_NO_RESPONSE"
+[2023-08-17 03:10:03] [INFO] sleeping up to 10 seconds until next reconnection attempt
+[2023-08-17 03:10:13] [INFO] checking state of node "postgresql" (ID: 1), 5 of 6 attempts
+[2023-08-17 03:10:13] [WARNING] unable to ping "user=repmgr dbname=repmgr host=10.2.0.12 port=5432 connect_timeout=2 fallback_application_name=repmgr"
+[2023-08-17 03:10:13] [DETAIL] PQping() returned "PQPING_NO_RESPONSE"
+[2023-08-17 03:10:13] [INFO] sleeping up to 10 seconds until next reconnection attempt
+[2023-08-17 03:10:23] [INFO] checking state of node "postgresql" (ID: 1), 6 of 6 attempts
+[2023-08-17 03:10:23] [WARNING] unable to ping "user=repmgr dbname=repmgr host=10.2.0.12 port=5432 connect_timeout=2 fallback_application_name=repmgr"
+[2023-08-17 03:10:23] [DETAIL] PQping() returned "PQPING_NO_RESPONSE"
+[2023-08-17 03:10:23] [WARNING] unable to reconnect to node "postgresql" (ID: 1) after 6 attempts
+[2023-08-17 03:10:23] [INFO] 0 active sibling nodes registered
+[2023-08-17 03:10:23] [INFO] 2 total nodes registered
+[2023-08-17 03:10:23] [INFO] primary node  "postgresql" (ID: 1) and this node have the same location ("default")
+[2023-08-17 03:10:23] [INFO] no other sibling nodes - we win by default
+[2023-08-17 03:10:23] [NOTICE] this node is the only available candidate and will now promote itself
+[2023-08-17 03:10:23] [INFO] promote_command is:
+  "repmgr standby promote -f /var/lib/pgsql/repmgr.conf"
+NOTICE: promoting standby to primary
+DETAIL: promoting server "postgresql1" (ID: 2) using pg_promote()
+NOTICE: waiting up to 60 seconds (parameter "promote_check_timeout") for promotion to complete
+NOTICE: STANDBY PROMOTE successful
+DETAIL: server "postgresql1" (ID: 2) was successfully promoted to primary
+[2023-08-17 03:10:24] [INFO] checking state of node 2, 1 of 6 attempts
+[2023-08-17 03:10:24] [NOTICE] node 2 has recovered, reconnecting
+[2023-08-17 03:10:24] [INFO] connection to node 2 succeeded
+[2023-08-17 03:10:24] [INFO] original connection is still available
+[2023-08-17 03:10:24] [INFO] 0 followers to notify
+[2023-08-17 03:10:24] [INFO] switching to primary monitoring mode
+[2023-08-17 03:10:24] [NOTICE] monitoring cluster primary "postgresql1" (ID: 2)
+```
+
+### 3. Check Server 2 repmgr database
+
+- Server2 now promoted to primary
+
+```
+[postgres@postgresql1 ~]$ psql -d repmgr -U repmgr 
+psql (12.16)
+Type "help" for help.
+
+repmgr=# \dt+
+                            List of relations
+ Schema |        Name        | Type  | Owner  |    Size    | Description 
+--------+--------------------+-------+--------+------------+-------------
+ repmgr | events             | table | repmgr | 16 kB      | 
+ repmgr | monitoring_history | table | repmgr | 0 bytes    | 
+ repmgr | nodes              | table | repmgr | 16 kB      | 
+ repmgr | voting_term        | table | repmgr | 8192 bytes | 
+(4 rows)
+
+repmgr=# select * from events;
+-[ RECORD 1 ]---+----------------------------------------------------------------
+----------------------------------
+node_id         | 1
+event           | cluster_created
+successful      | t
+event_timestamp | 2023-08-17 02:16:07.018497+00
+details         | 
+-[ RECORD 2 ]---+----------------------------------------------------------------
+----------------------------------
+node_id         | 1
+event           | primary_register
+successful      | t
+event_timestamp | 2023-08-17 02:16:07.025857+00
+details         | 
+-[ RECORD 3 ]---+----------------------------------------------------------------
+----------------------------------
+node_id         | 2
+event           | standby_clone
+successful      | t
+event_timestamp | 2023-08-17 02:36:40.880174+00
+details         | cloned from host "10.2.0.12", port 5432; backup method: pg_base
+backup; --force: Y
+-[ RECORD 4 ]---+----------------------------------------------------------------
+----------------------------------
+node_id         | 2
+event           | standby_register
+successful      | t
+event_timestamp | 2023-08-17 02:43:46.293042+00
+details         | standby registration succeeded; upstream node ID is 1
+-[ RECORD 5 ]---+----------------------------------------------------------------
+----------------------------------
+node_id         | 1
+event           | repmgrd_start
+successful      | t
+event_timestamp | 2023-08-17 03:05:39.870198+00
+details         | monitoring cluster primary "postgresql" (ID: 1)
+-[ RECORD 6 ]---+----------------------------------------------------------------
+----------------------------------
+node_id         | 2
+event           | repmgrd_start
+successful      | t
+event_timestamp | 2023-08-17 03:07:13.957352+00
+details         | monitoring connection to upstream node "postgresql" (ID: 1)
+-[ RECORD 7 ]---+----------------------------------------------------------------
+----------------------------------
+node_id         | 2
+event           | standby_promote
+successful      | t
+event_timestamp | 2023-08-17 03:10:24.417498+00
+details         | server "postgresql1" (ID: 2) was successfully promoted to prima
+ry
+-[ RECORD 8 ]---+----------------------------------------------------------------
+----------------------------------
+node_id         | 2
+event           | repmgrd_failover_promote
+successful      | t
+event_timestamp | 2023-08-17 03:10:24.443134+00
+details         | node "postgresql1" (ID: 2) promoted to primary; old primary "po
+stgresql" (ID: 1) marked as failed
+-[ RECORD 9 ]---+----------------------------------------------------------------
+----------------------------------
+node_id         | 2
+event           | repmgrd_reload
+successful      | t
+event_timestamp | 2023-08-17 03:10:24.446615+00
+details         | monitoring cluster primary "postgresql1" (ID: 2)
+```
+
+### 4. Check demo database in Server2 if we are able to insert
+
+```
+[postgres@postgresql1 ~]$ psql -d demo
+psql (12.16)
+Type "help" for help.
+
+demo=# \dt+
+                                  List of relations
+  Schema  |      Name       | Type  |  Owner   |  Size   |        Description    
+    
+----------+-----------------+-------+----------+---------+-----------------------
+----
+ bookings | aircrafts_data  | table | postgres | 16 kB   | Aircrafts (internal da
+ta)
+ bookings | airports_data   | table | postgres | 56 kB   | Airports (internal dat
+a)
+ bookings | boarding_passes | table | postgres | 33 MB   | Boarding passes
+ bookings | bookings        | table | postgres | 13 MB   | Bookings
+ bookings | flights         | table | postgres | 3160 kB | Flights
+ bookings | seats           | table | postgres | 88 kB   | Seats
+ bookings | test            | table | postgres | 96 kB   | 
+ bookings | ticket_flights  | table | postgres | 68 MB   | Flight segment
+ bookings | tickets         | table | postgres | 48 MB   | Tickets
+(9 rows)
 ```
 
