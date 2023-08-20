@@ -22,6 +22,22 @@
    sudo dnf --repo pgdg12 install postgresql12-server postgresql12
    ```
 
+   OR
+
+   ```
+   yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+   
+   yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+   
+   yum -y install yum-utils
+   
+   yum-config-manager --enable pgdg12
+   
+   yum install postgresql12-server postgresql12
+   ```
+
+   
+
 4. Initialize and start Database Service
 
    We first need to initialize database before starting. Use the following command:
