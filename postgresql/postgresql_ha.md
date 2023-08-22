@@ -1361,6 +1361,39 @@ event_timestamp | 2023-08-17 03:10:24.446615+00
 details         | monitoring cluster primary "postgresql1" (ID: 2)
 ```
 
+- Server2 now promoted to primary and no standby server
+
+```
+repmgr=# select * from nodes;
+-[ RECORD 1 ]----+---------------------------------------------------
+node_id          | 1
+upstream_node_id | 
+active           | f
+node_name        | postgresql
+type             | primary
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.12 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+-[ RECORD 2 ]----+---------------------------------------------------
+node_id          | 2
+upstream_node_id | 
+active           | t
+node_name        | postgresql1
+type             | primary
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.13 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+
+```
+
+
+
 ### 4. Check demo database in Server2 if we are able to insert
 
 ```
@@ -1388,3 +1421,555 @@ a)
 (9 rows)
 ```
 
+**Check the records in "test" table**
+
+```
+demo=# select count(*) from test;
+ count 
+-------
+  2000
+(1 row)
+```
+
+Insert 1000 records to "test" table
+
+```
+demo=# insert into test (select generate_series(1,1000));
+INSERT 0 1000
+
+demo=# select count(*) from test;
+ count 
+-------
+  3000
+(1 row)
+```
+
+
+
+## 5. Master recovery 
+
+- Make Server1 as standby
+
+### 1. Clone Server2 and register Server1 as standby
+
+**Check if all the prerequisites are met**
+
+```
+[postgres@postgresql ~]$ repmgr -h 10.2.0.13 -U repmgr -d repmgr -f repmgr.conf standby clone --dry-run 
+NOTICE: destination directory "/var/lib/pgsql/12/data" provided
+INFO: connecting to source node
+DETAIL: connection string is: host=10.2.0.13 user=repmgr dbname=repmgr
+DETAIL: current installation size is 311 MB
+INFO: "repmgr" extension is installed in database "repmgr"
+WARNING: target data directory appears to be a PostgreSQL data directory
+DETAIL: target data directory is "/var/lib/pgsql/12/data"
+HINT: use -F/--force to overwrite the existing data directory
+INFO: replication slot usage not requested;  no replication slot will be set up for this standby
+INFO: parameter "max_wal_senders" set to 10
+NOTICE: checking for available walsenders on the source node (2 required)
+INFO: sufficient walsenders available on the source node
+DETAIL: 2 required, 10 available
+NOTICE: checking replication connections can be made to the source server (2 required)
+INFO: required number of replication connections could be made to the source server
+DETAIL: 2 replication connections required
+WARNING: data checksums are not enabled and "wal_log_hints" is "off"
+DETAIL: pg_rewind requires "wal_log_hints" to be enabled
+NOTICE: standby will attach to upstream node 2
+HINT: consider using the -c/--fast-checkpoint option
+INFO: would execute:
+  pg_basebackup -l "repmgr base backup"  -D /var/lib/pgsql/12/data -h 10.2.0.13 -p 5432 -U repmgr -X stream 
+INFO: all prerequisites for "standby clone" are met
+
+```
+
+**Run the cloning with force option**
+
+```
+[postgres@postgresql ~]$ repmgr -h 10.2.0.13 -U repmgr -d repmgr -f repmgr.conf standby clone -F
+NOTICE: destination directory "/var/lib/pgsql/12/data" provided
+INFO: connecting to source node
+DETAIL: connection string is: host=10.2.0.13 user=repmgr dbname=repmgr
+DETAIL: current installation size is 311 MB
+INFO: replication slot usage not requested;  no replication slot will be set up for this standby
+NOTICE: checking for available walsenders on the source node (2 required)
+NOTICE: checking replication connections can be made to the source server (2 required)
+WARNING: data checksums are not enabled and "wal_log_hints" is "off"
+DETAIL: pg_rewind requires "wal_log_hints" to be enabled
+WARNING: directory "/var/lib/pgsql/12/data" exists but is not empty
+NOTICE: -F/--force provided - deleting existing data directory "/var/lib/pgsql/12/data"
+NOTICE: starting backup (using pg_basebackup)...
+HINT: this may take some time; consider using the -c/--fast-checkpoint option
+INFO: executing:
+  pg_basebackup -l "repmgr base backup"  -D /var/lib/pgsql/12/data -h 10.2.0.13 -p 5432 -U repmgr -X stream 
+NOTICE: standby clone (using pg_basebackup) complete
+NOTICE: you can now start your PostgreSQL server
+HINT: for example: pg_ctl -D /var/lib/pgsql/12/data start
+HINT: after starting the server, you need to re-register this standby with "repmgr standby register --force" to update the existing node record
+```
+
+### 2. Start postgresql service
+
+```
+$ sudo systemctl start postgresql-12.service 
+```
+
+### 3. Register Server1 to standby
+
+```
+[postgres@postgresql ~]$ repmgr -f repmgr.conf standby register -F
+INFO: connecting to local node "postgresql" (ID: 1)
+INFO: connecting to primary database
+INFO: standby registration complete
+NOTICE: standby node "postgresql" (ID: 1) successfully registered
+[postgres@postgresql ~]$ 
+```
+
+### 4. Check if the database is cloned in Server1
+
+```
+demo=# select count(*) from test;
+ count 
+-------
+  3000
+(1 row)
+```
+
+ **Try to insert records in test table**
+
+```
+demo=# insert into test (select generate_series(1,1000));
+ERROR:  cannot execute INSERT in a read-only transaction
+```
+
+### 5. Try to insert in Server2 and check if cloned in Server1
+
+```
+demo=# insert into test (select generate_series(1,1000));
+INSERT 0 1000
+demo=# select count(*) from test;
+ count 
+-------
+  4000
+(1 row)
+```
+
+**Check if clone in Server1**
+
+```
+demo=# select count(*) from test;
+ count 
+-------
+  4000
+(1 row)
+```
+
+### 6. Check the events from repmgr database
+
+```
+repmgr=# select * from events;
+
+-------------------------------
+node_id         | 1
+event           | standby_clone
+successful      | t
+event_timestamp | 2023-08-20 23:26:07.641698+00
+details         | cloned from host "10.2.0.13", port 5432; backup method: pg_basebac
+kup; --force: Y
+-[ RECORD 12 ]--+-------------------------------------------------------------------
+-------------------------------
+node_id         | 1
+event           | repmgrd_standby_reconnect
+successful      | t
+event_timestamp | 2023-08-20 23:27:11.720861+00
+details         | node restored as standby after 1352 seconds, monitoring connection
+ to upstream node -1
+-[ RECORD 13 ]--+-------------------------------------------------------------------
+-------------------------------
+node_id         | 1
+event           | repmgrd_standby_reconnect
+successful      | t
+event_timestamp | 2023-08-20 23:27:12.264912+00
+details         | node restored as standby after 1352 seconds, monitoring connection
+ to upstream node -1
+-[ RECORD 14 ]--+-------------------------------------------------------------------
+-------------------------------
+node_id         | 1
+event           | repmgrd_standby_reconnect
+successful      | t
+event_timestamp | 2023-08-20 23:27:13.367961+00
+details         | node restored as standby after 1352 seconds, monitoring connection
+ to upstream node -1
+-[ RECORD 15 ]--+-------------------------------------------------------------------
+-------------------------------
+node_id         | 1
+event           | standby_register
+successful      | t
+event_timestamp | 2023-08-20 23:31:10.31736+00
+details         | standby registration succeeded; upstream node ID is 2 (-F/--force 
+option was used)
+-[ RECORD 16 ]--+-------------------------------------------------------------------
+-------------------------------
+node_id         | 2
+event           | child_node_new_connect
+successful      | t
+event_timestamp | 2023-08-20 23:31:10.970152+00
+details         | new standby "postgresql" (ID: 1) has connected
+-[ RECORD 17 ]--+-------------------------------------------------------------------
+-------------------------------
+node_id         | 2
+event           | child_node_new_connect
+successful      | t
+event_timestamp | 2023-08-20 23:31:15.079998+00
+details         | new standby "postgresql" (ID: 1) has connected
+```
+
+### 7. Check the nodes from repmgr database
+
+```
+repmgr=# select * from nodes;
+-[ RECORD 1 ]----+---------------------------------------------------
+node_id          | 2
+upstream_node_id | 
+active           | t
+node_name        | postgresql1
+type             | primary
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.13 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+-[ RECORD 2 ]----+---------------------------------------------------
+node_id          | 1
+upstream_node_id | 2
+active           | t
+node_name        | postgresql
+type             | standby
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.12 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+```
+
+## 6. Switchover
+
+- **Switch Server1 to primary** 
+
+### 1. Stop Server2 postgresql service
+
+```
+$ sudo systemctl stop postgresql-12
+```
+
+**Monitoring using "repmgrd -f repmgr.conf --verbose"**
+
+```
+[2023-08-21 00:23:02] [WARNING] reconnection to node "postgresql1" (ID: 2) failed
+[2023-08-21 00:23:02] [WARNING] unable to connect to local node
+[2023-08-21 00:23:02] [INFO] checking state of node 2, 1 of 6 attempts
+[2023-08-21 00:23:02] [WARNING] unable to ping "user=repmgr dbname=repmgr host=10.2.0.13 port=5432 connect_timeout=2 fallback_application_name=repmgr"
+[2023-08-21 00:23:02] [DETAIL] PQping() returned "PQPING_NO_RESPONSE"
+[2023-08-21 00:23:02] [INFO] sleeping 10 seconds until next reconnection attempt
+[2023-08-21 00:23:12] [INFO] checking state of node 2, 2 of 6 attempts
+[2023-08-21 00:23:12] [WARNING] unable to ping "user=repmgr dbname=repmgr host=10.2.0.13 port=5432 connect_timeout=2 fallback_application_name=repmgr"
+[2023-08-21 00:23:12] [DETAIL] PQping() returned "PQPING_NO_RESPONSE"
+[2023-08-21 00:23:12] [INFO] sleeping 10 seconds until next reconnection attempt
+[2023-08-21 00:23:22] [INFO] checking state of node 2, 3 of 6 attempts
+[2023-08-21 00:23:22] [WARNING] unable to ping "user=repmgr dbname=repmgr host=10.2.0.13 port=5432 connect_timeout=2 fallback_application_name=repmgr"
+[2023-08-21 00:23:22] [DETAIL] PQping() returned "PQPING_NO_RESPONSE"
+[2023-08-21 00:23:22] [INFO] sleeping 10 seconds until next reconnection attempt
+```
+
+### 2. Check the nodes from repmgr database
+
+```
+repmgr=# select * from nodes;
+-[ RECORD 1 ]----+---------------------------------------------------
+node_id          | 2
+upstream_node_id | 
+active           | f
+node_name        | postgresql1
+type             | primary
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.13 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+-[ RECORD 2 ]----+---------------------------------------------------
+node_id          | 1
+upstream_node_id | 
+active           | t
+node_name        | postgresql
+type             | primary
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.12 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+```
+
+### 2. Clone Server1 and register Server2 as standby
+
+**Check if all the prerequisites are met**
+
+```
+postgres@postgresql1 ~]$ repmgr -h 10.2.0.12 -U repmgr -d repmgr -f repmgr.conf standby clone --dry-run 
+NOTICE: destination directory "/var/lib/pgsql/12/data" provided
+INFO: connecting to source node
+DETAIL: connection string is: host=10.2.0.12 user=repmgr dbname=repmgr
+DETAIL: current installation size is 311 MB
+INFO: "repmgr" extension is installed in database "repmgr"
+WARNING: target data directory appears to be a PostgreSQL data directory
+DETAIL: target data directory is "/var/lib/pgsql/12/data"
+HINT: use -F/--force to overwrite the existing data directory
+INFO: replication slot usage not requested;  no replication slot will be set up for this standby
+INFO: parameter "max_wal_senders" set to 10
+NOTICE: checking for available walsenders on the source node (2 required)
+INFO: sufficient walsenders available on the source node
+DETAIL: 2 required, 10 available
+NOTICE: checking replication connections can be made to the source server (2 required)
+INFO: required number of replication connections could be made to the source server
+DETAIL: 2 replication connections required
+WARNING: data checksums are not enabled and "wal_log_hints" is "off"
+DETAIL: pg_rewind requires "wal_log_hints" to be enabled
+NOTICE: standby will attach to upstream node 1
+HINT: consider using the -c/--fast-checkpoint option
+INFO: would execute:
+  pg_basebackup -l "repmgr base backup"  -D /var/lib/pgsql/12/data -h 10.2.0.12 -p 5432 -U repmgr -X stream 
+INFO: all prerequisites for "standby clone" are met
+```
+
+**Run the cloning with force option**
+
+```
+[postgres@postgresql1 ~]$ repmgr -h 10.2.0.12 -U repmgr -d repmgr -f repmgr.conf standby clone -F 
+NOTICE: destination directory "/var/lib/pgsql/12/data" provided
+INFO: connecting to source node
+DETAIL: connection string is: host=10.2.0.12 user=repmgr dbname=repmgr
+DETAIL: current installation size is 311 MB
+INFO: replication slot usage not requested;  no replication slot will be set up for this standby
+NOTICE: checking for available walsenders on the source node (2 required)
+NOTICE: checking replication connections can be made to the source server (2 required)
+WARNING: data checksums are not enabled and "wal_log_hints" is "off"
+DETAIL: pg_rewind requires "wal_log_hints" to be enabled
+WARNING: directory "/var/lib/pgsql/12/data" exists but is not empty
+NOTICE: -F/--force provided - deleting existing data directory "/var/lib/pgsql/12/data"
+NOTICE: starting backup (using pg_basebackup)...
+HINT: this may take some time; consider using the -c/--fast-checkpoint option
+INFO: executing:
+  pg_basebackup -l "repmgr base backup"  -D /var/lib/pgsql/12/data -h 10.2.0.12 -p 5432 -U repmgr -X stream 
+NOTICE: standby clone (using pg_basebackup) complete
+NOTICE: you can now start your PostgreSQL server
+HINT: for example: pg_ctl -D /var/lib/pgsql/12/data start
+HINT: after starting the server, you need to re-register this standby with "repmgr standby register --force" to update the existing node record
+```
+
+### 3. Start postgresql service
+
+```
+$ sudo systemctl start postgresql-12.service 
+```
+
+###  4. Register Server2 to standby
+
+```
+[postgres@postgresql1 ~]$ repmgr -f repmgr.conf standby register -F
+INFO: connecting to local node "postgresql1" (ID: 2)
+INFO: connecting to primary database
+INFO: standby registration complete
+NOTICE: standby node "postgresql1" (ID: 2) successfully registered
+```
+
+### 5. Check the events from repmgr database
+
+```
+repmgr=# select * from events;
+---------------------------
+node_id         | 2
+event           | standby_clone
+successful      | t
+event_timestamp | 2023-08-21 00:30:41.607838+00
+details         | cloned from host "10.2.0.12", port 5432; backup method: pg_basebackup;
+ --force: Y
+-[ RECORD 28 ]--+-----------------------------------------------------------------------
+---------------------------
+node_id         | 2
+event           | repmgrd_standby_reconnect
+successful      | t
+event_timestamp | 2023-08-21 00:31:48.951047+00
+details         | node restored as standby after 476 seconds, monitoring connection to u
+pstream node -1
+-[ RECORD 29 ]--+-----------------------------------------------------------------------
+---------------------------
+node_id         | 2
+event           | repmgrd_standby_reconnect
+successful      | t
+event_timestamp | 2023-08-21 00:31:48.953346+00
+details         | node restored as standby after 476 seconds, monitoring connection to u
+pstream node -1
+-[ RECORD 30 ]--+-----------------------------------------------------------------------
+---------------------------
+node_id         | 2
+event           | standby_register
+successful      | t
+event_timestamp | 2023-08-21 00:33:27.917981+00
+details         | standby registration succeeded; upstream node ID is 1 (-F/--force opti
+on was used)
+-[ RECORD 31 ]--+-----------------------------------------------------------------------
+---------------------------
+node_id         | 1
+event           | child_node_new_connect
+successful      | t
+event_timestamp | 2023-08-21 00:33:28.149917+00
+details         | new standby "postgresql1" (ID: 2) has connected
+-[ RECORD 32 ]--+-----------------------------------------------------------------------
+---------------------------
+node_id         | 1
+event           | child_node_new_connect
+successful      | t
+event_timestamp | 2023-08-21 00:33:28.504753+00
+details         | new standby "postgresql1" (ID: 2) has connected
+-[ RECORD 33 ]--+-----------------------------------------------------------------------
+---------------------------
+node_id         | 1
+event           | child_node_new_connect
+successful      | t
+event_timestamp | 2023-08-21 00:33:32.538711+00
+details         | new standby "postgresql1" (ID: 2) has connected
+
+```
+
+### 6. Check the nodes from repmgr database
+
+```
+repmgr=# select * from nodes;
+-[ RECORD 1 ]----+---------------------------------------------------
+node_id          | 1
+upstream_node_id | 
+active           | t
+node_name        | postgresql
+type             | primary
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.12 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+-[ RECORD 2 ]----+---------------------------------------------------
+node_id          | 2
+upstream_node_id | 1
+active           | t
+node_name        | postgresql1
+type             | standby
+location         | default
+priority         | 100
+conninfo         | host=10.2.0.13 port=5432 dbname=repmgr user=repmgr
+repluser         | repmgr
+slot_name        | 
+config_file      | /var/lib/pgsql/repmgr.conf
+```
+
+### 7. Try to insert in Server2
+
+```
+demo=# insert into test (select generate_series(1,1000));
+ERROR:  cannot execute INSERT in a read-only transaction
+```
+
+### 8. Try to insert in Server1 and check if cloned in Server2
+
+```
+demo=# insert into test (select generate_series(1,1000));
+INSERT 0 1000
+demo=# select count(*) from test;
+-[ RECORD 1 ]
+count | 5000
+```
+
+**Check if clone in Server2**
+
+```
+demo=# select count(*) from test;
+-[ RECORD 1 ]
+count | 5000
+```
+
+
+
+### 7. Virtual IPs activation
+
+**Copy network interface to sub-interface**
+
+```
+cp  /etc/sysconfig/network-scripts/ifcfg-eth0 /etc/sysconfig/network-scripts/ifcfg-eth0:0
+```
+
+**Server1 /etc/sysconfig/network-scripts/ifcfg-eth0:0**
+
+```
+BOOTPROTO=static
+DEVICE=eth0:0
+HWADDR=60:45:bd:1e:da:86
+METRIC=100
+ONBOOT=yes
+TYPE=Ethernet
+NAME=eth0:0
+IPADDR=10.2.0.100
+PREFIX=24 
+GATEWAY=10.2.0.1
+USERCTL=no
+```
+
+**Server1 /etc/sysconfig/network-scripts/ifcfg-eth0:1**
+
+```
+BOOTPROTO=static
+DEVICE=eth0:1
+HWADDR=60:45:bd:1e:da:86
+METRIC=100
+ONBOOT=yes
+TYPE=Ethernet
+NAME=eth0:1
+IPADDR=10.2.0.101
+PREFIX=24 
+GATEWAY=10.2.0.1
+USERCTL=no
+```
+
+**Server2 /etc/sysconfig/network-scripts/ifcfg-eth0:0**
+
+```
+BOOTPROTO=dhcp
+DEVICE=eth0:0
+HWADDR=00:22:48:55:de:a1
+METRIC=100
+ONBOOT=yes
+TYPE=Ethernet
+NAME=eth0:0
+IPADDR=10.2.0.100
+PREFIX=24 
+GATEWAY=10.2.0.1
+USERCTL=no
+```
+
+**Server2 /etc/sysconfig/network-scripts/ifcfg-eth0:1**
+
+```
+BOOTPROTO=dhcp
+DEVICE=eth0:1
+HWADDR=00:22:48:55:de:a1
+METRIC=100
+ONBOOT=yes
+TYPE=Ethernet
+NAME=eth0:1
+IPADDR=10.2.0.101
+PREFIX=24 
+GATEWAY=10.2.0.1
+USERCTL=no
+```
+
+## 7. Script for managing virtual IPs
