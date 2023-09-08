@@ -1,6 +1,38 @@
 # Postgresql 
 
+## Allow remote connections to PostgreSQL
 
+**1. Modify the PostgreSQL configuration file**
+
+Open the PostgreSQL configuration file “postgresql.conf” using your preferred text editor. The file is typically located in the /etc/postgresql/12/main directory. To open the file from the Linux Terminal, execute: `sudo nano /etc/postgresql/12/main/postgresql.conf` 
+
+Then, find the line `#listen_addresses = 'localhost'` and uncomment it (remove the # character at the beginning of the line).
+
+Next, change the value of “listen_addresses” to “*”. This allows PostgreSQL to listen on all available IP addresses. Alternatively, you can specify a specific IP address or a range of IP addresses that are allowed to connect to the server.
+
+**2. Modify the pg_hba.conf file**
+
+Open the “pg_hba.conf” file using your preferred text editor. The file is typically located in the /etc/postgresql/12/main directory. To open the file from the Linux Terminal, execute: `sudo nano /etc/postgresql/12/main/pg_hba.con`
+
+Take the following section:
+
+```
+# IPv4 local connections: host  all       all       127.0.0.1/32      md5 
+```
+
+And modify it this way: 
+
+```
+# IPv4 local connections:host  all       all       0.0.0.0/0      md5 
+```
+
+**3. Allow port 5432 through the firewall**
+
+To enable traffic on port 5432 through the firewall, execute the following command: `sudo ufw allow 5432/tcp` 
+
+**4. Restart PostgreSQL**
+
+Run the following command to restart PostgreSQL: `sudo service postgresql restart`
 
 ## PSQL
 
