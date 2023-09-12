@@ -1,4 +1,4 @@
-## Virtual Machine Scale Set
+# Virtual Machine Scale Set
 
 **Image creation**
 
@@ -49,4 +49,9 @@ We have a few options to solve this, e.g. use an unattended xml file to configur
 2. Then we installed 'Custom Script Extension' on VMSS and chosen this file from the storage account.
 3. After we upgraded the instances to the latest model, the timezone was corrected without hassles.
 
- 
+ # Convert .crt cetificate file to .pfx
+
+```
+openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt
+```
+
