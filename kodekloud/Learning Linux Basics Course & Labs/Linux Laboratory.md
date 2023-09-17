@@ -1,8 +1,72 @@
-# Linux Laboratory
+# Learning Linux Basics Course & Labs
 
-# WORKING WITH SHELL – I, LAB: WORKING WITH THE SHELL
+# Download Course Resources
 
+We have a GIT repository with the notes and commands from the course that will come handy. You may fork it here:
 
+https://github.com/kodekloudhub/linux-basics-course
+
+We also have the course deck for you to download. Please download it below.
+
+[Linux-Basics-Course-Study-Guide-1.pdf](https://kodekloud.com/wp-content/uploads/2021/08/Linux-Basics-Course-Study-Guide-1-1.pdf)
+
+# WORKING WITH SHELL
+
+##  MULTIPLE CHOICE QUIZ – INTRODUCTION TO SHELL
+
+1. Which command would you use to find out the type of a command?
+
+   - cd
+
+   - file
+
+   - type
+
+   - echo
+
+   - pwd
+
+2. Which directory contains the user home directories by default?
+
+   - home
+
+   - **/home**
+
+   - home-directory
+
+   - /root
+
+3. In the command “echo -n hello”, what is “-n”
+
+   - **option**
+
+   - argument
+
+   - command
+
+4. Which symbol represents a user’s home directory in Linux?
+
+   - $
+
+   - :
+
+   - **~**
+
+   - /
+
+5. In the command “echo -n hello”, what is “echo”
+
+   - **command**
+
+   - flag
+
+   - option
+
+   - argument
+
+   - switch
+
+## I, LAB: WORKING WITH THE SHELL
 
 1. What is the home directory for the user called `bob`?
    - /bob
@@ -32,12 +96,15 @@
    - shell-builtin
 
    ```
-   ~$ type git
+   $ type git
    git is /usr/bin/git
-   ```
-
    
-
+   $ type -t git
+   file
+   ```
+   
+   
+   
 5. Now, lets create some directories! Refer to the below diagram and create the directory called `birds`
 
    The home directory `/home/bob` already exists.
@@ -110,9 +177,9 @@
    drwxr-xr-x 1 bob bob    4096 Apr 15  2020 media
    ```
 
-   
 
-# WORKING WITH SHELL – I, LAB: LINUX BASH PROMPT
+
+## I, LAB: LINUX BASH PROMPT
 
 1. What is the default shell for `Bob`?
 
@@ -211,7 +278,9 @@
 
 
 
-# LINUX CORE CONCEPTS, LAB: LINUX KERNEL
+# LINUX CORE CONCEPTS
+
+## LAB: LINUX KERNEL
 
 1. What is the exact `version` of kernel running in this system?
 
@@ -279,7 +348,7 @@ sda       8:0    0   500G  0 disk
 
 
 
-# LINUX CORE CONCEPTS, LAB: LINUX KERNEL MODULES BOOT AND FILETYPES
+## LAB: LINUX KERNEL MODULES BOOT AND FILETYPES
 
 1. Going forward, you would need to make use of `sudo` for running several commands.
    In such cases, run `sudo` before the command.
@@ -416,7 +485,9 @@ sda       8:0    0   500G  0 disk
 
    
 
-# PACKAGE MANAGEMENT, LAB: YUM AND RPM
+# PACKAGE MANAGEMENT
+
+## LAB: YUM AND RPM
 
 1. This is a hands-on lab to work on RPM and YUM.
    Since Bob's laptop is running `Ubuntu`, Dave has offered one of his lab machines that runs `Centos 7`
@@ -596,7 +667,7 @@ sda       8:0    0   500G  0 disk
 
    
 
-   # PACKAGE MANAGEMENT, LAB – DPKG AND APT
+## LAB – DPKG AND APT
 
 1. This lab requires several commands to be run as the `root` user. Always use sudo.
 
@@ -666,7 +737,11 @@ sda       8:0    0   500G  0 disk
 
 
 
-# WORKING WITH SHELL – II, LAB: WORKING WITH SHELL II
+# WORKING WITH SHELL 
+
+
+
+## LAB: WORKING WITH SHELL II
 
 1. Going forward, you would need to make use of `sudo` for running several commands.
    In such cases, run `sudo` before the command.
@@ -745,7 +820,7 @@ gzip /home/bob/python.tar
    Bob's password is `caleston123`
 
    ```
-   $ python3 /home/bob/my_python_test.py >> /home/bob/py_error.txt
+   $ python3 /home/bob/my_python_test.py 2> /home/bob/py_error.txt
    ```
 
 9. Read the file `/usr/share/man/man1/tail.1.gz` and without extracting it and redirect the contents to a file called `/home/bob/pipes`
@@ -756,7 +831,9 @@ gzip /home/bob/python.tar
 
 
 
-# NETWORKING, LAB: DNS
+# NETWORKING
+
+## LAB: DNS
 
 1. What is the IP address of the `DNS Server` used in this system?-
 
@@ -863,7 +940,7 @@ gzip /home/bob/python.tar
 
 
 
-# NETWORKING, LAB: NETWORK BASICS
+## LAB: NETWORK BASICS
 
 1. What is the `IP Address` assigned to Bob's Laptop?
 
@@ -1004,7 +1081,9 @@ gzip /home/bob/python.tar
 
 
 
-# SECURITY AND FILE PERMISSIONS, LAB: ACCOUNT MANAGEMENT
+# SECURITY AND FILE PERMISSIONS
+
+## LAB: ACCOUNT MANAGEMENT
 
 1. This lab requires some commands to be run as the `root` user. Always use sudo.
 
@@ -1151,7 +1230,7 @@ gzip /home/bob/python.tar
 
 
 
-# SECURITY AND FILE PERMISSIONS, LAB: PERMISSIONS AND OWNERSHIP
+## LAB: PERMISSIONS AND OWNERSHIP
 
 1. This lab requires some commands to be run as the `root` user. Always use `sudo`.
 
@@ -1253,7 +1332,7 @@ gzip /home/bob/python.tar
 
 
 
-# SECURITY AND FILE PERMISSIONS, LAB: SSH AND SCP
+## LAB: SSH AND SCP
 
 
 
@@ -1386,7 +1465,11 @@ gzip /home/bob/python.tar
 
 
 
-# SECURITY AND FILE PERMISSIONS > LAB – IPTABLES
+# IPTABLES Introduction
+
+
+
+## LAB – IPTABLES
 
 1. In this Lab, we will secure the development environment by making use of `iptables`.
 
@@ -1512,7 +1595,7 @@ gzip /home/bob/python.tar
 
 
 
-#    SECURITY AND FILE PERMISSIONS, LAB: CRONJOB
+##    LAB: CRONJOB
 
 1. Which command is used to list all the cronjobs created for a user?
 
@@ -1614,7 +1697,9 @@ gzip /home/bob/python.tar
 
 
 
-# SERVICE MANAGEMENT WITH SYSTEMD, LAB: SYSTEMD SERVICES
+# SERVICE MANAGEMENT WITH SYSTEMD
+
+## LAB: SYSTEMD SERVICES
 
 1. This lab requires several commands to be run as the `root` user. Always use `sudo`.
 
@@ -2041,9 +2126,110 @@ Copy the file `caleston-code.tar.gz` from Bob's laptop to Bob's home directory o
 
     
 
+# Storage in Linux
+
+## Lab Partitions
+
+1. This lab requires some commands to be run as the root user. Always use sudo.
 
 
+   Bob's default password is caleston123
 
+
+   Ok
+
+2. How many disk type block devices are present in the system?
+
+   - **3**
+
+   - 1
+
+   - 10
+
+   ```
+   bob@caleston-lp10:~$ lsblk 
+   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   vda                    252:0    0   10G  0 disk 
+   └─vda1                 252:1    0   10G  0 part 
+     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+   vdb                    252:16   0    1G  0 disk 
+   vdc                    252:32   0    1G  0 disk 
+   ```
+
+3. What is the size of the disk /dev/vdc?
+
+   - 15GB
+
+   - 20GB
+
+   - **1GB**
+
+   - 25GB
+
+   ```
+   $ lsblk 
+   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   vda                    252:0    0   10G  0 disk 
+   └─vda1                 252:1    0   10G  0 part 
+     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+   vdb                    252:16   0    1G  0 disk 
+   vdc                    252:32   0    1G  0 disk 
+   ```
+
+4. What is the major number for the devices beginning with vd?
+
+   - 10
+
+   - 8
+
+   - **252**
+
+   - 12
+
+5. How many maximum partitions (primary or extended ) can an MBR have?
+
+   - 10
+
+   - **4**
+
+   - **1**
+
+   - 2
+
+   ```
+   $ lsblk 
+   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   vda                    252:0    0   10G  0 disk 
+   └─vda1                 252:1    0   10G  0 part 
+     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+   vdb                    252:16   0    1G  0 disk 
+   vdc                    252:32   0    1G  0 disk 
+   ```
+
+6. Create a GPT partition called `vdb1` of size `500M` on the disk `/dev/vdb`
+
+   You can install `gdisk` by running `sudo apt install gdisk`
+
+   ```
+   Run: sudo gdisk /dev/vdb
+   
+   In the interactive prompt, enter n
+   
+   Select parition number = 1 (for vdd1)
+   
+   Select default first sector = 2048
+   
+   Select +500M when asked for last sector
+   
+   Use default hex code = 8300
+   
+   Finally type w to write to the partition table
+   ```
+
+7. 
 
 
 
