@@ -1872,6 +1872,747 @@ gzip /home/bob/python.tar
 
 
 
+11. 
+
+# Storage in Linux
+
+## Lab Partitions
+
+1. This lab requires some commands to be run as the root user. Always use sudo.
+
+
+   Bob's default password is caleston123
+
+
+   Ok
+
+2. How many disk type block devices are present in the system?
+
+   - **3**
+
+   - 1
+
+   - 10
+
+   ```
+   bob@caleston-lp10:~$ lsblk 
+   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   vda                    252:0    0   10G  0 disk 
+   └─vda1                 252:1    0   10G  0 part 
+     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+   vdb                    252:16   0    1G  0 disk 
+   vdc                    252:32   0    1G  0 disk 
+   ```
+
+3. What is the size of the disk /dev/vdc?
+
+   - 15GB
+
+   - 20GB
+
+   - **1GB**
+
+   - 25GB
+
+   ```
+   $ lsblk 
+   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   vda                    252:0    0   10G  0 disk 
+   └─vda1                 252:1    0   10G  0 part 
+     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+   vdb                    252:16   0    1G  0 disk 
+   vdc                    252:32   0    1G  0 disk 
+   ```
+
+4. What is the major number for the devices beginning with vd?
+
+   - 10
+
+   - 8
+
+   - **252**
+
+   - 12
+
+5. How many maximum partitions (primary or extended ) can an MBR have?
+
+   - 10
+
+   - **4**
+
+   - 1
+
+   - 2
+
+   ```
+   $ lsblk 
+   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   vda                    252:0    0   10G  0 disk 
+   └─vda1                 252:1    0   10G  0 part 
+     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+   vdb                    252:16   0    1G  0 disk 
+   vdc                    252:32   0    1G  0 disk 
+   ```
+
+6. How many partitions does the disk /dev/vda have currently?
+
+   - 10
+
+   - **1**
+
+   - 4
+
+   - 2
+
+   ```
+   $ lsblk 
+   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   vda                    252:0    0   10G  0 disk 
+   └─vda1                 252:1    0   10G  0 part 
+     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+   vdb                    252:16   0    1G  0 disk 
+   vdc                    252:32   0    1G  0 disk 
+   ```
+
+   
+
+7. Create a GPT partition called `vdb1` of size `500M` on the disk `/dev/vdb`
+
+   You can install `gdisk` by running `sudo apt install gdisk`
+
+   Run: sudo gdisk /dev/vdb
+
+   In the interactive prompt, enter n
+
+   Select parition number = 1 (for vdd1)
+
+   Select default first sector = 2048
+
+   Select +500M when asked for last sector
+
+   Use default hex code = 8300
+
+   Finally type w to write to the partition table
+
+   ```
+   $ sudo gdisk /dev/vdb 
+   GPT fdisk (gdisk) version 1.0.3
+   
+   Partition table scan:
+     MBR: not present
+     BSD: not present
+     APM: not present
+     GPT: not present
+   
+   Creating new GPT entries.
+   
+   Command (? for help): n
+   Partition number (1-128, default 1): 1
+   First sector (34-2097118, default = 2048) or {+-}size{KMGTP}: 2048
+   Last sector (2048-2097118, default = 2097118) or {+-}size{KMGTP}: +500M
+   Current type is 'Linux filesystem'
+   Hex code or GUID (L to show codes, Enter = 8300): 8300
+   Changed type of partition to 'Linux filesystem'
+   
+   Command (? for help): w
+   
+   Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING
+   PARTITIONS!!
+   
+   Do you want to proceed? (Y/N): Y
+   OK; writing new GUID partition table (GPT) to /dev/vdb.
+   The operation has completed successfully.
+   ```
+
+
+
+## LAB – FILESYSTEMS
+
+1. This lab requires some commands to be run as the root user. Always use sudo.
+
+
+   Bob's default password is caleston123
+
+   Ok
+
+2. Which of the following filesystems does not use a journal?
+
+   - ext3
+
+   - **ext2**
+
+   - ext4
+
+3. Out of the disks /dev/vdb and /dev/vdc, which one has a filesystem created?
+
+   - **/dev/vdc**
+
+   - /dev/vdb
+
+   ```
+   $ sudo df -h
+   [sudo] password for bob: 
+   Filesystem                    Size  Used Avail Use% Mounted on
+   udev                          461M     0  461M   0% /dev
+   tmpfs                          99M  5.4M   94M   6% /run
+   /dev/mapper/vagrant--vg-root  8.9G  1.6G  6.9G  19% /
+   tmpfs                         493M     0  493M   0% /dev/shm
+   tmpfs                         5.0M     0  5.0M   0% /run/lock
+   tmpfs                         493M     0  493M   0% /sys/fs/cgroup
+   tmpfs                          99M     0   99M   0% /run/user/1002
+   /dev/vdc                     1008M  1.3M  956M   1% /mnt/backups
+   ```
+
+4. Can you find out the type of filesystem created in /dev/vdc?
+
+
+   Use the blkid command with the disk name as the argument.
+
+   - ext3
+
+   - ext4
+
+   - **ext2**
+
+   - nfs
+
+   - btrfs
+
+   ```
+   $ sudo blkid /dev/vdc 
+   /dev/vdc: UUID="105e0588-a0b4-4a7b-851f-c089d898a1b4" TYPE="ext2"
+   ```
+
+5. Create an ext4 filesystem on the disk /dev/vdb and mount it at /mnt/data
+
+   Check
+
+   Task completed?
+
+   Run: 
+
+   sudo mkfs.ext4 /dev/vdb
+   sudo mkdir /mnt/data
+   sudo  mount /dev/vdb /mnt/data
+
+   ```
+   bob@caleston-lp10:~$ sudo mkfs.ext4 /dev/vdb 
+   mke2fs 1.44.1 (24-Mar-2018)
+   Creating filesystem with 262144 4k blocks and 65536 inodes
+   Filesystem UUID: f0e56377-7dc0-4cd6-982b-821e1bb46996
+   Superblock backups stored on blocks: 
+           32768, 98304, 163840, 229376
+   
+   Allocating group tables: done                            
+   Writing inode tables: done                            
+   Creating journal (8192 blocks): done
+   Writing superblocks and filesystem accounting information: done
+   
+   bob@caleston-lp10:~$ sudo mkdir /mnt/data
+   
+   bob@caleston-lp10:~$ sudo mount /dev/vdb /mnt/data
+   
+   bob@caleston-lp10:~$ lsblk 
+   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   vda                    252:0    0   10G  0 disk 
+   └─vda1                 252:1    0   10G  0 part 
+     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+   vdb                    252:16   0    1G  0 disk /mnt/data
+   vdc                    252:32   0    1G  0 disk /mnt/backups
+   ```
+
+6. What would happen to the mount /mnt/data after a system reboot?
+
+   - **/mnt/data will not be mounted**
+
+   - /dev/vdb will be deleted
+
+   - /mnt/data filesystem will be deleted
+
+   - /mnt/data data will be destroyed
+
+7. Make the mount persistent across reboot.
+
+   Use rw option with the dump and pass numbers both set to 0
+
+   Check
+
+   Task completed?
+
+   
+
+   Add it in the FSTAB
+
+   Run: sudo vi /etc/fstab
+
+   Add the line /dev/vdb /mnt/data ext4 rw 0 0
+
+   Save and Exit.
+
+   ```
+   # /etc/fstab: static file system information.
+   # 
+   # Use 'blkid' to print the universally unique identifier for a
+   # device; this may be used with UUID= as a more robust way to name devices
+   # that works even if disks are added and removed. See fstab(5).
+   #
+   # <file system> <mount point>   <type>  <options>       <dump>  <pass>
+   /dev/mapper/vagrant--vg-root /               ext4    errors=remount-ro 0       1
+   /dev/mapper/vagrant--vg-swap_1 none            swap    sw              0       0
+   /dev/fd0        /media/floppy0  auto    rw,user,noauto,exec,utf8 0       0
+   /dev/vdb        /mnt/data       ext4    rw      0       0       
+   #VAGRANT-BEGIN
+   # The contents below are automatically generated by Vagrant. Do not modify.
+   #VAGRANT-END
+   ```
+
+   
+
+## LAB: LVM
+
+
+
+1.  This lab requires some commands to be run as the root user. Always use sudo.
+
+
+   Bob's default password is caleston123
+
+   Ok
+
+2. Is LVM installed on this machine?
+
+
+   Try out commands such as pvdisplay or lvs
+
+   - No
+
+   - **Yes**
+
+   ```
+   bob@caleston-lp10:~$ sudo pvdisplay 
+   [sudo] password for bob: 
+     --- Physical volume ---
+     PV Name               /dev/vda1
+     VG Name               vagrant-vg
+     PV Size               <10.00 GiB / not usable 2.00 MiB
+     Allocatable           yes (but full)
+     PE Size               4.00 MiB
+     Total PE              2559
+     Free PE               0
+     Allocated PE          2559
+     PV UUID               ecXq0T-x7d2-Hma9-rS1w-Mi02-st3y-EqIoiW
+      
+   bob@caleston-lp10:~$ sudo lvs
+     LV     VG         Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+     root   vagrant-vg -wi-ao----  <9.04g                                                    
+     swap_1 vagrant-vg -wi-ao---- 980.00m                   
+   ```
+
+3. LVM is installed on this machine and you will find that a physical volume has already been created.
+
+
+   What is the name of this physical volume?
+
+   - /dev/sdb
+
+   - **/dev/vda1**
+
+   - /dev/sda
+
+   - /dev/vdb
+
+   ```
+   bob@caleston-lp10:~$ sudo pvs
+   [sudo] password for bob: 
+     PV         VG         Fmt  Attr PSize   PFree
+     /dev/vda1  vagrant-vg lvm2 a--  <10.00g    0 
+     
+   bob@caleston-lp10:~$ sudo pvdisplay
+     --- Physical volume ---
+     PV Name               /dev/vda1
+     VG Name               vagrant-vg
+     PV Size               <10.00 GiB / not usable 2.00 MiB
+     Allocatable           yes (but full)
+     PE Size               4.00 MiB
+     Total PE              2559
+     Free PE               0
+     Allocated PE          2559
+     PV UUID               ecXq0T-x7d2-Hma9-rS1w-Mi02-st3y-EqIoiW
+   ```
+
+4. What is the size of this physical volume?
+
+   - 195.31GB
+
+   - 50GB
+
+   - **10GB**
+
+   - 200GB
+
+   ```
+   bob@caleston-lp10:~$ sudo pvs
+   [sudo] password for bob: 
+     PV         VG         Fmt  Attr PSize   PFree
+     /dev/vda1  vagrant-vg lvm2 a--  <10.00g    0 
+     
+   bob@caleston-lp10:~$ sudo pvdisplay
+     --- Physical volume ---
+     PV Name               /dev/vda1
+     VG Name               vagrant-vg
+     PV Size               <10.00 GiB / not usable 2.00 MiB
+     Allocatable           yes (but full)
+     PE Size               4.00 MiB
+     Total PE              2559
+     Free PE               0
+     Allocated PE          2559
+     PV UUID               ecXq0T-x7d2-Hma9-rS1w-Mi02-st3y-EqIoiW
+   ```
+
+5. What is the name of the volume group created using this PV?
+
+   - **vagrant-vg**
+
+   - root-vg
+
+   - host-vol
+
+   - rool-vol
+
+   ```
+   bob@caleston-lp10:~$ sudo pvdisplay
+     --- Physical volume ---
+     PV Name               /dev/vda1
+     VG Name               vagrant-vg
+     PV Size               <10.00 GiB / not usable 2.00 MiB
+     Allocatable           yes (but full)
+     PE Size               4.00 MiB
+     Total PE              2559
+     Free PE               0
+     Allocated PE          2559
+     PV UUID               ecXq0T-x7d2-Hma9-rS1w-Mi02-st3y-EqIoiW
+      
+   bob@caleston-lp10:~$ sudo vgdisplay
+     --- Volume group ---
+     VG Name               vagrant-vg
+     System ID             
+     Format                lvm2
+     Metadata Areas        1
+     Metadata Sequence No  3
+     VG Access             read/write
+     VG Status             resizable
+     MAX LV                0
+     Cur LV                2
+     Open LV               2
+     Max PV                0
+     Cur PV                1
+     Act PV                1
+     VG Size               <10.00 GiB
+     PE Size               4.00 MiB
+     Total PE              2559
+     Alloc PE / Size       2559 / <10.00 GiB
+     Free  PE / Size       0 / 0   
+     VG UUID               E8HKBz-6lBW-9sCH-51rQ-xu3p-J1U6-963v7c
+   ```
+
+6. Now, we will create a new VG. To do this we will make use of the disks /dev/vdb and /dev/vdc
+
+
+   What are the size of these disks individually?
+
+   - **1G**
+
+   - 15G
+
+   - 5G
+
+   - 2G
+
+   ```
+   bob@caleston-lp10:~$ sudo lsblk
+   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+   vda                    252:0    0   10G  0 disk 
+   └─vda1                 252:1    0   10G  0 part 
+     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+   vdb                    252:16   0    1G  0 disk 
+   vdc                    252:32   0    1G  0 disk 
+   ```
+
+7. Create PV's using /dev/vdb and /dev/vdc.
+
+   Check
+
+   Task completed?
+
+   ```
+   bob@caleston-lp10:~$ sudo pvcreate /dev/vdb
+     Physical volume "/dev/vdb" successfully created.
+   bob@caleston-lp10:~$ sudo pvcreate /dev/vdc
+     Physical volume "/dev/vdc" successfully created.
+   bob@caleston-lp10:~$ sudo pvdisplay 
+     --- Physical volume ---
+     PV Name               /dev/vda1
+     VG Name               vagrant-vg
+     PV Size               <10.00 GiB / not usable 2.00 MiB
+     Allocatable           yes (but full)
+     PE Size               4.00 MiB
+     Total PE              2559
+     Free PE               0
+     Allocated PE          2559
+     PV UUID               ecXq0T-x7d2-Hma9-rS1w-Mi02-st3y-EqIoiW
+      
+     "/dev/vdb" is a new physical volume of "1.00 GiB"
+     --- NEW Physical volume ---
+     PV Name               /dev/vdb
+     VG Name               
+     PV Size               1.00 GiB
+     Allocatable           NO
+     PE Size               0   
+     Total PE              0
+     Free PE               0
+     Allocated PE          0
+     PV UUID               SFaeVk-eyaB-eYv8-Ds23-lJZI-L2lo-FDW861
+      
+     "/dev/vdc" is a new physical volume of "1.00 GiB"
+     --- NEW Physical volume ---
+     PV Name               /dev/vdc
+     VG Name               
+     PV Size               1.00 GiB
+     Allocatable           NO
+     PE Size               0   
+     Total PE              0
+     Free PE               0
+     Allocated PE          0
+     PV UUID               9cxIIE-kfCI-1D4e-83EV-3Uwb-Ps49-ahybU3
+     
+     bob@caleston-lp10:~$ sudo pvs
+     PV         VG         Fmt  Attr PSize   PFree
+     /dev/vda1  vagrant-vg lvm2 a--  <10.00g    0 
+     /dev/vdb              lvm2 ---    1.00g 1.00g
+     /dev/vdc              lvm2 ---    1.00g 1.00g
+   ```
+
+8. Create a new volume group called caleston_vg using the newly created PV's
+
+   Check
+
+   Task completed?
+
+   ````
+   bob@caleston-lp10:~$ sudo vgcreate caleston_vg /dev/vdb /dev/vdc
+     Volume group "caleston_vg" successfully created
+   bob@caleston-lp10:~$ sudo vgs
+     VG          #PV #LV #SN Attr   VSize   VFree
+     caleston_vg   2   0   0 wz--n-   1.99g 1.99g
+     vagrant-vg    1   2   0 wz--n- <10.00g    0 
+   bob@caleston-lp10:~$ sudo vgdisplay
+     --- Volume group ---
+     VG Name               vagrant-vg
+     System ID             
+     Format                lvm2
+     Metadata Areas        1
+     Metadata Sequence No  3
+     VG Access             read/write
+     VG Status             resizable
+     MAX LV                0
+     Cur LV                2
+     Open LV               2
+     Max PV                0
+     Cur PV                1
+     Act PV                1
+     VG Size               <10.00 GiB
+     PE Size               4.00 MiB
+     Total PE              2559
+     Alloc PE / Size       2559 / <10.00 GiB
+     Free  PE / Size       0 / 0   
+     VG UUID               E8HKBz-6lBW-9sCH-51rQ-xu3p-J1U6-963v7c
+      
+     --- Volume group ---
+     VG Name               caleston_vg
+     System ID             
+     Format                lvm2
+     Metadata Areas        2
+     Metadata Sequence No  1
+     VG Access             read/write
+     VG Status             resizable
+     MAX LV                0
+     Cur LV                0
+     Open LV               0
+     Max PV                0
+     Cur PV                2
+     Act PV                2
+     VG Size               1.99 GiB
+     PE Size               4.00 MiB
+     Total PE              510
+     Alloc PE / Size       0 / 0   
+     Free  PE / Size       510 / 1.99 GiB
+     VG UUID               lOyvwR-RCkp-vyQc-bCKv-ABlv-eE0d-cx8O2r
+   ````
+
+9. Create a new logical volume called data from the caleston_vg.
+
+
+   Size of the volume should be 1G
+
+   Check
+
+   Task completed?
+
+   ```
+   bob@caleston-lp10:~$ sudo lvcreate -L 1G -n data caleston_vg
+     Logical volume "data" created.
+   bob@caleston-lp10:~$ sudo lvs
+     LV     VG          Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+     data   caleston_vg -wi-a-----   1.00g                                                    
+     root   vagrant-vg  -wi-ao----  <9.04g                                                    
+     swap_1 vagrant-vg  -wi-ao---- 980.00m                                                    
+   bob@caleston-lp10:~$ sudo lvdisplay
+     --- Logical volume ---
+     LV Path                /dev/vagrant-vg/root
+     LV Name                root
+     VG Name                vagrant-vg
+     LV UUID                aXeCm7-yCOC-srdD-T55P-wpHZ-c46Q-XJcX1t
+     LV Write Access        read/write
+     LV Creation host, time vagrant, 2021-11-21 18:46:22 +0000
+     LV Status              available
+     # open                 1
+     LV Size                <9.04 GiB
+     Current LE             2314
+     Segments               1
+     Allocation             inherit
+     Read ahead sectors     auto
+     - currently set to     256
+     Block device           253:0
+      
+     --- Logical volume ---
+     LV Path                /dev/vagrant-vg/swap_1
+     LV Name                swap_1
+     VG Name                vagrant-vg
+     LV UUID                K00a0k-hD5J-CJZj-a3zj-CaDv-F82n-Q6ZDl0
+     LV Write Access        read/write
+     LV Creation host, time vagrant, 2021-11-21 18:46:22 +0000
+     LV Status              available
+     # open                 2
+     LV Size                980.00 MiB
+     Current LE             245
+     Segments               1
+     Allocation             inherit
+     Read ahead sectors     auto
+     - currently set to     256
+     Block device           253:1
+      
+     --- Logical volume ---
+     LV Path                /dev/caleston_vg/data
+     LV Name                data
+     VG Name                caleston_vg
+     LV UUID                NVEEwM-zZMe-MoRZ-wK6T-oykf-j1bf-eJDpfp
+     LV Write Access        read/write
+     LV Creation host, time caleston-lp10, 2023-09-18 05:59:46 +0000
+     LV Status              available
+     # open                 0
+     LV Size                1.00 GiB
+     Current LE             256
+     Segments               2
+     Allocation             inherit
+     Read ahead sectors     auto
+     - currently set to     256
+     Block device           253:2
+   ```
+
+10. Create an ext4 filesystem on this logical volume and mount it at /mnt/media
+
+   Check
+
+   Task completed?
+
+   Run: 
+
+   sudo mkdir /mnt/media
+
+   sudo mkfs.ext4 /dev/mapper/caleston_vg-data
+
+   sudo mount /dev/mapper/caleston_vg-data /mnt/media/`
+
+   ```
+   bob@caleston-lp10:~$ sudo mkdir /mnt/media
+   
+   bob@caleston-lp10:~$ sudo mkfs.ext4 /dev/caleston_vg/data 
+   mke2fs 1.44.1 (24-Mar-2018)
+   Creating filesystem with 262144 4k blocks and 65536 inodes
+   Filesystem UUID: 41e8551e-14b5-484c-bfe9-ff90bfa6c468
+   Superblock backups stored on blocks: 
+           32768, 98304, 163840, 229376
+   
+   Allocating group tables: done                            
+   Writing inode tables: done                            
+   Creating journal (8192 blocks): done
+   Writing superblocks and filesystem accounting information: done
+   
+   bob@caleston-lp10:~$ sudo mount /dev/caleston_vg/data /mnt/media
+   ```
+
+11. Add 500M to the logical volume called data.
+
+
+    Do not unmount the filesystem.
+
+    Check
+
+    Task completed?
+
+    Run: 
+
+    sudo lvresize -L +500M -n  /dev/mapper/caleston_vg-data`
+
+    sudo resize2fs  /dev/mapper/caleston_vg-data
+
+    ```
+    $ sudo lvresize -L +500 -n /dev/mapper/caleston_vg-data 
+      Size of logical volume caleston_vg/data changed from 1.00 GiB (256 extents) to <1.49 GiB (381 extents).
+      Logical volume caleston_vg/data successfully resized.
+    
+    bob@caleston-lp10:~$ sudo lvs
+      LV     VG          Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+      data   caleston_vg -wi-ao----  <1.49g                                                    
+      root   vagrant-vg  -wi-ao----  <9.04g                                                    
+      swap_1 vagrant-vg  -wi-ao---- 980.00m                                                    
+    bob@caleston-lp10:~$ df -h
+    Filesystem                    Size  Used Avail Use% Mounted on
+    udev                          461M     0  461M   0% /dev
+    tmpfs                          99M  5.4M   94M   6% /run
+    /dev/mapper/vagrant--vg-root  8.9G  1.6G  6.9G  19% /
+    tmpfs                         493M     0  493M   0% /dev/shm
+    tmpfs                         5.0M     0  5.0M   0% /run/lock
+    tmpfs                         493M     0  493M   0% /sys/fs/cgroup
+    tmpfs                          99M     0   99M   0% /run/user/1002
+    /dev/mapper/caleston_vg-data  976M  2.6M  907M   1% /mnt/media
+    
+    bob@caleston-lp10:~$ sudo resize2fs /dev/mapper/caleston_vg-data 
+    resize2fs 1.44.1 (24-Mar-2018)
+    Filesystem at /dev/mapper/caleston_vg-data is mounted on /mnt/media; on-line resizing required
+    old_desc_blocks = 1, new_desc_blocks = 1
+    The filesystem on /dev/mapper/caleston_vg-data is now 390144 (4k) blocks long.
+    
+    bob@caleston-lp10:~$ df -h
+    Filesystem                    Size  Used Avail Use% Mounted on
+    udev                          461M     0  461M   0% /dev
+    tmpfs                          99M  5.4M   94M   6% /run
+    /dev/mapper/vagrant--vg-root  8.9G  1.6G  6.9G  19% /
+    tmpfs                         493M     0  493M   0% /dev/shm
+    tmpfs                         5.0M     0  5.0M   0% /run/lock
+    tmpfs                         493M     0  493M   0% /sys/fs/cgroup
+    tmpfs                          99M     0   99M   0% /run/user/1002
+    /dev/mapper/caleston_vg-data  1.5G  3.0M  1.4G   1% /mnt/media
+    ```
+
+
+
 # THE CLIENT DEMONSTRATION > LAB – TROUBLESHOOT THE DEVELOPMENT ENVIRONMENT
 
 1. Bob needs your help to get his app ready in time for the client presentation!
@@ -1892,8 +2633,8 @@ gzip /home/bob/python.tar
 
    ![](images/Caleston_demo.jpg)
 
-4. Task 1:`
-Copy the file `caleston-code.tar.gz` from Bob's laptop to Bob's home directory on the webserver `devapp01
+3. Task 1:`
+   Copy the file `caleston-code.tar.gz` from Bob's laptop to Bob's home directory on the webserver `devapp01
 
 
    Bob's password is `caleston123`
@@ -2007,9 +2748,9 @@ Copy the file `caleston-code.tar.gz` from Bob's laptop to Bob's home directory o
    - 5432
 
    ```
-   $ sudo netstat -natulp | grep postgres | grep LISTEN
-   tcp        0      0 0.0.0.0:5432            0.0.0.0:*               LISTEN      5583/postgres       
-   tcp6       0      0 :::5432                 :::*                    LISTEN      5583/postgres  
+$ sudo netstat -natulp | grep postgres | grep LISTEN
+tcp        0      0 0.0.0.0:5432            0.0.0.0:*               LISTEN      5583/postgres       
+tcp6       0      0 :::5432                 :::*                    LISTEN      5583/postgres  
    ```
 
 11. `Task 7`:
@@ -2121,139 +2862,12 @@ Copy the file `caleston-code.tar.gz` from Bob's laptop to Bob's home directory o
     ```
     sudo systemctl enable --now mercury.service
     
+    sudo systemctl start mercury.service
+    
     sudo systemctl status mercury.service
     ```
 
     
-
-# Storage in Linux
-
-## Lab Partitions
-
-1. This lab requires some commands to be run as the root user. Always use sudo.
-
-
-   Bob's default password is caleston123
-
-
-   Ok
-
-2. How many disk type block devices are present in the system?
-
-   - **3**
-
-   - 1
-
-   - 10
-
-   ```
-   bob@caleston-lp10:~$ lsblk 
-   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-   vda                    252:0    0   10G  0 disk 
-   └─vda1                 252:1    0   10G  0 part 
-     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
-     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
-   vdb                    252:16   0    1G  0 disk 
-   vdc                    252:32   0    1G  0 disk 
-   ```
-
-3. What is the size of the disk /dev/vdc?
-
-   - 15GB
-
-   - 20GB
-
-   - **1GB**
-
-   - 25GB
-
-   ```
-   $ lsblk 
-   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-   vda                    252:0    0   10G  0 disk 
-   └─vda1                 252:1    0   10G  0 part 
-     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
-     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
-   vdb                    252:16   0    1G  0 disk 
-   vdc                    252:32   0    1G  0 disk 
-   ```
-
-4. What is the major number for the devices beginning with vd?
-
-   - 10
-
-   - 8
-
-   - **252**
-
-   - 12
-
-5. How many maximum partitions (primary or extended ) can an MBR have?
-
-   - 10
-
-   - **4**
-
-   - **1**
-
-   - 2
-
-   ```
-   $ lsblk 
-   NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-   vda                    252:0    0   10G  0 disk 
-   └─vda1                 252:1    0   10G  0 part 
-     ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
-     └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
-   vdb                    252:16   0    1G  0 disk 
-   vdc                    252:32   0    1G  0 disk 
-   ```
-
-6. Create a GPT partition called `vdb1` of size `500M` on the disk `/dev/vdb`
-
-   You can install `gdisk` by running `sudo apt install gdisk`
-
-   ```
-   Run: sudo gdisk /dev/vdb
-   
-   In the interactive prompt, enter n
-   
-   Select parition number = 1 (for vdd1)
-   
-   Select default first sector = 2048
-   
-   Select +500M when asked for last sector
-   
-   Use default hex code = 8300
-   
-   Finally type w to write to the partition table
-   ```
-
-7. 
-
-
-
-
-
-   
-
-   
-
-   
-
-   
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

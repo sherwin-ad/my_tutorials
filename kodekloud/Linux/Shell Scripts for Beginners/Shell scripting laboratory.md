@@ -1,8 +1,21 @@
 # Shell scripting laboratory
 
+# Download course materials
 
+Download Course Deck here. Please note the below points:
 
-## SHELL SCRIPT INTRODUCTION, LAB: PROJECT INTRODUCTION
+[Shell-Scripting-kodekloud.pdf](https://kodekloud.com/wp-content/uploads/2022/01/Shell-Scripting-kodekloud.pdf)
+
+1. Use the deck for referring to concepts and syntax only
+2. Do not copy and paste commands or script from the deck as it may have hidden characters.
+
+For copying commands, code snippets and answers to lab questions please refer to this Github Repository:
+
+https://github.com/kodekloudhub/shell-scripting-for-beginners-course
+
+## SHELL SCRIPT INTRODUCTION 
+
+### LAB: PROJECT INTRODUCTION
 
 1. Rocket commands have been configured on your system. Let's test it out. Run the `rocket-ls` command to list all rockets.
 
@@ -236,7 +249,10 @@
     ```
 
     
-## SHELL SCRIPT INTRODUCTION, LAB: CREATING YOUR FIRST SHELL SCRIPT
+
+
+
+### LAB: CREATING YOUR FIRST SHELL SCRIPT
 
 1. Let's create our first script. Create a script named `create-and-launch-rocket` at the path `/home/bob` and add the below commands to it.
 
@@ -433,7 +449,7 @@
 
 
 
-## SHELL SCRIPT INTRODUCTION, LAB: VARIABLES
+### LAB: VARIABLES
 
 1. Let's update our script to use a variable by the name `mission_name`.
 
@@ -611,7 +627,7 @@
 
 
 
-## SHELL SCRIPT INTRODUCTION, LAB: COMMAND LINE ARGUMENTS & INPUTS
+### LAB: COMMAND LINE ARGUMENTS & INPUTS
 
 1. Let's update our script to use a command line variable in the place of `lunar-mission`
 
@@ -787,7 +803,7 @@
 
 
 
-## SHELL SCRIPT INTRODUCTION, LAB: AIRTHMETIC OPERATIONS
+### LAB: AIRTHMETIC OPERATIONS
 
 1. Let's try some arithmetic operations. We have created a shell script - `calculation.sh` - that has 2 variables defined - `A` and `B`. Update the shell script to print the Sum, Difference, Product and Quotient of these values.
 
@@ -979,7 +995,9 @@
 
 
 
-## FLOW CONTROL, LAB: CONDITIONAL LOGIC
+## FLOW CONTROL
+
+### LAB: CONDITIONAL LOGIC
 
 1. Let's update our script to use a conditional statement to print the cause if the status is `failed`
 
@@ -1166,7 +1184,7 @@
 
 
 
-## FLOW CONTROL, LAB: FOR LOOPS
+### LAB: FOR LOOPS
 
 
 
@@ -1649,7 +1667,7 @@
 
 
 
-## FLOW CONTROL, LABS: WHILE LOOPS
+### LABS: WHILE LOOPS
 
 1. Let's update our script to take into consideration the time a rocket spends in a `launching` state.
 
@@ -1838,7 +1856,7 @@
 
 
 
-## FLOW CONTROL, LABS: CASE STATEMENTS
+### LABS: CASE STATEMENTS
 
 1. A script called `print-pkm.sh` is created in the home directory. There are multiple syntax errors in the script. Identify and fix those so that the script works
 
@@ -2208,7 +2226,9 @@
 
 
 
-## SHEBANG, LAB: SHEBANG
+## SHEBANG
+
+### LAB: SHEBANG
 
 1. A script called `loop.sh` is created in the home directory. Run it using the command `./loop.sh` and check what it does.
 
@@ -2380,7 +2400,7 @@
 
 
 
-## SHEBANG, LAB: EXIT CODES
+### LAB: EXIT CODES
 
 
 
@@ -2516,7 +2536,7 @@
 
 
 
-## SHEBANG, LAB: FUNCTIONS
+### LAB: FUNCTIONS
 
 
 
@@ -2807,7 +2827,9 @@
 
 
 
-## PROJECT – E-COMMERCE APPLICATION, LAB – PROJECT
+## PROJECT – E-COMMERCE APPLICATION 
+
+### LAB – PROJECT
 
 1. Develop a shell script - `/home/bob/deploy-ecommerce-application.sh` - to automate the deployment of the `KodeKloud E-Commerce Application`. Click on the tab called `documentation` on the top-right of the terminal.
 
