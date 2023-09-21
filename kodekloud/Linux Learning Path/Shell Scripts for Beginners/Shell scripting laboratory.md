@@ -715,6 +715,15 @@ https://github.com/kodekloudhub/shell-scripting-for-beginners-course
    echo "Capital city of $1 is $2"
    ```
 
+   OR
+
+   ```
+   country=$1
+   capital=$2
+   
+   echo "Capital city of $country is $capital"
+   ```
+
    ```
    bob@caleston-lp10:~$ ./print-capital.sh Nigeria Abuja
    Capital city of Nigeria is Abuja
@@ -1202,7 +1211,7 @@ https://github.com/kodekloudhub/shell-scripting-for-beginners-course
    ```
    for mission in lunar-mission mars-mission jupiter-mission saturn-mission mercury-mission
    do
-           bash /home/bob/create-and-launch-rocket $mission
+     bash /home/bob/create-and-launch-rocket $mission
    done
    ```
 
@@ -2828,6 +2837,8 @@ https://github.com/kodekloudhub/shell-scripting-for-beginners-course
 
 
 ## PROJECT – E-COMMERCE APPLICATION 
+
+https://github.com/kodekloudhub/learning-app-ecommerce
 
 ### LAB – PROJECT
 

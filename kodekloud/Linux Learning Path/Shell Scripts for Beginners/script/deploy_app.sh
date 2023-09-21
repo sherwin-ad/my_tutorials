@@ -4,12 +4,13 @@
 # Author: Mumshad Mannambeth
 
 #######################################
-# Print a message in a given å.
+# Print a message in a given color.
 # Arguments:
 #   Color. eg: green, red
 #######################################
 function print_color(){
   NC='\033[0m' # No Color
+
   case $1 in
     "green") COLOR='\033[0;32m' ;;
     "red") COLOR='\033[0;31m' ;;
