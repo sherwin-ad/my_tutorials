@@ -65,7 +65,7 @@
 
    The bootstrap binary must be located in the MBR of the first storage device for a system equipped with BIOS to boot correctly.
 
-3. ## Which command would you use to view only the last ten lines of the initialization log?
+3. Which command would you use to view only the last ten lines of the initialization log?
 
    - **dmesg | tail**
    - dmesg -H
