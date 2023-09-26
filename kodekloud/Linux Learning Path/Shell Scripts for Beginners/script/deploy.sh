@@ -37,7 +37,7 @@ else
 fi
 }    
 
-function check_item()
+function check_webpage()
 {
 web_page=$(curl http://localhost)
 
@@ -135,11 +135,9 @@ sudo git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/w
 
 sudo sed -i 's/172.20.1.101/localhost/g' /var/www/html/index.php
 
-web_page=$(curl http://localhost)
 
-if [[ $web_page = *Laptop* ]]
-then
-  print_color "green" "Item Laptop is present on the web page"
-else
-  print_color "red" "Item Laptop is not present on the web page"
-fi  
+for item in Laptop Drone VR Watch
+do 
+    check_webpage $item
+done
+

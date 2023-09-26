@@ -139,6 +139,421 @@
 
 ## LINUX INSTALLATION AND PACKAGE MANAGEMENT, 
 
+### Design Hard Disk Layout – Logical Volume Manager (LVM)
+
+#### **To install LVM**
+
+```
+# apt install lvm2
+```
+
+#### **List devices that may be used as physical volumes**
+
+```
+# lvmdiskscan 
+  /dev/sda1 [       1.00 GiB] 
+  /dev/sda2 [     <19.00 GiB] LVM physical volume
+  /dev/sdb  [       1.00 GiB] 
+  /dev/sdc  [       1.00 GiB] 
+  /dev/sdd  [       1.00 GiB] 
+  3 disks
+  1 partition
+  0 LVM physical volume whole disks
+  1 LVM physical volume
+```
+
+#### **List block devices**
+
+```
+# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   20G  0 disk 
+├─sda1            8:1    0    1G  0 part /boot
+└─sda2            8:2    0   19G  0 part 
+  ├─centos-root 253:0    0   17G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sdb               8:16   0    1G  0 disk 
+sdc               8:32   0    1G  0 disk 
+sdd               8:48   0    1G  0 disk 
+sr0              11:0    1 1024M  0 rom  
+```
+
+#### **Create physical volumes**
+
+```
+# pvcreate /dev/sdb /dev/sdc 
+  Physical volume "/dev/sdb" successfully created.
+  Physical volume "/dev/sdc" successfully created.
+```
+
+##### **Display information about physical volumes**
+
+```
+# pvs
+  PV         VG     Fmt  Attr PSize   PFree
+  /dev/sda2  centos lvm2 a--  <19.00g    0 
+  /dev/sdb          lvm2 ---    1.00g 1.00g
+  /dev/sdc          lvm2 ---    1.00g 1.00g
+```
+
+OR 
+
+```
+# pvdisplay /dev/sdb 
+  "/dev/sdb" is a new physical volume of "1.00 GiB"
+  --- NEW Physical volume ---
+  PV Name               /dev/sdb
+  VG Name               
+  PV Size               1.00 GiB
+  Allocatable           NO
+  PE Size               0   
+  Total PE              0
+  Free PE               0
+  Allocated PE          0
+  PV UUID               kxWiFl-Upcq-BQFQ-bXDd-K0ZW-MDdE-17jaSD
+```
+
+OR
+
+```
+# pvdisplay
+  --- Physical volume ---
+  PV Name               /dev/sda2
+  VG Name               centos
+  PV Size               <19.00 GiB / not usable 3.00 MiB
+  Allocatable           yes (but full)
+  PE Size               4.00 MiB
+  Total PE              4863
+  Free PE               0
+  Allocated PE          4863
+  PV UUID               ZQzCdM-Q7Ur-9aRo-v1r1-1gHk-kozF-8F0hej
+   
+  "/dev/sdc" is a new physical volume of "1.00 GiB"
+  --- NEW Physical volume ---
+  PV Name               /dev/sdc
+  VG Name               
+  PV Size               1.00 GiB
+  Allocatable           NO
+  PE Size               0   
+  Total PE              0
+  Free PE               0
+  Allocated PE          0
+  PV UUID               ns2hHg-TMqs-wUAI-ufHU-PH7Q-qbHp-mfd4KW
+   
+  "/dev/sdb" is a new physical volume of "1.00 GiB"
+  --- NEW Physical volume ---
+  PV Name               /dev/sdb
+  VG Name               
+  PV Size               1.00 GiB
+  Allocatable           NO
+  PE Size               0   
+  Total PE              0
+  Free PE               0
+  Allocated PE          0
+  PV UUID               kxWiFl-Upcq-BQFQ-bXDd-K0ZW-MDdE-17jaSD
+```
+
+##### Remove physical volume(s)
+
+```
+# pvremove /dev/sdd
+  Labels on physical volume "/dev/sdd" successfully wiped.
+```
+
+
+
+#### Create a volume group
+
+```
+vgcreate my_volume /dev/sdb 
+```
+
+Or, to include both partitions at once:
+
+```
+# vgcreate my_volume /dev/sdb /dev/sdc 
+  Volume group "my_volume" successfully created
+```
+
+##### **Display information about volume group**
+
+```
+# vgs
+  VG        #PV #LV #SN Attr   VSize   VFree
+  centos      1   2   0 wz--n- <19.00g    0 
+  my_volume   2   0   0 wz--n-   1.99g 1.99g
+```
+
+OR
+
+```
+# vgdisplay my_volume
+  --- Volume group ---
+  VG Name               my_volume
+  System ID             
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               1.99 GiB
+  PE Size               4.00 MiB
+  Total PE              510
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       510 / 1.99 GiB
+  VG UUID               dYknHq-jSIQ-sGWy-Kdpd-xsCe-33yV-EhuIA2
+
+```
+
+OR
+
+```
+# vgdisplay 
+  --- Volume group ---
+  VG Name               centos
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  3
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               2
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               <19.00 GiB
+  PE Size               4.00 MiB
+  Total PE              4863
+  Alloc PE / Size       4863 / <19.00 GiB
+  Free  PE / Size       0 / 0   
+  VG UUID               ZYiPQY-wxhi-nTaQ-x7Y2-GGV4-lfzT-PnYFb4
+   
+  --- Volume group ---
+  VG Name               my_volume
+  System ID             
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               1.99 GiB
+  PE Size               4.00 MiB
+  Total PE              510
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       510 / 1.99 GiB
+  VG UUID               dYknHq-jSIQ-sGWy-Kdpd-xsCe-33yV-EhuIA2
+```
+
+##### Add more physical volumes to the volume group 
+
+```
+# pvcreate /dev/sdd
+  Physical volume "/dev/sdd" successfully created.
+
+# vgextend my_volume /dev/sdd
+  Volume group "my_volume" successfully extended
+
+# vgs
+  VG        #PV #LV #SN Attr   VSize   VFree 
+  centos      1   2   0 wz--n- <19.00g     0 
+  my_volume   3   0   0 wz--n-  <2.99g <2.99g
+```
+
+##### Remove physical volumes to the volume group 
+
+```
+# pvdisplay -C -o pv_name,vg_name
+  PV         VG       
+  /dev/sda2  centos   
+  /dev/sdb   my_volume
+  /dev/sdc   my_volume
+  /dev/sdd   my_volume
+
+# vgreduce my_volume /dev/sdd
+  Removed "/dev/sdd" from volume group "my_volume"
+
+```
+
+##### List all physical volumes associated to a volume group
+
+```
+# pvdisplay -C -o pv_name,vg_name
+  PV         VG       
+  /dev/sda2  centos   
+  /dev/sdb   my_volume
+  /dev/sdc   my_volume
+  /dev/sdd            
+```
+
+
+
+#### Create logical volumes
+
+```
+# lvcreate --size 250M --name partition1 my_volume
+  Rounding up size to full physical extent 252.00 MiB
+  Logical volume "partition1" created.
+```
+
+OR
+
+```
+# lvcreate -L 250M -n partition2 my_volume
+  Rounding up size to full physical extent 252.00 MiB
+  Logical volume "partition2" created.
+```
+
+##### **Display information about logicalvolumes**
+
+```
+# lvs
+  LV         VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root       centos    -wi-ao---- <17.00g                                                    
+  swap       centos    -wi-ao----   2.00g                                                    
+  partition1 my_volume -wi-a----- 252.00m                                                    
+  partition2 my_volume -wi-a----- 252.00m                    
+```
+
+OR
+
+```
+# lvdisplay /dev/my_volume/partition1
+  --- Logical volume ---
+  LV Path                /dev/my_volume/partition1
+  LV Name                partition1
+  VG Name                my_volume
+  LV UUID                cgVC6q-VQTl-TjsA-dY4W-lM83-aBLM-fAczWp
+  LV Write Access        read/write
+  LV Creation host, time localhost.localdomain, 2023-09-25 09:46:32 +0800
+  LV Status              available
+  # open                 0
+  LV Size                252.00 MiB
+  Current LE             63
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:
+```
+
+
+
+##### Resize logical volumes
+
+```
+# lvresize --extents 100%VG my_volume/partition1
+
+OR
+
+# lvresize -l 100%VG my_volume/partition1
+  Reducing 100%VG to remaining free space <1.75 GiB in VG.
+  Size of logical volume my_volume/partition1 changed from 252.00 MiB (63 extents) to <1.75 GiB (447 extents).
+  Logical volume my_volume/partition1 successfully resized.
+  
+# vgs
+  VG        #PV #LV #SN Attr   VSize   VFree
+  centos      1   2   0 wz--n- <19.00g    0 
+  my_volume   2   2   0 wz--n-   1.99g    0 
+  
+# lvs
+  LV         VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root       centos    -wi-ao---- <17.00g                                                    
+  swap       centos    -wi-ao----   2.00g                                                    
+  partition1 my_volume -wi-a-----  <1.75g                                                    
+  partition2 my_volume -wi-a----- 252.00m                                                
+```
+
+##### Shrink logical volumes
+
+```
+# lvresize -L 250M my_volume/partition1
+OR
+# lvresize --size 250M my_volume/partition1
+  Rounding size to boundary between physical extents: 252.00 MiB.
+  WARNING: Reducing active logical volume to 252.00 MiB.
+  THIS MAY DESTROY YOUR DATA (filesystem etc.)
+Do you really want to reduce my_volume/partition1? [y/n]: y
+  Size of logical volume my_volume/partition1 changed from <1.75 GiB (447 extents) to 252.00 MiB (63 extents).
+  Logical volume my_volume/partition1 successfully resized.
+```
+
+#### Create a filesystem on logical volumes
+
+ ```
+ # mkfs.xfs /dev/my_volume/partition1
+ meta-data=/dev/my_volume/partition1 isize=512    agcount=4, agsize=16128 blks
+          =                       sectsz=512   attr=2, projid32bit=1
+          =                       crc=1        finobt=0, sparse=0
+ data     =                       bsize=4096   blocks=64512, imaxpct=25
+          =                       sunit=0      swidth=0 blks
+ naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+ log      =internal log           bsize=4096   blocks=855, version=2
+          =                       sectsz=512   sunit=0 blks, lazy-count=1
+ realtime =none                   extsz=4096   blocks=0, rtextents=0
+ 
+ ```
+
+Resize the logical volume and filesystem
+
+```
+# lvresize --resizefs --size 512M my_volume/partition1
+OR
+# lvresize -r -L 512M my_volume/partition1
+Phase 1 - find and verify superblock...
+Phase 2 - using internal log
+        - zero log...
+        - scan filesystem freespace and inode maps...
+        - found root inode chunk
+Phase 3 - for each AG...
+        - scan (but don't clear) agi unlinked lists...
+        - process known inodes and perform inode discovery...
+        - agno = 0
+        - agno = 1
+        - agno = 2
+        - agno = 3
+        - process newly discovered inodes...
+Phase 4 - check for duplicate blocks...
+        - setting up duplicate extent list...
+        - check for inodes claiming duplicate blocks...
+        - agno = 0
+        - agno = 1
+        - agno = 2
+        - agno = 3
+No modify flag set, skipping phase 5
+Phase 6 - check inode connectivity...
+        - traversing filesystem ...
+        - traversal finished ...
+        - moving disconnected inodes to lost+found ...
+Phase 7 - verify link counts...
+No modify flag set, skipping filesystem flush and exiting.
+  Size of logical volume my_volume/partition1 changed from 252.00 MiB (63 extents) to 512.00 MiB (128 extents).
+  Logical volume my_volume/partition1 successfully resized.
+meta-data=/dev/mapper/my_volume-partition1 isize=512    agcount=4, agsize=16128 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0 spinodes=0
+data     =                       bsize=4096   blocks=64512, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal               bsize=4096   blocks=855, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+data blocks changed from 64512 to 131072
+```
+
 
 
 ### QUIZ: DESIGN HARD DISK LAYOUT
