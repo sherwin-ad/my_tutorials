@@ -638,6 +638,14 @@ data blocks changed from 64512 to 131072
 
    - GRUB_WAIT=
 
+### MANAGE SHARED LIBRARIES
+
+**List the shared libraries used by the /usr/bin/systemctl program**
+
+```
+# ldd /usr/bin/systemctl
+```
+
 
 
 ### QUIZ: MANAGE SHARED LIBRARIES
@@ -671,6 +679,8 @@ data blocks changed from 64512 to 131072
    - **.a**
 
    - .lib
+
+   Static libraries use the .a file extension.
 
 4. The naming format for shared libraries is:
 
@@ -731,6 +741,8 @@ data blocks changed from 64512 to 131072
 
    - apt-file show /usr/bin/systemctl
 
+   You can use apt-file search followed by the full path to a file to show which package contains that file.
+
 5. Which command would you use to install a .deb file located on your local Linux system?
 
    - dpkg -I
@@ -740,6 +752,210 @@ data blocks changed from 64512 to 131072
    - **dpkg -i**
 
    - dpkg -install
+
+
+
+### **USE RPM AND YUM PACKAGE MANAGEMENT**
+
+ Display the configured software repositories
+
+```
+# yum repolist
+repo id                            repo name
+appstream                          CentOS Stream 9 - AppStream
+baseos                             CentOS Stream 9 - BaseOS
+extras-common                      CentOS Stream 9 - Extras packages
+```
+
+```
+# yum repolist -v
+Loaded plugins: builddep, changelog, config-manager, copr, debug, debuginfo-install, download, generate_completion_cache, groups-manager, needs-restarting, playground, repoclosure, repodiff, repograph, repomanage, reposync, system-upgrade
+YUM version: 4.14.0
+cachedir: /var/cache/dnf
+Last metadata expiration check: 2:31:14 ago on Tue 26 Sep 2023 10:16:47 AM PST.
+Repo-id            : appstream
+Repo-name          : CentOS Stream 9 - AppStream
+Repo-revision      : 9-stream
+Repo-distro-tags      : [cpe:/o:centos-stream:centos-stream:9]:  ,  , 9, C, O, S, S, a,
+                      : e, e, m, n, r, t, t
+Repo-updated       : Mon 25 Sep 2023 09:53:14 PM PST
+Repo-pkgs          : 12,091
+Repo-available-pkgs: 11,868
+Repo-size          : 23 G
+Repo-metalink      : https://mirrors.centos.org/metalink?repo=centos-appstream-9-stream&arch=aarch64&protocol=https,http
+  Updated          : Tue 26 Sep 2023 10:16:43 AM PST
+Repo-baseurl       : http://ftp.riken.jp/Linux/centos-stream/9-stream/AppStream/aarch64/os/
+                   : (39 more)
+Repo-expire        : 21,600 second(s) (last: Tue 26 Sep 2023 10:16:43 AM PST)
+Repo-filename      : /etc/yum.repos.d/centos.repo
+
+Repo-id            : baseos
+Repo-name          : CentOS Stream 9 - BaseOS
+Repo-revision      : 9-stream
+Repo-distro-tags      : [cpe:/o:centos-stream:centos-stream:9]:  ,  , 9, C, O, S, S, a,
+                      : e, e, m, n, r, t, t
+Repo-updated       : Mon 25 Sep 2023 09:50:17 PM PST
+Repo-pkgs          : 3,396
+Repo-available-pkgs: 3,396
+Repo-size          : 5.2 G
+Repo-metalink      : https://mirrors.centos.org/metalink?repo=centos-baseos-9-stream&arch=aarch64&protocol=https,http
+  Updated          : Tue 26 Sep 2023 10:16:37 AM PST
+Repo-baseurl       : http://mirrors.tuna.tsinghua.edu.cn/centos-stream/9-stream/BaseOS/aarch64/os/
+                   : (39 more)
+Repo-expire        : 21,600 second(s) (last: Tue 26 Sep 2023 10:16:37 AM PST)
+Repo-filename      : /etc/yum.repos.d/centos.repo
+
+Repo-id            : extras-common
+Repo-name          : CentOS Stream 9 - Extras packages
+Repo-revision      : 1695367583
+Repo-updated       : Fri 22 Sep 2023 03:26:23 PM PST
+Repo-pkgs          : 69
+Repo-available-pkgs: 69
+Repo-size          : 700 k
+Repo-metalink      : https://mirrors.centos.org/metalink?repo=centos-extras-sig-extras-common-9-stream&arch=aarch64&protocol=https,http
+  Updated          : Tue 26 Sep 2023 10:16:47 AM PST
+Repo-baseurl       : https://ftp.iij.ad.jp/pub/linux/centos-stream/SIGs/9-stream/extras/aarch64/extras-common/
+                   : (19 more)
+Repo-expire        : 21,600 second(s) (last: Tue 26 Sep 2023 10:16:47 AM PST)
+Repo-filename      : /etc/yum.repos.d/centos-addons.repo
+Total packages: 15,556
+```
+
+**Repolist command-specific options:**
+  --all                 show all repos
+  --enabled             show enabled repos (default)
+  --disabled            show disabled repos
+
+```
+# yum repolist --all
+repo id                         repo name                                        status
+appstream                       CentOS Stream 9 - AppStream                      enabled
+appstream-debuginfo             CentOS Stream 9 - AppStream - Debug              disabled
+appstream-source                CentOS Stream 9 - AppStream - Source             disabled
+baseos                          CentOS Stream 9 - BaseOS                         enabled
+baseos-debuginfo                CentOS Stream 9 - BaseOS - Debug                 disabled
+baseos-source                   CentOS Stream 9 - BaseOS - Source                disabled
+crb                             CentOS Stream 9 - CRB                            disabled
+crb-debuginfo                   CentOS Stream 9 - CRB - Debug                    disabled
+crb-source                      CentOS Stream 9 - CRB - Source                   disabled
+extras-common                   CentOS Stream 9 - Extras packages                enabled
+extras-common-source            CentOS Stream 9 - Extras packages - Source       disabled
+highavailability                CentOS Stream 9 - HighAvailability               disabled
+highavailability-debuginfo      CentOS Stream 9 - HighAvailability - Debug       disabled
+highavailability-source         CentOS Stream 9 - HighAvailability - Source      disabled
+nfv                             CentOS Stream 9 - NFV                            disabled
+nfv-debuginfo                   CentOS Stream 9 - NFV - Debug                    disabled
+nfv-source                      CentOS Stream 9 - NFV - Source                   disabled
+resilientstorage                CentOS Stream 9 - ResilientStorage               disabled
+resilientstorage-debuginfo      CentOS Stream 9 - ResilientStorage - Debug       disabled
+resilientstorage-source         CentOS Stream 9 - ResilientStorage - Source      disabled
+rt                              CentOS Stream 9 - RT                             disabled
+rt-debuginfo                    CentOS Stream 9 - RT - Debug                     disabled
+rt-source                       CentOS Stream 9 - RT - Source                    disabled
+```
+
+Enable and disable repositories
+
+```
+# subscription-manager repos --enable [repo id]
+
+# subscription-manager repos --disable [repo id]
+
+# yum-config-manager --enable [repo-id]
+
+# yum-config-manager --disable [repo-id]
+```
+
+Add repository
+
+```
+# yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+Adding repo from: https://download.docker.com/linux/centos/docker-ce.repo
+```
+
+
+
+```
+# vi /etc/yum.repos.d/docker-ce.repo
+```
+
+docker-ce.repo
+
+```
+[docker-ce-stable]
+name=Docker CE Stable - $basearch
+baseurl=https://download.docker.com/linux/centos/$releasever/$basearch/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://download.docker.com/linux/centos/gpg
+
+[docker-ce-stable-debuginfo]
+name=Docker CE Stable - Debuginfo $basearch
+baseurl=https://download.docker.com/linux/centos/$releasever/debug-$basearch/stable
+enabled=0
+gpgcheck=1
+gpgkey=https://download.docker.com/linux/centos/gpg
+
+[docker-ce-stable-source]
+name=Docker CE Stable - Sources
+baseurl=https://download.docker.com/linux/centos/$releasever/source/stable
+enabled=0
+gpgcheck=1
+gpgkey=https://download.docker.com/linux/centos/gpg
+```
+
+**Yum group**
+
+```
+# yum group list
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+Last metadata expiration check: 1:58:05 ago on Tue 26 Sep 2023 01:17:13 PM PST.
+Available Environment Groups:
+   Server with GUI
+   Server
+   Custom Operating System
+Installed Environment Groups:
+   Minimal Install
+Available Groups:
+   Legacy UNIX Compatibility
+   Console Internet Tools
+   Container Management
+   Development Tools
+   .NET Development
+   Graphical Administration Tools
+   Headless Management
+   Network Servers
+   RPM Development Tools
+   Scientific Support
+   Security Tools
+   Smart Card Support
+   System Tools
+   
+   # yum group list --hidden
+   
+   # yum group install 'Server with GUI'
+   
+   # yum group remove 'Server with GUI'
+```
+
+```
+$ sudo wget https://download.nomachine.com/download/7.7/Linux/nomachine_7.7.4_1_x86_64.rpm
+
+$ sudo yum install ./nomachine_7.7.4_1_X86_64.rpm
+
+$ sudo yum remove nomachine
+
+$ sudo yum autoremove
+```
 
 
 
