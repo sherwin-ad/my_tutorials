@@ -141,7 +141,7 @@
 
 ### Design Hard Disk Layout – Logical Volume Manager (LVM)
 
-#### **To install LVM**
+#### **Install LVM**
 
 ```
 # apt install lvm2
@@ -491,7 +491,7 @@ Do you really want to reduce my_volume/partition1? [y/n]: y
   Logical volume my_volume/partition1 successfully resized.
 ```
 
-#### Create a filesystem on logical volumes
+##### Create a filesystem on logical volumes
 
  ```
  # mkfs.xfs /dev/my_volume/partition1
@@ -510,6 +510,8 @@ Do you really want to reduce my_volume/partition1? [y/n]: y
 Resize the logical volume and filesystem
 
 ```
+# lvresize -l +100%FREE -r /dev/vgubuntu/root
+# lvresize --extents +100%FREE --resizefs /dev/vgubuntu/root
 # lvresize --resizefs --size 512M my_volume/partition1
 OR
 # lvresize -r -L 512M my_volume/partition1
