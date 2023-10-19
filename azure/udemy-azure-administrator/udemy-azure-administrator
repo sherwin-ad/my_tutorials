@@ -243,7 +243,7 @@ Goto Resource groups > [resource group name] > Settings > Locks
 
 - **ReadOnly** means authorized users can read a resource, but they can't delete or update it. Applying this lock is similar to restricting all authorized users to the permissions that the Reader role provides.
 
-
+### Manage subscriptions and governance
 
 #### Azure Policy
 
@@ -251,3 +251,8 @@ Goto Policy > Authoring > Definitions
 
 - Azure Policy helps to enforce organizational standards and to assess compliance at-scale. 
 
+#### Move resources
+
+Goto Resource group > Overview > select the resources you want to move > Select move 
+
+![image-20231013170801050](images/image-20231013170801050.png)
