@@ -8,7 +8,7 @@ https://overthewire.org/wargames/
 
 The password for the next level is stored in a file called **readme** located in the home directory. Use this password to log into bandit1 using SSH. Whenever you find a password for a level, use SSH (on port 2220) to log into that level and continue the game.
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 [ls](https://man7.org/linux/man-pages/man1/ls.1.html) , [cd](https://man7.org/linux/man-pages/man1/cd.1p.html) , [cat](https://man7.org/linux/man-pages/man1/cat.1.html) , [file](https://man7.org/linux/man-pages/man1/file.1.html) , [du](https://man7.org/linux/man-pages/man1/du.1.html) , [find](https://man7.org/linux/man-pages/man1/find.1.html)
 
@@ -22,11 +22,11 @@ The password for the next level is stored in a file called **readme** located in
 
 The password for the next level is stored in a file called **-** located in the home directory
 
-## Commands you may need to solve this level
+Commands you may   need to solve this level
 
 [ls](https://man7.org/linux/man-pages/man1/ls.1.html) , [cd](https://man7.org/linux/man-pages/man1/cd.1p.html) , [cat](https://man7.org/linux/man-pages/man1/cat.1.html) , [file](https://man7.org/linux/man-pages/man1/file.1.html) , [du](https://man7.org/linux/man-pages/man1/du.1.html) , [find](https://man7.org/linux/man-pages/man1/find.1.html)
 
-## Helpful Reading Material
+**Helpful Reading Material**
 
 - [Google Search for “dashed filename”](https://www.google.com/search?q=dashed+filename)
 - [Advanced Bash-scripting Guide - Chapter 3 - Special Characters](http://tldp.org/LDP/abs/html/special-chars.html)
@@ -44,11 +44,11 @@ NH2SXQwcBdpmTEzi3bvBHMM9H66vVXjL
 
 The password for the next level is stored in a file called **spaces in this filename** located in the home directory
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 [ls](https://man7.org/linux/man-pages/man1/ls.1.html) , [cd](https://man7.org/linux/man-pages/man1/cd.1p.html) , [cat](https://man7.org/linux/man-pages/man1/cat.1.html) , [file](https://man7.org/linux/man-pages/man1/file.1.html) , [du](https://man7.org/linux/man-pages/man1/du.1.html) , [find](https://man7.org/linux/man-pages/man1/find.1.html)
 
-## Helpful Reading Material
+**Helpful Reading Material**
 
 - [Google Search for “spaces in filename”](https://www.google.com/search?q=spaces+in+filename)
 
@@ -64,11 +64,11 @@ rRGizSaX8Mk1RTb1CNQoXTcYZWU6lgzi
 
 ## Level 3 - Spaces in a filename.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored in a hidden file in the **inhere** directory.
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 [ls](https://man7.org/linux/man-pages/man1/ls.1.html) , [cd](https://man7.org/linux/man-pages/man1/cd.1p.html) , [cat](https://man7.org/linux/man-pages/man1/cat.1.html) , [file](https://man7.org/linux/man-pages/man1/file.1.html) , [du](https://man7.org/linux/man-pages/man1/du.1.html) , [find](https://man7.org/linux/man-pages/man1/find.1.html)
 
@@ -89,11 +89,11 @@ aBZ0W5EmUfAf7kHTQeOwd8bauFJ2lAiG
 
 ## Level 4 - Hidden Files.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored in the only human-readable file in the **inhere** directory. Tip: if your terminal is messed up, try the “reset” command.
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 [ls](https://man7.org/linux/man-pages/man1/ls.1.html) , [cd](https://man7.org/linux/man-pages/man1/cd.1p.html) , [cat](https://man7.org/linux/man-pages/man1/cat.1.html) , [file](https://man7.org/linux/man-pages/man1/file.1.html) , [du](https://man7.org/linux/man-pages/man1/du.1.html) , [find](https://man7.org/linux/man-pages/man1/find.1.html)
 
@@ -111,11 +111,11 @@ bandit3@bandit:~$ cat inhere/.hidden
 
 ## Level 5 - File types, specifically human-readable files.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored in the only human-readable file in the **inhere** directory. Tip: if your terminal is messed up, try the “reset” command.
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 [ls](https://man7.org/linux/man-pages/man1/ls.1.html) , [cd](https://man7.org/linux/man-pages/man1/cd.1p.html) , [cat](https://man7.org/linux/man-pages/man1/cat.1.html) , [file](https://man7.org/linux/man-pages/man1/file.1.html) , [du](https://man7.org/linux/man-pages/man1/du.1.html) , [find](https://man7.org/linux/man-pages/man1/find.1.html)
 
@@ -159,7 +159,7 @@ lrIWWI6bB37kxfiCQZqUdOIYfr6eEeqR
 
 ## Level 6 - Human-readable files, file sizes and non-executable files.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored in a file somewhere under the **inhere** directory and has all of the following properties:
 
@@ -167,7 +167,7 @@ The password for the next level is stored in a file somewhere under the **inhere
 - 1033 bytes in size
 - not executable
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 [ls](https://man7.org/linux/man-pages/man1/ls.1.html) , [cd](https://man7.org/linux/man-pages/man1/cd.1p.html) , [cat](https://man7.org/linux/man-pages/man1/cat.1.html) , [file](https://man7.org/linux/man-pages/man1/file.1.html) , [du](https://man7.org/linux/man-pages/man1/du.1.html) , [find](https://man7.org/linux/man-pages/man1/find.1.html)
 
@@ -213,7 +213,7 @@ P4L4vucdmLnm8I7Vl7jG1ApGSfjYKqJU
 
 ## Level 7 - Find a file with specific user and group ownership.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored **somewhere on the server** and has all of the following properties:
 
@@ -221,7 +221,7 @@ The password for the next level is stored **somewhere on the server** and has al
 - owned by group bandit6
 - 33 bytes in size
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 [ls](https://man7.org/linux/man-pages/man1/ls.1.html) , [cd](https://man7.org/linux/man-pages/man1/cd.1p.html) , [cat](https://man7.org/linux/man-pages/man1/cat.1.html) , [file](https://man7.org/linux/man-pages/man1/file.1.html) , [du](https://man7.org/linux/man-pages/man1/du.1.html) , [find](https://man7.org/linux/man-pages/man1/find.1.html) , [grep](https://man7.org/linux/man-pages/man1/grep.1.html)
 
@@ -236,11 +236,11 @@ z7WtoNQU2XfjmMtWA8u5rN4vzqu4v99S
 
 ## Level 8 - Learning grep and piping.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored in the file **data.txt** next to the word **millionth**
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 [man](https://man7.org/linux/man-pages/man1/man.1.html), grep, sort, uniq, strings, base64, tr, tar, gzip, bzip2, xxd
 
@@ -256,15 +256,15 @@ millionth	TESKZC0XvTetK0S9xNwm25STk5iWrBvP
 
 ## Level 9 - Linux command uniq and sort, to find lines only appearing once.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored in the file **data.txt** and is the only line of text that occurs only once
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 grep, sort, uniq, strings, base64, tr, tar, gzip, bzip2, xxd
 
-## Helpful Reading Material
+**Helpful Reading Material**
 
 - [Piping and Redirection](https://ryanstutorials.net/linuxtutorial/piping.php)
 
@@ -280,11 +280,11 @@ EN632PlfYiZbn3PhVK3XOGSlNInNE00t
 
 ## Level 10 - The ‘strings’ command. Find human-readable strings in a file.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored in the file **data.txt** in one of the few human-readable strings, preceded by several ‘=’ characters.
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 grep, sort, uniq, strings, base64, tr, tar, gzip, bzip2, xxd
 
@@ -304,15 +304,15 @@ x]T========== theG)"
 
 ## Level 11 - Base64.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored in the file **data.txt**, which contains base64 encoded data
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 grep, sort, uniq, strings, base64, tr, tar, gzip, bzip2, xxd
 
-## Helpful Reading Material
+**Helpful Reading Material**
 
 - [Base64 on Wikipedia](https://en.wikipedia.org/wiki/Base64)
 
@@ -327,15 +327,15 @@ The password is 6zPeziLdR2RKNdNYFNb6nVCKzphlXHBM
 
 ## Level 12 - Rot13 substitution cipher as Linux command with ’tr’.
 
-## Level Goal
+**Level Goal**
 
 The password for the next level is stored in the file **data.txt**, where all lowercase (a-z) and uppercase (A-Z) letters have been rotated by 13 positions
 
-## Commands you may need to solve this level
+**Commands you may need to solve this level**
 
 grep, sort, uniq, strings, base64, tr, tar, gzip, bzip2, xxd
 
-## Helpful Reading Material
+**Helpful Reading Material**
 
 - [Rot13 on Wikipedia](https://en.wikipedia.org/wiki/Rot13)
 
@@ -346,7 +346,7 @@ bandit11@bandit:~$ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 The password is JVNBBFSmZwKKOP0XbFXOoW8chDz5yVRv
 ```
 
-#### Addition
+**Addition**
 
 If we want to use ROT13 more often in the future, it might make sense to create a ‘alias’ so that we can use the name `rot13` (and `rot5` for numbers) as command and not `tr`:
 
@@ -359,11 +359,142 @@ alias rot5="tr '0-9' '5-90-4'"
 
 ## Level 13 - Hexdumps and compression and file signatures.
 
+**Level Goal**
+
+The password for the next level is stored in **/etc/bandit_pass/bandit14 and can only be read by user bandit14**. For this level, you don’t get the next password, but you get a private SSH key that can be used to log into the next level. **Note:** **localhost** is a hostname that refers to the machine you are working on
+
+**Commands you may need to solve this level**
+
+ssh, telnet, nc, openssl, s_client, nmap
+
+**Helpful Reading Material**
+
+- [SSH/OpenSSH/Keys](https://help.ubuntu.com/community/SSH/OpenSSH/Keys)
+
+```
+bandit12@bandit:~$ cat data.txt 
+
+bandit12@bandit:~$ mkdir -p /tmp/owen
+
+bandit12@bandit:~$ cp data.txt /tmp/owen
+
+bandit12@bandit:~$ cd /tmp/owen
+
+bandit12@bandit:/tmp/owen$ ls
+data.txt
+
+bandit12@bandit:/tmp/owen$ file data.txt 
+data.txt: ASCII text
+
+bandit12@bandit:/tmp/owen$ xxd -r data.txt data1
+
+bandit12@bandit:/tmp/owen$ file data1
+data1: gzip compressed data, was "data2.bin", last modified: Thu Oct  5 06:19:20 2023, max compression, from Unix, original size modulo 2^32 573
+
+bandit12@bandit:/tmp/owen$ mv data1 data2.gz
+
+bandit12@bandit:/tmp/owen$ gzip -d data2.gz 
+```
+
+
+
+```
+bandit12@bandit:/tmp/owen$ file data2
+data2: bzip2 compressed data, block size = 900k
+
+bandit12@bandit:/tmp/owen$ mv data2 data3.bz2
+
+bandit12@bandit:/tmp/owen$ bzip2 -d data3.bz2 
+
+bandit12@bandit:/tmp/owen$ file data3
+data3: gzip compressed data, was "data4.bin", last modified: Thu Oct  5 06:19:20 2023, max compression, from Unix, original size modulo 2^32 20480
+
+bandit12@bandit:/tmp/owen$ mv data3 data4.gz
+
+bandit12@bandit:/tmp/owen$ gzip -d data4.gz 
+
+bandit12@bandit:/tmp/owen$ file data4 
+data4: POSIX tar archive (GNU)
+
+bandit12@bandit:/tmp/owen$ tar -xvf data4
+data5.bin
+
+bandit12@bandit:/tmp/owen$ file data5.bin 
+data5.bin: POSIX tar archive (GNU)
+
+bandit12@bandit:/tmp/owen$ tar -xvf data5.bin
+data6.bin
+
+bandit12@bandit:/tmp/owen$ file data6.bin 
+data6.bin: bzip2 compressed data, block size = 900k
+
+bandit12@bandit:/tmp/owen$ mv data6.bin data7.bz2
+
+bandit12@bandit:/tmp/owen$ bzip2 -d data7.bz2 
+
+bandit12@bandit:/tmp/owen$ file data7
+data7: POSIX tar archive (GNU)
+
+bandit12@bandit:/tmp/owen$ tar -xvf data7
+data8.bin
+
+bandit12@bandit:/tmp/owen$ file data8.bin 
+data8.bin: gzip compressed data, was "data9.bin", last modified: Thu Oct  5 06:19:20 2023, max compression, from Unix, original size modulo 2^32 49
+
+bandit12@bandit:/tmp/owen$ mv data8.bin data9.gz
+
+bandit12@bandit:/tmp/owen$ gzip -d data9.gz 
+
+bandit12@bandit:/tmp/owen$ file data9
+data9: ASCII text
+
+bandit12@bandit:/tmp/owen$ cat data9
+The password is wbWdlBxEir4CaE8LaPhauuOo6pwRmrDw
+```
+
 
 
 ## Level 14 - SSH Login with key and transferring files from a remote host.
 
+**Level Goal**
+
+The password for the next level is stored in **/etc/bandit_pass/bandit14 and can only be read by user bandit14**. For this level, you don’t get the next password, but you get a private SSH key that can be used to log into the next level. **Note:** **localhost** is a hostname that refers to the machine you are working on
+
+**Commands you may need to solve this level**
+
+ssh, telnet, nc, openssl, s_client, nmap
+
+**Helpful Reading Material**
+
+- [SSH/OpenSSH/Keys](https://help.ubuntu.com/community/SSH/OpenSSH/Keys)
+
+```
+bandit13@bandit:~$ ls
+sshkey.private
+
+bandit13@bandit:~$ ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
+```
+
+
+
 ## Level 15 - Netcat and first network communication.
+
+**Level Goal**
+
+The password for the next level can be retrieved by submitting the password of the current level to **port 30000 on localhost**.
+
+**Commands you may need to solve this level**
+
+ssh, telnet, nc, openssl, s_client, nmap
+
+**Helpful Reading Material**
+
+- [How the Internet works in 5 minutes (YouTube)](https://www.youtube.com/watch?v=7_LPdttKXPc) (Not completely accurate, but good enough for beginners)
+- [IP Addresses](http://computer.howstuffworks.com/web-server5.htm)
+- [IP Address on Wikipedia](https://en.wikipedia.org/wiki/IP_address)
+- [Localhost on Wikipedia](https://en.wikipedia.org/wiki/Localhost)
+- [Ports](http://computer.howstuffworks.com/web-server8.htm)
+- [Port (computer networking) on Wikipedia](https://en.wikipedia.org/wiki/Port_(computer_networking))
 
 ## Level 16 - OpenSSL, secure communication.
 
