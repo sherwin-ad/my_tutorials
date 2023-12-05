@@ -369,5 +369,97 @@ Hierarchy of management groups and subscriptions
 - Subscription
 - Resource group
 
-#### Configure access to storage
+### Configure access to storage
 
+- An Azure storage account contains **blobs, files, queues, tables,** and **disks.**
+- **Types of Storage Accounts: **
+  - **General-purpose (v2 and v1)**
+  - **BlockBlobStorage**
+  - **FileStorage**
+  - **BlobStorage**
+- All storage accounts are encrypted using Storage Service Encryption (SSE) for data at rest
+- Storage accounts endpoints:
+  - **Blob storage:** https://*tutorialsdojo*.blob.core.windows.net
+  - **Table storage:** https://*tutorialsdojo*.table.core.windows.net
+  - **Queue storage**: https://*tutorialsdojo*.queue.core.windows.net
+  - **Azure Files**: https://*tutorialsdojo*.file.core.windows.net
+  - **Azure Data Lake Storage Gen2:** https://.dfs.core.windows.net
+
+- Access tiers are: 
+  - **Hot**
+    - Highest storage costs, but lowest access costs
+    - Store data that is accessed frequently
+    - By default, new storage accounts are created in the hot tier
+  - **Cool**
+    - Lower storage costs, but higher access costs
+    - **Store data that is infrequently accessed (at least 30 days)**
+    - You can use a cool access tier for short-term backup.
+
+- - **Archive**
+    - Lowest storage costs, but the highest retrieval costs
+    - Store data that is rarely accessed (at least 180 days)
+    - Data needs to be stored for a long time.
+- Storage redundancy includes:
+  - **Locally redundant storage (LRS)** 
+    - A low-cost redundancy strategy
+    - Your data is copied synchronously three times within the primary region
+  - **Zone-redundant storage (ZRS)**
+    - Redundancy for high availability
+    - The data is copied synchronously across three Azure availability zones in the primary region
+  - **Geo-redundant storage (GRS)**
+    - Cross-regional redundancy
+    - In the primary region, data is synchronously copied three times, and then asynchronously copied to the secondary region.
+    - Enable read-only geo-redundant storage (RA-GRS) to access data in the secondary region.
+  - **Geo-zone-redundant storage (GZRS)**
+    - Redundancy for both high availability and maximum durability
+    - Data is copied synchronously across three Azure availability zones in the primary region, then copied asynchronously to the secondary region.
+    - You can also enable RA-GZRS for read access data in the secondary region
+- Moving of data into different storage account can be done automatically or manually
+- You can migrate data manually using:
+  - AzCopy uses a command-line utility
+  - Data Movement Library is designed for high-performance, reliable, and easy data transfer operations similar to AzCopy
+  - REST API or client library lets you create a custom application to migrate your data
+
+**Types of Storage Accounts**
+
+- **General-purpose v2 accounts**
+  - Supports Data Lake Gen2, Blobs, Files Disks Queues Tables
+  - Delivers the lowest per-gigabyte capacity prices for Azure Storage
+
+- **General-purpose v1 accounts**
+
+- - Supports Blobs, Files, Disks, Queues, Tables
+  - You can upgrade a general-purpose v1 account to a general-purpose v2 account with no downtime and without copying the data.
+  - You can use general-purpose v1 accounts since the General-purpose v2 accounts and Blob storage accounts only support the [Azure Resource Manager](https://tutorialsdojo.com/azure-resource-manager-arm/) deployment model.
+  - If you don’t need a large capacity for transaction-intensive or significant geo-replication bandwidth, GPv1 is a suitable choice
+
+- **BlockBlobStorage accounts**
+  - Provides low, consistent latency, and higher transaction rates.
+  - Upgrading a Blob storage account to a general-purpose v2 account has no downtime and you don’t need to copy the data
+  - It doesn’t support hot, cool, and archive access tiers
+  - You can use BlockBlobStorage for storing unstructured object data as block blobs or append blobs. 
+
+- **FileStorage accounts**
+  - Only supports file shares
+  - Offers IOPS bursting
+
+- **BlobStorage accounts**
+  - Only supports block and append blobs.
+  - BlobStorage account offers standard performance. While the BlockBlobStorage account supports premium performance.
+
+| **Storage Account Type** | **Supported Services**                             | **Supported Performance Tiers** | **Supported Access Tiers** | **Replication Options**                                  | **Deployment Model**      | **Encryption** |
+| ------------------------ | -------------------------------------------------- | ------------------------------- | -------------------------- | -------------------------------------------------------- | ------------------------- | -------------- |
+| General-purpose V2       | Blob, File, Queue, Table, Disk, and Data Lake Gen2 | Standard, Premium               | Hot, Cool, Archive         | LRS, GRS, RA-GRS, ZRS, GZRS (preview), RA-GZRS (preview) | Resource Manager          | Encrypted      |
+| General-purpose V1       | Blob, File, Queue, Table, and Disk                 | Standard, Premium               | N/A                        | LRS, GRS, RA-GRS                                         | Resource Manager, Classic | Encrypted      |
+| BlockBlobStorage         | Blob (block blobs and append blobs only)           | Premium                         | N/A                        | LRS, ZRS                                                 | Resource Manager          | Encrypted      |
+| FileStorage              | File only                                          | Premium                         | N/A                        | LRS, ZRS                                                 | Resource Manager          | Encrypted      |
+| BlobStorage              | Blob (block blobs and append blobs only)           | Standard                        | Hot, Cool, Archive         | LRS, GRS, RA-GRS                                         | Resource Manager          | Encrypted      |
+
+The following table describes key parameters for each redundancy option:
+
+| Parameter                                             | LRS                                                   | ZRS                                                          | GRS/RA-GRS                                                   | GZRS/RA-GZRS                                                 |
+| :---------------------------------------------------- | :---------------------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| Percent durability of objects over a given year       | at least 99.999999999% (11 9's)                       | at least 99.9999999999% (12 9's)                             | at least 99.99999999999999% (16 9's)                         | at least 99.99999999999999% (16 9's)                         |
+| Availability for read requests                        | At least 99.9% (99% for cool or archive access tiers) | At least 99.9% (99% for cool access tier)                    | At least 99.9% (99% for cool or archive access tiers) for GRS  At least 99.99% (99.9% for cool or archive access tiers) for RA-GRS | At least 99.9% (99% for cool access tier) for GZRS  At least 99.99% (99.9% for cool access tier) for RA-GZRS |
+| Availability for write requests                       | At least 99.9% (99% for cool or archive access tiers) | At least 99.9% (99% for cool access tier)                    | At least 99.9% (99% for cool or archive access tiers)        | At least 99.9% (99% for cool access tier)                    |
+| Number of copies of data maintained on separate nodes | Three copies within a single region                   | Three copies across separate availability zones within a single region | Six copies total, including three in the primary region and three in the secondary region | Six copies total, including three across separate availability zones in the primary region and three locally redundant copies in the secondary region |

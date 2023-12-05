@@ -6,7 +6,45 @@
 
 ## Kubernetes Architecture
 
+![](images/kubernetes-architecture.png)
+
 ![image-20220729125207812](images/image-20220729125207812.png)
+
+## What is Kubernetes?
+
+- An open-source container-orchesstration system
+- Automates application deployment, scaling,  and management.
+- Originally design by Google
+- Maintained by CNCF ([Cloud Native Computing Foundation](https://www.cncf.io/))
+
+
+
+## Why you need Kubenetes?
+
+- **Service discovery and load balancing** Kubernetes can expose a container using the DNS name or using their own IP address. If traffic to a container is high, Kubernetes is able to load balance and distribute the network traffic so that the deployment is stable.
+- **Storage orchestration** Kubernetes allows you to automatically mount a storage system of your choice, such as local storages, public cloud providers, and more.
+- **Automated rollouts and rollbacks** You can describe the desired state for your deployed containers using Kubernetes, and it can change the actual state to the desired state at a controlled rate. For example, you can automate Kubernetes to create new containers for your deployment, remove existing containers and adopt all their resources to the new container.
+- **Automatic bin packing** You provide Kubernetes with a cluster of nodes that it can use to run containerized tasks. You tell Kubernetes how much CPU and memory (RAM) each container needs. Kubernetes can fit containers onto your nodes to make the best use of your resources.
+- **Self-healing** Kubernetes restarts containers that fail, replaces containers, kills containers that don't respond to your user-defined health check, and doesn't advertise them to clients until they are ready to serve.
+- **Secret and configuration management** Kubernetes lets you store and manage sensitive information, such as passwords, OAuth tokens, and SSH keys. You can deploy and update secrets and application configuration without rebuilding your container images, and without exposing secrets in your stack configuration.
+- **Batch execution** In addition to services, Kubernetes can manage your batch and CI workloads, replacing containers that fail, if desired.
+- **Horizontal scaling** Scale your application up and down with a simple command, with a UI, or automatically based on CPU usage.
+- **IPv4/IPv6 dual-stack** Allocation of IPv4 and IPv6 addresses to Pods and Services
+- **Designed for extensibility** Add features to your Kubernetes cluster without changing upstream source code.
+
+## Kubernetes Adoption in Cloud
+
+- AWS - EKS (Elastic Kubernetes Service)
+- Azure - AKS (Azure Kubernetes Service)
+- GCP - GKE (Google Kubernetes Engine)
+- Oracle Cloud - OKE (*Oracle Cloud* Infrastructure Container Engine for Kubernetes)
+- Digital Ocean - DOKS (*DigitalOcean* Kubernetes)
+
+## Kubernetes Pods
+
+- smallest deployable units of computing that you can create and manage in Kubernetes.
+- is a group of one or more application containers
+- has a unique dynamic IP address
 
 ## Node or Minions
 
@@ -19,6 +57,8 @@
 
 ## Master Node
 
+- Master Node is a collection of components like Storage, Controller, Scheduler, API-server that makes up the control plane of the Kubernetes. When you interact with Kubernetes by using CLI you are communicating with the Kubernetes cluster master node. All the processes run on a single node in the cluster, and this node is also referred to as the master.
+
 - Manage, plan, schedule, monitor nodes
 
 - The master is another node with Kubernetes installed in it, and is configured as a Master. 
@@ -27,9 +67,65 @@
 
 ## Worker Nodes
 
+- The worker nodes in a cluster are the machines or physical servers that run your applications. The Kubernetes master controls each node. there are multiple nodes connected to the master node. On the node, there are multiple pods running and there are multiple containers running in pods.
+
 - Host Application as Containers
 
-  
+
+
+
+## Kubernetes Objects
+
+Before one wants to work on K8s, they should know about the basic components in Kubernetes and also about objects in API. Basic objects and several higher-level abstractions are known as controllers.These are the building block of the application lifecycle.
+
+**Basic objects include:**
+
+### Pod  
+
+- A single or group of containers that share storage and network with a K8s configuration, telling those containers how to behave.  
+- Pods share IP and port address space and can communicate with each other over localhost networking. 
+- Each pod is assigned an IP address on which it can be accessed by other pods within a cluster.
+
+### Service 
+
+- An abstraction that defines a logical set of pods as well as the policy for accessing them. Coupling of a set of pods to a policy by which to access them.  
+
+- Services are used to expose containerized applications to origins from outside the cluster.
+
+### Volume
+
+- An abstraction that lets us persist data. 
+- This is necessary because containers are ephemeral—meaning data is deleted when the container is deleted.
+
+### Namespace
+
+- Namespaces are a way to create multiple virtual K8s clusters within a single cluster. 
+- Namespaces are normally used for wide-scale deployments where there are many users, teams, and projects.
+
+**Controllers, (higher-level abstractions) include:**
+
+### ReplicaSet (RS)
+
+- A Kubernetes replica set ensures that the specified number of pods in a replica set is running at all times. 
+- If one pod dies or crashes, the replica set configuration will ensure a new one is created in its place. You would normally use a Deployment to manage this in place of a Replica Set.
+
+### Deployment
+
+- A way to define the desired state of pods or a replica set. 
+- Deployments are used to define HA policies to your containers by defining policies around how many of each container must be running at any one time.
+
+### StatefulSet
+
+- A workload API object that manages stateful applications, such as databases.
+
+### DaemonSet
+
+- A *DaemonSet* ensures that all (or some) Nodes run a copy of a Pod. As nodes are added to the cluster, Pods are added to them. As nodes are removed from the cluster, those Pods are garbage collected. Deleting a DaemonSet will clean up the Pods it created.
+
+### Job
+
+- Creates one or more pods, runs a certain task(s) to completion, then deletes the pod(s). The main function of a job is to create one or more pods and tracks the success of pods. They ensure that the specified number of pods are completed successfully.
+- When a specified number of successful runs of pods is completed, then the job is considered complete. Creating a Kubernetes Job, like other Kubernetes resources, is through a definition file
 
 ## Components
 
