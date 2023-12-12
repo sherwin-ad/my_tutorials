@@ -463,3 +463,13 @@ The following table describes key parameters for each redundancy option:
 | Availability for read requests                        | At least 99.9% (99% for cool or archive access tiers) | At least 99.9% (99% for cool access tier)                    | At least 99.9% (99% for cool or archive access tiers) for GRS  At least 99.99% (99.9% for cool or archive access tiers) for RA-GRS | At least 99.9% (99% for cool access tier) for GZRS  At least 99.99% (99.9% for cool access tier) for RA-GZRS |
 | Availability for write requests                       | At least 99.9% (99% for cool or archive access tiers) | At least 99.9% (99% for cool access tier)                    | At least 99.9% (99% for cool or archive access tiers)        | At least 99.9% (99% for cool access tier)                    |
 | Number of copies of data maintained on separate nodes | Three copies within a single region                   | Three copies across separate availability zones within a single region | Six copies total, including three in the primary region and three in the secondary region | Six copies total, including three across separate availability zones in the primary region and three locally redundant copies in the secondary region |
+
+### Manage data in Azure storage accounts
+
+#### Moving Large Files via Azure Data Disk
+
+**Azure Import/Export service** 
+
+- is used to securely import large amounts of data to Azure Blob storage and Azure Files by shipping disk drives to an Azure datacenter. 
+- This service can also be used to transfer data from Azure Blob storage to disk drives and ship to your on-premises sites. 
+- Data from one or more disk drives can be imported either to Azure Blob storage or Azure Files.
