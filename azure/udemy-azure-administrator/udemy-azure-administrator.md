@@ -473,3 +473,22 @@ The following table describes key parameters for each redundancy option:
 - is used to securely import large amounts of data to Azure Blob storage and Azure Files by shipping disk drives to an Azure datacenter. 
 - This service can also be used to transfer data from Azure Blob storage to disk drives and ship to your on-premises sites. 
 - Data from one or more disk drives can be imported either to Azure Blob storage or Azure Files.
+
+#### Copy files with AZCopy
+
+**Syntax**
+
+```
+azcopy copy 'https://<source-storage-account-name>.<blob or dfs>.core.windows.net/<container-name>/<blob-path>' 'https://<destination-storage-account-name>.<blob or dfs>.core.windows.net/<container-name>/<blob-path>'
+```
+
+**Syntax**
+
+```
+azcopy copy 'https://<source-storage-account-name>.<blob or dfs>.core.windows.net/<container-name>/<blob-path>' 'https://<destination-storage-account-name>.<blob or dfs>.core.windows.net/<container-name>/<blob-path>'
+```
+
+```
+azcopy copy 'cloud-sql-proxy' 'https://owenstorage001.blob.core.windows.net/owen-con?sp=racwdl&st=2023-12-12T23:02:06Z&se=2023-12-13T07:02:06Z&spr=https&sv=2022-11-02&sr=c&sig=038nDY4XBTFSJ85jw79UTZhiDys1Y%2BqABtZATjM0LUg%3D'
+```
+
