@@ -492,3 +492,42 @@ azcopy copy 'https://<source-storage-account-name>.<blob or dfs>.core.windows.ne
 azcopy copy 'cloud-sql-proxy' 'https://owenstorage001.blob.core.windows.net/owen-con?sp=racwdl&st=2023-12-12T23:02:06Z&se=2023-12-13T07:02:06Z&spr=https&sv=2022-11-02&sr=c&sig=038nDY4XBTFSJ85jw79UTZhiDys1Y%2BqABtZATjM0LUg%3D'
 ```
 
+## Azure Virtual Machine
+
+### Create a VM in powershell
+
+```
+New-AzVm `
+    -ResourceGroupName 'myResourceGroup' `
+    -Name 'myVM' `
+    -Location 'East US' `
+    -Image 'MicrosoftWindowsServer:WindowsServer:2022-datacenter-azure-edition:latest' `
+    -VirtualNetworkName 'myVnet' `
+    -SubnetName 'mySubnet' `
+    -SecurityGroupName 'myNetworkSecurityGroup' `
+    -PublicIpAddressName 'myPublicIpAddress' `
+    -OpenPorts 80,3389
+```
+
+### Install web server
+
+```
+Invoke-AzVMRunCommand -ResourceGroupName 'myResourceGroup' -VMName 'myVM' -CommandId 'RunPowerShellScript' -ScriptString 'Install-WindowsFeature -Name Web-Server -IncludeManagementTools'
+```
+
+### Start and Stop VM in Powershell
+
+```
+Start-AzVM -Name] <String> -ResourceGroupName <String>
+
+Stop-AzVM -Name] <String> -ResourceGroupName <String>
+```
+
+### Restart and Delete VM in Powershell
+
+```
+Restart-AzVM -Name] <String> -ResourceGroupName <String>
+
+Remove-AzVM -Name] <String> -ResourceGroupName <String>
+```
+
