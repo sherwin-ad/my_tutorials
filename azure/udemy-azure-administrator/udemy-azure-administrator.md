@@ -531,3 +531,294 @@ Restart-AzVM -Name] <String> -ResourceGroupName <String>
 Remove-AzVM -Name] <String> -ResourceGroupName <String>
 ```
 
+
+
+## Automate deployment of resources by using templates
+
+### What is Azure Resource Manager?
+
+- is the deployment and management service for Azure. 
+- It allows users to manage and organize resources consistently. 
+- The ARM acts as a conduit for deploying and managing Azure resources. 
+- It provides a management layer that enables creating, updating, and deleting resources in your Azure account.
+
+![Azure 101: Azure Resource Manager and ARM Templates](images/consistent-management-layer.png)
+
+### What are ARM Templates?
+
+- are a form of infrastructure as code, a concept where you define the infrastructure you need to be deployed. 
+- You no longer need to click around the portal creating virtual machines or writing scripts to deploy a storage account. Instead, the template defines the resources, and the Azure ARM management layer is responsible for creating the infrastructure.
+
+### ARM Template Basics
+
+- Parameters
+- Functions
+- Variables
+- Resources
+- Outputs
+
+#### Parameters
+
+- allow you to pass different values to the ARM template for use during the deployment. 
+- Some common examples include names of resources or which Azure region to host them. 
+- Parameters enable your templates to be more dynamic and used across different environments.
+
+```
+"parameters": {
+
+    "VMName": {
+
+        "type": "string",
+
+        "metadata": {
+
+            "description": "The name of the virtual machine."
+
+        }
+
+    },
+
+
+
+
+    "VMAdmin": {
+
+        "type": "string",
+
+        "metadata": {
+
+            "description": "Name of the local virtual machine administrator account."
+
+        },
+
+        "defaultValue": "local_admin"
+
+    },
+
+
+
+
+    "VMAdminPassword": {
+
+        "type": "securestring",
+
+        "metadata": {
+
+            "description": "Password for the local virtual machine administrator account."
+
+        }
+
+    },
+
+
+
+
+    "VMSize": {
+
+        "type": "string",
+
+        "metadata": {
+
+            "description": "Virtual Machine SKU Size"
+
+        },
+
+        "allowedValues": [
+
+            "Standard_D2_v4",
+
+            "Standard_D4_v4",
+
+            "Standard_D8_v4",
+
+            "Standard_D16_v4"
+
+        ]
+
+    }
+
+}
+```
+
+Here is an example file named *virtualMachine.parameters.json* with values for the parameters defined earlier in this section. Note that the *VMAdmin* parameter is technically optional since it has a default value. If you did not include it in this file, the template uses the defined default value.
+
+```
+{
+
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+
+    "contentVersion": "1.0.0.0",
+
+    "parameters": {
+
+        "VMName": {
+
+            "value": "webapp01"
+
+        },
+
+        "VMAdmin": {
+
+            "value": "svr_admin"
+
+        },
+
+        "VMAdminPassword": {
+
+            "value": "N0t@Rea!P@ss0wrd"
+
+        },
+
+        "VMSize": {
+
+            "value": "Standard_D4_v4"
+
+        }
+
+    }
+
+}
+```
+
+#### Functions
+
+- allow you to create complicated expressions that you don’t want to repeat throughout the template. 
+- ARM template functions are a lot of functions in other programming languages. 
+- You call them when you need to run them, and you can pass information to them and expect a return value.
+
+For example, say you need to create unique names for resources. Instead of copying and pasting the same code to generate the unique name, you create a function that makes the unique name. For example, here is a function called *uniqueName* with a parameter named *prefix* that returns a unique name using the resource group ID.
+
+Note the *namespace* value. This value can be anything you want. Functions require a different namespace value to avoid naming conflicts with regular template functions.
+
+```
+"functions": [
+
+  {
+
+    "namespace": "varonis",
+
+    "members": {
+
+      "uniqueName": {
+
+        "parameters": [
+
+          {
+
+            "name": "prefix",
+
+            "type": "string"
+
+          }
+
+        ],
+
+        "output": {
+
+          "type": "string",
+
+          "value": "[concat(toLower(parameters('prefix')), uniqueString(resourceGroup().id))]"
+
+        }
+
+      }
+
+    }
+
+  }
+
+]
+```
+
+Here is an example of calling the *uniqueName* function passing *prodwebapp* as the value for the *prefix* parameter. Instead of passing the string, you can also give a template parameter or variable value.
+
+```
+"name": "[varonis.uniqueName('prodwebapp')]"
+```
+
+#### Variables
+
+- Variables are not much different in ARM templates than you find in other programming languages. 
+- Variables contain values that are used repeatedly throughout the template. 
+- Like functions, you can use variables to create complicated expressions, so you don’t have to repeat them in the template.
+
+Like parameters, variables have the same data types, such as strings, objects, and integers. You define variables using the colon as the assignment operator. For example, instead of passing the Azure region as a parameter, you can define it as a variable, like this:
+
+```
+"variables": {
+
+    "location": "westus2"
+
+}
+```
+
+To reference a variable later, using the *variable()* function with the variable name, like this:
+
+```
+"location": "[variables('location')]"
+```
+
+#### Resources
+
+- defines what Azure resources to deploy with the template.
+- Resources can be anything as small as a network security group all the way to virtual machines, storage accounts, or Azure Functions.
+
+Most resources have a set of common properties. Here is a template of a resource definition with explanations of each part.
+
+```
+"name": “<resource name>”,
+
+"type": "Microsoft.<resource provider>/<resource type>",
+
+"apiVersion": "<api version>",
+
+"tags": {
+
+    "key": "value"
+
+},
+
+"location": "<location>",
+
+"dependsOn": [ ],
+
+"properties": { }
+```
+
+- **Name**: Name for the resource. This value can be set from a parameter, variable, or set manually.
+
+- **Type**: The type of resource to deploy. The *<resource provider>* refers to the high-level family of resources to deploy. Examples include Microsoft.Compute, Microsoft.Storage, and Microsoft.Network. The *<resource type>* maps out more precisely the resource to deploy. For example, Microsoft.Compute contains resources related to compute infrastructure such as virtual machines, disks, and availability sets. The resource provider and resource type are separated by a forward slash ( / ).
+
+- **ApiVersion**: The API version determines what properties are available to configure on the resource. As Azure grows, Microsoft often adds new features or settings to resources. The API version combined with the resource type determines what you can configure. The API version is formatted as YYYY-MM-DD.
+
+- **Tags**: You can tag your resources just like when you create them in the Azure portal. Tags allow organizing resources and are made up of a key-value pair. For example, you can have a tag showing the resource’s environment, such as development or production.
+
+- **Location**: Location is the Azure region to deploy the resource. You typically deploy resources to the same resource group when you create a deployment (you’ll see a demo of this later). To automatically set the location to the same location as the resource group, use the *resourceGroup()* function and the *location* property, like this:
+
+```
+“location”: "[resourceGroup().location]"
+```
+
+- **DependsOn**: Unlike other infrastructure as code languages like Terraform, ARM templates require that you manually create resource dependencies. Dependencies determine the order Azure should deploy the resources. For example, if an ARM template is deploying a virtual network and a virtual machine, the virtual network must exist first before creating the virtual machine.
+
+- **Properties**: The properties section contains configuration information for the deployed resource. For example, virtual networks have properties like their address space and subnets. Storage accounts have their access tier and minimum allowed TLS version.
+
+#### Outputs
+
+The outputs section defines values and information returned from the deployment. Outputs are helpful for data that Azure dynamically generates during the deployment, like a public IP address.
+
+Here is an example of an output section displaying the connection endpoints for a newly created storage account. The ARM template generates a storage account name in the *stgAccountName* variable.
+
+```
+"outputs": {
+
+    "endpoints": {
+
+        "type": "object",
+
+        "value": "[reference(variables('stgAcctName')).primaryEndpoints]"
+
+    }
+
+}
+```
