@@ -822,3 +822,202 @@ Here is an example of an output section displaying the connection endpoints for 
 
 }
 ```
+
+### Deploy an ARM Template using Powershell
+
+```
+New-AzResourceGroupDeployment \
+  -Name ExampleDeployment \
+  -ResourceGroupName ExampleResourceGroup \
+  -TemplateFile <path-to-template> \
+  -TemplateParameterFile <path-to-parameter>
+```
+
+### Bicep
+
+**Documentation**
+
+https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
+
+- Bicep is a language for declaratively deploying Azure resources. You can use Bicep instead of JSON for developing your Azure Resource Manager templates (ARM templates).
+
+### Hands-On Practice
+
+https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/master/Instructions/Labs/LAB_03b-Manage_Azure_Resources_by_Using_ARM_Templates.md
+
+
+
+## Azure Disk Encryption (ADE)
+
+**Double Encryption**
+
+Go to Virtual Machine > Settings > Disk and click Additional settings tab
+![image-20240110094136964](images/image-20240110094136964.png)
+
+
+
+**Check double encryption**
+
+![image-20240110143007608](images/image-20240110143007608.png)
+
+## Create and configure an Azure App Services
+
+Go to Web App
+
+### Hands-On Practice
+
+https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/master/Instructions/Labs/LAB_09a-Implement_Web_Apps.md
+
+## Azure Kubernetes Service
+
+### Create AKS cluster
+
+Go to Kubernetes services and click Create a Kubernetes cluster
+
+### Communicate to AKS cluster
+
+Go to cloud shell bash 
+
+Get credentials
+
+ ```
+ sherwin [ ~ ]$ az aks get-credentials --resource-group test_rg --name test-aks 
+ ```
+
+```
+sherwin [ ~ ]$ kubectl get nodes
+NAME                                STATUS   ROLES   AGE   VERSION
+aks-agentpool-25762512-vmss000000   Ready    agent   13m   v1.27.7
+aks-agentpool-25762512-vmss000001   Ready    agent   13m   v1.27.7
+```
+
+### Deploy an image to an AKS cluster
+
+Go to Kubenetes Service and click Create a quick start application
+![image-20240111155902302](images/image-20240111155902302.png)
+
+Create a single image application
+
+![image-20240111160024762](images/image-20240111160024762.png)
+
+![image-20240111162636010](images/image-20240111162636010.png)
+
+![image-20240111162842156](images/image-20240111162842156.png)
+
+```
+sherwin [ ~ ]$ az aks get-credentials --resource-group test_rg --name test-aks 
+Merged "test-aks" as current context in /home/sherwin/.kube/config
+```
+
+**List namspace**
+
+```
+sherwin [ ~ ]$ kubectl get namespace
+NAME                    STATUS   AGE
+calico-system           Active   147m
+default                 Active   148m
+default-1704961745547   Active   93m
+gatekeeper-system       Active   138m
+kube-node-lease         Active   148m
+kube-public             Active   148m
+kube-system             Active   148m
+tigera-operator         Active   147m
+```
+
+**List deployments**
+
+```
+sherwin [ ~ ]$ kubectl get deployments -n default-1704961745547
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+azuredocs   1/1     1            1           94m
+```
+
+**List services**
+
+```
+sherwin [ ~ ]$ kubectl get services -n default-1704961745547
+NAME                TYPE           CLUSTER-IP    EXTERNAL-IP    PORT(S)                      AGE
+azuredocs-service   LoadBalancer   10.0.74.128   20.84.27.104   80:30559/TCP,443:31316/TCP   95m
+```
+
+**List nodes**
+
+```
+sherwin [ ~ ]$ kubectl get nodes -n default-1704961745547
+NAME                                STATUS   ROLES   AGE    VERSION
+aks-agentpool-25762512-vmss000000   Ready    agent   151m   v1.27.7
+aks-agentpool-25762512-vmss000001   Ready    agent   151m   v1.27.7
+
+```
+
+**List pods**
+
+```
+sherwin [ ~ ]$ kubectl get pods -n default-1704961745547
+NAME                         READY   STATUS    RESTARTS   AGE
+azuredocs-58fd9f67d4-xqwd4   1/1     Running   0          97m
+
+```
+
+```
+sherwin [ ~ ]$ kubectl get pods -n default-1704961745547 -o wide
+NAME                         READY   STATUS    RESTARTS   AGE   IP            NODE                                NOMINATED NODE   READINESS GATES
+azuredocs-58fd9f67d4-xqwd4   1/1     Running   0          97m   10.244.1.15   aks-agentpool-25762512-vmss000000   <none>           <none>
+```
+
+### Scaling Kubernetes
+
+**List deployments**
+
+```
+sherwin [ ~ ]$ kubectl get deployments -n default-1704961745547 
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+azuredocs   1/1     1            1           116
+```
+
+**Scale**
+
+```
+sherwin [ ~ ]$ kubectl scale --replicas=2 deployment/azuredocs -n default-1704961745547 
+deployment.apps/azuredocs scaled
+```
+
+**List pods**
+
+```
+sherwin [ ~ ]$ kubectl get pods -n default-1704961745547 -o wide
+NAME                         READY   STATUS    RESTARTS   AGE    IP            NODE                                NOMINATED NODE   READINESS GATES
+azuredocs-58fd9f67d4-dqx8z   1/1     Running   0          101s   10.244.0.6    aks-agentpool-25762512-vmss000002   <none>           <none>
+azuredocs-58fd9f67d4-xqwd4   1/1     Running   0          118m   10.244.1.15   aks-agentpool-25762512-vmss000000   <none>           <none>
+```
+
+### AKS Storage Options
+
+#### **Data Volumes can be added using Azure Storage**
+
+- Azure Disk
+  - can only be attached to a single node
+- Azure Files
+  - Mount SMB 1.1.1 file share of NFS 4.1 file share
+  - Multiple nodes and multiple pods can access once
+  - Premium SSD or Standard HDD storage
+- Azure NetApp Files
+- Azure Blobs
+  - Mount using NFS 3.0 protocol: Block Blobs
+
+#### Volumes Types
+
+- emptydir
+  - Commonly used as temporary space for a pod.
+- secret
+  - You can use secret volumes to inject sensitive data into pods, such as passwords.
+- configmap 
+  - You can use *configMap* to inject key-value pair properties into pods, such as application configuration information
+
+#### Steps creating persistent volume
+
+1. Definition of storage class
+2. Configuration of persistent volume claim using this storage class
+3. Create the persistent volume claim and provision the volume
+4. Attach the volume to the pod
+
