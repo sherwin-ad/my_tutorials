@@ -1,4 +1,4 @@
-### AZ-104 Microsoft Azure Administrator Exam Prep
+### ![image-20240115103856145](/home/sherwinowen/snap/typora/86/.config/Typora/typora-user-images/image-20240115103856145.png)AZ-104 Microsoft Azure Administrator Exam Prep
 
 ### **Powershell and CLI**
 
@@ -893,6 +893,68 @@ aks-agentpool-25762512-vmss000001   Ready    agent   13m   v1.27.7
 
 ### Deploy an image to an AKS cluster
 
+deployment.yaml
+
+```
+ - apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: default-1704961745547
+  spec:
+    finalizers:
+      - kubernetes
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: azuredocs
+    namespace: default-1704961745547
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: azuredocs
+    template:
+      metadata:
+        labels:
+          app: azuredocs
+      spec:
+        nodeSelector:
+          kubernetes.io/os: linux
+        containers:
+          - name: azuredocs
+            image: mcr.microsoft.com/azuredocs/aci-helloworld
+            ports:
+              - containerPort: 80
+              - containerPort: 443
+            resources:
+              requests:
+                cpu: '0'
+                memory: '0'
+              limits:
+                cpu: '256'
+                memory: 11400G
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: azuredocs-service
+    namespace: default-1704961745547
+  spec:
+    type: LoadBalancer
+    ports:
+      - targetPort: 80
+        name: port80
+        port: 80
+        protocol: TCP
+      - targetPort: 443
+        name: port443
+        port: 443
+        protocol: TCP
+    selector:
+      app: azuredocs
+```
+
+
+
 Go to Kubenetes Service and click Create a quick start application
 ![image-20240111155902302](images/image-20240111155902302.png)
 
@@ -1017,7 +1079,332 @@ azuredocs-58fd9f67d4-xqwd4   1/1     Running   0          118m   10.244.1.15   a
 #### Steps creating persistent volume
 
 1. Definition of storage class
+
+   storage-class.yaml
+
+   ```
+   apiVersion: storage.k8s.io/v1
+   kind: StorageClass
+   metadata:
+     name: managed-premium-retain
+   provisioner: disk.csi.azure.com
+   parameters:
+     skuName: Premium_ZRS
+   reclaimPolicy: Retain
+   volumeBindingMode: WaitForFirstConsumer
+   allowVolumeExpansion: true
+   ```
+
+   Apply
+
+   ```
+   kubectl apply -f storage-class.yaml
+   ```
+
 2. Configuration of persistent volume claim using this storage class
+
 3. Create the persistent volume claim and provision the volume
+
+   azure-pvc.yaml
+
+   ```
+   apiVersion: v1
+   kind: PersistentVolumeClaim
+   metadata:
+     name: azure-managed-disk
+   spec:
+     accessModes:
+     - ReadWriteOnce
+     storageClassName: managed-premium-retain
+     resources:
+       requests:
+         storage: 5Gi
+   ```
+
+   Apply
+
+   ```
+   kubectl apply -f azure-pvc.yaml
+   ```
+
 4. Attach the volume to the pod
+
+   nginx.yaml
+
+   ```
+   kind: Pod
+   apiVersion: v1
+   metadata:
+     name: nginx
+   spec:
+     containers:
+       - name: myfrontend
+         image: mcr.microsoft.com/oss/nginx/nginx:1.15.5-alpine
+         volumeMounts:
+         - mountPath: "/mnt/azure"
+           name: volume
+     volumes:
+       - name: volume
+         persistentVolumeClaim:
+           claimName: azure-managed-disk
+   ```
+
+   Apply
+
+   ```
+   kubectl apply -f nginx.yaml
+   ```
+
+
+
+#### Hands-On Practice
+
+There is a lab available on Github, which requires your own Azure account to use instead of one provided by Microsoft:
+
+[AZ-104-MicrosoftAzureAdministrator/Instructions/Labs/Lab_09c-Implement-Azure-Container-Apps.md.md at master · MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator (github.com)](https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/master/Instructions/Labs/Lab_09c-Implement-Azure-Container-Apps.md)
+
+https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/master/Instructions/Labs/LAB_09b-Implement_Azure_Container_Instances.md
+
+Install Docker Toolbox on Windows:
+
+https://docs.docker.com/toolbox/toolbox_install_windows/
+
+Install Docker Desktop on Windows:
+
+https://docs.docker.com/docker-for-windows/install/
+
+We've also created a real-life AKS lab for you where we teach you
+
+Resources for this lecture
+
+- AKS+scaling+lab.pdf
+- testkubernetesapp.yaml
+
+
+
+## ACI Azure Container Instance
+
+**Azure Container Instance Features**
+
+ACI provides direct control over containers, with no need to configure cloud virtual machines (VMs) or implement container orchestration platforms like Kubernetes. Key features include:
+
+- Support for both Linux and Windows containers
+- Ability to launch new containers through the Azure portal or command line interface (CLI)—underlying compute resources are automatically configured and scaled
+- Support for standard Docker images and the use of public container registries, such as Docker Hub, as well as Azure Container Registry
+- Ability to provide access to containers over Internet using a fully qualified domain name and IP address
+- Ability to specify the number of CPU cores and memory required for container instances
+- Support for [persistent storage](https://bluexp.netapp.com/blog/understanding-kubernetes-persistent-volume-provisioning) by mounting Azure file shares to the container
+- Defining groups that organize multiple containers that share the same host, storage, and networking resources. This is similar to the concept of a pod in Kubernetes.
+
+### ACI Container Groups
+
+**What is a container group?**
+
+A container group is a collection of containers that get scheduled on the same host machine. The containers in a container group share a lifecycle, resources, local network, and storage volumes. It's similar in concept to a *pod* in [Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/).
+
+The following diagram shows an example of a container group that includes multiple containers:
+
+![Container groups diagram](images/container-groups-example.png)
+
+This example container group:
+
+- Is scheduled on a single host machine.
+- Is assigned a DNS name label.
+- Exposes a single public IP address, with one exposed port.
+- Consists of two containers. One container listens on port 80, while the other listens on port 5000.
+- Includes two Azure file shares as volume mounts, and each container mounts one of the shares locally.
+
+```
+code azuredeploy.json
+```
+
+azuredeploy.json
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "containerGroupName": {
+      "type": "string",
+      "defaultValue": "myContainerGroup",
+      "metadata": {
+        "description": "Container Group name."
+      }
+    }
+  },
+  "variables": {
+    "container1name": "aci-tutorial-app",
+    "container1image": "mcr.microsoft.com/azuredocs/aci-helloworld:latest",
+    "container2name": "aci-tutorial-sidecar",
+    "container2image": "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
+  },
+  "resources": [
+    {
+      "name": "[parameters('containerGroupName')]",
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2019-12-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "containers": [
+          {
+            "name": "[variables('container1name')]",
+            "properties": {
+              "image": "[variables('container1image')]",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGb": 1.5
+                }
+              },
+              "ports": [
+                {
+                  "port": 80
+                },
+                {
+                  "port": 8080
+                }
+              ]
+            }
+          },
+          {
+            "name": "[variables('container2name')]",
+            "properties": {
+              "image": "[variables('container2image')]",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGb": 1.5
+                }
+              }
+            }
+          }
+        ],
+        "osType": "Linux",
+        "ipAddress": {
+          "type": "Public",
+          "ports": [
+            {
+              "protocol": "tcp",
+              "port": 80
+            },
+            {
+                "protocol": "tcp",
+                "port": 8080
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "containerIPv4Address": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', parameters('containerGroupName'))).ipAddress.ip]"
+    }
+  }
+}
+```
+
+**Deploy ACI container group** 
+
+```
+$ az deployment group create --resource-group test_rg --template-file azuredeploy.json 
+```
+
+**View deployment state**
+
+```
+$ az container show --resource-group test_rg --name myContainerGroup --output table
+Name              ResourceGroup    Status    Image                                                                                               IP:ports               Network    CPU/Memory       OsType    Location
+----------------  ---------------  --------  --------------------------------------------------------------------------------------------------  ---------------------  ---------  ---------------  --------  ----------
+myContainerGroup  test_rg          Running   mcr.microsoft.com/azuredocs/aci-tutorial-sidecar,mcr.microsoft.com/azuredocs/aci-helloworld:latest  20.124.57.195:80,8080  Public     1.0 core/1.5 gb  Linux     eastus
+```
+
+**View ACI Cotainer Group in Azure console**
+
+Go to All services > Resource groups > ACI Container group name
+
+![image-20240115103552160](images/image-20240115103552160.png)
+
+
+
+## Azure Container Apps (ACA)
+
+ **What is an Azure Container App?**
+
+Azure Container Apps (ACA) provide a serverless hosting service that sits on top of an AKS service, allowing you to deploy multiple containers without dealing with the underlying infrastructure. In fact, ACA do not even expose Kubernetes APIs to the users.
+
+## Azure Container Registry (ACR)
+
+- is a managed registry service based on the open-source Docker Registry 2.0. Create and maintain Azure container registries to store and manage your container images and related artifacts.
+
+| Tier         | Description                                                  |
+| :----------- | :----------------------------------------------------------- |
+| **Basic**    | A cost-optimized entry point for developers learning about Azure Container Registry. Basic registries have the same programmatic capabilities as Standard and Premium (such as Microsoft Entra [authentication integration](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication#individual-login-with-azure-ad), [image deletion](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-delete), and [webhooks](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-webhook)). However, the included storage and image throughput are most appropriate for lower usage scenarios. |
+| **Standard** | Standard registries offer the same capabilities as Basic, with increased included storage and image throughput. Standard registries should satisfy the needs of most production scenarios. |
+| **Premium**  | Premium registries provide the highest amount of included storage and concurrent operations, enabling high-volume scenarios. In addition to higher image throughput, Premium adds features such as [geo-replication](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-geo-replication) for managing a single registry across multiple regions, [content trust](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-content-trust) for image tag signing, [private link with private endpoints](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-private-link) to restrict access to the registry. |
+
+### Push your first image to your Azure container registry using the Docker CLI
+
+**Log in to a registry**
+
+```
+az login
+az acr login --name myregistry
+```
+
+**Pull a public Nginx image**
+
+```
+docker pull nginx
+```
+
+**Run the container locally**
+
+```
+docker run -it --rm -p 8080:80 nginx
+```
+
+![Nginx on local computer](images/nginx.png)
+
+**Create an alias of the image**
+
+```
+docker tag nginx myregistry.azurecr.io/samples/nginx
+```
+
+**Push the image to your registry**
+
+```
+docker push myregistry.azurecr.io/samples/nginx
+```
+
+**Pull the image from your registry**
+
+```
+docker pull myregistry.azurecr.io/samples/nginx
+```
+
+Start the Nginx **container**
+
+```
+docker run -it --rm -p 8080:80 myregistry.azurecr.io/samples/nginx
+```
+
+Browse to `http://localhost:8080` to view the running container.
+
+To stop and remove the container, press `Control`+`C`.
+
+**Remove the image (optional)**
+
+```
+docker rmi myregistry.azurecr.io/samples/nginx
+```
+
+Azure CLI
+
+```
+az acr repository delete --name myregistry --image samples/nginx:latest
+```
 

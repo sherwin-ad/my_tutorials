@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: testkubernetesapp
+  name: testkubernetesapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testkubernetesapp
+  template:
+    metadata:
+      labels:
+        app: testkubernetesapp
+    spec:
+      containers:
+      - image: testkubernetesapp20220506173144.azurecr.io/testkubernetesapp:latest
+        name: testkubernetesapp
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testkubernetesapp
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: testkubernetesapp
+

@@ -1199,6 +1199,14 @@ sr1                        11:1    1  1.2G  0 rom
      Logical volume vgdata/lvdata successfully resized.
    ```
 
+   ```
+   # lvextend -l +100%FREE /dev/psa-vg/psa-lv
+     Size of logical volume psa-vg/psa-lv changed from <100.00 GiB (25599 extents) to 1.07 TiB (281598 extents).
+     Logical volume psa-vg/psa-lv successfully resized.
+   ```
+
+   
+
 3. Check logical volume
 
    **Using vgdispaly commnd**
@@ -1240,12 +1248,23 @@ sr1                        11:1    1  1.2G  0 rom
    # resize2fs /dev/vgdata/lvdata 
    ```
 
+   ```
+   # resize2fs -p /dev/mapper/psa--vg-psa--lv
+   resize2fs 1.45.5 (07-Jan-2020)
+   Filesystem at /dev/mapper/psa--vg-psa--lv is mounted on /var/psa-data; on-line resizing required
+   old_desc_blocks = 13, new_desc_blocks = 138
+   The filesystem on /dev/mapper/psa--vg-psa--lv is now 288356352 (4k) blocks long.
+   
+   ```
+   
+   
+   
    **For xfs**
-
+   
    ```
    # xfs_growfs /dev/vgdata/lvdata 
    ```
-
+   
    
 
 ### Automount File Systems on Linux 
