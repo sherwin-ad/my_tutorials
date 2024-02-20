@@ -943,6 +943,18 @@ Syncing disks.
   Volume group "vgdata" successfully created
 ```
 
+### Extend Volume Group
+
+```
+# vgextend psa-vg /dev/vdd
+  Volume group "psa-vg" successfully extended
+
+# vgextend psa-vg /dev/vde
+  Volume group "psa-vg" successfully extended
+```
+
+
+
 
 
 ### Display various attributes of  volume group

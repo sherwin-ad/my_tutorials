@@ -1,4 +1,4 @@
-### ![image-20240115103856145](/home/sherwinowen/snap/typora/86/.config/Typora/typora-user-images/image-20240115103856145.png)AZ-104 Microsoft Azure Administrator Exam Prep
+## AZ-104 Microsoft Azure Administrator Exam Prep
 
 ### **Powershell and CLI**
 
@@ -1407,4 +1407,32 @@ Azure CLI
 ```
 az acr repository delete --name myregistry --image samples/nginx:latest
 ```
+
+
+
+## Manage Virtual Networking
+
+### Add a Firewall to the Network
+
+https://learn.microsoft.com/en-us/azure/firewall/tutorial-firewall-deploy-portal
+
+
+
+### Create Virtual WAN
+
+https://learn.microsoft.com/en-us/azure/virtual-wan/how-to-nva-hub
+
+
+
+### Hands-On Practice
+
+https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/master/Instructions/Labs/LAB_04-Implement_Virtual_Networking.md
+
+
+
+## Implement and manage virtual networking
+
+### VNET Peering
+
+
 
