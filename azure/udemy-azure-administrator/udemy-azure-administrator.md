@@ -1434,5 +1434,419 @@ https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/mas
 
 ### VNET Peering
 
+- VNet Peering connects two virtual networks for resource sharing in one region or across regions in Microsoft Azure
+- Virtual network peering enables you to seamlessly connect two or more [Virtual Networks](https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) in Azure. 
+- The virtual networks appear as one for connectivity purposes. 
+- The traffic between virtual machines in peered virtual networks uses the Microsoft backbone infrastructure. 
+- Like traffic between virtual machines in the same network, traffic is routed through Microsoft's *private* network only.
+
+### Configure Global Peering
+
+- **Global virtual network peering**: Connecting virtual networks across Azure regions.
+
+### Virtual network peering pricing
+
+Virtual network peering links virtual networks, enabling you to route traffic between them using private IP addresses. Ingress and egress traffic is charged at both ends of the peered networks.
+
+#### VNET Peering within the same region
+
+| Inbound data transfer  | $0.01 per GB |
+| ---------------------- | ------------ |
+| Outbound data transfer | $0.01 per GB |
+
+#### Global VNET Peering
+
+|                        | Zone 1        | Zone 2       | Zone 3       | US Gov1       |
+| ---------------------- | ------------- | ------------ | ------------ | ------------- |
+| Inbound data transfer  | $0.035 per GB | $0.09 per GB | $0.16 per GB | $0.044 per GB |
+| Outbound data transfer | $0.035 per GB | $0.09 per GB | $0.16 per GB | $0.044 per GB |
+
+- A sub-region is the lowest level geo-location that you may select to deploy your applications and associated data. For data transfers (except CDN), the following regions correspond to Zone 1, Zone 2, and Zone 3:
+
+**Zone 1**—Australia Central, Australia Central 2, Canada Central, Canada East, Central US, East US, East US 2, France Central, France South, Germany North, Germany West Central, North Central US, North Europe, Norway East, Norway West, South Central US, Switzerland North, Switzerland West, UK South, UK West, West Central US, West Europe, West US, West US 2
+
+**Zone 2**—Australia East, Australia Southeast, Central India, East Asia, Japan East, Japan West, Korea Central, Korea South, Southeast Asia, South India, West India
+
+**Zone 3**—Brazil South, South Africa North, South Africa West, UAE Central, UAE North
+
+**US Gov**—US Gov Arizona, US Gov Texas, US Gov Virginia
 
 
+
+### Virtual Network Gateway
+
+- Azure VPN Gateway is a service that uses a specific type of virtual network gateway to send encrypted traffic between an Azure virtual network and on-premises locations over the public Internet. 
+- You can also use VPN Gateway to send encrypted traffic between Azure virtual networks over the Microsoft network.
+
+#### VPN Gateways Pricing
+
+Setting up a virtual network is free of charge. However, we do charge for the VPN gateway that connects to on-premises and other virtual networks in Azure. This charge is based on the amount of time that gateway is provisioned and available.
+
+| VPN Gateway Type | Price      | Bandwidth | S2S Tunnels                                           | P2S Tunnels                                                  |
+| ---------------- | ---------- | --------- | ----------------------------------------------------- | ------------------------------------------------------------ |
+| Basic            | $0.04/hour | 100 Mbps  | Max 10 1-10: Included                                 | Max 128 1-128: Included                                      |
+| VpnGw1           | $0.19/hour | 650 Mbps  | Max 30 1-10: Included 11-30: $0.015/hour per tunnel   | Max 250 1-128: Included 129-250: $0.01/hour per connection   |
+| VpnGw2           | $0.49/hour | 1 Gbps    | Max 30 1-10: Included 11-30: $0.015/hour per tunnel   | Max 500 1-128: Included 129-500: $0.01/hour per connection   |
+| VpnGw3           | $1.25/hour | 1.25 Gbps | Max 30 1-10: Included 11-30: $0.015/hour per tunnel   | Max 1,000 1-128: Included 129-1,000: $0.01/hour per connection |
+| VpnGw4           | $2.10/hour | 5 Gbps    | Max 100 1-10: Included 11-100: $0.015/hour per tunnel | Max 5,000 1-128: Included 129-5,000: $0.01/hour per connection |
+| VpnGw5           | $3.65/hour | 10 Gbps   | Max 100 1-10: Included 11-100: $0.015/hour per tunnel | Max 10,000 1-128: Included 129-10,000: $0.01/hour per connection |
+
+#### Data Transfers Pricing
+
+| Type                             | Example                                                      | Price                                                        |
+| -------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Inbound Inter-virtual            | Data going into Azure data centers between two virtual networks | Free                                                         |
+| Outbound Inter-virtual           | Data going out of Azure data centers between two virtual networks | From Zone 1*— **$0.035** per GBFrom Zone 2*— **$0.09** per GBFrom Zone 3*— **$0.16** per GB |
+| Outbound P2S (Point-to-Site) VPN | Data going out of Azure Virtual Network via P2S VPNs         | Data transferred out of Azure Virtual Networks via the P2S VPNs will be charged at standard [data transfer](https://azure.microsoft.com/en-us/pricing/details/bandwidth/) rates. |
+
+#### VPN Gateways — Availability Zones Pricing
+
+As with all of Azure, we are continuously innovating, upgrading, and refining our virtual network gateways to further increase reliability and availability. By adding support for [Azure Availability Zones](https://docs.microsoft.com/en-us/azure/availability-zones/az-overview), we bring increased resiliency, scalability, and higher availability to virtual network gateways. You can deploy VPN and ExpressRoute gateways in Azure Availability Zones by using the new Zone Redundant Gateway SKUs. This physically and logically separates them into different Availability Zones protecting your on-premises network connectivity to Azure from zone-level failures. The bandwidth thresholds remain the same for the zone redundant gateways.
+
+| VPN Gateway Type | Price       | Bandwidth | S2S Tunnels                                           | P2S Tunnels                |
+| ---------------- | ----------- | --------- | ----------------------------------------------------- | -------------------------- |
+| VpnGw1AZ         | $0.361/hour | 650 Mbps  | Max 30 1-10: Included 11-30: $0.015/hour per tunnel   | Max 250 1-128: Included    |
+| VpnGw2AZ         | $0.564/hour | 1 Gbps    | Max 30 1-10: Included 11-30: $0.015/hour per tunnel   | Max 500 1-128: Included    |
+| VpnGw3AZ         | $1.438/hour | 3 Gbps    | Max 30 1-10: Included 11-30: $0.015/hour per tunnel   | Max 1,000 1-128: Included  |
+| VpnGw4AZ         | $2.42/hour  | 6 Gbps    | Max 100 1-10: Included 11-100: $0.015/hour per tunnel | Max 5,000 1-128: Included  |
+| VpnGw5AZ         | $4.20/hour  | 10 Gbps   | Max 100 1-10: Included 11-100: $0.015/hour per tunnel | Max 10,000 1-128: Included |
+
+
+
+#### Hands-On Practice
+
+https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/master/Instructions/Labs/LAB_05-Implement_Intersite_Connectivity.md
+
+
+
+### Configure Name Resolution
+
+#### Azure DNS Services
+
+- Azure DNS is a hosting service for DNS domains that provides name resolution by using Microsoft Azure infrastructure. 
+- By hosting your domains in Azure, you can manage your DNS records by using the same credentials, APIs, tools, and billing as your other Azure services.
+
+#### Create Private DNS Zone
+
+![Summary diagram of the quickstart setup](images/private-dns-quickstart-summary.png)
+
+The following example creates a DNS zone called **private.contoso.com** in a resource group called **MyAzureResourceGroup**.
+
+A DNS zone contains the DNS entries for a domain. To start hosting your domain in Azure DNS, you create a DNS zone for that domain name.
+
+![Screenshot of private DNS zones search.](https://learn.microsoft.com/en-us/azure/dns/media/private-dns-portal/search-private-dns.png)
+
+1. On the portal search bar, type **private dns zones** in the search text box and press **Enter**.
+2. Select **Private DNS zone**.
+3. Select **Create private dns zone**.
+4. On the **Create Private DNS zone** page, type or select the following values:
+   - **Resource group**: Select **Create new**, enter *MyAzureResourceGroup*, and select **OK**. The resource group name must be unique within the Azure subscription.
+   - **Name**: Type *private.contoso.com* for this example.
+5. For **Resource group location**, select **West Central US**.
+6. Select **Review + Create**.
+7. Select **Create**.
+
+It may take a few minutes to create the zone.
+
+
+
+##### Virtual network and parameters
+
+In this section you'll need to replace the following parameters in the steps with the information below:
+
+Expand table
+
+| Parameter                  | Value                                                 |
+| :------------------------- | :---------------------------------------------------- |
+| **<resource-group-name>**  | MyAzureResourceGroup (Select existing resource group) |
+| **<virtual-network-name>** | MyAzureVNet                                           |
+| **<region-name>**          | West Central US                                       |
+| **<IPv4-address-space>**   | 10.2.0.0/16                                           |
+| **<subnet-name>**          | MyAzureSubnet                                         |
+| **<subnet-address-range>** | 10.2.0.0/24                                           |
+
+
+
+##### Create the virtual network and subnet
+
+In this section, you'll create a virtual network and subnet.
+
+1. On the upper-left side of the screen, select **Create a resource > Networking > Virtual network** or search for **Virtual network** in the search box.
+
+2. In **Create virtual network**, enter or select this information in the **Basics** tab:
+
+   Expand table
+
+   | **Setting**          | **Value**                                                    |
+   | :------------------- | :----------------------------------------------------------- |
+   | **Project Details**  |                                                              |
+   | Subscription         | Select your Azure subscription                               |
+   | Resource Group       | Select **Create new**, enter **<resource-group-name>**, then select OK, or select an existing **<resource-group-name>** based on parameters. |
+   | **Instance details** |                                                              |
+   | Name                 | Enter **<virtual-network-name>**                             |
+   | Region               | Select **<region-name>**                                     |
+
+3. Select the **IP Addresses** tab or select the **Next: IP Addresses** button at the bottom of the page.
+
+4. In the **IP Addresses** tab, enter this information:
+
+   Expand table
+
+   | Setting            | Value                          |
+   | :----------------- | :----------------------------- |
+   | IPv4 address space | Enter **<IPv4-address-space>** |
+
+5. Under **Subnet name**, select the word **default**.
+
+6. In **Edit subnet**, enter this information:
+
+   Expand table
+
+   | Setting              | Value                            |
+   | :------------------- | :------------------------------- |
+   | Subnet name          | Enter **<subnet-name>**          |
+   | Subnet address range | Enter **<subnet-address-range>** |
+
+7. Select **Save**.
+
+8. Select the **Review + create** tab or select the **Review + create** button.
+
+9. Select **Create**.
+
+
+
+##### Link the virtual network
+
+To link the private DNS zone to a virtual network, you create a virtual network link.
+
+![Screenshot of adding virtual network link.](images/dns-add-virtual-network-link.png)
+
+1. Open the **MyAzureResourceGroup** resource group and select the **private.contoso.com** private zone.
+
+2. On the left pane, select **Virtual network links**.
+
+3. Select **Add**.
+
+4. Type **myLink** for the **Link name**.
+
+5. For **Virtual network**, select **myAzureVNet**.
+
+6. Select the **Enable auto registration** check box.
+
+7. Select **OK**.
+
+   
+
+##### Create the test virtual machines
+
+Now, create two virtual machines so you can test your private DNS zone:
+
+1. On the portal page upper left, select **Create a resource**, and then select **Windows Server 2016 Datacenter**.
+2. Select **MyAzureResourceGroup** for the resource group.
+3. Type **myVM01** - for the name of the virtual machine.
+4. Select **West Central US** for the **Region**.
+5. Enter a name for the administrator user name.
+6. Enter a password and confirm the password.
+7. For **Public inbound ports**, select **Allow selected ports**, and then select **RDP (3389)** for **Select inbound ports**.
+8. Accept the other defaults for the page and then click **Next: Disks >**.
+9. Accept the defaults on the **Disks** page, then click **Next: Networking >**.
+10. Make sure that **myAzureVNet** is selected for the virtual network.
+11. Accept the other defaults for the page, and then click **Next: Management >**.
+12. For **Boot diagnostics**, select **Disable**, accept the other defaults, and then select **Review + create**.
+13. Review the settings and then click **Create**.
+
+Repeat these steps and create another virtual machine named **myVM02**.
+
+It will take a few minutes for both virtual machines to complete.
+
+
+
+##### Create an additional DNS record
+
+The following example creates a record with the relative name **db** in the DNS Zone **private.contoso.com**, in resource group **MyAzureResourceGroup**. The fully qualified name of the record set is **db.private.contoso.com**. The record type is "A", with the IP address of **myVM01**.
+
+1. Open the **MyAzureResourceGroup** resource group and select the **private.contoso.com** private zone.
+2. Select **+ Record set**.
+3. For **Name**, type **db**.
+4. For **IP Address**, type the IP address you see for **myVM01**. This should be auto registered when the virtual machine started.
+5. Select **OK**.
+
+![Screenshot of creating dns record.](images/azure_documentation.md)
+
+
+
+##### Test the private zone
+
+Now you can test the name resolution for your **private.contoso.com** private zone.
+
+
+
+##### Configure VMs to allow inbound ICMP
+
+You can use the ping command to test name resolution. So, configure the firewall on both virtual machines to allow inbound ICMP packets.
+
+1. Connect to myVM01, and open a Windows PowerShell window with administrator privileges.
+
+2. Run the following command:
+
+   PowerShell
+
+   ```powershell
+   New-NetFirewallRule –DisplayName "Allow ICMPv4-In" –Protocol ICMPv4
+   ```
+
+Repeat for myVM02.
+
+
+
+##### Ping the VMs by name
+
+1. From the myVM02 Windows PowerShell command prompt, ping myVM01 using the automatically registered host name:
+
+   
+
+   ```
+   ping myVM01.private.contoso.com
+   ```
+
+   You should see output that looks similar to this:
+
+   
+
+   ```
+   PS C:\> ping myvm01.private.contoso.com
+   
+   Pinging myvm01.private.contoso.com [10.2.0.4] with 32 bytes of data:
+   Reply from 10.2.0.4: bytes=32 time<1ms TTL=128
+   Reply from 10.2.0.4: bytes=32 time=1ms TTL=128
+   Reply from 10.2.0.4: bytes=32 time<1ms TTL=128
+   Reply from 10.2.0.4: bytes=32 time<1ms TTL=128
+   
+   Ping statistics for 10.2.0.4:
+       Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+   Approximate round trip times in milli-seconds:
+       Minimum = 0ms, Maximum = 1ms, Average = 0ms
+   PS C:\>
+   ```
+
+2. Now ping the
+
+    
+
+   db
+
+    
+
+   name you created previously:
+
+   
+
+   ```
+   ping db.private.contoso.com
+   ```
+
+   You should see output that looks similar to this:
+
+   
+
+   ```
+   PS C:\> ping db.private.contoso.com
+   
+   Pinging db.private.contoso.com [10.2.0.4] with 32 bytes of data:
+   Reply from 10.2.0.4: bytes=32 time<1ms TTL=128
+   Reply from 10.2.0.4: bytes=32 time<1ms TTL=128
+   Reply from 10.2.0.4: bytes=32 time<1ms TTL=128
+   Reply from 10.2.0.4: bytes=32 time<1ms TTL=128
+   
+   Ping statistics for 10.2.0.4:
+       Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+   Approximate round trip times in milli-seconds:
+       Minimum = 0ms, Maximum = 0ms, Average = 0ms
+   PS C:\>
+   ```
+
+
+
+#### Create Public DNS Zone
+
+1. Sign in to the [Azure portal](https://portal.azure.com/).
+2. On the top left-hand side of the screen, select **Create a resource** and search for **DNS zone**. Then select **Create**.
+
+![Screenshot of create a resource search for DNS zone.](images/search-dns-zone.png)
+
+
+
+### Network Security Group
+
+- You can use an Azure network security group to filter network traffic between Azure resources in an Azure virtual network. 
+- A network security group contains [security rules](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview#security-rules) that allow or deny inbound network traffic to, or outbound network traffic from, several types of Azure resources. 
+- For each rule, you can specify source and destination, port, and protocol.
+
+#### Application security groups
+
+- Application security groups enable you to configure network security as a natural extension of an application's structure, allowing you to group virtual machines and define network security policies based on those groups. 
+- You can reuse your security policy at scale without manual maintenance of explicit IP addresses. 
+- The platform handles the complexity of explicit IP addresses and multiple rule sets, allowing you to focus on your business logic. 
+
+#### Hands-on Practice
+
+- https://learn.microsoft.com/en-us/azure/virtual-network/tutorial-filter-network-traffic
+- https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/master/Instructions/Labs/LAB_04-Implement_Virtual_Networking.md
+
+- Peering+and+NSG+labs.pdf
+
+### Load Balancing
+
+- *Load balancing* refers to efficiently distributing incoming network traffic across a group of backend servers or resources.
+
+- Azure Load Balancer operates at layer 4 of the Open Systems Interconnection (OSI) model. It's the single point of contact for clients. Load balancer distributes inbound flows that arrive at the load balancer's front end to backend pool instances. These flows are according to configured load-balancing rules and health probes. The backend pool instances can be Azure Virtual Machines or instances in a Virtual Machine Scale Set.
+
+- A **[public load balancer](https://learn.microsoft.com/en-us/azure/load-balancer/components#frontend-ip-configurations)** can provide outbound connections for virtual machines (VMs) inside your virtual network. These connections are accomplished by translating their private IP addresses to public IP addresses. Public Load Balancers are used to load balance internet traffic to your VMs.
+
+- An **[internal (or private) load balancer](https://learn.microsoft.com/en-us/azure/load-balancer/components#frontend-ip-configurations)** is used where private IPs are needed at the frontend only. Internal load balancers are used to load balance traffic inside a virtual network. A load balancer frontend can be accessed from an on-premises network in a hybrid scenario.
+
+![Diagram depicts public and internal load balancers directing traffic to web and business tiers.](images/load-balancer.png)
+
+*Figure: Balancing multi-tier applications by using both public and internal Load Balancer*
+
+#### Azure load-balancing services
+
+- [Azure Front Door](https://learn.microsoft.com/en-us/azure/frontdoor/front-door-overview) is an application delivery network that provides global load balancing and site acceleration service for web applications. It offers Layer 7 capabilities for your application like SSL offload, path-based routing, fast failover, and caching to improve performance and high availability of your applications.
+
+   Note
+
+  At this time, Azure Front Door doesn't support Web Sockets.
+
+- [Traffic Manager](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview) is a DNS-based traffic load balancer that enables you to distribute traffic optimally to services across global Azure regions, while providing high availability and responsiveness. Because Traffic Manager is a DNS-based load-balancing service, it load balances only at the domain level. For that reason, it can't fail over as quickly as Azure Front Door, because of common challenges around DNS caching and systems not honoring DNS TTLs.
+
+- [Application Gateway](https://learn.microsoft.com/en-us/azure/application-gateway/overview) provides application delivery controller as a service, offering various Layer 7 load-balancing capabilities. Use it to optimize web farm productivity by offloading CPU-intensive SSL termination to the gateway.
+
+- [Load Balancer](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-overview) is a high-performance, ultra-low-latency Layer 4 load-balancing service (inbound and outbound) for all UDP and TCP protocols. It's built to handle millions of requests per second while ensuring your solution is highly available. Load Balancer is zone redundant, ensuring high availability across availability zones. It supports both a regional deployment topology and a [cross-region topology](https://learn.microsoft.com/en-us/azure/load-balancer/cross-region-overview).
+
+#### Azure Load Balancer SKUs
+
+- **Basic SKU** - only supports basic feature, free, up to 300 instances in the backend pool
+- **Standard SKU** - recommended for production workloads, has SLA, NAT Gateway support, Private Link support, Availability Zone support, up to 1000 instances in the backend pool
+- **Gateway SKU** - not covered on the exam
+
+| Standard Load Balancer                                       | Basic Load Balancer                                          |                                                              |
+| :----------------------------------------------------------- | :----------------------------------------------------------- | ------------------------------------------------------------ |
+| Scenario                                                     | Equipped for load-balancing network layer traffic when high performance and ultra-low latency is needed. Routes traffic within and across regions, and to availability zones for high resiliency. | Equipped for small-scale applications that don't need high availability or redundancy. Not compatible with availability zones. |
+| Backend type                                                 | IP based, NIC based                                          | NIC based                                                    |
+| Protocol                                                     | TCP, UDP                                                     | TCP, UDP                                                     |
+| Backend pool endpoints                                       | Any virtual machines or virtual machine scale sets in a single virtual network | Virtual machines in a single availability set or virtual machine scale set |
+| [Health probes](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-custom-probe-overview#probe-protocol) | TCP, HTTP, HTTPS                                             | TCP, HTTP                                                    |
+| [Health probe down behavior](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-custom-probe-overview#probe-down-behavior) | TCP connections stay alive on an instance probe down **and** on all probes down. | TCP connections stay alive on an instance probe down. All TCP connections end when all probes are down. |
+| Availability Zones                                           | Zone-redundant and zonal frontends for inbound and outbound traffic | Not available                                                |
+| Diagnostics                                                  | [Azure Monitor multi-dimensional metrics](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-standard-diagnostics) | Not supported                                                |
+| HA Ports                                                     | [Available for Internal Load Balancer](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-ha-ports-overview) | Not available                                                |
+| Secure by default                                            | Closed to inbound flows unless allowed by a network security group. Internal traffic from the virtual network to the internal load balancer is allowed. | Open by default. Network security group optional.            |
+| Outbound Rules                                               | [Declarative outbound NAT configuration](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-connections#outboundrules) | Not available                                                |
+| TCP Reset on Idle                                            | [Available on any rule](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-tcp-reset) | Not available                                                |
+| [Multiple front ends](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-multivip-overview) | Inbound and [outbound](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-connections) | Inbound only                                                 |
+| Management Operations                                        | Most operations < 30 seconds                                 | 60-90+ seconds typical                                       |
+| SLA                                                          | [99.99%](https://azure.microsoft.com/support/legal/sla/load-balancer/v1_0/) | Not available                                                |
+| Global VNet Peering Support                                  | Standard Internal Load Balancer is supported via Global VNet Peering | Not supported                                                |
+| [NAT Gateway Support](https://learn.microsoft.com/en-us/azure/virtual-network/nat-gateway/nat-overview) | Both Standard Internal Load Balancer and Standard Public Load Balancer are supported via Nat Gateway | Not supported                                                |
+| [Private Link Support](https://learn.microsoft.com/en-us/azure/private-link/private-link-overview) | Standard Internal Load Balancer is supported via Private Link | Not supported                                                |
+| [Global tier](https://learn.microsoft.com/en-us/azure/load-balancer/cross-region-overview) | Standard Load Balancer supports the Global tier for Public Load Balancers enabling cross-region load balancing | Not supported                                                |
