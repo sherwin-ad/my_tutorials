@@ -1,5 +1,61 @@
 ## AZ-104 Microsoft Azure Administrator Exam Prep
 
+### Amazing Microsoft Resources
+
+Here are some official Microsoft websites that you really should bookmark when studying for the AZ-104 exam:
+
+**Learning paths on MS Learn:**
+
+https://docs.microsoft.com/en-us/learn/certifications/exams/az-104#two-ways-to-prepare
+
+MS Learn
+
+https://docs.microsoft.com/en-us/learn/browse/?roles=administrator&products=azure
+
+Azure Code Samples
+
+https://azure.microsoft.com/en-us/resources/samples/?sort=0
+
+Official Azure Documentation
+
+https://docs.microsoft.com/en-us/azure/
+
+Official Microsoft Azure YouTube Channel
+
+https://www.youtube.com/c/MicrosoftAzure
+
+Official Microsoft Developer YouTube Channel
+
+https://www.youtube.com/channel/UCsMica-v34Irf9KVTh6xx-g
+
+Download the Azure SDK's for PowerShell and CLI
+
+https://azure.microsoft.com/en-us/downloads/
+
+Official Github Repository for PowerShell Scripts
+
+https://github.com/Azure/azure-powershell
+
+Azure REST API Browser
+
+https://docs.microsoft.com/en-us/rest/api/?view=Azure
+
+
+
+**Microsoft Labs and Workshops - Practice is the key to success**
+
+Azure Citadel - Labs and Workshops
+
+https://azurecitadel.com/
+
+Microsoft Cloud Workshop - More labs and workshops
+
+https://microsoftcloudworkshop.com/
+
+GitHub AZ-104 from Microsoft Training
+
+https://microsoftlearning.github.io/AZ-104-MicrosoftAzureAdministrator/
+
 ### **Powershell and CLI**
 
 #### Memorizing Powershell and CLI commands
@@ -210,9 +266,65 @@ az login
 
 
 
-### **Introduction to Azure Active Directory**
+### **Introduction to Azure Active Directory or Microsoft Entra ID**
 
 - **Microsoft Entra ID** - new name for Azure AD
+
+
+
+#### Microsoft Entra ID (Free vs Premium)
+
+![image-20240307112011169](images/image-20240307112011169.png)
+
+
+
+#### **Basic Concepts of Accounts & Subscriptions**
+
+- **Account**
+- **Tenant**
+- **Subscription**
+- **Resource Group**
+
+
+
+##### Account / User
+
+- A person or a program
+
+  1. Person - i.e. Joe Smith - joe@example.com
+
+     - User name, password, multi-factor authentication
+
+  2. App - Managed Identity
+
+     - Represents a program or service
+
+The basis for authentication
+
+
+
+##### Tenant
+
+- A representation of an organization
+- Usually represented by a public domain name - i.e. example.com
+- Will be assigned a domain if not specified - i.e. example.onmicrosoft.com
+- A dedicated instance of Azure Active Directory
+- Every Azure Account is part of at least one tenant
+
+
+
+##### Subscription
+
+- An agreement with Microsoft to use Azure services, and how you're going to pay for that
+
+- All Azure resource usage gets billed to the payment method of the subscription
+  - Free subscriptions
+  - Pay as you go
+  - Enterprise agreements
+
+
+
+ 
 
 #### Create Tenant
 
@@ -1850,3 +1962,224 @@ Repeat for myVM02.
 | [NAT Gateway Support](https://learn.microsoft.com/en-us/azure/virtual-network/nat-gateway/nat-overview) | Both Standard Internal Load Balancer and Standard Public Load Balancer are supported via Nat Gateway | Not supported                                                |
 | [Private Link Support](https://learn.microsoft.com/en-us/azure/private-link/private-link-overview) | Standard Internal Load Balancer is supported via Private Link | Not supported                                                |
 | [Global tier](https://learn.microsoft.com/en-us/azure/load-balancer/cross-region-overview) | Standard Load Balancer supports the Global tier for Public Load Balancers enabling cross-region load balancing | Not supported                                                |
+
+#### Create a Test Environment Quickly Using Github
+
+- https://github.com/Azure/azure-quickstart-templates
+
+
+
+#### Application Gateway
+
+- Azure Application Gateway is a web traffic (OSI layer 7) load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port.
+
+- Application Gateway can make routing decisions based on additional attributes of an HTTP request, for example URI path or host headers. For example, you can route traffic based on the incoming URL. So if `/images` is in the incoming URL, you can route traffic to a specific set of servers (known as a pool) configured for images. If `/video` is in the URL, that traffic is routed to another pool that's optimized for videos.
+
+![imageURLroute](images/figure1-720.png)
+
+#### Hands-On Practice
+
+- https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/master/Instructions/Labs/LAB_06-Implement_Network_Traffic_Management.md
+
+- Load+Balancer+lab.pdf
+
+### Monitor and troubleshoot virtual networking
+
+#### Virtual Network Troubleshooting
+
+#### Network diagnostic tools
+
+**IP flow verify**
+
+- allows you to detect traffic filtering issues at a virtual machine level. It checks if a packet is allowed or denied to or from an IP address (IPv4 or IPv6 address). It also tells you which security rule allowed or denied the traffic. For more information, see [IP flow verify overview](https://learn.microsoft.com/en-us/azure/network-watcher/ip-flow-verify-overview) and [Diagnose a virtual machine network traffic filter problem](https://learn.microsoft.com/en-us/azure/network-watcher/diagnose-vm-network-traffic-filtering-problem).
+
+**NSG diagnostics**
+
+- allows you to detect traffic filtering issues at a virtual machine, virtual machine scale set, or application gateway level. It checks if a packet is allowed or denied to or from an IP address, IP prefix, or a service tag. It tells you which security rule allowed or denied the traffic. It also allows you to add a new security rule with a higher priority to allow or deny the traffic. For more information, see [NSG diagnostics overview](https://learn.microsoft.com/en-us/azure/network-watcher/network-watcher-network-configuration-diagnostics-overview) and [Diagnose network security rules](https://learn.microsoft.com/en-us/azure/network-watcher/diagnose-network-security-rules).
+
+**Next hop**
+
+- allows you to detect routing issues. It checks if traffic is routed correctly to the intended destination. It provides you with information about the Next hop type, IP address, and Route table ID for a specific destination IP address. For more information, see [Next hop overview](https://learn.microsoft.com/en-us/azure/network-watcher/network-watcher-next-hop-overview) and [Diagnose a virtual machine network routing problem](https://learn.microsoft.com/en-us/azure/network-watcher/diagnose-vm-network-routing-problem).
+
+**Effective security rules**
+
+- allows you to view the effective security rules applied to a network interface. It shows you all security rules applied to the network interface, the subnet the network interface is in, and the aggregate of both. For more information, see [Effective security rules overview](https://learn.microsoft.com/en-us/azure/network-watcher/effective-security-rules-overview) and [View details of a security rule](https://learn.microsoft.com/en-us/azure/network-watcher/diagnose-vm-network-traffic-filtering-problem#view-details-of-a-security-rule).
+
+**Connection troubleshoot**
+
+- enables you to test a connection between a virtual machine, a virtual machine scale set, an application gateway, or a Bastion host and a virtual machine, an FQDN, a URI, or an IPv4 address. The test returns similar information returned when using the [connection monitor](https://learn.microsoft.com/en-us/azure/network-watcher/network-watcher-overview#connection-monitor) capability, but tests the connection at a point in time instead of monitoring it over time, as connection monitor does. For more information, see [Connection troubleshoot overview](https://learn.microsoft.com/en-us/azure/network-watcher/connection-troubleshoot-overview) and [Troubleshoot connections with Azure Network Watcher](https://learn.microsoft.com/en-us/azure/network-watcher/network-watcher-connectivity-portal).
+
+**Packet capture**
+
+- allows you to remotely create packet capture sessions to track traffic to and from a virtual machine (VM) or a virtual machine scale set. For more information, see [packet capture](https://learn.microsoft.com/en-us/azure/network-watcher/network-watcher-packet-capture-overview) and [Manage packet captures for virtual machines](https://learn.microsoft.com/en-us/azure/network-watcher/packet-capture-vm-portal).
+
+**VPN troubleshoot**
+
+- enables you to troubleshoot virtual network gateways and their connections. For more information, see [VPN troubleshoot overview](https://learn.microsoft.com/en-us/azure/network-watcher/vpn-troubleshoot-overview) and [Diagnose a communication problem between networks](https://learn.microsoft.com/en-us/azure/network-watcher/diagnose-communication-problem-between-networks).
+
+#### Hands-on Practice
+
+https://www.azurecitadel.com/network/vdc/monitor/
+
+### Azure Monitor
+
+- Azure Monitor is a comprehensive monitoring solution for collecting, analyzing, and responding to monitoring data from your cloud and on-premises environments. You can use Azure Monitor to maximize the availability and performance of your applications and services. It helps you understand how your applications are performing and allows you to manually and programmatically respond to system events.
+
+- Azure Monitor collects and aggregates the data from every layer and component of your system across multiple Azure and non-Azure subscriptions and tenants. It stores it in a common data platform for consumption by a common set of tools that can correlate, analyze, visualize, and/or respond to the data. You can also integrate other Microsoft and non-Microsoft tools.
+
+[![Diagram that shows an abstracted view of what Azure monitor does as described in the previous paragraph.](images/azure-monitor-high-level-abstraction-opt.svg)](https://learn.microsoft.com/en-us/azure/azure-monitor/media/overview/azure-monitor-high-level-abstraction-opt.svg#lightbox)
+
+#### High level architecture
+
+Azure Monitor can monitor these types of resources in Azure, other clouds, or on-premises:
+
+- Applications
+- Virtual machines
+- Guest operating systems
+- Containers including Prometheus metrics
+- Databases
+- Security events in combination with Azure Sentinel
+- Networking events and health in combination with Network Watcher
+- Custom sources that use the APIs to get data into Azure Monitor
+
+You can also export monitoring data from Azure Monitor into other systems so you can:
+
+- Integrate with other third-party and open-source monitoring and visualization tools
+- Integrate with ticketing and other ITSM systems
+
+#### Enabling diagnostic in Virtual Machine
+
+1. Open the menu for a virtual machine in the Azure portal.
+
+2. Select **Diagnostic settings** in the **Monitoring** section of the VM menu.
+
+3. Select **Enable guest-level monitoring** if the diagnostics extension hasn't already been enabled.
+
+   [![Screenshot that shows enabling monitoring.](images/enable-monitoring.png)](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/media/diagnostics-extension-windows-install/enable-monitoring.png#lightbox)
+
+4. A new Azure Storage account will be created for the VM. The name will be based on the name of the resource group for the VM. A default set of guest performance counters and logs will be selected.
+
+   [![Screenshot that shows Diagnostic settings.](images/diagnostic-settings.png)](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/media/diagnostics-extension-windows-install/diagnostic-settings.png#lightbox)
+
+5. On the **Performance counters** tab, select the guest metrics you want to collect from this virtual machine. Use the **Custom** setting for more advanced selection.
+
+   [![Screenshot that shows Performance counters.](images/performance-counters.png)](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/media/diagnostics-extension-windows-install/performance-counters.png#lightbox)
+
+6. On the **Logs** tab, select the logs to collect from the virtual machine. Logs can be sent to storage or event hubs, but not to Azure Monitor. Use the [Log Analytics agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/log-analytics-agent) to collect guest logs to Azure Monitor.
+
+   [![Screenshot that shows the Logs tab with different logs selected for a virtual machine.](images/logs.png)](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/media/diagnostics-extension-windows-install/logs.png#lightbox)
+
+7. On the **Crash dumps** tab, specify any processes to collect memory dumps after a crash. The data will be written to the storage account for the diagnostic setting. You can optionally specify a blob container.
+
+   [![Screenshot that shows the Crash dumps tab.](images/crash-dumps.png)](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/media/diagnostics-extension-windows-install/crash-dumps.png#lightbox)
+
+8. On the **Sinks** tab, specify whether to send the data to locations other than Azure storage. If you select **Azure Monitor**, guest performance data will be sent to Azure Monitor Metrics. You can't configure the event hubs sink by using the Azure portal.
+
+   [![Screenshot that shows the Sinks tab with the Send diagnostic data to Azure Monitor option enabled.](images/sinks.png)](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/media/diagnostics-extension-windows-install/sinks.png#lightbox)
+
+   If you haven't enabled a system-assigned identity configured for your virtual machine, you might see the following warning when you save a configuration with the Azure Monitor sink. Select the banner to enable the system-assigned identity.
+
+   [![Screenshot that shows the managed identity warning.](images/managed-entity.png)](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/media/diagnostics-extension-windows-install/managed-entity.png#lightbox)
+
+9. On the **Agent** tab, you can change the storage account, set the disk quota, and specify whether to collect diagnostic infrastructure logs.
+
+   [![Screenshot that shows the Agent tab with the option to set the storage account.](images/agent.png)](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/media/diagnostics-extension-windows-install/agent.png#lightbox)
+
+10. Select **Save** to save the configuration.
+
+
+
+#### Enabling diagnostic in Virtual Machine
+
+Go to Azure Portal > App Service > Diagnostic Settings and enable the required settings you would like to send to the destination . In this blog I have taken an example of HTTP Logs and App Service Application Logs in a Windows App Service ( .Net Core ).
+
+ 
+
+![thumbnail image 1 of blog post titled  	 	 	  	 	 	 				 		 			 				 						 							Enabling AppServiceAppLogs & AppServiceHTTPLogs diagnostic settings in app services 							 						 					 			 		 	 			 	 	 	 	 	 ](images/658x166.png)
+
+#### Monitoring Logs in Azure
+
+Goto Monitor > Logs
+
+![Screenshot that shows queries in Log Analytics.](images/log-analytics.png)
+
+#### Hub and Spoke Network Design
+
+- https://github.com/MicrosoftLearning/AZ-104-MicrosoftAzureAdministrator/blob/master/Instructions/Labs/LAB_06-Implement_Network_Traffic_Management.md
+
+
+
+### Implement Backup and Recovery
+
+#### Azure Backup 
+
+2 Ways to backup Virtual Machine
+
+1. Goto VM > Backup + disaster recovery > Backup
+2. Got Backup and Site Recovery > Create Recovery Services vault
+
+#### File Recovery from a VM Backup
+
+2 ways
+
+1. Goto Recovery Services Vaults > [Vault Name] > Backup items
+
+   ![image-20240229172143025](images/image-20240229172143025.png)
+
+2. Goto Virtual Machines > [VM Name] > Backup and click File Recovery
+
+   ![image-20240229172405750](images/image-20240229172405750.png)
+
+
+
+​	![image-20240229172608530](images/image-20240229172608530.png)
+
+#### Restore a Full VM
+
+- Goto Virtual Machines > [VM Name] > Backup and click Restore VM
+
+  ![image-20240229172405750](images/image-20240229172405750.png)
+
+#### On-Premise Backup
+
+- Goto Recovery Services vault > [Vault Name] > Backup > Select On-Premises and Waht do you want to backup
+  ![image-20240229175451486](images/image-20240229175451486.png)
+
+​	   **Click Prepare infrustructure**
+
+****	![image-20240229175547450](images/image-20240229175547450.png)
+
+#### Soft delete for VM Backups
+
+- the backup data is retained for 14 additional days, allowing the recovery of that backup item with no data loss. 
+- The additional 14 days of retention for backup data in the "soft delete" state don't incur any cost to you.
+
+- Enable by default
+- 14 days to delete backup data
+- can be un-deleted
+- 15th day - auto delete
+
+#### Azure Site Recovery 
+
+- Azure Site Recovery simply by replicating an Azure VM to a different Azure region directly from the Azure portal. 
+
+**Enable replication for the Azure VM**
+
+The following steps enable VM replication to a secondary location.
+
+1. On the Azure portal, from **Home** > **Virtual machines** menu, select a VM to replicate.
+
+2. In **Operations**, select **Disaster recovery**.
+
+3. From **Basics** > **Target region**, select the target region.
+
+4. To view the replication settings, select **Review + Start replication**. If you need to change any defaults, select **Advanced settings**.
+
+   
+
+#### Azure Site Recovery Fail Over
+
+- Goto VM > Operations > Disaster Recovery and  click Test Failover
+
+  ![image-20240301163715974](images/image-20240301163715974.png)
+
