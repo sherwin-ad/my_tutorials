@@ -197,7 +197,7 @@
     - Scale out the service plan to P1
     - Scale out based on a schedule
     - Scale up based on a metric
-    - Scale up based on a schedule
+    - ## Scale up based on a schedule
 
     
 
@@ -1058,7 +1058,7 @@
 
    - Configure an inbound NAT rule.
 
-   - **Set Session persistence to Client IP.**
+   - **Set Session persistence to Client IP.named VM1 and VM2 in an availability set named AVSet1.**
 
    - Set Session persistence to None.
 
@@ -1211,9 +1211,9 @@
 
    [Configure network routing and endpoints - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-network-routing-endpoints/)
 
-11. You need to generate the shared access signature (SAS) token required to authorize a request to a resource.
+11. **You need to generate the shared access signature (SAS) token required to authorize a request to a resource.**
 
-    Which two parameters are required for the SAS token? Each correct answer presents part of the solution
+    **Which two parameters are required for the SAS token? Each correct answer presents part of the solution**
 
     Select all answers that apply.
 
@@ -1286,11 +1286,11 @@
 
     [Configure Azure Storage with tools - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-storage-tools/)
 
-15. You have two premium block blob Azure Storage accounts named storage1 and storage2.
+15. **You have two premium block blob Azure Storage accounts named storage1 and storage2.**
 
-    You need to configure object replication from storage1 to storage2.
+    **You need to configure object replication from storage1 to storage2.**
 
-    Which three features should be enabled before configuring object replication? Each correct answer presents part of the solution.
+    **Which three features should be enabled before configuring object replication? Each correct answer presents part of the solution.**
 
     Select all answers that apply.
 
@@ -1374,11 +1374,11 @@
 
     [Compare storage for file shares and blob data - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-files-file-sync/2-compare-files-to-blobs)
 
-19. You have an Azure subscription that contains a storage account named storage1.
+19. **You have an Azure subscription that contains a storage account named storage1.**
 
-    You need to ensure that public network access is disabled from all networks, including the internet.
+    **You need to ensure that public network access is disabled from all networks, including the internet.**
 
-    What should you configure on storage1?
+    **What should you configure on storage1?**
 
     Select only one answer.
 
@@ -1476,11 +1476,11 @@
 
     [Configure Azure resources with tools - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-resources-tools/)
 
-24. You are creating an Azure virtual machine that will run Windows Server.
+24. **You are creating an Azure virtual machine that will run Windows Server.**
 
-    You need to ensure that VM1 will be part of a virtual machine scale set.
+    **You need to ensure that VM1 will be part of a virtual machine scale set.**
 
-    Which setting should you configure during the creation of the virtual machine?
+    **Which setting should you configure during the creation of the virtual machine?**
 
     Select only one answer.
 
@@ -1589,7 +1589,30 @@
 
     Which two actions should you perform? Each correct answer presents part of the solution.
 
+    Select all answers that apply.You have a Basic Azure App Service plan that contains a web app.
+
+    You need to ensure that the web app can scale automatically when the CPU percentage goes beyond 80 percent for a duration of 15 minutes.
+
+    Which two actions should you perform? Each correct answer presents part of the solution.
+
     Select all answers that apply.
+
+    Configure a deployment slot.
+
+    Configure a scaling condition to scale based on a metric, and then add the rules.
+    This answer is correct.
+
+    Configure a scaling condition to scale based on an instance count, and then set the instance count.
+
+    Scale out the App Service plan.
+
+    Scale up the App Service plan.
+    This answer is correct.
+    Scale up the web app by adding more CPU, memory, and disk space to fulfill the requirement. Increase the number of virtual machine instances that run the app. The scale settings take only seconds to apply and affect all the apps in the App Service plan. Then, you must set up a scaling condition with the required metrics to scale up/down and scale out/in when certain thresholds are met.
+
+    Scale up features and capacities - Azure App Service | Microsoft Learn
+
+    Configure Azure App Service - Training | Microsoft Learn
 
     - Create a new App Service plan in RG2.
 
@@ -1671,11 +1694,11 @@
 
     [Create custom domain names - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-app-services/8-create-custom-domain-names)
 
-33. You have a Microsoft Entra tenant that uses Microsoft Entra Connect to sync with an Active Directory Domain Services (AD DS) domain.
+33. **You have a Microsoft Entra tenant that uses Microsoft Entra Connect to sync with an Active Directory Domain Services (AD DS) domain.**
 
-    You need to ensure that users can reset their AD DS password from the Azure portal. The users must be able to use two methods to reset their password.
+    **You need to ensure that users can reset their AD DS password from the Azure portal. The users must be able to use two methods to reset their password.**
 
-    Which two actions should you perform? Each correct answer presents part of the solution.
+    **Which two actions should you perform? Each correct answer presents part of the solution.**
 
     Select all answers that apply.
 
@@ -1786,7 +1809,7 @@
 
     Select all answers that apply.
 
-    - Create an action group of type Runbook, and then select **Scale Up VM**.
+    - Create an action group of type Runbook, and then select Scale Up VM.
 
     - **Create an action group of type Runbook, and then select Stop VM as an action.**
 
@@ -1914,15 +1937,15 @@
 
     [Enable B2B external collaboration settings - Microsoft Entra | Microsoft Learn](https://learn.microsoft.com/azure/active-directory/external-identities/external-collaboration-settings-configure)
 
-44. You need to create Azure alerts based on metric values and activity log events.
+44. **You need to create Azure alerts based on metric values and activity log events.**
 
-    The solution must meet the following requirements:
+    **The solution must meet the following requirements:**
 
-    - Set a limit on how many times an alert notification is sent.
-    - Call an Azure function when an alert is triggered.
-    - Configure the alert to have a severity of warning when triggered.
+    - **Set a limit on how many times an alert notification is sent.**
+    - **Call an Azure function when an alert is triggered.**
+    - **Configure the alert to have a severity of warning when triggered.**
 
-    Which two resources should you create? Each correct answer presents part of the solution.
+    **Which two resources should you create? Each correct answer presents part of the solution.**
 
     Select all answers that apply.
 
@@ -2054,7 +2077,544 @@
 
     [Configure Azure alerts - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-alerts/)
 
-    
+51. **You have an Azure subscription that contains multiple storage accounts.**
+
+    **A storage account named storage1 has a file share that stores marketing videos. Users reported that 99 percent of the assigned storage is used.**
+
+    **You need to ensure that the file share can support large files and store up to 100 TiB.**
+
+    **Which two PowerShell commands should you run? Each correct answer presents part of the solution.**
+
+    Select all answers that apply.
+
+    - New-AzRmStorageShare -ResourceGroupName RG1 -Name -StorageAccountName storage1 -Name share1 -QuotaGiB 100GB
+    - **Set-AzStorageAccount -ResourceGroupName RG1 -Name storage1 -EnableLargeFileShare**
+    - Set-AzStorageAccount -ResourceGroupName RG1 -Name storage1 -Type "Standard_RAGRS"
+    - **Update-AzRmStorageShare -ResourceGroupName RG1 -Name -StorageAccountName storage1 -Name share1 -QuotaGiB 102400**
 
     
 
+    You must enable the storage account to support large files and update the storage account quota to 102,400 GB. You do not need to change the type of storage account, and you are updating the existing share.
+
+    [Object replication overview - Azure Storage | Microsoft Learn](https://learn.microsoft.com/azure/storage/blobs/object-replication-overview)
+
+    [Configure Azure Blob Storage - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-blob-storage/)
+
+52. You create an Azure Storage account.
+
+    You need to create a lifecycle management rule to move blobs to Cool storage if the blobs have not been used for 30 days.
+
+    What should you do first?
+
+    Select only one answer.
+
+    - **Enable access tracking.**
+
+    - Enable versioning for blobs.
+    - Refresh the blob inventory.
+    - Rotate the storage account keys.
+
+    A lifecycle management rule can be used to move or delete blobs automatically. The rule can be based on the time the blob was last modified or the time the blob was last accessed (read or write). To perform an action based on the access time, access tracking must be enabled. This can incur additional storage costs.
+
+    [Configure a lifecycle management policy - Azure Storage | Microsoft Learn](https://learn.microsoft.com/azure/storage/blobs/lifecycle-management-policy-configure?tabs=azure-portal)
+
+    [Configure Azure Blob Storage - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-blob-storage/)
+
+53. You have an Azure subscription that contains a storage account named storage1.
+
+    You need to provide storage1 with access to a partner organization. Access to storage1 must expire after 24 hours.
+
+    What should you configure?
+
+    Select only one answer.
+
+    - **a shared access signature (SAS)**
+
+    - an access key
+    - Azure Content Delivery Network (CDN)
+    - lifecycle management
+
+    A SAS provides secure delegated access to resources in a storage account. With a SAS, you have granular control over how a client can access data, including time restrictions.
+
+    Access keys and Azure CDN provide permanent access to resources. They will require manual steps to remove access. Lifecycle management is not needed.
+
+    [Configure Azure Storage security - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-storage-security/)
+
+    [Grant limited access to data with shared access signatures (SAS) - Azure Storage | Microsoft Learn](https://learn.microsoft.com/azure/storage/common/storage-sas-overview)
+
+54. You have an Azure Storage account named storage1.
+
+    You plan to store long-term backups in storage1. The solution must minimize costs.
+
+    Which storage tier should you use for the backups?
+
+    Select only one answer.
+
+    - **Archive**
+
+    - Cold
+
+    - Cool
+
+    - Hot
+
+    Archive is an offline tier that is optimized for storing data that is rarely accessed and has flexible latency requirements. Data in the Archive tier must be stored for a minimum of 180 days.
+
+    [Hot, cool, and archive access tiers for blob data - Azure Storage | Microsoft Learn](https://learn.microsoft.com/azure/storage/blobs/access-tiers-overview)
+
+    [Assign blob access tiers - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-blob-storage/4-create-blob-access-tiers)
+
+55. You have an Azure virtual machine that hosts a third-party application named App1.
+
+    Users report that they experience performance issues when they use the application.
+
+    You need to find the root cause of the performance issue.
+
+    What should you use?
+
+    Select only one answer.
+
+    - activity logs
+
+    - Azure Advisor
+
+    - Azure Cost
+
+    - **Azure Monitor**
+
+    Azure Monitor stores metrics in a time-series database that is optimized for analyzing time-stamped data. Activity logs detect and address issues before users notice them proactivity. Azure Advisor analyzes configuration and usage metrics but does not provide time-lapsed data. Azure Cost only helps to optimize and reduce overall Azure spending.
+
+    [Overview of Azure Monitor Alerts - Azure Monitor | Microsoft Learn](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-overview)
+
+    [Configure Azure alerts - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-alerts/)
+
+56. You have an Azure virtual machine that runs Linux. The virtual machine hosts a custom application that outputs log data in the JSON format.
+
+    You need to recommend a solution to collect the logs in Log Analytics workspace.
+
+    What should you include in the recommendation?
+
+    Select only one answer.
+
+    - the Azure VMAccess extension
+
+    - the Custom Script Extension Version 2 extension
+
+    - the DSC extension for Linux
+
+    - **the Azure Monitor agent for Linux**
+
+    You can use the Log Analytics agent for Linux as part of a solution to collect JSON output from the Linux virtual machines.
+
+    The Azure Custom Script Extension is used for post-deployment configuration, software installation, or any other configuration or management task.
+
+    Desired State Configuration (DSC) is a management platform that you can use to manage an IT and development infrastructure with configuration as code.
+
+    The Azure VMAccess extension acts as a KVM switch that allows you to access the console to reset access to Linux or perform disk-level maintenance.
+
+    [Collecting custom JSON data sources with the Log Analytics agent for Linux in Azure Monitor - Azure Monitor | Microsoft Learn](https://learn.microsoft.com/azure/azure-monitor/agents/data-sources-json)
+
+    [Configure Azure Monitor - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-monitor/)
+
+57. **You have an Azure subscription that contains two protected virtual machines named VM1 and VM2. VM1 and VM2 are backed up to a Recovery Service vault named Vault1 by using the same backup policy.**
+
+    **Your company plans to create additional virtual machines and Recovery Services vaults. During this process, Vault1 will be decommissioned.**
+
+    **You need to delete Vault1.**
+
+    **Which three actions should you perform before you can delete Vault1? Each correct answer presents part of the solution.**
+
+    Select all answers that apply.
+
+    - Delete VM1 and VM2.
+
+    - **Disable the soft delete feature and delete all data.**
+
+    - Enable a Read lock on Vault1.
+
+    - **Permanently remove any items in the soft delete state.**
+
+    - **Stop the backup of VM1 and VM2.**
+
+    
+
+    You must stop the backups so that you can prepare to move to the new policy. The soft delete feature is enabled by default, so it must be disabled. You must remove all the items that are in the soft delete state. Deleting the virtual machines is not required. You cannot delete the policy without deleting the vault and backup, and a new policy is not required.
+
+    [Overview of Recovery Services vaults - Azure Backup | Microsoft Learn](https://learn.microsoft.com/azure/backup/backup-azure-recovery-services-vault-overview)
+
+    [Delete a Microsoft Azure Recovery Services vault - Azure Backup | Microsoft Learn](https://learn.microsoft.com/azure/backup/backup-azure-delete-vault?tabs=portal)
+
+    [Configure virtual machine backups - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-machine-backups/)
+
+58. You have an Azure subscription that contains the following virtual networks:
+
+    - VNet1 has an IP address range of 192.168.0.0/24.
+    - VNet2 has an IP address range of 10.10.0.0/24.
+    - VNet3 has an IP address range of 192.168.0.0/16.
+
+    You need configure virtual network peering.
+
+    Which two peerings can you create? Each correct answer presents complete solution.
+
+    Select all answers that apply.
+
+    - **VNet1 can be peered with VNet2.**
+
+    - VNet1 can be peered with VNet3.
+
+    - **VNet2 can be peered with VNet3.**
+
+    - VNet3 can be peered with VNet1.
+
+    VNet1 and VNet2 have non-overlapping IP addresses. For virtual network peering, both virtual networks must have non-overlapping IP addresses.
+
+    [Azure Virtual Network peering | Microsoft Learn](https://learn.microsoft.com/azure/virtual-network/virtual-network-peering-overview)
+
+    [Configure virtual network peering - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-vnet-peering/)
+
+59. **You have an Azure virtual network that contains four subnets. Each subnet contains 10 virtual machines.**
+
+    **You plan to configure a network security group (NSG) that will allow inbound traffic over TCP port 8080 to two virtual machines on each subnet. The NSG will be associated to each subnet.**
+
+    **You need to recommend a solution to configure the inbound access by using the fewest number of NSG rules possible.**
+
+    **What should you use as the destination in the NSG?**
+
+    Select only one answer.
+
+    - **an application security group**
+
+    - a service tag
+
+    - the subnets of the virtual machines
+
+    Application security groups allow you to group together the network interfaces from multiple virtual machines, and then use the group as the source or destination in an NSG rule. The network interfaces must be in the same virtual network.
+
+    You can use the IP address of each virtual machine as the destination, but you must create a rule for each virtual machine.
+
+    Using the subnets will require four rules and will also allow traffic to all the virtual machines on those subnets.
+
+    Service tags are for specific Azure services, such as Azure App Service or Azure Backup.
+
+    [Azure application security groups overview | Microsoft Learn](https://learn.microsoft.com/azure/virtual-network/application-security-groups)
+
+    [Configure network security groups - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-network-security-groups/)
+
+60. You have a virtual machine named VM1 that is assigned to a network security group (NSG) named NSG1.
+
+    NSG1 has the following outbound security rules:
+
+    Rule1:
+
+    - Priority: 900
+    - Name: BlockInternet
+    - Port: 80
+    - Protocol: TCP
+    - Source: Any
+    - Destination: Any
+    - Action: Block
+
+    Rule2:
+
+    - Priority: 1000
+    - Name: AllowInternet
+    - Port: 80
+    - Protocol: TCP
+    - Source: Any
+    - Destination: Any
+    - Action: Allow
+
+    You need to ensure that internet access to VM1 on port 80 is allowed.
+
+    What should you do?
+
+    Select only one answer.
+
+    - Change the action of Rule2.
+
+    - Change the name of Rule1.
+
+    - **Change the priority of Rule2.**
+
+    - Change the source of Rule 2.
+
+    Rule1 has higher priority, so the action will be blocked. You can increase the priority of Rule2, decrease the priority of Rule1, or change the action of Rule1 to achieve the goal.
+
+    [Azure network security groups overview | Microsoft Learn](https://learn.microsoft.com/azure/virtual-network/network-security-groups-overview)
+
+    [Configure network security groups - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-network-security-groups/)
+
+61. **You deploy web servers to two virtual machines named VM1 and VM2 in an availability set named AVSet1.**
+
+    **You need to configure Azure Load Balancer with a backend pool of VM1 and VM2. The solution must minimize costs.**
+
+    **Which SKU should you use for the Azure Load Balancer configuration?**
+
+    Select only one answer.
+
+    - Azure Standard Load Balancer with Basic SKU public IP
+
+    - Azure Standard Load Balancer with Standard SKU public IP
+
+    - **Basic Azure Load Balancer with Basic SKU public IP**
+
+    - Basic Azure Load Balancer with Standard SKU public IP
+
+    Basic Azure Load Balancer supports deployment in a single availability zone. Basic Azure Load Balancer supports only Basic SKU public IP. Azure Standard Load Balancer is zone-redundant, but has a higher cost.
+
+    [Azure Load Balancer SKUs | Microsoft Learn](https://learn.microsoft.com/azure/load-balancer/skus)
+
+    [Configure Azure Load Balancer - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-load-balancer/)
+
+62. You have an Azure subscription that contains a virtual network named VNet1.
+
+    You plan to deploy a virtual machine named VM1 to be used as a network inspection appliance.
+
+    You need to ensure that all network traffic passes through VM1.
+
+    What should you do?
+
+    Select only one answer.
+
+    - **Configure a user-defined route.**
+
+    - Create a virtual network gateway.
+
+    - Modify the default route.
+
+    - Modify the system route.
+
+    Azure automatically creates a route table for each subnet on an Azure virtual network and adds system default routes to the table. You can override some of the Azure system routes with custom user-defined routes and add more custom routes to route tables. Azure routes outbound traffic from a subnet based on the routes on a subnet's route table.
+
+    [Configure network routing and endpoints - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-network-routing-endpoints/)
+
+    [Azure virtual network traffic routing | Microsoft Learn](https://learn.microsoft.com/azure/virtual-network/virtual-networks-udr-overview)
+
+63. You have an Azure virtual network named VNet1.
+
+    You create an Azure Private DNS zone named contoso.com.
+
+    You need to ensure that the virtual machines on VNet1 register in the contoso.com private DNS zone.
+
+    What should you do?
+
+    Select only one answer.
+
+    - **Add a virtual network link to contoso.com.**
+
+    - Add Azure DNS Private Resolver to VNet1.
+
+    - Configure each virtual machine to use a custom DNS server.
+
+    - Configure VNet1 to use a custom DNS server.
+
+    To associate a virtual network to a private DNS zone, you add the virtual network to the zone by creating a virtual network link.
+
+    Azure DNS Private Resolver is used to proxy DNS queries between on-premises environments and Azure DNS.
+
+    A custom DNS server will work if you deploy a DNS server as a virtual machine or an appliance, however, this configuration does not work with a private DNS zone.
+
+    [Quickstart - Create an Azure private DNS zone using the Azure portal | Microsoft Learn](https://learn.microsoft.com/azure/dns/private-dns-getstarted-portal)
+
+    [Configure Azure DNS - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-dns/)
+
+64. **From PowerShell, you run the `Get-MgUser` cmdlet for a user and receive the following details:**
+
+    - **`Id: 8755b347-3545-3876-3987-999999999999`**
+    - **`DisplayName: Ben Smith`**
+    - **`Mail: bsmith@contoso.com`**
+    - **`UserPrincipalName: bsmith_contoso.com#EXT#@fabrikam.com`**
+
+    Which statement accurately describes the user?
+
+    Select only one answer.
+
+    - The user account is disabled.
+
+    - **The user is a guest in the tenant.**
+
+    - The user is assigned an administrative role.
+
+    - The user is deleted.
+
+    For guest users, the user principal name (UPN) will contain the email of the guest user (bsmith_contoso.com) followed by #EXT# followed by the domain name of the tenant (@fabrikam.com). Regular Microsoft Entra users appear in a format of user@fabrikam.com.
+
+    [B2B collaboration overview - Azure AD - Microsoft Entra | Microsoft Learn](https://learn.microsoft.com/azure/active-directory/external-identities/what-is-b2b)
+
+    [Create Azure users and groups in Azure Active Directory - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/create-users-and-groups-in-azure-active-directory/)
+
+65. You have an Azure subscription and a user named User1.
+
+    You need to assign User1 a role that allows the user to create and manage all types of resources in the subscription. The solution must prevent User1 from assigning roles to other users.
+
+    Which Azure role-based access control (RBAC) role should you assign to User1?
+
+    Select only one answer.
+
+    - API Management Service Contributor
+
+    - **Contributor**
+
+    - Owner
+
+    - Reader
+
+    Users with the Contributor role can create and manage all types of resources but cannot delegate new access to other users. Users with the Reader role can view existing Azure resources but cannot perform any action against them. Users with the API Management Service Contributor role can only manage API Management services and APIs. Users with the Owner role provides full access to all resources, including the right to delegate access to others.
+
+    [Azure built-in roles - Azure RBAC | Microsoft Learn](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles)
+
+    [Configure role-based access control - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-role-based-access-control/)
+
+66. **You have an Azure subscription that contains hundreds of virtual machines that were migrated from a local datacenter.**
+
+    **You need to identify which virtual machines are underutilized.**
+
+    **Which Azure Advisor settings should you use?**
+
+    Select only one answer.
+
+    - **Cost**
+
+    - High Availability
+
+    - Operational Excellence
+
+    - Performance
+
+    The Cost blade allows you to optimize and reduce your overall Azure spending. You can use this to identify the virtual machines that are underutilized. The Performance blade allows you to improve the speed of your applications. High availability is unavailable via Azure Advisor. Operational Excellence helps you achieve process and workflow efficiency, resource manageability, and deployment best practices.
+
+    [Introduction to Azure Advisor - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/intro-to-azure-advisor/)
+
+67. Y**ou have an Azure subscription that contains a resource group named RG1. RG1 contains an Azure virtual machine named VM1.**
+
+    **You need to use VM1 as a template to create a new Azure virtual machine.**
+
+    **Which three methods can you use to complete the task? Each correct answer presents a complete solution.**
+
+    Select all answers that apply.
+
+    - From Azure Cloud Shell, run the `Get-AzVM` and `New-AzVM` cmdlets.
+
+    - From Azure Cloud Shell, run the `Save-AzDeploymentScriptLog` and `New-AzResourceGroupDeployment` cmdlets.
+
+    - **From Azure Cloud Shell, run the `Save-AzDeploymentTemplate` and `New-AzResourceGroupDeployment` cmdlets.**
+
+    - **From RG1, select Export template, select Download, and then, from Azure Cloud Shell, run the `New-AzResourceGroupDeployment` cmdlet.**
+
+    - **From VM1, select Export template, and then select Deploy.**
+
+    
+
+    From RG1, selecting the Download option from the Export template page exports the Azure Resource Manager (ARM) template from the resource group properties. You can then deploy the ARM template by running the `New-AzResourceGroupDeployment` cmdlet.
+
+    By using the `Save-AzDeploymentTemplate` cmdlet, you can save the resource ARM template. You can then deploy the ARM template by running the `New-AzResourceGroupDeployment` cmdlet.
+
+    From VM1, selecting the Deploy option from the Export template page allows you to deploy a new Azure virtual machine and use the configuration of VM1 as the template.
+
+    The `Save-AzDeploymentScriptLog` cmdlet is used to save the log of a deployment script execution.
+
+    The `Get-AzVM` cmdlet generates a list of virtual machines that are created in the Azure subscription.
+
+    [Export template in Azure portal - Azure Resource Manager | Microsoft Learn](https://learn.microsoft.com/azure/azure-resource-manager/templates/export-template-portal)
+
+    [Export template in Azure PowerShell - Azure Resource Manager | Microsoft Learn](https://learn.microsoft.com/azure/azure-resource-manager/templates/export-template-powershell)
+
+    [Automate Azure tasks using scripts with PowerShell - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/automate-azure-tasks-with-powershell/)
+
+68. You have an Azure Resource Manager (ARM) template named deploy.json that is stored in an Azure Blob storage container.
+
+    You plan to deploy the template by running the `New-AzDeployment` cmdlet.
+
+    Which parameter should you use to reference the template?
+
+    Select only one answer.
+
+    - -Tag 
+    - -Templatefile 
+    - -TemplateSpecId
+    - **-TemplateUri**
+
+    The PowerShell deployment cmdlets can be used to deploy JSON templates that are stored locally in a resources group as a template spec, or from a web-based location. You can use the `-TemplateUri` parameter to specify a web-based location, such as GitHub or an Azure Blob Storage account. You can use `-Templatefile` to specify a local file. You can use `-TemplateSpecId` to specify a template that was save to Azure as a template spec.
+
+    [Deploy resources with PowerShell and template - Azure Resource Manager | Microsoft Learn](https://learn.microsoft.com/azure/azure-resource-manager/templates/deploy-powershell)
+
+    [Deploy Azure infrastructure by using JSON ARM templates - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/create-azure-resource-manager-template-vs-code/)
+
+    [Automate Azure tasks using scripts with PowerShell - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/automate-azure-tasks-with-powershell/)
+
+69. **You have an Azure subscription that contains an Azure container app named cont1.**
+
+    **You plan to add scaling rules to cont1.**
+
+    **You need to ensure that cont1 replicas are created based on received messages in Azure Service Bus.**
+
+    **Which scale trigger should you use?**
+
+    Select only one answer.
+
+    - CPU usage
+
+    - **event-driven**
+
+    - HTTP traffic
+
+    - memory usage
+
+    Azure Container Apps allows a set of triggers to create new instances, called replicas. For Azure Service Bus, an event-driven trigger can be used to run the escalation method. The remaining scale triggers cannot use a scale rule based on messages in an Azure service bus.
+
+    [Scaling in Azure Container Apps | Microsoft Learn](https://learn.microsoft.com/azure/container-apps/scale-app)
+
+    [Configure Azure Container Instances - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-container-instances/)
+
+70. **You have a Basic Azure App Service plan that contains a web app.**
+
+    **You need to ensure that the web app can scale automatically when the CPU percentage goes beyond 80 percent for a duration of 15 minutes.**
+
+    **Which two actions should you perform? Each correct answer presents part of the solution.**
+
+    Select all answers that apply.
+
+    - Configure a deployment slot.
+
+    - **Configure a scaling condition to scale based on a metric, and then add the rules.**
+
+    - Configure a scaling condition to scale based on an instance count, and then set the instance count.
+
+    - Scale out the App Service plan.
+
+    - **Scale up the App Service plan.**
+
+    Scale up the web app by adding more CPU, memory, and disk space to fulfill the requirement. Increase the number of virtual machine instances that run the app. The scale settings take only seconds to apply and affect all the apps in the App Service plan. Then, you must set up a scaling condition with the required metrics to scale up/down and scale out/in when certain thresholds are met.
+
+    [Scale up features and capacities - Azure App Service | Microsoft Learn](https://learn.microsoft.com/azure/app-service/manage-scale-up)
+
+    [Configure Azure App Service - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-app-services/)
+
+71. **You have an Azure subscription that contains a resource group named RG1. RG1 contains an application named App1 and a container app named containerapp1.**
+
+    **App1 is experiencing performance issues when attempting to add messages to the containerapp1 queue.**
+
+    **You need to create a job to perform an application resource cleanup when a new message is added to a queue.**
+
+    **Which command should you run?**
+
+    Select only one answer.
+
+    - **az containerapp job create \ --name "my-job" --resource-group "RG1" -trigger-type "Event" \ -replica-timeout 60 --replica-retry-limit 1 ...**
+    - az containerapp job create \ --name "my-job" --resource-group " RG1" -trigger-type "Manual" \ -replica-timeout 60 --replica-retry-limit 1 ...
+    - az containerapp job start \ --name "my-job" --resource-group " RG1" -trigger-type "Schedule" \ -replica-timeout 60 --replica-retry-limit 1 ...
+    - az containerapp job start \ --name "my-job" --resource-group " RG1" -trigger-type "Event" \ -replica-timeout 60 --replica-retry-limit 1 ...
+
+    Azure Container Apps jobs enable you to run containerized tasks that execute for a finite duration, and then exit. You can use jobs to perform tasks such as data processing, machine learning, or any scenario where on-demand processing is required. Container apps and jobs run in the same environment, allowing them to share capabilities such as networking and logging.
+
+    A job's trigger type determines how the job is started. The following trigger types are available:
+
+    Manual: Manual jobs are triggered on demand.
+
+    Schedule: Scheduled jobs are triggered at specific times and can run repeatedly.
+
+    Event: Event-driven jobs are triggered by events such as a message arriving in a queue.
+
+    [Jobs in Azure Container Apps (preview) | Microsoft Learn](https://learn.microsoft.com/azure/container-apps/jobs?tabs=azure-cli)
+    
+72. 
