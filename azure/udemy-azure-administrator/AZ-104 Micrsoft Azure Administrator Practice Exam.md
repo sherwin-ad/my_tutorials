@@ -360,8 +360,8 @@
 
 23. You have defined an autoscale condition with four autoscale rules. The first rule scales out when the CPU utilization reaches 70 percent. The second rule scales back in when the CPU utilization drops below 50 percent. The third rule scales out if memory occupancy exceeds 75 percent. The fourth rule scales back in when memory occupancy falls below 50 percent. When will the system scale out?
 
-    - When CPU utilization reaches 70 percent, **and** memory occupancy exceeds 75 percent
-    - You can't do this with a single autoscale condition. An autoscale condition can only contain autoscale rules that use the same metric
+    - When CPU utilization reaches 70 percent, and memory occupancy exceeds 75 percent
+    - You can't do this with a single autoscale condition. An autoscale condition can only contain autoscale rules that use the same metrics
     - **When CPU utilization reaches 70 percent, or memory occupancy exceeds 75 percent**
 
     
