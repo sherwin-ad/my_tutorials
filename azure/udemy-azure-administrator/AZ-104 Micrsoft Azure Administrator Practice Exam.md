@@ -1070,16 +1070,16 @@
 
    [Configure Azure Load Balancer - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-load-balancer/)
 
-5. You have an Azure subscription that contains a resource group named RG1. RG1 has a virtual network named VNet3, a virtual machine named VM1, and a public IP address named PubIP1. All the resources are in the West US Azure region.
+5. **You have an Azure subscription that contains a resource group named RG1. RG1 has a virtual network named VNet3, a virtual machine named VM1, and a public IP address named PubIP1. All the resources are in the West US Azure region.**
 
-   You plan to create and configure a network security group (NSG) named NSG1 for the following types of traffic:
+   **You plan to create and configure a network security group (NSG) named NSG1 for the following types of traffic:**
 
-   - Remote Desktop Management
-   - HTTP
+   - **Remote Desktop Management**
+   - **HTTP**
 
-   NSG1 will be used on the subnets of multiple virtual networks.
+   **NSG1 will be used on the subnets of multiple virtual networks.**
 
-   Which two cmdlets should you run? Each correct answer presents part of the solution.
+   **Which two cmdlets should you run? Each correct answer presents part of the solution.**
 
    Select all answers that apply.
 
@@ -1513,13 +1513,13 @@
 
     [Configure virtual machine availability - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-machine-availability/)
 
-26. You have an Azure subscription that contains an Azure Storage account named vmstorageaccount1.
+26. **You have an Azure subscription that contains an Azure Storage account named vmstorageaccount1.**
 
-    You create an Azure container instance named container1.
+    **You create an Azure container instance named container1.**
 
-    You need to configure persistent storage for container1.
+    **You need to configure persistent storage for container1.**
 
-    What should you create in vmstorageaccount1?
+    **What should you create in vmstorageaccount1?**
 
     Select only one answer.
 
@@ -1626,18 +1626,18 @@
 
     [Configure Azure App Service - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-app-services/)
 
-30. You have an Azure subscription that contains an Azure App Service web app named App1.
+30. **You have an Azure subscription that contains an Azure App Service web app named App1.**
 
-    You have the following diagnostic logging configurations:
+    **You have the following diagnostic logging configurations:**
 
-    - Application Logging (FileSystem): Error
-    - Application Logging (Blob): Information
-    - Detailed Error Message: Warning
-    - Web Server Logging: Verbose
+    - **Application Logging (FileSystem): Error**
+    - **Application Logging (Blob): Information**
+    - **Detailed Error Message: Warning**
+    - **Web Server Logging: Verbose**
 
-    You need to configure diagnostic logging to store all warnings or higher.
+    **You need to configure diagnostic logging to store all warnings or higher.**
 
-    Which types of diagnostic logging and severity should you enable?
+    **Which types of diagnostic logging and severity should you enable?**
 
     Select all answers that apply.
 
@@ -1653,13 +1653,13 @@
 
     [Configure Azure App Service - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-app-services/)
 
-31. You have an Azure subscription that contains a container app named App1. App1 is configured to use cached data.
+31. **You have an Azure subscription that contains a container app named App1. App1 is configured to use cached data.**
 
-    You plan to create a new container.
+    **You plan to create a new container.**
 
-    You need to ensure that the new container automatically refreshes the cache used by App1.
+    **You need to ensure that the new container automatically refreshes the cache used by App1.**
 
-    Which type of container should you configure?
+    **Which type of container should you configure?**
 
     Select only one answer.
 
@@ -1714,13 +1714,13 @@
 
     [Implement Azure AD self-service password reset - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/allow-users-reset-their-password/3-implement-azure-ad-self-service-password-reset)
 
-34. You have a Microsoft Entra tenant.
+34. **You have a Microsoft Entra tenant.**
 
-    You create a new user named User1.
+    **You create a new user named User1.**
 
-    You need to assign a Microsoft 365 E5 license to User1.
+    **You need to assign a Microsoft 365 E5 license to User1.**
 
-    Which user attribute should be configured for User1 before you can assign the license?
+    **Which user attribute should be configured for User1 before you can assign the license?**
 
     Select only one answer.
 
@@ -1910,13 +1910,13 @@
 
     [Configure Azure Policy - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-policy/)
 
-43. You have an Azure subscription that contains a tenant named contoso.com.
+43. **You have an Azure subscription that contains a tenant named contoso.com.**
 
-    All users in contoso.com are currently able to invite external users to B2B collaboration.
+    **All users in contoso.com are currently able to invite external users to B2B collaboration.**
 
-    You need to ensure that only members of the Guest Inviter, User Administrator, and Global Administrator roles can invite guest users.
+    **You need to ensure that only members of the Guest Inviter, User Administrator, and Global Administrator roles can invite guest users.**
 
-    What should you configure?
+    **What should you configure?**
 
     Select only one answer.
 
@@ -2041,11 +2041,11 @@
 
     [Configure Network Watcher - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-network-watcher/)
 
-49. You have an Azure subscription that contains virtual machines, virtual networks, application gateways, and load balancers.
+49. **You have an Azure subscription that contains virtual machines, virtual networks, application gateways, and load balancers.**
 
-    You need to monitor the network health of the resources.
+    **You need to monitor the network health of the resources.**
 
-    Which Azure service should you use?
+    **Which Azure service should you use?**
 
     Select only one answer.
 
@@ -2366,13 +2366,13 @@
 
     [Configure Azure Load Balancer - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-load-balancer/)
 
-62. You have an Azure subscription that contains a virtual network named VNet1.
+62. **You have an Azure subscription that contains a virtual network named VNet1.**
 
-    You plan to deploy a virtual machine named VM1 to be used as a network inspection appliance.
+    **You plan to deploy a virtual machine named VM1 to be used as a network inspection appliance.**
 
-    You need to ensure that all network traffic passes through VM1.
+    **You need to ensure that all network traffic passes through VM1.**
 
-    What should you do?
+    **What should you do?**
 
     Select only one answer.
 
@@ -2390,13 +2390,13 @@
 
     [Azure virtual network traffic routing | Microsoft Learn](https://learn.microsoft.com/azure/virtual-network/virtual-networks-udr-overview)
 
-63. You have an Azure virtual network named VNet1.
+63. **You have an Azure virtual network named VNet1.**
 
-    You create an Azure Private DNS zone named contoso.com.
+    **You create an Azure Private DNS zone named contoso.com.**
 
-    You need to ensure that the virtual machines on VNet1 register in the contoso.com private DNS zone.
+    **You need to ensure that the virtual machines on VNet1 register in the contoso.com private DNS zone.**
 
-    What should you do?
+    **What should you do?**
 
     Select only one answer.
 
@@ -2616,5 +2616,416 @@
     Event: Event-driven jobs are triggered by events such as a message arriving in a queue.
 
     [Jobs in Azure Container Apps (preview) | Microsoft Learn](https://learn.microsoft.com/azure/container-apps/jobs?tabs=azure-cli)
+
+72. You have an Azure Storage account.
+
+    You need to copy data to the storage account by using the AzCopy tool.
+
+    Which two types of data storage are supported by AzCopy? Each correct answer presents a complete solution.
+
+    Select all answers that apply.
+
+    - **blob**
+
+    - **file**
+
+    - queue
+
+    - table
+
+    You can provide authorization credentials by using Microsoft Entra, or by using a shared access signature (SAS) token. Both storage types, blob and file, are supported in AzCopy.
+
+    [Copy or move data to Azure Storage by using AzCopy v10 | Microsoft Learn](https://learn.microsoft.com/azure/storage/common/storage-use-azcopy-v10)
+
+    [Configure Azure Storage with tools - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-storage-tools/)
+
+73. **You have an Azure subscription.**
+
+    **You plan to create a storage account named storage1.**
+
+    **You need to ensure that storage1 provides POSIX-compliant access control lists (ACLs).**
+
+    **Which option should you configure when creating storage1?**
+
+    Select only one answer.
+
+    - access tier
+
+    - **hierarchical namespace**
+
+    - SFTP
+
+    - version-level immutable support
+
+    To enable POSIX-compliant access control lists (ACLs), the hierarchical namespace must be used. The remaining options are valid for a storage account, but do not provide the POSIX-compliant feature.
+
+    [Azure Data Lake Storage Gen2 Hierarchical Namespace | Microsoft Learn](https://learn.microsoft.com/azure/storage/blobs/data-lake-storage-namespace)
+
+    [Configure storage accounts - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-storage-accounts/)
+
+74. You have two Azure subscriptions named Sub1 and Sub2.
+
+    Sub1 contains a virtual network named VNet1 and a VPN gateway. Sub2 contains a virtual network named VNet2.
+
+    You have an on-premises device named Device1 that runs Windows and has a Point-to-Site (P2S) VPN client installed.
+
+    You configure network peering between VNet1 and VNet2.
+
+    You need to ensure that Device1 can access VNet2 when a VPN connection is established.
+
+    What should you do?
+
+    - Select only one answer.
+
+    - Create a private endpoint in Sub2.
+
+    - Deploy Azure Front Door to Sub2.
+
+    - **Download and reinstall the P2S VPN client on Device1.**
+
+    Run the `New-SelfSignedCertificate` cmdlet on Device1.
+
+    Point-to-Site (P2S) VPN clients must be downloaded and reinstalled again after virtual network peering is successfully configured to ensure that the new routes are downloaded to the client.
+
+    A private endpoint and Azure Front Door are not required nor used to be able to access VNet2 from VNet1.
+
+    Device1 already has a digital certificate when you install the P2S VPN client, so you do not need to create new certificate manually.
+
+    [Create, change, or delete an Azure virtual network peering | Microsoft Learn](https://learn.microsoft.com/azure/virtual-network/virtual-network-manage-peering?tabs=peering-portal#requirements-and-constraints)
+
+    [Configure virtual network peering - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-vnet-peering/)
+
+75. **You have a Microsoft Entra tenant named contoso.com. Microsoft Entra Connect is configured to sync users to the tenant.**
+
+    **You need to assign licenses to the users based on Microsoft Entra ID attributes. The solution must minimize administrative effort.**
+
+    **Which two actions should you perform? Each correct answer presents part of the solution.**
+
+    Select all answers that apply.
+
+    - **Assign the licenses to the dynamic groups.**
+
+    - Assign the licenses to the security groups.
+
+    - Create an automatic assignment policy.
+
+    - **Create dynamic groups.**
+
+    - Create security groups.
+
+    To assign licenses to users based on Microsoft Entra ID attributes, you must create a dynamic security group and configure rules based on custom attributes. The dynamic group must be added to a license group for automatic synchronization. All users in the groups will get the license automatically. Microsoft Entra evaluates the users in the organization that are in scope for an assignment policy rule and creates assignments for the users who don't have assignments to an access package; automatic assignment policies are not used for licensing.
+
+    [Assign licenses to a group - Azure Active Directory - Microsoft Entra | Microsoft Learn](https://learn.microsoft.com/azure/active-directory/enterprise-users/licensing-groups-assign)
+
+    [Configure user and group accounts - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-user-group-accounts/)
+
+76. **You have an Azure subscription that contains multiple users and administrators.**
+
+    **You are creating a new custom role by using the following JSON.**
+
+    ```
+    { 
     
-72. 
+      "Name": "Custom Role", 
+    
+      "Id": null, 
+    
+      "IsCustom": true, 
+    
+      "Description": "Custom Role description", 
+    
+      "Actions": [ 
+    
+        "Microsoft.Compute/*/read", 
+    
+        “Microsoft.Compute/snapshots/write”, 
+    
+        “Microsoft.Compute/snapshots/read”, 
+    
+        "Microsoft.Support/*" 
+    
+      ], 
+    
+      "NotActions": [ 
+    
+      “Microsoft.Compute/snapshots/delete” 
+    
+      ], 
+    
+      "AssignableScopes": [ 
+    
+        "/subscriptions/00000000-0000-0000-0000-000000000000", 
+    
+        "/subscriptions/11111111-1111-1111-1111-111111111111" 
+    
+      ] 
+    
+    } 
+    ```
+
+    Which three actions can be performed by a user that is assigned the custom role? Each correct answer presents a complete solution.
+
+    Select all answers that apply.
+
+    - **Call Microsoft Support.**
+    - Create and delete a snapshot.
+    - **Create and read a snapshot.**
+    - Create virtual machines.
+    - **Read all virtual machine settings.**
+
+    The role can read all compute resources, call Microsoft support roles, and allow the creation and reading of a snapshot.
+
+    [Azure custom roles - Azure RBAC | Microsoft Learn](https://learn.microsoft.com/azure/role-based-access-control/custom-roles)
+
+    [Configure role-based access control - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-role-based-access-control/)
+
+77. **You have an Azure subscription.**
+
+    **An administrator manages access to resources at the resource group level. The assignment process is automated by running the following PowerShell script nightly.**
+
+    ```
+    $rg = "RG1" 
+    $RoleName = "CustomRole1" 
+    $Role = Get-AzRoleDefinition -Name $RoleName 
+    New-AzRoleAssignment -SignInName user1@contoso.com `   
+        -RoleDefinitionName $Role.Name `
+        -ResourceGroupName $rg
+    ```
+
+    User1 is unable to access the RG1 resource group. You discover that the script fails to complete for new users.
+
+    You run `Get-AzRoleDefinition | Format-Table -Property Name, Id` and receive the following information:
+
+    ```
+    Name: Custom Role 1, ID: 111-222-333
+    Name: Owner, ID: 222-333-444
+    Name: Contributor, ID: 333-444-555
+    Name: Reader, ID: 666-777-888
+    ```
+
+    You need to modify the script to ensure that it does not fail in the future.
+
+    What should you change in the script?
+
+    Select only one answer.
+
+    - $Role = Add-AzRoleDefinition -Name $RoleName
+    - $Role = Get-AzRoleAssignment -Name $RoleName 
+    - $Role = Set-AzRoleAssignment -Name $RoleName
+    - **$RoleName = "111-222-333"**
+
+    You should use the ID of the role in case the role name was changed to prevent such a change from breaking the script.
+
+    [Assign Azure roles using Azure PowerShell - Azure RBAC | Microsoft Learn](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-powershell)
+
+    [Configure role-based access control - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-role-based-access-control/)
+
+78. **You have an Azure subscription that contains several storage accounts.**
+
+    **You need to provide a user with the ability to perform the following tasks:**
+
+    - **Manage containers within the storage accounts.**
+    - **View storage account access keys.**
+
+    **The solution must use the principle of least privilege.**
+
+    **Which role should you assign to the user?**
+
+    Select only one answer.
+
+    - Owner
+    - Reader
+    - **Storage Account Contributor**
+    - Storage Blob Data Contributor
+
+    Storage Account Contributor allows the management of storage accounts. It provides access to the account key, which can be used to access data via Shared Key authorization. Storage Blob Data Contributor grants permissions to read, write, and delete Azure Storage containers and blobs. Reader allows you to view all resources but does not allow you to make any changes. Owner grants full access to manage all resources, including the ability to assign roles in Azure RBAC.
+
+    [Azure built-in roles - Azure RBAC | Microsoft Learn](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles)
+
+    [Configure role-based access control - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-role-based-access-control/)
+
+79. **You have a Log Analytics workspace that collects data from various data sources.**
+
+    **You create a new Azure Monitor log query.**
+
+    **You plan to view data pinned as a chart to a shared dashboard.**
+
+    **What is the maximum number of days for which data can be pinned as a chart on the dashboard?**
+
+    Select only one answer.
+
+    - **14**
+    - 30
+    - 90
+    - 180
+
+    Data pinned on a shared dashboard can only be displayed for a maximum of 14 days.
+
+    [Azure Monitor workbook chart visualizations - Azure Monitor | Microsoft Learn](https://learn.microsoft.com/azure/azure-monitor/visualize/workbooks-chart-visualizations)
+
+    [Configure Azure Monitor - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-monitor/)
+
+80. You have multiple Azure virtual machines and an Azure recovery services vault. Virtual machines are configured with the default backup policy.
+
+    What is the retention period of virtual machine backups in the default backup policy?
+
+    Select only one answer.
+
+    - 7 days
+    - 14 days
+    - 30 days
+    - 90 days
+
+    By default, backups of virtual machines are kept for 30 days.
+
+    [Back up an Azure VM from the VM settings - Azure Backup | Microsoft Learn](https://learn.microsoft.com/azure/backup/backup-azure-vms-first-look-arm)
+
+    [Configure virtual machine backups - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-machine-backups/)
+
+81. You have an Azure virtual machine that you back up by using Azure Backup.
+
+    The backup policy sub type is Standard, and the backup policy has the following configurations:
+
+    - Backup schedule frequency: Weekly
+    - Retain instant recovery snapshot(s) for: 5 days
+    - Retention of weekly backup point: On Sunday at 8:00 AM for 12 weeks
+
+    You plan to reduce the amount of storage used by Instant Restore.
+
+    You need to instance recovery snapshots to be retained for only two days.
+
+    What should you do first?
+
+    Select only one answer.
+
+    - Change Policy sub type to Enhanced.
+    - Change Retention of weekly backup point to 1 week.
+    - **Change the backup schedule frequency to Daily.**
+    - Provision an additional blob storage container.
+
+    You can choose to store between one and five instant recovery snapshots and the default value is two. However, when the backup schedule frequency is weekly, you must retain five instant recovery snapshots.
+
+    [Azure Instant Restore Capability - Azure Backup | Microsoft Learn](https://learn.microsoft.com/azure/backup/backup-instant-restore-capability)
+
+    [Configure file and folder backups - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-file-folder-backups/)
+
+82. You have an Azure subscription that contains 20 virtual networks and 500 virtual machines.
+
+    You deploy a new virtual machine named VM501.
+
+    You discover that VM501 is unable to communicate with a virtual machine named VM20 in the subscription. You suspect that a network security group (NSG) is the cause of the issue.
+
+    You need to identify whether an NSG is blocking communications. The solution must minimize administrative effort.
+
+    What should you use?
+
+    Select only one answer.
+
+    - diagnostic logs
+    - **IP flow verify**
+    - NSG flow logs
+    - packet capture
+
+    IP flow verify lets you specify a source and destination IPv4 address, port, protocol (TCP or UDP), and traffic direction (inbound or outbound). IP flow verify can identify the specific network security group (NSG) that prevents communication. NSG flow logs is a feature of Azure Network Watcher that allows you to log information about IP traffic flowing through an NSG. Although the logs may help you identify the source of the issue, it requires much more configuration and manual evaluation. Packet capture allows you to create packet capture sessions to track traffic to and from a virtual machine. Packet capture may help narrow down the scope of the issue, but it will not identify the specific NSG that prevents communication.
+
+    [Azure Network Watcher | Microsoft Learn](https://learn.microsoft.com/azure/network-watcher/network-watcher-monitoring-overview)
+
+    [Configure Network Watcher - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-network-watcher/)
+
+83. **You have two Azure virtual machines named VM1 and VM2 that run Windows Server.**
+
+    **VM1 has a single data disk that stores backup files.**
+
+    **You need to move the data disk from VM1 to VM2 as quickly as possible.**
+
+    **What should you do first?**
+
+    Select only one answer.
+
+    - **Detach the data disk from VM1.**
+    - Restart VM1.
+    - Stop VM1.
+    - Stop VM2.
+
+    You can detach a disk from a running virtual machine (hot removal). You do not need to stop VM2 or restart the VM1.
+
+    [Detach a data disk from a Windows VM - Azure - Azure Virtual Machines | Microsoft Learn](https://learn.microsoft.com/azure/virtual-machines/windows/detach-disk)
+
+    [Configure virtual machines - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-machines/)
+
+84. **You are deploying a virtual machine by using an availability set in the East US Azure region.**
+
+    **You have deployed 18 virtual machines in two fault domains and 10 update domains.**
+
+    **Microsoft performed planned physical hardware maintenance in the East US region.**
+
+    **What is the maximum number of virtual machines that will be unavailable?**
+
+    Select only one answer.
+
+    - **2**
+
+    - 8
+
+    - 9
+
+    - 18
+
+    18 virtual machines are shared across 10 update domains. The first 10 virtual machines go to 10 update domains, so eight update domains will have two virtual machines. When there is physical hardware maintenance, some virtual machines will be unavailable based on their configuration. If there was a rack failure, then 18 virtual machines will be distributed to two fault domains with nine virtual machines each.
+
+    [Availability sets overview - Azure Virtual Machines | Microsoft Learn](https://learn.microsoft.com/azure/virtual-machines/availability-set-overview)
+
+    [Configure virtual machine availability - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-machine-availability/)
+
+85. You plan to deploy an Azure virtual machine.
+
+    You are evaluating whether to use an Azure Spot instance.
+
+    Which two factors can cause an Azure Spot instance to be evicted? Each correct answer presents a complete solution.
+
+    Select all answers that apply.
+
+    - the average CPU usages of the instance
+
+    - **the Azure capacity needs**
+
+    - **the current price of the instance**
+
+    - the time of day
+
+    Azure Spot instances allow you to provision virtual machines at a reduced cost, but these virtual machines can be stopped by Azure when Azure needs the capacity for other pay-as-you-go workloads, or when the price of the spot instance exceeds the maximum price that you have set. These virtual machines are good for dev, testing, or for workloads that do not require any specific SLA.
+
+    [Use Azure Spot Virtual Machines - Azure Virtual Machines | Microsoft Learn](https://learn.microsoft.com/azure/virtual-machines/spot-vms)
+
+    [Configure virtual machine availability - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-machine-availability/)
+
+86. **You have an Azure subscription.**
+
+    **You plan to deploy a web app in a Linux-based Docker container.**
+
+    **You need to recommend a solution for the deployment of the web app that meets the following requirements:**
+
+    - **Supports a custom domain name**
+    - **Provides the ability to scale out automatically based on demand.**
+    - **Minimizes administrative effort**
+    - **Minimizes costs**
+
+    **Which solution should you recommend?**
+
+    Select only one answer.
+
+    - **Azure App Service**
+
+    - Azure Container Instances
+
+    - Azure Kubernetes Service (AKS)
+
+    - Azure Virtual Machine Scale Sets
+
+    Azure App Service fulfills all the stated requirements. Azure Virtual Machine Scale Sets, Azure Kubernetes Service (AKS), and Azure Container Instances are more difficult to administer and more costly.
+
+    [Overview - Azure App Service | Microsoft Learn](https://learn.microsoft.com/azure/app-service/overview)
+
+    [Configure Azure App Service plans - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-app-service-plans/)
+
+87. 
