@@ -1228,9 +1228,9 @@
 
     [Configure Azure Storage security - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-storage-security/)
 
-12. You need to create an Azure Storage account that supports the Azure Data Lake Storage Gen2 capabilities.
+12. **You need to create an Azure Storage account that supports the Azure Data Lake Storage Gen2 capabilities.**
 
-    Which two types of storage accounts can you use? Each correct answer presents a complete solution.
+    **Which two types of storage accounts can you use? Each correct answer presents a complete solution.**
 
     Select all answers that apply.
 
@@ -1265,11 +1265,11 @@
 
     [Determine replication strategies - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-storage-accounts/5-determine-replication-strategies)
 
-14. You have an Azure Storage account named corpimages and an on-premises shared folder named \\server1\images.
+14. **You have an Azure Storage account named corpimages and an on-premises shared folder named \\server1\images.**
 
-    You need to migrate all the contents from \\server1\images to corpimages.
+    **You need to migrate all the contents from \\server1\images to corpimages.**
 
-    Which two commands can you use? Each correct answer presents a complete solution?
+    **Which two commands can you use? Each correct answer presents a complete solution?**
 
     Select all answers that apply.
 
@@ -1326,13 +1326,13 @@
 
     [Configure Azure Blob Storage - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-blob-storage/)
 
-17. You have an Azure subscription and an on-premises Hyper-V virtual machine named VM1. VM1 contains a single virtual disk.
+17. **You have an Azure subscription and an on-premises Hyper-V virtual machine named VM1. VM1 contains a single virtual disk.**
 
-    You plan to use VM1 as a template to deploy 25 new Azure virtual machines.
+    **You plan to use VM1 as a template to deploy 25 new Azure virtual machines.**
 
-    You need to upload VM1 to Azure.
+    **You need to upload VM1 to Azure.**
 
-    Which cmdlet should you run?
+    **Which cmdlet should you run?**
 
     Select only one answer.
 
@@ -1355,11 +1355,11 @@
 
     [Configure virtual machines - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-machines/)
 
-18. You have an Azure subscription that contains a storage account named storage1 and a Microsoft Entra tenant named contoso.com.
+18. **You have an Azure subscription that contains a storage account named storage1 and a Microsoft Entra tenant named contoso.com.**
 
-    You plan to provide identity-based access to storage1.
+    **You plan to provide identity-based access to storage1.**
 
-    Which storage1 data service can be configured to use identity-based access?
+    **Which storage1 data service can be configured to use identity-based access?**
 
     Select only one answer.
 
@@ -1581,36 +1581,36 @@
 
     [Configure Azure Container Instances - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-container-instances/)
 
-29. You have an Azure subscription that contains multiple resource groups and Azure App Service web apps. A resource group named RG1 hosts a web app named appservice1. The App Service uses a free App Service Managed SSL certificate.
+29. **You have an Azure subscription that contains multiple resource groups and Azure App Service web apps. A resource group named RG1 hosts a web app named appservice1. The App Service uses a free App Service Managed SSL certificate.**
 
-    You create a resource group named RG2.
+    **You create a resource group named RG2.**
 
-    You plan to move all the resources in RG1 to RG2.
+    **You plan to move all the resources in RG1 to RG2.**
 
-    Which two actions should you perform? Each correct answer presents part of the solution.
+    **Which two actions should you perform? Each correct answer presents part of the solution.**
 
-    Select all answers that apply.You have a Basic Azure App Service plan that contains a web app.
+    **Select all answers that apply.You have a Basic Azure App Service plan that contains a web app.**
 
-    You need to ensure that the web app can scale automatically when the CPU percentage goes beyond 80 percent for a duration of 15 minutes.
+    **You need to ensure that the web app can scale automatically when the CPU percentage goes beyond 80 percent for a duration of 15 minutes.**
 
-    Which two actions should you perform? Each correct answer presents part of the solution.
+    **Which two actions should you perform? Each correct answer presents part of the solution.**
 
-    Select all answers that apply.
+    **Select all answers that apply.**
 
-    Configure a deployment slot.
+    **Configure a deployment slot.**
 
-    Configure a scaling condition to scale based on a metric, and then add the rules.
-    This answer is correct.
+    **Configure a scaling condition to scale based on a metric, and then add the rules.**
+    **This answer is correct.**
 
-    Configure a scaling condition to scale based on an instance count, and then set the instance count.
+    **Configure a scaling condition to scale based on an instance count, and then set the instance count.**
 
-    Scale out the App Service plan.
+    **Scale out the App Service plan.**
 
-    Scale up the App Service plan.
-    This answer is correct.
-    Scale up the web app by adding more CPU, memory, and disk space to fulfill the requirement. Increase the number of virtual machine instances that run the app. The scale settings take only seconds to apply and affect all the apps in the App Service plan. Then, you must set up a scaling condition with the required metrics to scale up/down and scale out/in when certain thresholds are met.
+    **Scale up the App Service plan.**
+    **This answer is correct.**
+    **Scale up the web app by adding more CPU, memory, and disk space to fulfill the requirement. Increase the number of virtual machine instances that run the app. The scale settings take only seconds to apply and affect all the apps in the App Service plan. Then, you must set up a scaling condition with the required metrics to scale up/down and scale out/in when certain thresholds are met.**
 
-    Scale up features and capacities - Azure App Service | Microsoft Learn
+    **Scale up features and capacities - Azure App Service | Microsoft Learn**
 
     Configure Azure App Service - Training | Microsoft Learn
 
@@ -1801,11 +1801,11 @@
 
     [Configure role-based access control - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-role-based-access-control/)
 
-38. You have an Azure subscription that contains a resource group named RG1. RG1 contains a virtual machine that runs daily reports.
+38. **You have an Azure subscription that contains a resource group named RG1. RG1 contains a virtual machine that runs daily reports.**
 
-    You need to ensure that the virtual machine shuts down when resource group costs exceed 75 percent of the allocated budget.
+    **You need to ensure that the virtual machine shuts down when resource group costs exceed 75 percent of the allocated budget.**
 
-    Which two actions should you perform? Each correct answer presents part of the solution.
+    **Which two actions should you perform? Each correct answer presents part of the solution.**
 
     Select all answers that apply.
 
@@ -1889,13 +1889,13 @@
 
     [Create Azure Advisor alerts for new recommendations using Azure portal - Azure Advisor | Microsoft Learn](https://learn.microsoft.com/azure/advisor/advisor-alerts-portal)
 
-42. You have an Azure subscription.
+42. **You have an Azure subscription.**
 
-    You plan to create an Azure Policy definition named Policy1.
+    **You plan to create an Azure Policy definition named Policy1.**
 
-    You need to include remediation information to indicate when users use Microsoft Defender for Cloud Regulatory and Compliance.
+    **You need to include remediation information to indicate when users use Microsoft Defender for Cloud Regulatory and Compliance.**
 
-    To which definition section should you add remediation information for Policy1?
+    **To which definition section should you add remediation information for Policy1?**
 
     Select only one answer.
 
@@ -1977,13 +1977,13 @@
 
     [Manage the Azure recovery services agent - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-file-folder-backups/6-manage-azure-recovery-services-agent?ns-enrollment-type=learningpath&ns-enrollment-id=learn.az-104-monitor-backup-resources)
 
-46. You have an Azure virtual machine named VM1 that is protected by using Azure site recovery.
+46. **You have an Azure virtual machine named VM1 that is protected by using Azure site recovery.**
 
-    You fail over VM1 from the primary region to the secondary region.
+    **You fail over VM1 from the primary region to the secondary region.**
 
-    You need to reprotect VM1 after the failover so that VM1 will replicate back to the primary region.
+    **You need to reprotect VM1 after the failover so that VM1 will replicate back to the primary region.**
 
-    What is the VM1 status before the reprotection?
+    **What is the VM1 status before the reprotection?**
 
     Select only one answer.
 
@@ -1998,11 +1998,11 @@
 
     [Configure file and folder backups - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-file-folder-backups/)
 
-47. You have an Azure subscription that contains a resource group named RG1. RG1 contains two virtual machines named VM1 and VM2.
+47. **You have an Azure subscription that contains a resource group named RG1. RG1 contains two virtual machines named VM1 and VM2.**
 
-    You need to inspect all the network traffic from VM1 to VM2.The solution must use Azure Monitor metrics.
+    **You need to inspect all the network traffic from VM1 to VM2.The solution must use Azure Monitor metrics.**
 
-    Which two actions should you perform? Each correct answer presents part of the solution.
+    **Which two actions should you perform? Each correct answer presents part of the solution.**
 
     Select all answers that apply.
 
@@ -2060,9 +2060,9 @@
 
     [Configure Network Watcher - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-network-watcher/)
 
-50. You plan to create an alert in Azure Monitor that will have an action group to send SMS messages.
+50. **You plan to create an alert in Azure Monitor that will have an action group to send SMS messages.**
 
-    What is the maximum number of SMS messages that will be sent every hour if the alert gets triggered every minute?
+    **What is the maximum number of SMS messages that will be sent every hour if the alert gets triggered every minute?**
 
     Select only one answer.
 
@@ -2188,11 +2188,11 @@
 
     [Configure Azure alerts - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-alerts/)
 
-56. You have an Azure virtual machine that runs Linux. The virtual machine hosts a custom application that outputs log data in the JSON format.
+56. **You have an Azure virtual machine that runs Linux. The virtual machine hosts a custom application that outputs log data in the JSON format.**
 
-    You need to recommend a solution to collect the logs in Log Analytics workspace.
+    **You need to recommend a solution to collect the logs in Log Analytics workspace.**
 
-    What should you include in the recommendation?
+    **What should you include in the recommendation?**
 
     Select only one answer.
 
@@ -2521,11 +2521,11 @@
 
     [Automate Azure tasks using scripts with PowerShell - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/automate-azure-tasks-with-powershell/)
 
-68. You have an Azure Resource Manager (ARM) template named deploy.json that is stored in an Azure Blob storage container.
+68. **You have an Azure Resource Manager (ARM) template named deploy.json that is stored in an Azure Blob storage container.**
 
-    You plan to deploy the template by running the `New-AzDeployment` cmdlet.
+    **You plan to deploy the template by running the `New-AzDeployment` cmdlet.**
 
-    Which parameter should you use to reference the template?
+    **Which parameter should you use to reference the template?**
 
     Select only one answer.
 
@@ -2865,15 +2865,15 @@
 
     [Configure Azure Monitor - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-monitor/)
 
-80. You have multiple Azure virtual machines and an Azure recovery services vault. Virtual machines are configured with the default backup policy.
+80. **You have multiple Azure virtual machines and an Azure recovery services vault. Virtual machines are configured with the default backup policy.**
 
-    What is the retention period of virtual machine backups in the default backup policy?
+    **What is the retention period of virtual machine backups in the default backup policy?**
 
     Select only one answer.
 
     - 7 days
     - 14 days
-    - 30 days
+    - **30 days**
     - 90 days
 
     By default, backups of virtual machines are kept for 30 days.
@@ -3028,4 +3028,216 @@
 
     [Configure Azure App Service plans - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-app-service-plans/)
 
-87. 
+87. **You have an Azure subscription that contains a resource group named RG1.**
+
+    **You have an Azure Resource Manager (ARM) template for an Azure virtual machine.**
+
+    **You need to use PowerShell to provision a virtual machine in RG1 by using the template.**
+
+    **Which PowerShell cmdlet should you run?**
+
+    Select only one answer.
+
+    - New-AzManagementGroupDeployment
+    - **New-AzResourceGroupDeployment**
+    - New-AzSubscriptionDeployment 
+    - New-AzVM
+
+    Virtual machines are deployed to resource groups, so you must run the `New-AzResourceGroupDeployment` cmdlet. You can deploy virtual machines to subscriptions or management groups directly, therefore, `New-AzManagementGroupDeployment` and `New-AzSubscriptionDeployment` cannot be used. `New-AzVM` can be used to provision a new virtual machine, but without using a template.
+
+    [Deploy resources with PowerShell and template - Azure Resource Manager | Microsoft Learn](https://learn.microsoft.com/azure/azure-resource-manager/templates/deploy-powershell)
+
+    [Deploy Azure infrastructure by using JSON ARM templates - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/create-azure-resource-manager-template-vs-code/)
+
+    [Automate Azure tasks using scripts with PowerShell - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/automate-azure-tasks-with-powershell/)
+
+88. **You have an Azure virtual machine.**
+
+    **You receive a notification that the virtual machine is going to be affected by an underlying maintenance activity on the physical infrastructure.**
+
+    **You need to move the virtual machine to a different host to avoid a service interruption.**
+
+    **What should you do?**
+
+    Select only one answer.
+
+    - Apply an Azure policy.
+
+    - Apply an Azure tag.
+
+    - Move the virtual machine to another Azure subscription.
+
+    - **Redeploy the virtual machine.**
+
+    You must redeploy the virtual machine, which can move the virtual machine to a different host. Azure will shut down the virtual machine and move the virtual machine to a new node within the Azure infrastructure.
+
+    [Redeploy Windows virtual machines in Azure - Virtual Machines | Microsoft Learn](https://learn.microsoft.com/troubleshoot/azure/virtual-machines/redeploy-to-new-node-windows)
+
+    [Configure virtual machines - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-machines/)
+
+89. **You have an Azure subscription that contains the following resources:**
+
+    - **Eight virtual networks**
+    - **24 virtual machines**
+    - **16 storage accounts**
+
+    **You need to implement a monitoring solution that provides the ability to view diagnostics and telemetry data generated by Azure resources.**
+
+    **What should you include in the solution?**
+
+    Select only one answer.
+
+    - **a Log Analytics workspace**
+    - an Azure Machine Learning workspace
+    - metrics logs
+    - resource logs
+
+    A Log Analytics workspace is a unique environment for log data from Azure Monitor and other Azure services, such as Microsoft Sentinel and Microsoft Defender for Cloud. Each workspace has its own data repository and configuration and can combine data from multiple services.
+
+    [Log Analytics workspace overview - Azure Monitor | Microsoft Docs](https://docs.microsoft.com/azure/azure-monitor/logs/log-analytics-workspace-overview)
+
+    [Determine Log Analytics uses - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-log-analytics/2-determine-uses)
+
+90. You have an Azure subscription that contains a network security group (NSG) named NSG1.
+
+    You plan to configure NSG1 to allow the following types of traffic:
+
+    - Remote Desktop Management
+    - Secured HTTPS
+
+    Which two ports should you allow in NSG1? Each correct answer presents part of the solution.
+
+    Select all answers that apply.
+
+    - 80
+
+    - 25
+
+    - **443**
+
+    - 587
+
+    - **3389**
+
+    You must open port 443 to secured HTTPS traffic, port 3389 for Remote Desktop, and 587 to send outbound email by using authenticated SMTP relay. Port 80 is used for unsecured traffic. Port 25 is used by mail traffic.
+
+    [Protect your Azure resources with a lock - Azure Resource Manager | Microsoft Learn](https://learn.microsoft.com/azure/azure-resource-manager/management/lock-resources?tabs=json)
+
+    [Configure network security groups - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-network-security-groups/)
+
+91. You create several Azure virtual machines that run Windows Server.
+
+    You need to connect to the virtual machines without exposing RDP ports over the internet.
+
+    Which Azure service should you deploy?
+
+    Select only one answer.
+
+    - **Azure Bastion**
+
+    - Azure Front Door
+
+    - Azure Network Watcher
+
+    - Azure Virtual Desktop
+
+    Azure Bastion is a service that lets you connect to a virtual machine by using a browser, without exposing RDP and SSH ports. Azure Monitor helps you maximize the availability and performance of applications and services. Azure Network Watcher provides tools to monitor, diagnose, view metrics, and enable or disable logs for resources in an Azure virtual network. Remote Desktop is a feature of the operating system, which exposes the RDP port to connect to a server from the internet.
+
+    [About Azure Bastion | Microsoft Learn](https://learn.microsoft.com/azure/bastion/bastion-overview)
+
+    [Configure virtual networks - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-networks/)
+
+92. **You have an Azure subscription that contains a virtual network named VNet1.**
+
+    **You plan to enable VNet1 connectivity to on-premises resources by using an encrypted connection.**
+
+    **What should you configure for VNet1?**
+
+    Select only one answer.
+
+    - a private endpoint connection
+    - a public IP address
+    - **a virtual network gateway**
+    - internet routing
+
+    A VPN gateway is a type of virtual network gateway that sends encrypted traffic between a virtual network and an on-premises location across a public connection. You can also use a VPN gateway to send traffic between virtual networks across the Azure backbone. A VPN gateway connection relies on the configuration of multiple resources, each of which contains configurable settings.
+
+    [Introduction to Azure VPN Gateway - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/intro-to-azure-vpn-gateway/)
+
+93. You plan to configure object replication between two Azure Storage accounts.
+
+    The Blob service of the source storage account has the following settings:
+
+    - Hierarchical namespace: Disabled
+    - Default access tier: Hot
+    - Blob public access: Enabled
+    - Blob soft delete: Enabled (7 days)
+    - Container soft delete: Enabled (7 days)
+    - Versioning: Disabled
+    - Change feed: Enabled
+    - NFS v3: Disabled
+    - Allow cross-tenant replication: Enabled
+
+    Which setting should be modified on the source storage account to support object replication?
+
+    Select only one answer.
+
+    - Blob soft delete
+
+    - Change feed
+
+    - Hierarchical namespace
+
+    - **Versioning**
+
+    Versioning must be enabled for both the source and destination accounts. In this scenario, versioning is currently disabled.
+
+    [Object replication overview - Azure Storage | Microsoft Learn](https://learn.microsoft.com/azure/storage/blobs/object-replication-overview)
+
+    [Configure Azure Blob Storage - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-blob-storage/)
+
+94. You have a Kusto query that returns 1,000 events from the SecurityEvent table in Azure Monitor.
+
+    You need to configure the query to aggregate the results by the Account column.
+
+    Which operator should you use?
+
+    Select only one answer.
+
+    - extend
+
+    - project
+    - **summarize**
+    - where
+
+    Summarize is used to group records from one or more columns of data. Where is used to filter the rows. Project is used to rename and select columns. Extend is used to add columns.
+
+    [Get started with log queries in Azure Monitor - Azure Monitor | Microsoft Learn](https://learn.microsoft.com/azure/azure-monitor/logs/get-started-queries)
+
+    [Configure Azure Monitor - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-azure-monitor/)
+
+95. You have an Azure virtual network that contains two subnets named Subnet1 and Subnet2. You have a virtual machine named VM1 that is connected to Subnet1. VM1 runs Windows Server.
+
+    You need to ensure that VM1 is connected directly to both subnets.
+
+    What should you do first?
+
+    Select only one answer.
+
+    - **From the Azure portal, add a network interface.**
+
+    - From the Azure portal, create an IP group.
+
+    - From the Azure portal, modify the IP configurations of an existing network interface.
+
+    - Sign in to Windows Server and create a network bridge.
+
+    A network interface is used to connect a virtual machine to a subnet. Since VM1 is connected to Subnet1, VM1 already has a network interface attached that is connected to Subnet1. To connect VM1 directly to Subnet2, you must create a new network interface that is connected to Subnet2. Next, you must attach the new network interface to VM1.
+
+    An IP group is a user-defined collection of static IP addresses, ranges, and subnets. A network bridge allows you to connect multiple existing network connection in Windows together. Changing the IP configurations of the existing network interface results in VM1 being connected to Subnet2 but not to Subnet1.
+
+    [Virtual networks and virtual machines in Azure | Microsoft Learn](https://learn.microsoft.com/azure/virtual-network/network-overview)
+
+    [Configure virtual networks - Training | Microsoft Learn](https://learn.microsoft.com/training/modules/configure-virtual-networks/)
+
+96. 
