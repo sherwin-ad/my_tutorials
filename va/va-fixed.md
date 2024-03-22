@@ -741,3 +741,417 @@ read R BLOCK
 closed
 ```
 
+
+
+# HTTP Verb Tampering
+
+## Testing for HTTP Verb Tampering
+
+### Summary
+
+HTTP Verb Tampering tests the web application’s response to different HTTP methods accessing system objects. For every system object discovered during spidering, the tester should attempt accessing all of those objects with every HTTP method.
+
+The HTTP specification includes request methods other than the standard GET and POST requests. A standards compliant web server may respond to these alternative methods in ways not anticipated by developers. Although the common description is `verb` tampering, the HTTP 1.1 standard refers to these request types as different HTTP `methods`.
+
+The full [HTTP 1.1 specification](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html) defines the following valid HTTP request methods, or verbs:
+
+- [`OPTIONS`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2)
+- [`GET`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3)
+- [`HEAD`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4)
+- [`POST`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5)
+- [`PUT`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6)
+- [`DELETE`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7)
+- [`TRACE`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.8)
+- [`CONNECT`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.9)
+
+If enabled, the Web Distributed Authoring and Version [(WebDAV)](http://www.webdav.org/specs/rfc2518.html) [extensions](https://tools.ietf.org/html/rfc4918) permit several more HTTP methods:
+
+- [`PROPFIND`](http://www.webdav.org/specs/rfc2518.html#METHOD_PROPFIND)
+- [`PROPPATCH`](http://www.webdav.org/specs/rfc2518.html#METHOD_PROPPATCH)
+- [`MKCOL`](http://www.webdav.org/specs/rfc2518.html#METHOD_MKCOL)
+- [`COPY`](http://www.webdav.org/specs/rfc2518.html#METHOD_COPY)
+- [`MOVE`](http://www.webdav.org/specs/rfc2518.html#METHOD_MOVE)
+- [`LOCK`](http://www.webdav.org/specs/rfc2518.html#METHOD_LOCK)
+- [`UNLOCK`](http://www.webdav.org/specs/rfc2518.html#METHOD_UNLOCK)
+
+However, most web applications only need to respond to GET and POST requests, providing user data in the URL query string or appended to the request respectively. The standard `<a href=""></a>` style links trigger a GET request; form data submitted via `<form method='POST'></form>`trigger POST requests. Forms defined without a method also send data via GET by default.
+
+Oddly, the other valid HTTP methods are not supported by the [HTML standard](https://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.1). Any HTTP method other than GET or POST needs to be called outside the HTML document. However, JavaScript and AJAX calls may send methods other than GET and POST.
+
+As long as the web application being tested does not specifically call for any non-standard HTTP methods, testing for HTTP verb tampering is quite simple. If the server accepts a request other than GET or POST, the test fails. The solutions is to disable all non GET or POST functionality within the web application server, or in a web application firewall.
+
+If methods such as HEAD or OPTIONS are required for your application, this increases the burden of testing substantially. Each action within the system will need to be verified that these alternate methods do not trigger actions without proper authentication or reveal information about the contents or workings web application. If possible, limit alternate HTTP method usage to a single page that contains no user actions, such the default landing page (example: index.html).
+
+### How to Test
+
+As the HTML standard does not support request methods other than GET or POST, we will need to craft custom HTTP requests to test the other methods. We highly recommend using a tool to do this, although we will demonstrate how to do manually as well.
+
+### Manual HTTP Verb Tampering Testing
+
+This example is written using the netcat package from openbsd (standard with most Linux distributions). You may also use telnet (included with Windows) in a similar fashion.
+
+1. Crafting custom HTTP requests
+
+   Each HTTP 1.1 request follows the following basic formatting and syntax. Elements surrounded by brackets `[ ]` are contextual to your application. The empty newline at the end is required.
+
+   ```
+   [METHOD] /[index.htm] HTTP/1.1
+   host: [www.example.com]
+   ```
+
+   In order to craft separate requests, you can manually type each request into netcat or telnet and examine the response. However, to speed up testing, you may also store each request in a separate file. This second approach is what we’ll demonstrate in these examples. Use your favorite editor to create a text file for each method. Modify for your application’s landing page and domain.
+
+   1.1 OPTIONS
+
+   ```
+   OPTIONS /index.html HTTP/1.1
+   host: www.example.com
+   ```
+
+   1.2 GET
+
+   ```
+   GET /index.html HTTP/1.1
+   host: www.example.com
+   ```
+
+   1.3 HEAD
+
+   ```
+   HEAD /index.html HTTP/1.1
+   host: www.example.com
+   ```
+
+   1.4 POST
+
+   ```
+   POST /index.html HTTP/1.1
+   host: www.example.com
+   ```
+
+   1.5 PUT
+
+   ```
+   PUT /index.html HTTP/1.1
+   host: www.example.com
+   ```
+
+   1.6 DELETE
+
+   ```
+   DELETE /index.html HTTP/1.1
+   host: www.example.com
+   ```
+
+   1.7 TRACE
+
+   ```
+   TRACE /index.html HTTP/1.1
+   host: www.example.com
+   ```
+
+   1.8 CONNECT
+
+   ```
+   CONNECT /index.html HTTP/1.1
+   host: www.example.com
+   ```
+
+2. Sending HTTP requests
+
+   For each method or method text file, send the request to your web server via netcat or telnet on port 80 (HTTP):
+
+   `nc www.example.com 80 < OPTIONS.http.txt`
+
+3. Parsing HTTP responses
+
+   Although each HTTP method can potentially return different results, there is only a single valid result for all methods other than GET and POST. The web server should either ignore the request completely or return an error. Any other response indicates a test failure as the server is responding to methods/verbs that are unnecessary. These methods should be disabled.
+
+   An example of a failed test (ie, the server supports OPTIONS despite no need for it):
+
+   ![OPTIONS Verb Tampering](https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/07-Input_Validation_Testing/images/OPTIONS_verb_tampering.png)
+   *Figure 4.7.3-1: OPTIONS Verb Tampering*
+
+### Automated HTTP Verb Tampering Testing
+
+If you are able to analyze your application via simple HTTP status codes (200 OK, 501 Error, etc) - then the following bash script will test all available HTTP methods.
+
+```
+#!/bin/bash
+
+for webservmethod in GET POST PUT TRACE CONNECT OPTIONS PROPFIND;
+
+do
+printf "$webservmethod " ;
+printf "$webservmethod / HTTP/1.1\nHost: $1\n\n" | nc -q 1 $1 80 | grep "HTTP/1.1"
+
+done
+```
+
+## Limit HTTP VERBS on Apache2
+
+Add this in .htaccess or httpd.conf file
+
+Use the mod_rewrite to correctly respond to unwanted HTTP methods:
+
+```
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} !=GET
+RewriteCond %{REQUEST_METHOD} !=POST 
+RewriteRule .* /error/405.html [R=405,L] 
+```
+
+
+
+# Cache-Control Header
+
+Cache-Control, in simple terms, is a set of instructions used by websites to tell web browsers and other services how to store and manage the website's content. These instructions help websites load faster, save internet bandwidth, and ensure users see the most recent version of the content.
+
+Imagine you visit a website with images, text, and other elements. Instead of downloading all the elements each time you visit, the browser can temporarily save some on your device. This is called caching, and Cache-Control provides rules for this process, like how long to keep the protected content or if certain content shouldn't be saved.
+
+For example, Cache-Control can tell the browser to keep an image for 1 hour, and after that, it should check with the website to see if there's a newer version. If there's no new version, the browser continues to use the saved image. This helps the website load faster and uses less internet data.
+
+## **What exactly is meant by the term "Cache-Control Header"?**
+
+The Cache-Control header is an HTTP (Hypertext Transfer Protocol) response header used to specify directives for caching the response on the client side, such as web browsers or intermediate caching proxies. The primary purpose of the Cache-Control header is to define how and for how long the client should cache a particular web resource, thereby helping optimize performance, reduce server load, and minimize bandwidth usage.
+
+The Cache-Control header contains a series of directives that define caching behaviour. Some common Cache-Control demands include:
+
+1. `public`: Indicates that the response is cacheable by any cache, even if the user is authenticated.
+2. `private`: Specifies that the response is specific to the user and should not be cached by shared caches (e.g., proxies). The user's browser can cache it.
+3. `no-cache`: The response can be cached but must be revalidated with the server before each use.
+4. `no-store`: The response should not be stored in any cache. This is used for sensitive information that should not be cached.
+5. `max-age`: Sets the maximum time, in seconds, that the resource is considered fresh. Once the age of the cached resource exceeds the max-age value, the cache must revalidate the resource with the server.
+
+You can use multiple directives in a Cache-Control header, separated by commas. For example, the following Cache-Control header indicates that the response can be cached privately by the user's browser and has a freshness lifetime of 1 hour:
+
+```
+Cache-Control: private, max-age=3600
+```
+
+Using appropriate Cache-Control directives helps improve web applications' performance and user experience by reducing the need for repeated requests to the server for the same resources.
+
+**Here’s an example of an HTTP response header from google.com, with a focus on the Cache-Control header:**
+
+```
+HTTP/1.1 200 OK
+Date: Wed, 05 Apr 2023 10:00:00 GMT
+Expires: -1
+Cache-Control: private, max-age=0
+Content-Type: text/html; charset=UTF-8
+Server: gws
+X-XSS-Protection: 0
+X-Content-Type-Options: nosniff
+Content-Length: 45432
+Connection: keep-alive
+```
+
+In this example, the Cache-Control header contains two directives: `private` and `max-age=0`. The `private` The Directive indicates that the response is specific to the user and should not be cached by shared caches (e.g., caching proxies). The browser can cache the response, but due to the `max-age=0` the Directive, the cache is considered stale immediately, and the browser must revalidate the resource with the server before using it.
+
+Other headers shown in this example include:
+
+- `Date`: The date and time when the server generated the response.
+- `Expires`: Indicates when the resource is considered expired. In this case, it's set to -1, meaning the resource has expired.
+- `Content-Type`: Specifies the type of content being returned (in this case, HTML).
+- `Server`: Identifies the server software handling the request (in this case, Google's custom web server, "gws").
+- `X-XSS-Protection`: A security header to protect against cross-site scripting (XSS) attacks.
+- `X-Content-Type-Options`: A security header to prevent MIME-type confusion attacks.
+- `Content-Length`: The length of the response body in bytes.
+- `Connection`: Indicates whether the connection should be kept open or closed after the response.
+
+## Cache-Control: Max-Age
+
+The `Cache-Control: max-age` the Directive is used to specify the maximum amount of time, in seconds, that a cached resource is considered fresh. When the max-age value is reached, the cache is considered stale, and the client (e.g., a web browser) must revalidate the resource with the server before using it.
+
+For example, consider the following Cache-Control header:
+
+```
+Cache-Control: max-age=3600
+```
+
+In this case, the `max-age` It is set to 3600 seconds, which is equivalent to 1 hour. This means the client can cache and use the resource without contacting the server for up to 1 hour. After 1 hour, the client must revalidate the resource with the server to ensure it has the most up-to-date version.
+
+Using appropriate max-age values helps improve website performance by reducing the need for clients to request resources from the server repeatedly. It also helps minimize bandwidth usage, as resources can be served from the local cache rather than downloaded from the server each time they are needed.
+
+## Cache-Control: No-Cache
+
+The `Cache-Control: no-cache` the Directive is used to specify that the client (e.g., a web browser) can cache a resource, but it must revalidate the resource with the server before using it each time. This ensures that the client always has the most up-to-date resource version.
+
+Here’s an example of an HTTP response header with the `Cache-Control: no-cache` directive:
+
+```
+HTTP/1.1 200 OK
+Date: Wed, 05 Apr 2023 10:30:00 GMT
+Cache-Control: no-cache
+Content-Type: text/html; charset=UTF-8
+Content-Length: 51234
+Connection: keep-alive
+```
+
+In this example, the Cache-Control header is set to `no-cache`. As a result, the client can cache the resource, but it must check with the server for updates each time it wants to use the resource. If the server confirms that the cached resource is still the latest version, the client can use the cached resource. Otherwise, the client must download the updated resource from the server.
+
+Using the `no-cache` the Directive can be helpful when it's important to have up-to-date information but still want to take advantage of caching to reduce server load and improve performance.
+
+## Cache-Control: No-Store
+
+The `Cache-Control: no-store` the Directive is used to specify that the response must not be stored in any cache. This Directive is typically used for sensitive information the client should not cache (e.g., a web browser) or any intermediate caching proxies.
+
+Here’s an example of an HTTP response header with the `Cache-Control: no-store` directive:
+
+```
+HTTP/1.1 200 OK
+Date: Wed, 05 Apr 2023 11:00:00 GMT
+Cache-Control: no-store
+Content-Type: application/json; charset=UTF-8
+Content-Length: 12345
+Connection: keep-alive
+```
+
+In this example, the Cache-Control header is set to `no-store`. This means that the client must not store the response in any cache and must request the resource from the server each time it's needed. This is useful for protecting sensitive information, such as personal or financial data, which should not be stored in caches where unauthorized users can access or accidentally leak it.
+
+Using the `no-store` the Directive ensures that sensitive information is constantly retrieved directly from the server, minimizing the risk of data exposure through caching.
+
+## Cache-Control: Public
+
+The `Cache-Control: public` the Directive specifies that the response can be cached by any cache, including shared caches (e.g., caching proxies) and private caches (e.g., a web browser's cache). This Directive is helpful for resources that are not user-specific and can be safely cached by multiple clients.
+
+Here’s an example of an HTTP response header with the `Cache-Control: public` directive:
+
+```
+HTTP/1.1 200 OK
+Date: Wed, 05 Apr 2023 12:00:00 GMT
+Cache-Control: public, max-age=86400
+Content-Type: image/jpeg
+Content-Length: 102400
+Connection: keep-alive
+```
+
+In this example, the Cache-Control header is set to `public`, with an additional `max-age` Directive of 86400 seconds (24 hours). This means that the response can be cached by any cache (both shared and private), and it's considered fresh for up to 24 hours. After 24 hours, the cache must revalidate the resource with the server.
+
+Using the `public` the Directive can help improve website performance by allowing resources to be cached by multiple clients, reducing the need for repeated requests to the server and minimizing bandwidth usage.
+
+## Cache-Control: Private
+
+The `Cache-Control: private` the Directive is used to specify that the response is specific to the user and should only be cached by the user's private cache (e.g., a web browser's cache). Shared caches, such as caching proxies, must not cache the response.
+
+Here’s an example of an HTTP response header with the `Cache-Control: private` directive:
+
+```
+HTTP/1.1 200 OK
+Date: Wed, 05 Apr 2023 13:00:00 GMT
+Cache-Control: private, max-age=7200
+Content-Type: text/html; charset=UTF-8
+Content-Length: 54321
+Connection: keep-alive
+```
+
+In this example, the Cache-Control header is set to `private`, with an additional `max-age` Directive of 7200 seconds (2 hours). This means that the response is specific to the user and can be cached by their browser but not by shared caches. The cached resource is considered fresh for up to 2 hours. After 2 hours, the browser must revalidate the resource with the server.
+
+Using the `private` the Directive can help maintain user privacy and ensure personalized content is not accidentally cached and served to other users through shared caches.
+
+## **Additional Headers for the HTTP Cache**
+
+In addition to the Cache-Control header, several other HTTP headers are related to caching. These headers help manage cached resources' storage, retrieval, and validation. Some of the most common HTTP cache headers include:
+
+1. `ETag` (Entity Tag): The ETag header provides a unique identifier (usually a hash) for a specific resource version. Clients can use the ETag value to perform conditional requests, allowing the server to respond with a "304 Not Modified" status if the client's cached version matches the current ETag value. This mechanism helps save bandwidth and optimize resource fetching.
+2. `Last-Modified`: The Last-Modified header indicates the date and time when the resource was last modified. Like the ETag header, it can be used for conditional requests to validate whether the cached resource is still up-to-date. If the Last-Modified value provided by the client matches the server's value, the server can respond with a "304 Not Modified" status, indicating that the client's cached resource is still valid.
+3. `Expires`: The Expires header sets an absolute expiration date and time for the resource, after which it is considered stale. While the Cache-Control header with the `max-age` The directive is more flexible and widely used; the Expires header can still be helpful for older clients that do not support the Cache-Control header. If both Cache-Control and Expires headers are present, Cache-Control takes precedence.
+4. `Vary`: The Vary header indicates which request headers should be considered when determining if a cached response can be used for a new request. This is important for resources with different representations based on request headers, such as the `Accept-Encoding` header (which indicates the client's supported compression methods). The Vary header helps ensure that caches only serve responses that match the client's request headers.
+5. `Pragma`: The Pragma header is an older HTTP/1.0 header mainly used for backward compatibility. Its primary purpose is to specify cache directives for HTTP/1.0 clients that do not support the Cache-Control header. The most common usage is equivalent to the `Cache-Control: no-cache` The order is in HTTP/1.1.
+
+While the Cache-Control header is the most prominent and flexible header for controlling caching behaviour, combining these additional headers can provide more granular control over caching and help optimize the performance, efficiency, and user experience of web applications.
+
+## Cache-Control and Content Distribution Networks
+
+A Content Delivery Network (CDN) is a system of distributed servers that delivers web content and other resources to users based on their geographic location, the origin of the web page, and the server’s performance. CDNs are designed to improve web applications' performance, reliability, and security by caching and serving content from edge servers closer to end users, thus reducing latency and network congestion.
+
+Cache-Control headers are crucial in the interaction between CDNs and web resources. The directives provided in the Cache-Control header help CDNs determine how to cache and serve the content to end-users. Here’s how various Cache-Control directives can impact the caching behaviour of CDNs:
+
+1. `public`: The `public` The Directive allows CDNs to cache the content and serve it to multiple users. It is beneficial for static resources like images, stylesheets, or scripts that stay the same frequency and are not user-specific.
+2. `private`: The `private` the Directive indicates that the content is user-specific and should not be cached by shared caches, such as CDNs. This Directive is important for personalized content or resources containing sensitive information that the user's browser should only cache.
+3. `no-cache`: The `no-cache` the Directive allows CDNs to cache the content, but they must revalidate it with the origin server before serving it to users. This ensures that users receive the most up-to-date version of the content while benefiting from the reduced latency offered by CDNs.
+4. `no-store`: The `no-store` directive prevents CDNs from caching the content at all. This is typically used for sensitive information or resources that should always be fetched directly from the origin server.
+5. `max-age`: The `max-age` the Directive specifies the maximum amount of time, in seconds, that the resource is considered fresh. CDNs use this information to determine how long they can serve the cached content before needing to revalidate it with the origin server.
+6. `s-maxage`: The `s-maxage` The directive is similar `max-age`, but it targets explicitly shared caches like CDNs. It `s-maxage` is present CDNs will use this value instead of `max-age` to determine the resource's freshness.
+
+## Disabling caching in .htaccess
+
+Add this code at the bottom of the .htaccess file to turn off caching. Delete the code to turn caching on again.
+
+```
+# DISABLE CACHING
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+</IfModule>
+
+<FilesMatch "\.(css|flv|gif|htm|html|ico|jpe|jpeg|jpg|js|mp3|mp4|png|pdf|swf|txt)$">
+    <IfModule mod_expires.c>
+        ExpiresActive Off
+    </IfModule>
+    <IfModule mod_headers.c>
+        FileETag None
+        Header unset ETag
+        Header unset Pragma
+        Header unset Cache-Control
+        Header unset Last-Modified
+        Header set Pragma "no-cache"
+        Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+        Header set Expires "Thu, 1 Jan 1970 00:00:00 GMT"
+    </IfModule>
+</FilesMatch>
+```
+
+# Secure cookie with HttpOnly and Secure flag in Apache
+
+Implement cookie HTTP header flag with HTTPOnly & Secure to protect a website from XSS attacks
+
+Do you know you can mitigate most common **XSS attacks** using `HttpOnly` and `Secure` flag with your cookie?
+
+[XSS](https://owasp.org/www-community/attacks/xss/) is dangerous. By looking at an increasing number of XSS attacks daily, you must consider [securing your web applications](https://geekflare.com/secure-web-application-server/).
+
+Without having HttpOnly and Secure flag in the HTTP response header, it is possible to steal or manipulate web application sessions and cookies.
+
+It’s better to manage this within the application code. However, due to developers’ unawareness, it comes to Web Server administrators.
+
+I will not talk about how to set these at the code level. You can refer [here](https://owasp.org/www-community/HttpOnly).
+
+## Implementation Procedure in Apache
+
+- Ensure you have `mod_headers.so` enabled in Apache HTTP server
+- Add following entry in httpd.conf
+
+```markup
+Header always edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure
+```
+
+Copy
+
+- Restart Apache HTTP server to test
+
+*Note*: Header edit is not compatible with [lower than Apache 2.2.4 version](http://httpd.apache.org/docs/2.2/mod/mod_headers.html).
+
+You can use the following to set the [HttpOnly and Secure](https://geekflare.com/enable-cors-httponly-cookie-secure-token/) flag in lower than the 2.2.4 version. Thanks to Ytse for sharing this information.
+
+```markup
+Header set Set-Cookie HttpOnly;Secure
+```
+
+Copy
+
+## Verification
+
+You can either leverage the browser’s inbuilt developer tools to check the response header or use an https://domsignal.com/http-headers-test
+
+
+
+# Secure Wordpress with X-Frame-Options & HTTPOnly Cookie
+
+https://geekflare.com/wordpress-x-frame-options-httponly-cookie/
+
+
+
+# Fix HTTP Headers and cookies vulnerabilities in WordPress
+
+- Install Http Headers plugins in Wordpress and configure
