@@ -1891,3 +1891,634 @@ If you'd like, you can download your files to preview them locally:
    ```
 
 3. Now, unzip the file on your local computer and open *index.hml* to see for yourself!
+
+ 
+
+# [Edit code through branching and merging in Git](https://learn.microsoft.com/en-us/training/modules/branch-merge-git/)
+
+## Setup
+
+Before you can assume the role of Alice, you must do some work to set up a bare repo for everyone to share, and then add some files.
+
+Git is already installed for us in Azure Cloud Shell, so we can use Git in Cloud Shell to the right.
+
+### Create a shared bare repo
+
+1. Create a new directory named *Shared.git* to hold the bare repo:
+
+   Bash
+
+   ```bash
+   mkdir Shared.git
+   cd Shared.git
+   ```
+
+2. Now, run the following command to create a bare repo in the shared directory:
+
+   Bash
+
+   ```bash
+   git init --bare
+   ```
+
+3. Set the name of the default branch for the new repo. To accomplish this step, you can change the `HEAD` branch to point at a different branch; in this case, the `main` branch:
+
+   Bash
+
+   ```bash
+   git symbolic-ref HEAD refs/heads/main
+   ```
+
+### Clone the shared repo for Bob
+
+1. Move up one level from this directory and create a directory for Bob to store his repo:
+
+   Bash
+
+   ```bash
+   cd ..
+   mkdir Bob
+   ```
+
+2. Clone and configure the repo for Bob:
+
+   Bash
+
+   ```bash
+   cd Bob
+   git clone ../Shared.git .
+   git config user.name Bob
+   git config user.email bob@contoso.com
+   git symbolic-ref HEAD refs/heads/main
+   ```
+
+ Note
+
+Because you want to start with the default branch of `main`, you need to change `HEAD` to point to `refs/heads/main` rather than `refs/heads/master` which is the default branch name.
+
+### Add base files
+
+As a final setup step, we'll add our base website files and push them to the shared repo. For these commands, we're still working in the *Bob* directory.
+
+1. Create some files by running the Linux `touch` command, and then stage and commit them by using Git:
+
+   Bash
+
+   ```bash
+   touch index.html
+   mkdir Assets
+   touch Assets/site.css
+   git add .
+   git commit -m "Create empty index.html and site.css files"
+   ```
+
+2. Now, add some HTML to your file by using the Cloud Shell code editor. You can open the editor by running the `code` command. Open *index.html* in the online editor by entering `code index.html` at the terminal prompt:
+
+   Bash
+
+   ```bash
+   code index.html
+   ```
+
+3. Paste in this HTML code:
+
+   HTML
+
+   ```html
+   <!DOCTYPE html>
+   <html>
+     <head>
+       <meta charset='UTF-8'>
+       <title>Our Feline Friends</title>
+       <link rel="stylesheet" href="CSS/site.css">
+     </head>
+     <body>
+       <nav><a href="./index.html">home</a></nav>
+       <h1>Our Feline Friends</h1>
+       <p>Eventually we will put cat pictures here.</p>
+       <footer><hr>Copyright (c) 2021 Contoso Cats</footer>
+     </body>
+   </html>
+   ```
+
+4. Save the file, and close the editor. You can select the ellipsis "..." in the right corner of the editor, or use the accelerator key (press Ctrl+S on Windows and Linux; press Cmd+S on macOS).
+
+5. Change to the *Assets* directory, and then open *site.css* in the editor:
+
+   Bash
+
+   ```bash
+   cd Assets
+   code site.css
+   ```
+
+6. Add the following CSS to the file:
+
+   css
+
+   ```css
+   h1, h2, h3, h4, h5, h6 { font-family: sans-serif; }
+   body { font-family: serif; background-color: #F0FFF8; }
+   nav, footer { background-color: #C0D8DF; }
+   ```
+
+   Save the file and close the editor.
+
+7. Go back to the *Bob* directory, and commit again:
+
+   Bash
+
+   ```bash
+   cd ..
+   git add .
+   git commit -m "Add simple HTML and stylesheet"
+   git push --set-upstream origin main
+   ```
+
+    Note
+
+   Because we are using a different default branch name, you have to tell git to associate your main branch to the main branch of the source repository.
+
+8. Check the output. If you see a warning like this example, don't worry. This warning is just letting users know about a change to Git's default behaviors.
+
+   Output
+
+   ```output
+   warning: push.default is unset; its implicit value has changed in
+   Git 2.0 from 'matching' to 'simple'. To squelch this message
+   and maintain the traditional behavior, use:
+   
+     git config --global push.default matching
+   
+   To squelch this message and adopt the new behavior now, run:
+   
+     git config --global push.default simple
+   
+   When push.default is set to 'matching', git will push local branches
+   to the remote branches that already exist with the same name.
+   
+   Since Git 2.0, Git defaults to the more conservative 'simple'
+   behavior, which only pushes the current branch to the corresponding
+   remote branch that 'git pull' uses to update the current branch.
+   
+   See 'git help config' and search for 'push.default' for further information.
+   (the 'simple' mode was introduced in Git 1.7.11. Use the similar mode
+   'current' instead of 'simple' if you sometimes use older versions of Git)
+   ```
+
+   If you'd like to make sure you don't see this warning again, you can run this command:
+
+   Bash
+
+   ```bash
+   git config --global push.default simple
+   ```
+
+9. Check the output for this indicator of success:
+
+   Output
+
+   ```output
+   Counting objects: 9, done.
+   Delta compression using up to 2 threads.
+   Compressing objects: 100% (6/6), done.
+   Writing objects: 100% (9/9), 953 bytes | 953.00 KiB/s, done.
+   Total 9 (delta 0), reused 0 (delta 0)
+   To ../Shared.git
+    * [new branch]      main -> main
+   ```
+
+## Create a branch for Alice
+
+Alice wants to create a topic branch named `add-style` to do their work in. Let's assume the role of Alice, and then create the branch and add some code to this branch.
+
+1. Move up one level from this directory, and create a directory for Alice for their copy of the repo:
+
+   Bash
+
+   ```bash
+   cd ..
+   mkdir Alice
+   ```
+
+2. Clone the repo for Alice, and then configure it:
+
+   Bash
+
+   ```bash
+   cd Alice
+   git clone ../Shared.git .
+   git config user.name Alice
+   git config user.email alice@contoso.com
+   ```
+
+3. You now have a current copy of the repository. To confirm, you can list the file contents and run `git status` to confirm the state of the repository.
+
+   Bash
+
+   ```bash
+   ls
+   git status
+   ```
+
+4. Run the `git branch` command to create a branch named `add-style`. Then, run the `git checkout` command to switch to that branch (make it the *current branch*).
+
+   Bash
+
+   ```bash
+   git branch add-style
+   git checkout add-style
+   ```
+
+5. In the *Alice/Assets* directory, open *site.css*. Add the following CSS class definition to the bottom of the file:
+
+   css
+
+   ```css
+   .cat { max-width: 40%; padding: 5 }
+   ```
+
+   Save the changes to the file, and close the editor.
+
+6. Commit the change:
+
+   Bash
+
+   ```bash
+   git commit -a -m "Add style for cat pictures"
+   ```
+
+7. At this point, Alice wants to make their style available to everyone else, so they switch back to `main` and do a pull in case anyone else has made changes:
+
+   Bash
+
+   ```bash
+   git checkout main
+   git pull
+   ```
+
+8. The output says that the `main` branch is up to date (in other words, `main` on Alice's computer matches `main` in the shared repo). So, Alice merges the `add-style` branch into the `main` branch by running `git merge --ff-only` to perform a *fast-forward* merge. Then, Alice pushes `main` from their repo to the shared repo.
+
+   Bash
+
+   ```bash
+   git merge --ff-only add-style
+   git push
+   ```
+
+In this case, a fast-forward merge wasn't strictly necessary because the `main` branch had no changes, and Git would have merged the changes anyway. But using the `--ff only` flag is a good practice because an `--ff-only` merge fails if `main` has changed.
+
+## Exercise - Merge Bob's branch
+
+Completed100 XP
+
+- 10 minutes
+
+This module requires a sandbox to complete. You have used 1 of 10 sandboxes for today. More sandboxes will be available tomorrow.
+
+
+
+Activate sandbox
+
+While Alice is working on CSS for the website, Bob is working away at home, blissfully unaware of the work Alice is doing. This arrangement is just fine because they're both using branches! Bob decides to make some changes of their own.
+
+### Create a branch for Bob
+
+1. Return to the *Bob* directory, and run the following command to create a branch named `add-cat`. Use the popular `checkout -b` option to create the branch and switch to it in a single command.
+
+   Bash
+
+   ```bash
+   cd ../Bob
+   git checkout -b add-cat
+   ```
+
+2. Download the zip file that contains [some website resources](https://github.com/MicrosoftDocs/mslearn-branch-merge-git/raw/main/git-resources.zip). Then, unzip the resource files:
+
+   Bash
+
+   ```bash
+   wget https://github.com/MicrosoftDocs/mslearn-branch-merge-git/raw/main/git-resources.zip
+   unzip git-resources.zip
+   ```
+
+3. Now, move the *bobcat2-317x240.jpg* file into Bob's *Assets* directory. Delete the other files. You'll download the files and use them again later.
+
+   Bash
+
+   ```bash
+   mv bobcat2-317x240.jpg Assets/bobcat2-317x240.jpg
+   rm git-resources.zip
+   rm bombay-cat-180x240.jpg
+   ```
+
+4. Next, open the *index.html* file and replace the line that says "Eventually we will put cat pictures here" with the following line:
+
+   HTML
+
+   ```html
+   <img src="Assets/bobcat2-317x240.jpg" />
+   ```
+
+5. Save the file, and close the editor.
+
+6. You've made two changes to Bob's `add-cat` branch — you added one file and modified another. Run `git status` to double-check your changes:
+
+   Bash
+
+   ```bash
+   git status
+   ```
+
+7. Then, run the following commands to add the new file in the *Assets* directory to the index and commit all changes:
+
+   Bash
+
+   ```bash
+   git add .
+   git commit -a -m "Add picture of Bob's cat"
+   ```
+
+8. Bob now does the same action that Alice did earlier. Bob switches back to the `main` branch, and executes a pull to see if anything has changed:
+
+   Bash
+
+   ```bash
+   git checkout main
+   git pull
+   ```
+
+9. Check the output. This time, the output indicates that changes *have* been made to the `main` branch in the shared repo (the result of Alice's push). It also indicates that the changes pulled from `main` in the shared repo have been merged with `main` in Bob's repo:
+
+   Output
+
+   ```output
+   remote: Counting objects: 4, done.
+   remote: Compressing objects: 100% (3/3), done.
+   remote: Total 4 (delta 1), reused 0 (delta 0)
+   Unpacking objects: 100% (4/4), done.
+   From D:/Labs/Git/Bob/../Shared
+      e81ae09..1d2bfea  main     -> origin/main
+   Updating e81ae09..1d2bfea
+   Fast-forward
+    Assets/site.css | 3 ++-
+    1 file changed, 2 insertions(+), 1 deletion(-)
+   ```
+
+10. Next, Bob merges their branch into the `main` branch so that `main` in their repo will have their changes *and* Alice's changes. Then, Bob pushes `main` on their computer to the `main` branch in the shared repo:
+
+    Bash
+
+    ```bash
+    git merge add-cat --no-edit
+    git push
+    ```
+
+Bob didn't use the `--ff-only` flag because they knew that `main` had changed. A fast-forward only merge would have failed.
+
+### Sync the repos
+
+At this point, Bob has an up-to-date repo, but Alice doesn't. Alice needs to do a `git pull` from the shared repo to make sure they have the latest and greatest version of the site.
+
+Run the following commands to sync Alice's repo with the shared repo:
+
+Bash
+
+```bash
+cd ../Alice
+git pull
+```
+
+Take a moment to verify that Alice's repo and Bob's repo are synced. Each of the repos should have a JPG file in the *Assets* directory, and an `<img>` element declared in the *index.html* file. The *site.css* file in each repo's *Assets* folder should contain a line that defines a CSS style named *cat*. This style was added by Alice when they made their changes.
+
+If you open *index.html* in a browser, you'll see this image:
+
+![Screenshot that shows cats on the website.](https://learn.microsoft.com/en-us/training/modules/branch-merge-git/media/first-cat.png)
+
+In the next lesson, you'll learn how to resolve merge conflicts, which occur when changes made by two or more developers overlap.
+
+## Exercise - Resolve merge conflicts
+
+Conflicts like this can happen, so you *must* know how to deal with them. The good news is that Git provides solutions for dealing with merge conflicts.
+
+### Create branches for Alice and Bob
+
+Let's begin by creating a branch for Alice and a branch for Bob. Both of your developer friends are updating files in the project repo at the same time. They're not aware of each other's changes because they're making updates in their local branches.
+
+1. Be sure you're in the *Alice* directory, and then create a branch named `add-cat` for Alice to work in:
+
+   Bash
+
+   ```bash
+   git checkout -b add-cat
+   ```
+
+2. Change to the *Bob* directory, and then create a branch named `style-cat` for Bob to work in:
+
+   Bash
+
+   ```bash
+   cd ../Bob
+   git checkout -b style-cat
+   ```
+
+Now, let's make some changes in the branches.
+
+### Make a change as Alice
+
+Start by assuming the role of Alice and make a change to the website home page. Replace the picture of Bob's cat with a picture of Alice's.
+
+1. Change back to the *Alice* directory:
+
+   Bash
+
+   ```bash
+   cd ../Alice
+   ```
+
+2. If you didn't download the resources earlier, download the zip file that contains the [resources that accompany this lesson](https://github.com/MicrosoftDocs/mslearn-branch-merge-git/raw/main/git-resources.zip). Unzip the resource files:
+
+   Bash
+
+   ```bash
+   wget https://github.com/MicrosoftDocs/mslearn-branch-merge-git/raw/main/git-resources.zip
+   unzip git-resources.zip
+   ```
+
+3. Move the *bombay-cat-180x240.jpg* file into Alice's *Assets* directory, and delete the other files:
+
+   Bash
+
+   ```bash
+   mv bombay-cat-180x240.jpg Assets/bombay-cat-180x240.jpg
+   rm git-resources.zip
+   rm bobcat2-317x240.jpg
+   ```
+
+4. Open the *index.html* file, and then replace this statement (which uses one of Bob's cat pictures):
+
+   HTML
+
+   ```html
+   <img src="Assets/bobcat2-317x240.jpg" />
+   ```
+
+   with this statement (which uses one of Alice's cat pictures):
+
+   HTML
+
+   ```html
+   <img class="cat" src="Assets/bombay-cat-180x240.jpg" />
+   ```
+
+5. Save the file and close the editor.
+
+6. Now, run the following Git commands to push the changes to the project repo. First, we'll add the commits made in the *Assets* folder. Then, we'll switch back to the `main` branch, and run `git pull` to make sure nothing has changed. Finally, we'll merge the `add-cat` local branch into the `main` branch, and then push the changes to the repo.
+
+   Bash
+
+   ```bash
+   git add Assets
+   git commit -a -m "Add picture of Alice's cat"
+   git checkout main
+   git pull
+   git merge --ff-only add-cat
+   git push
+   ```
+
+Finish by confirming that the push succeeded.
+
+### Make a change as Bob
+
+Without knowing what Alice is doing, Bob notices that Alice's last push added a CSS style named `cats` to the *site.css* file for the repo. So, Bob decides to apply that class to their cat picture.
+
+1. Return to the *Bob* directory:
+
+   Bash
+
+   ```bash
+   cd ../Bob
+   ```
+
+2. Open the *index.html* file. Replace the statement that uses Bob's cat picture with the following statement that adds a `class="cat"` attribute to the `<img>` element:
+
+   HTML
+
+   ```html
+   <img class="cat" src="Assets/bobcat2-317x240.jpg" />
+   ```
+
+3. Save the file, and close the editor.
+
+4. Now, run the following Git commands to sync the changes to the project repo like you did for the updates to Alice's repo. Commit the change, switch to the `main` branch, run `git pull`, and then merge the style change:
+
+   Bash
+
+   ```bash
+   git commit -a -m "Style Bob's cat"
+   git checkout main
+   git pull
+   git merge style-cat
+   ```
+
+And there it is: *the dreaded merge conflict*. The same line in the same file was changed by two people. Git sees the conflict, and reports "Automatic merge failed." Git has no way of knowing whether the `src` attribute in the `<img>` element should reference the *bobcat2-317x240.jpg* file or the *bombay-cat-180x240.jpg* file.
+
+Output
+
+```output
+Auto-merging index.html
+CONFLICT (content): Merge conflict in index.html
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+The output from Git identifies the *index.html* file as the source of the conflict.
+
+The question now is: What is Bob to do?
+
+### Resolve the merge conflict
+
+Bob has a few options at this point. Bob can take one of these actions:
+
+- Run the `git merge --abort` command to restore the `main` branch to what it was before the attempted merge. Run the `git pull` command to get Alice's changes. Then, create a new branch, make their changes, and merge their branch into the `main` branch. Last, they push their changes.
+- Run the `git reset --hard` command to get back to where they were before they started the merge.
+- Resolve the conflict manually by using information that Git inserts into the affected files.
+
+Developers seem to prefer the last option. When Git detects a conflict in content versions, it inserts *both* versions of the content into the file. Git uses special formatting to help you identify and resolve the conflict: left angle brackets `<<<<<<<`, double dashes (equal signs) `=======`, and right angle brackets `>>>>>>>`. The content above the line of dashes `=======` shows your changes in your branch. The content below the separator line shows the version of the content in the branch that you're trying to merge into.
+
+Here's what the *index.html* file in Bob's repo looks like now. Notice the special formatting around the content with conflicts:
+
+HTML
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='UTF-8'>
+    <title>Our Feline Friends</title>
+    <link rel="stylesheet" href="CSS/site.css">
+  </head>
+  <body>
+    <nav><a href="./index.html">home</a></nav>
+    <h1>Our Feline Friends</h1>
+    <<<<<<< HEAD
+    <img class="cat" src="Assets/bombay-cat-180x240.jpg">
+    =======
+    <img class="cat" src="assets/bobcat2-317x240.jpg">
+    >>>>>>> style-cat
+    <footer><hr>Copyright (c) 2021 Contoso Cats</footer>
+  </body>
+</html>
+```
+
+Let's resolve the merge conflict by editing the *index.html* file. Because this merge conflict is a quick fix, you'll make the change directly in the `main` branch, even though you're still in the *Bob* directory.
+
+1. Open the *index.html* file, and then delete the special formatting lines. Don't remove any other statements.
+
+   HTML
+
+   ```html
+   <<<<<<< HEAD
+   =======
+   >>>>>>> style-cat
+   ```
+
+2. Save the file, and close the editor.
+
+   The *index.html* file now has two `<img>` elements: one for Bob's cat picture and one for Alice's.
+
+   Some text editors feature Git integration and offer to help when they see text that indicates a merge conflict. If you open the *index.html* file in Visual Studio Code, you'll see the following code:
+
+   ![Screenshot that shows how to resolve merge conflicts in Visual Studio Code.](https://learn.microsoft.com/en-us/training/modules/branch-merge-git/media/resolve-conflict.png)
+
+   If you select **Accept Both Changes**, the editor removes the lines around the `<img>` elements and leaves both elements intact.
+
+3. Run the following commands to commit the change:
+
+   Bash
+
+   ```bash
+   git add index.html
+   git commit -a -m "Style Bob's cat"
+   ```
+
+   The `git add` command tells Git that the conflict in the *index.html* file has been resolved.
+
+4. Push the changes to the `main` branch on the remote:
+
+   Bash
+
+   ```bash
+   git push
+   ```
+
+5. Finish by syncing the changes into Alice's repo:
+
+   Bash
+
+   ```bash
+   cd ../Alice
+   git pull
+   ```
+
+6. Finally, open Alice's *index.html* file and confirm that their version also has two `<img>` tags with cat pictures.
+
