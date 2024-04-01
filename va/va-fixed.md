@@ -490,7 +490,7 @@ https://www.ssllabs.com/ssltest/
 
 
 
-## How to check whether the server supports Forward Secrecy
+## How to check wether the server supports Forward Secrecy
 
 In [this article](https://www.namecheap.com/support/knowledgebase/article.aspx/9652/38/perfect-forward-secrecy-what-it-is/) we have reviewed what is Perfect Forward Secrecy and how it works. Here we will discuss the way to check if your server supports FS.
 
@@ -1138,9 +1138,55 @@ You can use the following to set the [HttpOnly and Secure](https://geekflare.com
 Header set Set-Cookie HttpOnly;Secure
 ```
 
-Copy
+
+
+## Implementation Procedure in Apache
+
+**Enable HttpOnly Flag in IIS**
+
+Set HttpOnly flag in IIS Edit the web.config file of your web application and add the following:     
+
+```
+<system.web>  
+  ...  
+  <httpCookies httpOnlyCookies="true" requireSSL="true" />  
+  ...  
+</system.web>
+```
+
+
+
+**Enable Secure Flag in IIS**
+
+To enable secure flag in IIS, it is better to use URL Rewrite and add the following to your web.config file:
+
+```
+<system.webServer>  
+  <rewrite>  
+    <outboundRules>  
+      <rule name="Use only secure cookies" preCondition="Unsecured cookie">  
+        <match serverVariable="RESPONSE_SET_COOKIE" pattern=".*" negate="false" />  
+        <action type="Rewrite" value="{R:0}; secure" />  
+      </rule>  
+      <preConditions>  
+        <preCondition name="Unsecured cookie">  
+          <add input="{RESPONSE_SET_COOKIE}" pattern="." />  
+          <add input="{RESPONSE_SET_COOKIE}" pattern="; secure" negate="true" />  
+        </preCondition>  
+      </preConditions>  
+    </outboundRules>  
+  </rewrite>  
+...  
+</system.webServer>
+```
+
+
 
 ## Verification
+
+
+
+
 
 You can either leverage the browser’s inbuilt developer tools to check the response header or use an https://domsignal.com/http-headers-test
 
