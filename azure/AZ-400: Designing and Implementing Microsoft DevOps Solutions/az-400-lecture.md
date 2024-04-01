@@ -233,6 +233,119 @@ Goto Azure Devops Board > Organization > Project Settings > Github Connections
 
 - Members with basic access+ and dashboard permissions or team admin/project admin can add, edit or manage a dashboard 7
 
+
+
+## Integrate  external tools
+
+**MESSAGING APPS**
+
+Microsoft Teams and Sl ack can be integrated with Azure DevOps
+
+- ﻿﻿Create a team
+- ﻿﻿Install Boards/Repos/Pipelines app or plugin
+- ﻿﻿Create a channel for
+
+### **MESSAGING: INTEGRATING AZURE DEVOPS BOARDS**
+
+- ﻿﻿**Authenticate:**
+   "@azure boards signin"
+   "/azboards signin"
+- ﻿﻿**Link channel to project:**
+   "@azure boards link <project url>"
+   "/azboards link < project url>"
+- ﻿﻿**Setup & manage subscriptions:**
+   "@azure boards subscriptions"
+   "/azboards subscriptions"
+
+### **MESSAGING: INTEGRATING AZURE DEVOPS PIPELINES**
+
+- ﻿﻿**Authenticate:**
+   "@azure pipelines signin"
+   "/azpipelines signin"
+- ﻿﻿**Monitor pipelines in a project:**
+   "@azure pipelines subscribe < project/pipeline url>"
+   "/azpipelines subscribe < project/pipeline url>"
+- ﻿﻿**Manage subscriptions:**
+   "@azure pipelines subscriptions"
+   "/azpipelines subscriptions"
+
+## SERVICE HOOKS
+
+These subscriptions can be used to integrate Azure DevOps with third-party services.
+
+- Triggered by a specific Azure DevOps Event.
+  Example: pushing code, build completing, etc.
+
+- You select a specific action a card/listto be performed.
+  Example: creating in Trello
+
+Webhooks are similar - they run with a trigger and as an action post JSON to an HTTP(S) endpoint
+
+## **SERVICE MANAGEMENT**
+
+- Service Management Tools can be connected to Azure with the IT Service Management Connector (ITSMC).
+
+### Supported ITSM tools:
+
+- Service Now
+- System Center Service Manager
+
+### Actions:
+
+Create work items based on Azure alerts, sync incident and change request data from ITSM tool to Azure log analytics workspace
+
+## Design an authentication strategy
+
+**AZURE ACTIVE DIRECTORY**
+
+- Identity and access management solution based in Azure cloud.
+
+- Provides authentication for internet services, applications and third-party SaaS applications.
+
+**Azure Tenant:** Represents a single organization. Automatically created upon signing up for a Microsoft cloud service subscription.
+
+**Identity**: Can be a user, application or server that may require authentication.
+
+**AZURE ACTIVE DIRECTORY AUTHENTICATION FEATURES**
+
+**Azure AD Domain Services**: Allows you to join Azure virtual machines to a domain without the need for domain controllers
+
+**Azure Application Management**: Allows you to register applications in an azure tenant to manage and secure access to the app
+
+**Azure Service Principal**: Provides an identity for applications running in Azure resources (such as VMs, containers, and more) so that they can connect to other AD resources.
+
+**Azure Managed Identity:**
+
+- ﻿﻿System-assigned
+- ﻿﻿User-assigned
+
+**AZURE ACTIVE DIRECTORY SECURITY FEATURES**
+
+**Azure AD Conditional Access: **Policies that enforce a set of rules/conditions to be satisfied in order to allow access
+
+**Azure Multi-Factor Authentication:**
+Additional form of identification during sign-in
+
+- ﻿﻿MS authenticator app,
+- ﻿﻿SMS,
+- ﻿﻿Voice call,
+- ﻿﻿OATH software/hardware token
+
+**Azure Privileged Identity Management:** Time-based and approval-based role activation to allow access to Azure AD and resources
+
+**AZURE ACTIVE DIRECTORY EXTERNAL IDENTITY FEATURES**
+
+**Azure AD Business to Customer (B2C):**
+
+- ﻿﻿Customers use their preferred social, enterprise, or local account identity
+
+- ﻿﻿Provides SSO access to applications and APls
+
+**Azure AD Business to Business (B2B):**
+
+- ﻿﻿Securely share applications and services with a guest by sending them an email invitation link
+- ﻿﻿Guest uses their own identity solution
+
 # Getting started with GIT 
 
 https://git-scm.com/
