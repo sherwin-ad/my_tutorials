@@ -90,6 +90,149 @@
 
 
 
+## Understanding Azure Devops
+
+ ![image-20240401104821306](images/image-20240401104821306.png)
+
+
+
+### **WORK ITEMS**
+
+- Task/activity, such as a bug, epic, feature, issue, task, test case, or user
+story
+
+- Work-item types depend on the selected process for the Azure DevOps
+project (Basic, Scrum, Agile, CMMI)
+
+- Assigned to project members and sprints
+
+### **AZURE DEVOPS PROCESSES: BASIC**
+
+- Track work with issues, tasks and epics
+
+- Workflow states: to do, doing, done
+
+### **AZURE DEVOPS PROCESSES: SCRUM**
+
+- Track work with product backlog items, tasks, epics, features & bugs
+- Ideal if your team practices Scrum
+- Workflow states: new, approved, committed, done & removed
+
+### **AZURE DEVOPS PROCESSES: AGILE**
+
+- Track work with user stories, tasks, epics, features and bugs
+
+- Ideal if your team uses Agile planning methods including scrum
+
+- Development and test activities are tracked separately
+
+- Workflow states: new, active, resolved, closed & removed
+
+### **AZURE DEVOPS PROCESSES: CAPABILITY MATURITY MODEL INDEX**
+
+- Track work with requirements, change requests, risk & reviews, as well as
+epics, features & bugs
+
+- Ideal if your team requires a framework for process improvement & an
+auditable record of decisions
+
+- Workflow states: proposed, active, resolved & closed
+
+## Azure Devops Board
+
+- Track work items throughout the workflow states (columns: new, resolved,
+etc..) of the project
+
+- Work items are presented as cards which you can easily drag and drop
+throughout the workflow states
+
+- Visualize the flow of work of your team and collaborate with others
+
+  
+
+### AZURE DEVOPS BOARDS: CONCEPTS
+
+- Sprint: Period of time in which specific work must be completed
+
+- Backlog items: List with work items required by the application
+
+- Features: Group of backlog items
+
+- Epics: Group of several features
+
+- Effort/story points/size: Measure the size/complexity of a work item
+
+### AZURE DEVOPS BOARDS AND GITHUB INTEGRATION
+
+- Connect Azure Boards to GitHub repos
+
+- Link Azure Boards work items to GitHub commits, pull requests and issues
+
+- Sync GitHub issues to Azure Boards work items 
+
+## Explore Azure Devops Boards
+
+https://dev.azure.com/
+
+## Integrate Azure Boards to Github
+
+Goto Azure Devops Board > Organization > Project Settings > Github Connections
+
+## Azure Devops: Wiki
+
+- Share information about the project to help users understand, use and
+  contribute to your project
+
+- Supports collaborative editing of content & structure
+
+### CREATING A WIKI
+
+- New wiki git repository
+
+- Publish code as wiki
+
+- Format wiki content:
+
+  - Markdown
+
+  - HTML Tags
+
+  - Images & files
+
+  - Link to Work Items
+
+### PERMISSIONS
+
+- Read: Anyone with access to the project
+
+- Contributor: Add or edit wiki pages
+
+- Create repository: Publish code as wiki/create git repository
+
+## Azure Devops: Dashboard
+
+- Provide visibility to stakeholders and team members of the overall progress of a team or project in real time.
+
+### WIDGETS
+
+- Display chart
+
+- User-configurable information
+
+- Links
+
+- Type: Out of box, marketplace, custom
+
+### QUERY BASED CHARTS
+
+- Work item, analytics report, release pipelines, build tests
+
+### PERMISSIONS
+
+- Anyone with access to the project can view dashboards
+
+- Members with basic access+ and dashboard permissions or team admin/project admin can add, edit or manage a dashboard 7
+
 # Getting started with GIT 
 
 https://git-scm.com/
