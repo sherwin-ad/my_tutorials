@@ -346,6 +346,45 @@ Additional form of identification during sign-in
 - ﻿﻿Securely share applications and services with a guest by sending them an email invitation link
 - ﻿﻿Guest uses their own identity solution
 
+## Authentication in Azure Devops
+
+### **INTEGRATING ACTIVE DIRECTORY**
+
+- You can connect an Azure DevOps organization to Active Directory to manage access
+
+- Conditional Access Policies: Require multi-factor authentication, block access for unsupported devices, block access by location
+
+### **AZURE REPOS AUTHENTICATION**
+
+- You can authenticate to Azure DevOps Repos by using git in command prompt or any git client that supports SSH & HTTP authentication.
+
+**SSH: Safer, public and private key pair, associated to your username:**
+
+- id_rsa -> Private Key 
+- id_rsa.pub -> Public Key
+
+**Personal Access Token**: 
+
+- easy to create and revoke, scoped permissions 	
+
+### SERVICE CONNECTION AUTHENTICATION
+
+**Basic**: Azure Repos
+
+**Service Principal/Azure-Managed Service Identity**: Azure resource manager, Power Platform Built Tools, Azure Web Apps, Azure Kubernetes Service (AKS)
+
+**Public/Private key pair**: Chef, Docker host, Ext. Git, SSH
+
+**Token/API key-based**: Azure DevOps Repos, Ext. Git, Generic, Github, Maven, NPM, NuGet, Python, VS App Center
+
+**Credentials based**: Azure Classic service, ARM, Subversion
+
+## Integrate Microsoft Entra ID in Azure Devops
+
+Goto Azure Devops > Organization Setting > Microsoft Entry  and click connect directory
+
+
+
 # Getting started with GIT 
 
 https://git-scm.com/
