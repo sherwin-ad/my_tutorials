@@ -385,6 +385,134 @@ Goto Azure Devops > Organization Setting > Microsoft Entry  and click connect di
 
 
 
+## Authorization and governance
+
+### SECURITY POLICIES IN AZURE DEVOPS
+
+You can configure several policies at the Azure DevOps organizational level to:
+
+- ﻿﻿Restrict access via Oauth
+- ﻿﻿Restrict SSH authentication
+- ﻿﻿Restrict creation of public projects
+- ﻿﻿Restrict invites to Github users
+
+### AUTHORIZATION IN AZURE DEVOPS
+
+- Access to Azure DevOps features is based on security group and access level.
+
+**Access levels:**
+
+- Stakeholder, Basic, "Basic + Test Plans", Visual studio subscription
+
+**Security group:**
+
+- Project level - Readers, Contributors, Project Administrators Organizational level - Start with prefix "Project Collection" < group name>
+
+### SERVICE CONNECTIONS
+
+- Integrate third party services to execute tasks from a pipeline job.
+
+**User permissions:**
+
+- ﻿﻿User: Reader, User, Creator, Administrator
+- ﻿﻿Scopes: Project, Organization
+
+**Project & pipeline permissions:**
+
+- Restrict/share the service connection between projects and pipelines
+
+## Learn About Azure Key Vault
+
+Azure Key Vault is a cloud service for securely storing and accessing secrets
+
+- ﻿﻿Centralize application secrets
+- ﻿﻿Securely store secrets and keys
+- ﻿﻿Monitor access and use
+
+![image-20240402180303441](images/image-20240402180303441-2052185-2052206.png)
+
+
+
+### USE CASE
+
+- ﻿﻿Azure Pipeline tasks (Azure Key Vault task, CLI/Powershell tasks, etc..)
+- ﻿﻿Azure DevOps (variable groups)
+- ﻿﻿ARM templates
+- ﻿﻿Terraform
+- ﻿﻿Applications
+
+### AZURE CLI
+
+```
+az keyvault create --name "<your-unique-keyvault-name>" --resource-group "myResourceGroup" --location "EastUS"
+```
+
+
+
+### POWERSHELL
+
+```
+New-AzKeyVault -Name "‹your-unique-keyvault-name>" -ResourceGroupName "myResourceGroup" -Location "East US"
+```
+
+
+
+### KEY VAULT AUTHENTICATION
+
+- Authentication is done with Azure AD. For authorization RBAC or Access policies can be used.
+
+### KEY VAULT AUTHORIZATION
+
+**Management plane:** Authorization to manage Key Vault (creating/deleting Key Vault...) uses RBAC
+
+**Data plane**: manage secrets/keys/certificates Access policies can be used as well as RBAC.
+
+### **PERMISSIONS/SECRET ACCESS CONTROL:**
+
+- ﻿﻿Get
+- ﻿﻿List
+- ﻿﻿Set
+- ﻿﻿Delete
+
+
+
+![image-20240402181322315](images/image-20240402181322315.png)
+
+
+
+## Learn about Azure DevOps variables
+
+- Control job behavior, store values that you can use in your pipeline and help avoid hard-coding values
+
+### User-defined
+
+- Defined by user, can be set at root, stage and job level as well as in the Ul.
+
+### Predefined/System variables
+
+- ﻿﻿Automatically set by the system
+- ﻿﻿Read-only variables
+
+### Environment variables
+
+- Variables injected to the pipeline which are specific to the OS
+
+### Variable scopes (ordered by precedence)
+
+- ﻿﻿Job level
+- ﻿﻿Stage level
+- ﻿﻿Root level
+
+### VARIABLE GROUPS
+
+- ﻿﻿Store values and secrets
+- ﻿﻿Shared across pipelines in the same project
+- ﻿﻿Link Azure Key Vault and map selective secrets
+
+### SECRET VARIABLES
+
+- Encrypt the variable and preventing it from appearing in the output of Azure Pipelines
+
 # Getting started with GIT 
 
 https://git-scm.com/
