@@ -513,6 +513,159 @@ New-AzKeyVault -Name "‹your-unique-keyvault-name>" -ResourceGroupName "myResou
 
 - Encrypt the variable and preventing it from appearing in the output of Azure Pipelines
 
+
+
+## Learn about SCM (Source Code Management)/VCS (Version Control System)
+
+### AZURE REPOS
+
+- **Git**: Distributed VCS, branch policy, pull requests
+
+- **Team Foundation Version Control**: Centralized VCS, path-based branches,
+Granular permission and access restriction at file level
+
+### GITHUB/GITHUB ENTERPRISE
+
+- Decentralized VCS, git based, structure consists of organizations and user
+  accounts.
+
+### BITBUCKET CLOUD/BITBUCKET SERVER
+
+- Git based, includes ci/cd pipelines
+
+### APACHE SUBVERSION
+
+- Centralized VCS, repositories accessed through filesystem, http:// or svn://
+
+## Learn Git
+
+### WINDOWS
+
+Installed from https://git-scm.com/downloads
+
+### LINUX & MACOS
+
+Pre-installed
+
+### AZURE REPOS AUTHENTICATION
+
+- **SSH**: Public and private key pair
+
+- **Personal access token (PAT)**: Name and token, scoped access, custom
+expiration
+
+- **Git credential manager core (GCM)**: Uses Azure DevOps services
+credentials. Supports multi-factor authentication with Azure Repos and two-factor authentication with Github repositories. 
+
+### Git Commands
+
+**git config**
+
+- This command sets the author name and email address respectively to be used with your commits.
+
+````
+git config –global user.name “[name]”
+git config –global user.email “[email address]”
+````
+
+**git init** 
+
+- This command is used to start a new repository.
+
+```
+git init [repository name]
+```
+
+**git clone**
+
+- This command is used to obtain a repository from an existing URL.
+
+```
+git clone [repo name] [url]
+```
+
+**git remote**
+
+- This command is used to connect your local repository to the remote server.
+
+```
+git remote add [variable name] [Remote Server Link]
+```
+
+**git add**
+
+- This command adds a file to the staging area.
+
+```
+git add [file]  
+```
+
+**git commit**
+
+- This command records or snapshots the file permanently in the version history.
+
+```
+git commit -m “[ Type in the commit message]” 
+```
+
+**git branch**
+
+- This command creates a new branch.
+
+```
+git branch [branch name]
+```
+
+**git checkout**
+
+- This command is used to switch from one branch to another.
+
+```
+git checkout [branch name]
+```
+
+- This command creates a new branch and also switches to it.
+
+```
+git checkout -b [branch name]
+```
+
+**git merge**
+
+- This command merges the specified branch’s history into the current branch.
+
+```
+git merge [branch name]
+```
+
+**git push**
+
+- This command sends the committed changes of master branch to your remote repository.
+
+```
+git push [remote] [branch]
+```
+
+**git fetch**
+
+- Download objects and refs from another repository
+
+```
+git fetch [remote]
+```
+
+**git pull**
+
+- This command fetches and merges changes on the remote server to your working directory.
+
+```
+git pull [remote]
+```
+
+
+
+
+
 # Getting started with GIT 
 
 https://git-scm.com/
@@ -531,6 +684,10 @@ With a VCS, you can:
 - Retrieve past versions of the entire project or of individual files.
 - Create *branches*, where changes can be made experimentally. This feature allows several different sets of changes (for example, features or bug fixes) to be worked on at the same time, possibly by different people, without affecting the main branch. Later, you can merge the changes you want to keep back into the main branch.
 - Attach a tag to a version—for example, to mark a new release.
+
+
+
+
 
 ## GIT
 
