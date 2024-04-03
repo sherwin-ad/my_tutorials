@@ -664,7 +664,176 @@ git pull [remote]
 
 
 
+## Git workflows, tags and branches
 
+### WORKFLOWS
+
+- ﻿﻿**Git flow**
+- ﻿﻿**Github flow**
+- ﻿﻿**Trunk based development**
+
+### BRANCHES
+
+- ﻿﻿**Main**: Default branch, production-ready state, tags
+- ﻿﻿**Development**: Copy of main; new features are merged into this branch
+- ﻿﻿**Feature**: Branch to work on a specific functionality
+- ﻿﻿**Release**: Copy of development branch; used for testing & documentation
+- ﻿﻿**Hotfix**: Copy of main; used to resolve bugs & issues
+
+### TAGS
+
+Used to capture a point in a git history that marks a version release
+
+- ﻿﻿**Lightweight tags**: Points to a specific commit, includes tag name
+- ﻿﻿**Annotated tags**: Points to a specific commit and includes metadata such as name, message and date.
+
+### Gitflow
+
+Strict branching model designed around a project release
+
+- ﻿﻿Published in 2010 by Vincent Driessen (https://nvie.com)
+- ﻿﻿Great for teams with junior developers
+- ﻿﻿Ideal for projects with a scheduled release cycle
+- ﻿﻿Projects where you work with vendors/third party or open-source
+- ﻿﻿Multiple versions of software need to be supported and maintained
+
+![image-20240403134253295](images/image-20240403134253295.png)
+
+
+
+### Trunk-based development
+
+No concept of release; every feature is pushed live immediately
+
+- ﻿﻿Simpler and easier to adopt
+- ﻿﻿Main and release branches are combined into "trunk" branch
+- ﻿﻿New short-lived branches are created for every new feature
+- ﻿﻿Hotfixes are treated just like feature branches
+
+**Trunk-based:**
+
+- ﻿﻿Commits from feature branches are preserved in trunk
+- ﻿﻿Daily commits; unfinished code is hidden with a feature toggle
+- ﻿﻿Branch by abstraction
+
+![image-20240403135300111](images/image-20240403135300111.png)
+
+
+
+## Pull Request
+
+- Used to merge code, it allows teams to review code and provide feedback
+
+### PERMISSIONS
+
+- ﻿﻿**Access Level**: Basic or higher to view/review pull request. Stakeholder in case of a public project
+- ﻿﻿**Security group**: Readers allows you to contribute to a pull request; contributors allows you to create or complete a pull request
+
+### PULL REQUEST WORKFLOW
+
+![image-20240403143933522](images/image-20240403143933522.png)
+
+## BRANCH POLICIES
+
+Help protect branches, enforce guidelines, restrict use, limit access
+
+- ﻿﻿**Require reviewers**: Require approval from minimum number of reviewers
+- ﻿﻿**Linked work items**: Require association between pull request and work items
+- ﻿﻿**Limit merge types**: Restrict merging to allow certain types
+- ﻿﻿**Build validation**: Build must succeed in order to complete pull request
+- ﻿﻿**Bypass branch policies**: Allows you to push changes even if policies are not satisfied
+
+## BRANCH PROTECTION
+
+- ﻿﻿**Branch locking**: Prevent updates to the branch
+
+- ﻿﻿**Branch permissions**:
+
+  - ﻿﻿**Git:** Set policies and permissions for individual users/groups in a branch
+
+  - **TFVC**: Set policies, permissions for individual users/groups are more granular (read, merge, label, lock)
+
+
+
+## Merge types
+
+### BASIC MERGE
+
+- ﻿﻿Maintains the commit history of the feature (source) branch
+- ﻿﻿Creates a merge commit in the target (destination) branch
+
+![image-20240403155447993](images/image-20240403155447993.png)
+
+### SQUASH MERGE
+
+- ﻿﻿Reduces git history by grouping changes into one single commit
+- ﻿﻿Adds this single commit to the front of target branch
+
+![image-20240403155621979](images/image-20240403155621979.png)
+
+ 
+
+### REBASE AND FAST FORWARD MERGE:
+
+- Adds feature branch commits to the front of the target branch without grouping these changes in a new commit
+
+![image-20240403155851759](images/image-20240403155851759.png)
+
+
+
+### SEMI-LINEAR MERGE (REBASE WITH MERGE COMMIT):
+
+- Adds feature branch commits to the front of the target branch and creates a merge commit
+
+![image-20240403160030495](images/image-20240403160030495.png)
+
+
+
+## Advanced repository features
+
+### GIT REPOSITORY USAGE BEST PRACTICES:
+
+- ﻿﻿Repositories should generally be no larger than 10gb
+- ﻿﻿Don't commit large binaries, compressed files, logs or diagnostics data
+- ﻿﻿Don't commit compiled code or binary dependencies
+- ﻿﻿Do Commit: Source code, text formats
+
+### GIT LFS (Large File Storage):
+
+- ﻿﻿Git extension, stores large binary files in separate storage
+- ﻿﻿Requires installation of Git LFS client
+
+### GIT SUBMODULES:
+
+\- Integrate another git repository into your repository
+
+### FORKS:
+
+\- Copy repository to a new repository
+
+### MERGE CONFLICT:
+
+\- Different branches being merged & updating same lines of code
+
+### •gitignore:
+
+- File within your git repository to prevent tracking of files
+
+### Git go (garbage collection):
+
+- Removes all unused data from repository
+
+### Git prune:
+
+- Cleans up unreachable (commits not accessed through a branch or log) or orphaned git objects
+
+### Git partial clone and shallow clone:
+
+- Allow you to work in a repository without downloading every version in the git history
+
+### Git sparse-checkout:
+
+- Specify which directories to download from the remote repository
 
 # Getting started with GIT 
 
@@ -684,6 +853,8 @@ With a VCS, you can:
 - Retrieve past versions of the entire project or of individual files.
 - Create *branches*, where changes can be made experimentally. This feature allows several different sets of changes (for example, features or bug fixes) to be worked on at the same time, possibly by different people, without affecting the main branch. Later, you can merge the changes you want to keep back into the main branch.
 - Attach a tag to a version—for example, to mark a new release.
+
+
 
 
 
