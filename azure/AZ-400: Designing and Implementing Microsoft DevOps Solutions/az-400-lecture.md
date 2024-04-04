@@ -1030,9 +1030,43 @@ Group of agents scoped to the entire organization
 
 Azure Pipelines: `https://dev.azure.com/{your-organization}`
 
+## Create classic azure pipeline
 
+1. Sign in to your Azure DevOps instance.
 
+2. Select an existing project or create a new project.
 
+3. Select **Pipelines** in the left menu.
+
+4. Select **Create Pipeline**:
+
+   ![Created pipeline.](images/create-pipeline.png)
+
+5. Select **Use the classic editor**:
+
+   ![Classic editor.](images/use-classic-editor.png)
+
+6. Select GitHub as the source.
+
+7. If necessary, authorize your GitHub connection using OAuth or using a personal access token:
+
+   ![Pipeline in GitHub.](images/pipeline-github.png)
+
+8. If needed, edit the connection name.
+
+9. Select **...** (ellipsis) from the right side of **Repository** input.
+
+10. Enter the name of your project on GitHub, and then **Select** it:
+
+    ![Select a repo.](images/select-repo.png)
+
+11. Select **Continue**.
+
+12. In the Select a template screen, select **Empty job**:
+
+    ![Select Empty job.](images/empty-job.png)
+
+13. **Save** your pipeline.
 
 
 
