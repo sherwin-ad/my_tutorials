@@ -789,7 +789,7 @@ Help protect branches, enforce guidelines, restrict use, limit access
 
 
 
-## Advanced repository features
+## Advanced GIT features
 
 ### GIT REPOSITORY USAGE BEST PRACTICES:
 
@@ -802,6 +802,44 @@ Help protect branches, enforce guidelines, restrict use, limit access
 
 - ﻿﻿Git extension, stores large binary files in separate storage
 - ﻿﻿Requires installation of Git LFS client
+
+#### Getting Started
+
+1. Download and install the Git command line extension. Once downloaded and installed, set up Git LFS for your user account by running:
+
+   ```
+   git lfs install
+   ```
+
+   You only need to run this once per user account.
+
+   Install git lfs in ubuntu
+
+   ```
+   sudo apt-get -y install git-lfs
+   ```
+
+2. In each Git repository where you want to use Git LFS, select the file types you'd like Git LFS to manage (or directly edit your .gitattributes). You can configure additional file extensions at anytime.
+
+   ```
+   git lfs track "*.psd"
+   ```
+
+   Now make sure .gitattributes is tracked:
+
+   ```
+   git add .gitattributes
+   ```
+
+   Note that defining the file types Git LFS should track will not, by itself, convert any pre-existing files to Git LFS, such as files on other branches or in your prior commit history. To do that, use the [git lfs migrate(1)](https://github.com/git-lfs/git-lfs/blob/main/docs/man/git-lfs-migrate.adoc?utm_source=gitlfs_site&utm_medium=doc_man_migrate_link&utm_campaign=gitlfs) command, which has a range of options designed to suit various potential use cases.
+
+3. There is no step three. Just commit and push to GitHub as you normally would; for instance, if your current branch is named `main`:
+
+   ```
+   git add file.psd
+   git commit -m "Add design file"
+   git push origin main
+   ```
 
 ### GIT SUBMODULES:
 
@@ -829,11 +867,174 @@ Help protect branches, enforce guidelines, restrict use, limit access
 
 ### Git partial clone and shallow clone:
 
-- Allow you to work in a repository without downloading every version in the git history
+- Allow you to work in a repository without downloading every version in the git history  
 
 ### Git sparse-checkout:
 
 - Specify which directories to download from the remote repository
+
+## Github Codespaces
+
+- Creates cloud-hosted dev environments with the VSCode IDE in virtual machines that boots up in seconds.
+- You can use this vm to code from your browser on any device.
+- Charged on a pay-as-you-go basis depending on the VM Size
+
+ https://github.com/codespaces
+
+## Develop build pipelines
+
+### PIPELINE COMPONENTS
+
+- **Triggers**: launches the pipeline
+
+- **Step**: Smallest building block of the pipeline, can be a task/script
+
+- **Task**: Activity with set of inputs
+
+- **Job**: Set of steps/tasks
+
+- **Stage**: Group that may contain several jobs
+
+- **Agent**: Machine that executes the pipeline jobs
+
+### TYPES:
+
+- **Classic**: GUI editor
+
+- **YAML**: Text editor
+
+### BUILD TRIGGERS:
+
+- **Continuous integration triggers**: Updates to repository branches/tags
+
+- **Pull Request triggers**: Open/update pull request
+
+- **Pipeline/build completion triggers:** Triggered upon pipeline completion
+- **Other triggers**: Scheduled, comment, gated check-ins.
+
+### CLASSIC (PIPELINE) TASK GROUPS
+
+- Groups a sequence of tasks that can be reused within build/release pipelines of a project.
+
+### YAML (PIPELINE) TEMPLATES
+
+- Insert reusable content/control what is allowed in a pipeline
+
+### PIPELINE ARTIFACTS:
+
+- Files produced in one job, usually shared between following jobs
+
+
+
+### TYPES of Agents:
+
+- Agents are machines that execute the jobs from your pipeline.
+
+1. **Microsoft-Hosted:**
+
+   Maintenance/upgrades managed by Microsoft
+   **Available OS Images**: Windows Server, Ubuntu, macOS
+
+2. **Self-Hosted:**
+
+   Your own machine running the Azure Pipelines agent
+   **Platforms**: Linux, macOS, Windows, Docker
+   **Machine**: VM, Container, Scale set
+
+**POOLS:**
+
+Group of agents scoped to the entire organization
+**Azure Pipelines Pool**: Microsoft-hosted agents
+**Default**: Self-hosted agents
+
+**AUTHORIZATION:**
+
+- Reader: View agent pool & agents
+
+- User: Can author pipelines that use the agent pools
+
+- Administrator: Register agents & manage membership/roles
+
+**REGISTER AN AGENT:**
+
+- Personal Access token with “read” and “manage” permissions in the Agent
+  Pools scope.
+
+## Setup up build agents
+
+### Create a Personal Access Tokens
+
+1. Sign in to your organization (`https://dev.azure.com/{yourorganization}`).
+
+2. From your home page, open user settings ![img](https://learn.microsoft.com/en-us/azure/devops/media/icons/user-settings-gear.png?view=azure-devops) and select **Personal access tokens**.
+
+   ![Screenshot showing selection, Personal Access Tokens.](images/select-personal-access-tokens.jpg)
+
+3. Select **+ New Token**.
+
+   ![Screenshot showing selection, New Token.](images/select-new-token.png)
+
+4. Name your token, select the organization where you want to use the token, and then set your token to automatically expire after a set number of days.
+
+   ![Screenshot showing entry of basic token information.](images/create-new-pat.png)
+
+5. Select the [scopes](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops#scopes) for this token to authorize for *your specific tasks*.
+
+   For example, to create a token to enable a [build and release agent](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents) to authenticate to Azure DevOps Services, limit your token's scope to **Agent Pools (Read & manage)**. To read audit log events, and manage and delete streams, select **Read Audit Log**, and then select **Create**.
+
+   ![Screenshot showing selected scopes for a PAT.](images/select-pat-scopes-preview.png)
+
+    Note
+
+   You may be restricted from creating full-scoped PATs. If so, your Azure DevOps Administrator in Microsoft Entra ID has enabled a policy which limits you to a specific custom defined set of scopes. For more information, see [Manage PATs with policies/Restrict creation of full-scoped PATs](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/manage-pats-with-policies-for-administrators?view=azure-devops#restrict-creation-of-full-scoped-pats). For a custom defined PAT, the required scope for accessing the Component Governance API, `vso.governance`, isn't selectable in the UI.
+
+6. When you're done, copy the token and store it in a secure location. For your security, it doesn't display again.
+
+   ![Screenshot showing how to copy the token to your clipboard.](images/copy-token-to-clipboard.png)
+
+
+
+### Download and configure the agent
+
+
+
+**Azure Pipelines**
+
+1. Log on to the machine using the account for which you've prepared permissions as explained in the previous section.
+
+2. In your web browser, sign in to Azure Pipelines, and navigate to the **Agent pools** tab:
+
+   1. Sign in to your organization (`https://dev.azure.com/{yourorganization}`).
+
+   2. Choose **Azure DevOps**, **Organization settings**.
+
+      ![Choose Organization settings.](images/organization-settings.png)
+
+   3. Choose **Agent pools**.
+
+      ![Choose Agent pools tab.](images/agent-pools.png)
+
+3. Select the **Default** pool, select the **Agents** tab, and choose **New agent**.
+
+4. On the **Get the agent** dialog box, click **Linux**.
+
+5. On the left pane, select the specific flavor. We offer x64 or ARM for many Linux distributions.
+
+6. On the right pane, click the **Download** button.
+
+7. Follow the instructions on the page.
+
+8. Unpack the agent into the directory of your choice. `cd` to that directory and run `./config.sh`.
+
+**Server URL**
+
+Azure Pipelines: `https://dev.azure.com/{your-organization}`
+
+
+
+
+
+
 
 # Getting started with GIT 
 
