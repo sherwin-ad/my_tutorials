@@ -1225,15 +1225,8 @@ https://code.visualstudio.com/docs/java/java-tutorial
 **Add remote**
 
 ```
-git remote add ado https://beesuite:3agu67aimwynwkykmoyozrfzkjd25kqj2czh6roj34f46pcjz66q@dev.azure.com/beesuite/lab46javapkg/_git/lab46javapkg
+git remote add ado https://beesuite:[Git credentials]@dev.azure.com/beesuite/lab46javapkg/_git/lab46javapkg
 git push -u ado --all
-
-## Git credentials
-3agu67aimwynwkykmoyozrfzkjd25kqj2czh6roj34f46pcjz66q
-```
-
-```
-@sherwinowen1 ➜ /workspaces/lab46javapkg (main) $ git remote add ado https://beesuite:3agu67aimwynwkykmoyozrfzkjd25kqj2czh6roj34f46pcjz66q@dev.azure.com/beesuite/lab46javapkg/_git/lab46javapkg
 ```
 
 ### Set up feeds
