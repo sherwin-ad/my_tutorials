@@ -1225,7 +1225,7 @@ https://code.visualstudio.com/docs/java/java-tutorial
 **Add remote**
 
 ```
-git remote add ado https://beesuite:[Git credentials]@dev.azure.com/beesuite/lab46javapkg/_git/lab46javapkg
+git remote add ado https://[organization]:[Git credentials]@dev.azure.com
 git push -u ado --all
 ```
 
