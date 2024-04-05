@@ -883,7 +883,7 @@ Help protect branches, enforce guidelines, restrict use, limit access
 
 ## Develop build pipelines
 
-### PIPELINE COMPONENTS
+**PIPELINE COMPONENTS**
 
 - **Triggers**: launches the pipeline
 
@@ -897,13 +897,13 @@ Help protect branches, enforce guidelines, restrict use, limit access
 
 - **Agent**: Machine that executes the pipeline jobs
 
-### TYPES:
+**TYPES:**
 
 - **Classic**: GUI editor
 
 - **YAML**: Text editor
 
-### BUILD TRIGGERS:
+**BUILD TRIGGERS:**
 
 - **Continuous integration triggers**: Updates to repository branches/tags
 
@@ -912,21 +912,21 @@ Help protect branches, enforce guidelines, restrict use, limit access
 - **Pipeline/build completion triggers:** Triggered upon pipeline completion
 - **Other triggers**: Scheduled, comment, gated check-ins.
 
-### CLASSIC (PIPELINE) TASK GROUPS
+**CLASSIC (PIPELINE) TASK GROUPS**
 
 - Groups a sequence of tasks that can be reused within build/release pipelines of a project.
 
-### YAML (PIPELINE) TEMPLATES
+**YAML (PIPELINE) TEMPLATES**
 
 - Insert reusable content/control what is allowed in a pipeline
 
-### PIPELINE ARTIFACTS:
+**PIPELINE ARTIFACTS:**
 
 - Files produced in one job, usually shared between following jobs
 
 
 
-### TYPES of Agents:
+**TYPES of Agents:**
 
 - Agents are machines that execute the jobs from your pipeline.
 
@@ -960,9 +960,9 @@ Group of agents scoped to the entire organization
 - Personal Access token with “read” and “manage” permissions in the Agent
   Pools scope.
 
-## Setup up build agents
+### Setup up build agents
 
-### Create a Personal Access Tokens
+#### Create a Personal Access Tokens
 
 1. Sign in to your organization (`https://dev.azure.com/{yourorganization}`).
 
@@ -994,7 +994,7 @@ Group of agents scoped to the entire organization
 
 
 
-### Download and configure the agent
+#### Download and configure the agent
 
 
 
@@ -1030,7 +1030,7 @@ Group of agents scoped to the entire organization
 
 Azure Pipelines: `https://dev.azure.com/{your-organization}`
 
-## Create classic azure pipeline
+### Create classic azure pipeline
 
 1. Sign in to your Azure DevOps instance.
 
@@ -1072,7 +1072,7 @@ Azure Pipelines: `https://dev.azure.com/{your-organization}`
 
 
 
-## Create YAML pipelines
+### Create YAML pipelines
 
 1. Sign in to your Azure DevOps instance.
 
@@ -1128,11 +1128,115 @@ Azure Pipelines: `https://dev.azure.com/{your-organization}`
          dir
    ```
 
-   
 
 
 
+## Learn about package management
 
+**PACKAGE**
+
+- Container/bundle of software that can be used to add functionality to your project
+
+**AZURE ARTIFACTS**
+
+- Azure DevOps component that allows you to share and consume packages
+
+**SUPPORTED PACKAGES**
+
+- **NuGet**: Dotnet (.NET); nuget.org; nuget.config or package sources in VS;
+NuGetAuthenticate Task or Azure artifacts credential provider
+
+- **npm**: Node/Javascript; npmjs.com; .npmrc file; npmAuthenticate task or
+  vsts-npm-auth
+
+- **Python**: setup.py; twineAuthenticate task or Azure artifacts keyring; PyPI
+(Python Package Index)
+
+- **Java**: pom.xml (maven ) or build.gradle (gradle); settings.xml and Personal
+Access Token; Maven Central (mvnrepository.com)
+
+- **Universal packages**: Any collection of files labelled with a name and
+version; universalPackages task |
+
+**FEEDS**
+
+- Store, manage, and group your packages; control access to your packages
+
+**ACCESS**
+
+**Project-scoped**: Private/Public; Public: no upstream sources or universal
+packages
+URL includes projectld:
+https://feeds.dev.azure.com/organization/projectid/_apis/Packaging/Feeds
+
+**Organization-scoped**: Always private
+URL does not include projectid:
+https://feeds.dev.azure.com/organization/_apis/Packaging/Feeds
+
+**FEED PERMISSIONS**
+
+- **Reader**: list/install/restore packages
+- **Collaborator**: Reader + save packages from upstream sources
+
+- **Contributor**: Collaborator + publish/unlist/promote packages
+
+- **Owner/Admin**: Contributor + delete packages, edit upstream sources and
+feed settings |
+
+**FEED VIEWS**
+Read-only list of specific package versions while keeping others private
+
+- **@local (default)**: all published packages and saved upstream packages
+
+
+
+**UPSTREAM SOURCES**
+Manage dependencies (packages produced by your team & packages from
+public package repositories) in a single feed
+
+**SEMANTIC VERSIONING**
+Used to convey the nature, risk, and quality of code change
+**1.2.3-alpha**
+
+**RECYCLE BIN**
+Deleted packages will be permanently deleted after 30 days
+
+
+
+**ADDITIONAL PACKAGE MANAGEMENT TOOLS**
+
+- **Jfrog Artifactory**: Universal package repository (helm, maven, conda, php,
+docker, npm, and more)
+
+- **Github Packages**: Host and manage packages for: npm, rubygems, maven, gradle, docker and nuget.
+
+### Create packages
+
+https://code.visualstudio.com/docs/java/java-tutorial
+
+### Push github repo to azure devops repo
+
+**Remove remote** 
+
+```
+@sherwinowen1 ➜ /workspaces/lab46javapkg (main) $ git remote remove origin 
+```
+
+**Add remote**
+
+```
+git remote add ado https://beesuite:3agu67aimwynwkykmoyozrfzkjd25kqj2czh6roj34f46pcjz66q@dev.azure.com/beesuite/lab46javapkg/_git/lab46javapkg
+git push -u ado --all
+
+## Git credentials
+3agu67aimwynwkykmoyozrfzkjd25kqj2czh6roj34f46pcjz66q
+```
+
+```
+@sherwinowen1 ➜ /workspaces/lab46javapkg (main) $ git remote add ado https://beesuite:3agu67aimwynwkykmoyozrfzkjd25kqj2czh6roj34f46pcjz66q@dev.azure.com/beesuite/lab46javapkg/_git/lab46javapkg
+```
+
+### Set up feeds
 
 
 
