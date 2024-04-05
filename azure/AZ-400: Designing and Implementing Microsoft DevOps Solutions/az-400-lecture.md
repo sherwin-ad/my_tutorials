@@ -1070,6 +1070,72 @@ Azure Pipelines: `https://dev.azure.com/{your-organization}`
 
 
 
+
+
+## Create YAML pipelines
+
+1. Sign in to your Azure DevOps instance.
+
+2. Select an existing project or create a new project.
+
+3. Select **Pipelines** in the left menu.
+
+4. Select **Create Pipeline**:
+
+   ![Created pipeline.](images/create-pipeline.png)
+
+5. Select **Azure Repos Git Yaml**:
+
+   ![Classic editor.](images/use-classic-editor.png)
+
+   azure-pipelines.yml
+
+   ```
+   # Starter pipeline
+   # Start with a minimal pipeline that you can customize to build and deploy your code.
+   # Add steps that build, run tests, deploy, and more:
+   # https://aka.ms/yaml
+   
+   trigger:
+   - main
+   
+   pool: Default
+   
+   steps:
+   - script: echo Hello, world!
+     displayName: 'Run a one-line script'
+   
+   - script: |
+       echo Add other tasks to build, test, and deploy your project.
+       echo See https://aka.ms/yaml
+     displayName: 'Run a multi-line script'
+   
+   - task: ArchiveFiles@2
+     inputs:
+       rootFolderOrFile: 'README.md'
+       includeRootFolder: true
+       archiveType: 'zip'
+       archiveFile: 'README2.zip'
+       replaceExistingArchive: false
+   
+   - task: CmdLine@2
+     inputs:
+       script: |
+         echo Write your commands here
+         
+         echo Hello world
+         
+         dir
+   ```
+
+   
+
+
+
+
+
+
+
 # Getting started with GIT 
 
 https://git-scm.com/
