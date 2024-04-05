@@ -1231,6 +1231,144 @@ git push -u ado --all
 
 ### Set up feeds
 
+## Learn about containers
+
+**CONTAINER IMAGE:**
+Encapsulates an application's code along with its dependencies in an image that is lightweight, portable, and platform-independent
+
+**DOCKERFILE:**
+Plain-text file with steps to tell the container engine how to build the image
+
+**CONTAINER:**
+Running instance of a docker image
+
+**CONTAINER REGISTRY:**
+Store container images to make them available for download
+
+**DOCKER REGISTRY SERVICE CONNECTION:**
+
+- ﻿﻿**Azure Container Registry**: Azure subscription and ACR
+- ﻿﻿**Dockerhub or others**: URL, Account, Password/PAT
+
+### Create a dockerfile
+
+**FROM**: Specify parent image, by default will try and fetch from dockerhub
+
+**RUN**: Execute commands
+
+**WORKDIR**: Set working directory for dockerfile commands
+
+**COPY**: Copy files or directories from a specific location
+
+**ENTRYPOINT**: Command that will be executed when the container starts
+
+**DOCKERFILE EXAMPLE:**
+
+```
+FROM ubuntu:latest
+
+RUN apt-get update
+
+WORKDIR /app
+
+COPY script.sh ./
+
+ENTRYPOINT ["/script.sh"]
+```
+
+**BUILDING THE DOCKER IMAGE**
+Use the "docker build" command followed by the "-t flag" to set a name and tag (<mylmageName>:tag) for the image and the path to the dockerfile:
+
+```
+docker build -t myDockerImage:0.1 .
+```
+
+**RUNNING THE CONTAINER IN DOCKER**
+Use the "docker run" command followed by the name of the docker image and tag:
+
+```
+docker run myDockerImage:0.1
+```
+
+**AUTHENTICATE TO A CONTAINER REGISTRY**
+Docker login; Docker registry service connection
+
+**PUSH/PULL IMAGE FROM A CONTAINER REGISTRY**
+Docker push/pull; Docker - Build and push tasks
+
+
+
+## Learn about code quality and security
+
+Quality code is produced by using a coding standard, analyzing code through testing, reviewing code, and refactoring legacy code.
+
+**BUGS**
+Issues that may break the code/make it unreliable
+
+**LINTING**
+Programmatic and stylistic errors, such as formatting discrepancy, complexity, bugs, logical errors, unreachable code, check best practices are being applied, dangerous data type combinations
+
+- ﻿﻿**Net**: FxCop
+- ﻿﻿**Java(Maven/Gradle)**: PMD/Checkstyle/FindBugs
+- ﻿﻿**Javascript**: Grunt
+- ﻿﻿**Python**: flake8, pylint
+
+
+
+**UNIT TESTS**
+
+Testing smallest piece of independent code, such as a function, method, or property, to make sure it works as expected.
+
+- ﻿﻿**Net**: xUnit/Nunit/MSTest/Visual Studio Test task
+- ﻿﻿**Java** (Ant/Maven/Gradle): Junit
+- ﻿﻿**Javascript**: Grunt/Gulp/mocha/jasmine
+- ﻿﻿**Python**: PyTest
+
+**CODE COVERAGE**
+Determines what portion of your code is being tested
+
+- Publish code coverage results task: Cobertura, Jacoco, Istanbul
+
+**TECHNICAL DEBT**
+Can be managed by reducing code complexity, bugs and vulnerabilities
+
+- Tools: Sonarcloud/Sonarqube/Github advanced security
+
+
+
+**STATIC APPLICATION SECURITY TESTING (SAST)**
+Application with several tools to inspect your code to identify vulnerabilities and bugs with support for a variety of programming languages
+
+- Tools: SonarQube/SonarCloud/Whitesource Bolt/GitHub Advanced
+  Security/CodeQL Analysis
+
+**VULNERABILITIES**
+Security related issues/potential backdoor that can put your code at risk of attack
+
+**SHIFT-LEFT TESTING**
+Moving security thinking to the early stages of planning and development
+
+**DEPENDENCY SCANNING**
+Identify outdated/vulnerable dependencies
+
+- Tools: Whitesource Bolt/Nu Keeper/GH dependency review/GitHub
+  Dependabot (creates pull request)
+
+**CONTAINER SCANNING**
+Scans Linux container images in Azure container registry and private registries.
+
+- Tools: Microsoft defender for containers
+
+**SECRETS SCANNING**
+Scans entire git history for any secrets
+
+- Tools: GitHub Secret scanning, git leaks
+
+**LICENSE COMPLIANCE SCANNING**
+Identify security and license compliance risks in software and dependencies
+
+- Tool: Whitesource Bolt
+
 
 
 # Getting started with GIT 
