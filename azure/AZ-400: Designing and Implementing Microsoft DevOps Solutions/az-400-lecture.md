@@ -106,19 +106,21 @@ project (Basic, Scrum, Agile, CMMI)
 
 - Assigned to project members and sprints
 
-### **AZURE DEVOPS PROCESSES: BASIC**
+### Four type of work items
+
+#### **1. AZURE DEVOPS PROCESSES: BASIC**
 
 - Track work with issues, tasks and epics
 
 - Workflow states: to do, doing, done
 
-### **AZURE DEVOPS PROCESSES: SCRUM**
+#### **2. AZURE DEVOPS PROCESSES: SCRUM**
 
 - Track work with product backlog items, tasks, epics, features & bugs
 - Ideal if your team practices Scrum
 - Workflow states: new, approved, committed, done & removed
 
-### **AZURE DEVOPS PROCESSES: AGILE**
+#### **3. AZURE DEVOPS PROCESSES: AGILE**
 
 - Track work with user stories, tasks, epics, features and bugs
 
@@ -128,7 +130,7 @@ project (Basic, Scrum, Agile, CMMI)
 
 - Workflow states: new, active, resolved, closed & removed
 
-### **AZURE DEVOPS PROCESSES: CAPABILITY MATURITY MODEL INDEX**
+#### **4. AZURE DEVOPS PROCESSES: CAPABILITY MATURITY MODEL INDEX**
 
 - Track work with requirements, change requests, risk & reviews, as well as
 epics, features & bugs
@@ -1457,6 +1459,82 @@ effective alternative.
   
 
 ## Integrate azure pipelines with GitHub
+
+
+
+## Multi-stage docker builds
+
+Dockerfile
+
+```
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+RUN dotnet new console -o MyApp -f net8.0
+WORKDIR /MyApp
+CMD dotnet run
+```
+
+
+
+docker build -t mydockerimage:v1 .
+
+```
+$ docker build -t mydockerimage:v1 .
+
+$ docker images
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+mydockerimage   v1        842cf1aa43d7   3 minutes ago    867MB
+```
+
+Dockerfile
+
+```
+FROM mcr.microsoft.com/dotnet/sdk:8.0 As build
+RUN dotnet new console -o MyApp -f net8.0
+WORKDIR /MyApp
+RUN dotnet run
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+COPY --from=build /MyApp/bin/Debug/net8.0 ./
+ENTRYPOINT ["dotnet", "MyApp.dll"]
+```
+
+
+
+```
+$ docker build -t mydockerimage:v2 .
+
+$ docker images
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+mydockerimage   v2        7d7d1bd3a328   38 seconds ago   217MB
+mydockerimage   v1        842cf1aa43d7   3 minutes ago    867MB
+```
+
+
+
+
+
+## Learn about pipeline monitoring
+
+**POOL CONSUMPTION REPORT:**
+
+Chart showing running jobs and queued jobs. Helpful to find the concurrency limit to find out if you should purchase more parallel jobs.
+
+**PIPELINE ANALYTICS:**
+
+Here you will find reports on:
+
+- ﻿﻿Pipeline pass rate
+- ﻿﻿Pipeline duration
+- ﻿﻿Test pass rate
+
+**FLAKY TEST:**
+
+Tests that pass/fail even when there are no changes in code.
+
+- ﻿﻿System detection: uses test rerun data
+- ﻿﻿Custom detection: uses your own mechanism
+
+You can prevent pipeline failures due to flaky tests by removing them from the test summary report.
 
 
 
