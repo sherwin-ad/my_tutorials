@@ -1369,7 +1369,92 @@ Identify security and license compliance risks in software and dependencies
 
 - Tool: Whitesource Bolt
 
+## Integrating external tools
 
+**AZURE PIPELINES AND EXTERNAL VCS INTEGRATION:**
+
+- Supported repositories: Azure repos (Git/TFVC), GitHub/Enterprise,
+  Bitbucket Cloud/Server, Subversion
+
+
+
+**AZURE PIPELINES AND GITHUB REPOSITORY AUTHENTICATION:**
+
+- GitHub App: Runs without using your GH identity, works with GH checks
+
+- OAuth & PAT: Uses your personal GH identity
+  
+  
+  
+
+**PIPELINE STATUS UPDATES:**
+
+- GitHub App: GitHub Checks API, contains detailed pipeline status
+
+- OAuth & PAT: GitHub Status API, limited info posted back to commit/PR
+  
+  
+  
+
+**OTHER INTEGRATION ACTIVITIES (PAT):**
+
+- GitHub actions and Azure Artifacts
+
+- Trigger ADO Pipelines from GitHub Actions
+
+## Optimize build
+
+**PIPELINE CACHING:**
+Helps reduce build time by reusing files & dependencies from previous runs.
+
+- Setting it up: Use the “Cache” pipeline task, define key and path.
+
+  
+
+**PARALLEL JOBS:**
+Reduce time it takes to execute a pipeline by running jobs simultaneously
+
+- Limit: Number of parallel jobs limited by Project visibility (private/public)
+and agent type (MS-Hosted/self-hosted)
+
+**SCHEDULED TRIGGERS:**
+You can run pipelines on a scheduled basis instead of on a per-event basis by
+unchecking “Enable Continuous Integration” and setting a schedule to run
+the pipeline. Depending on the number of jobs, this could be a good cost-
+effective alternative.
+
+
+
+**MULTISTAGE BUILD**
+
+- Allows you to build smaller build images
+
+- Separate build into stages within a single Dockerfile
+
+  ```
+  FROM <image>[:tag] [AS <name>]
+  ```
+
+
+
+**MULTISTAGE BUILD USE CASES**
+
+- One FROM could be used to build your application and another FROM
+  could be used to run your application.
+
+- Build and test within the container
+
+  ```
+  FROM mcr.microsoft.com/dotnet/sdk:6.@ As build-env
+  WORKDIR /app
+  RUN dotnet publish -c Release -o /app/publish
+  FROM mcr.microsoft.com/dotnet/aspnet:6.0
+  COPY -from=build-env /app/publish .
+  WORKDIR /app
+  ENTRYPOINT [“dotnet”, “test.d1l”]
+  ```
+
+  
 
 # Getting started with GIT 
 
