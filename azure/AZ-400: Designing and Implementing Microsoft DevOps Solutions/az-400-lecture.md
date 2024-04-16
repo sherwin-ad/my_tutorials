@@ -1538,6 +1538,70 @@ You can prevent pipeline failures due to flaky tests by removing them from the t
 
 
 
+# Design Continues Delivery
+
+## Application deployment process
+
+### RELEASE PIPELINE ARTIFACTS (classic):
+
+Collection of artifacts that you can deploy to various stages:
+
+- ﻿﻿**VCS/SCM**: GitHub & TFVC
+- ﻿﻿**Cl systems**: Azure DevOps Build Pipelines, Jenkins
+- ﻿﻿**Azure Artifacts**: Maven, NPM, NuGet, Python, Universal packages
+- ﻿﻿**Container repositories**: Azure Container Registry/Docker hub
+- ﻿﻿**Other sources**: Download in custom tasks/scripts within job
+
+### RELEASE TRIGGERS (classic):
+
+- ﻿﻿**Continuous deployment**: Every time a new build artifact is generated
+- ﻿﻿**Scheduled**: Run a release pipeline according to a schedule
+- ﻿﻿**Pull Request**: Whenever an artifact is generated through a pull request
+- ﻿﻿**Stage Trigger**: Manual/After Stage/After Release
+
+### RELEASE TRIGGERS (YAML):
+
+\- **Types**: Continuous Integration, Pull request, Gated, Comment, Scheduled, Pipeline
+
+### APPROVALS AND CHECKS:
+
+Usage of approvals to protect resources (environments, service connections, agent pools, variable groups) from being consumed in a pipeline stage.
+
+- ﻿﻿Approvals check: Assign required approvers for resources
+- ﻿﻿Branch Control check: Specify allowed branches and branch protection
+- ﻿﻿Business hours check: Specify time window for deployments
+- ﻿﻿Required template check: Enforce specific yaml template
+- ﻿﻿Evaluate artifact check: Evaluate container image against custom policies
+- ﻿﻿Exclusive lock check: locks pipeline runs to a single pipeline and stage
+
+### PRE/POST DEPLOYMENT APPROVALS:
+
+Grant/Reject release at the start/end of a stage or both.
+
+### PRE/POST DEPLOYMENT GATES:
+
+Continues/Stops deployment based on health signals from external services
+
+\- **Default Types**: Azure function, Query Azure monitor alerts, invoke REST API, Query work items, Security and compliance assessment
+
+### CONDITIONS:
+
+Configure job order through dependencies:
+
+- ﻿﻿**Yaml**: "dependsOn" keyword
+- ﻿﻿**Classic**: Task control options/additional options for a job
+
+### CREATING A RELEASE (classic):
+
+- ﻿﻿**Continuous deployment trigger**: every time a new build artifact is created
+- ﻿﻿**Create Release button (manual)**: Clicking button in a pipeline
+- ﻿﻿**REST API** : Create a release definition through the API
+
+### DEPLOYMENT JOBS (YAML):
+
+- ﻿﻿Special type of job that maintains deployment history.
+- ﻿﻿Allows you to define how your application will be rolled out
+
 # Getting started with GIT 
 
 https://git-scm.com/
