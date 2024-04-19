@@ -1143,3 +1143,566 @@ output "primaryblobhost" {
 
 https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle
 
+Sample prevent destroy
+
+main.tf
+
+```
+resource "azurerm_resource_group" "example" {
+  name     = "example"
+  location = var.azregion
+}
+
+resource "azurerm_storage_account" "mystorage" {
+  for_each = {
+    lrs = "LRS"
+    grs = "GRS"
+  }
+  name                     = "owenteststorage${each.key}"
+  resource_group_name      = azurerm_resource_group.example.name
+  location                 = azurerm_resource_group.example.location
+  account_tier             = "Standard"
+  account_replication_type = each.value
+  
+  # Prevent destroy 
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  tags = {
+    environment = "staging"
+    owner = "Mr. ${local.name}"
+  }  
+}
+```
+
+```
+$ terraform destroy
+...
+Error: Instance cannot be destroyed
+│ 
+│   on main.tf line 18:
+│   18: resource "azurerm_storage_account" "mystorage" {
+│ 
+│ Resource azurerm_storage_account.mystorage["lrs"] has lifecycle.prevent_destroy set, but
+│ the plan calls for this resource to be destroyed. To avoid this error and continue with the
+│ plan, either disable lifecycle.prevent_destroy or reduce the scope of the plan using the
+│ -target option.
+╵
+╷
+│ Error: Instance cannot be destroyed
+│ 
+│   on main.tf line 18:
+│   18: resource "azurerm_storage_account" "mystorage" {
+│ 
+│ Resource azurerm_storage_account.mystorage["grs"] has lifecycle.prevent_destroy set, but
+│ the plan calls for this resource to be destroyed. To avoid this error and continue with the
+│ plan, either disable lifecycle.prevent_destroy or reduce the scope of the plan using the
+│ -target option.
+```
+
+## Dynamic Blocks
+
+- are a special Terraform block type that provide the functionality of a [for expression](https://www.terraform.io/language/expressions/for) by creating multiple nested blocks. 
+
+### **Key benefits of Terraform dynamic blocks**
+
+The key benefits of Terraform dynamic blocks are: 
+
+- **Speed** – simplifying the code makes it much quicker  to write and also for it to be processed and thus for the infrastructure to be deployed.
+- **Clarity** – in contrast to multiple blocks of repetitive code, it’s much easier to read and understand code written using dynamic blocks.
+- **Re-use** – copying, pasting, and amending large  blocks of code is difficult and tedious. Combine dynamic blocks and  variables/parameters to streamline this process.
+- **Reliability** – linked to clarity and re-use, errors are less likely to be made in simple, easy-to-read code.
+
+nsg.tf
+
+```
+locals {
+  nsg-rules = [{
+    name                       = "rule1"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    },
+    {
+      name                       = "rule2"
+      priority                   = 101
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+  }]
+}
+
+resource "azurerm_network_security_group" "nsg" {
+  name                = "owen-nsg"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
+  dynamic "security_rule" {
+    for_each = local.nsg-rules
+    content {
+      name                       = security_rule.value.name
+      priority                   = security_rule.value.priority
+      direction                  = security_rule.value.direction
+      access                     = security_rule.value.access
+      protocol                   = security_rule.value.protocol
+      source_port_range          = security_rule.value.source_port_range
+      destination_port_range     = security_rule.value.destination_port_range
+      source_address_prefix      = security_rule.value.source_address_prefix
+      destination_address_prefix = security_rule.value.destination_address_prefix
+    }
+  }
+}
+```
+
+
+
+## Using Builßt-in Functions
+
+https://developer.hashicorp.com/terraform/language/functions
+
+- The Terraform language includes a number of built-in functions that you can call from within expressions to transform and combine values. The general syntax for function calls is a function name followed by comma-separated arguments in parentheses.
+
+```
+terraform console
+> lower("SHERWIN")
+"sherwin"
+> upper("sherwin")
+"SHERWIN"
+>split(",","Sherwin,Ana,Reine,Lesyl,Shen")
+tolist([
+  "Sherwin",
+  "Ana",
+  "Reine",
+  "Lesyl",
+  "Shen",
+> distinct(["a", "b", "a", "c", "d", "b"])
+tolist([
+  "a",
+  "b",
+  "c",
+  "d",
+  
+> abspath(path.root)
+"/Users/sherwinowen/my_doc/owen-git/terraforn-on-azure/04-HCL"
+
+> bcrypt("password1")
+"$2a$10$.TeAiIO6SKAvWy7NlkpFG.zxZk8yonSJJqsJDtoYIxifFoyfyFGWe"
+
+> uuid()
+"506444bc-4fc8-1a63-4c0e-3bb641c12296"
+```
+
+### flatten Function
+
+`flatten` takes a list and replaces any elements that are lists with a flattened sequence of the list contents.
+
+**Examples**
+
+```mdx-code-blocks_codeBlockMargin__xk4yr
+> flatten([["a", "b"], [], ["c"]])
+["a", "b", "c"]
+```
+
+### coalesce Function
+
+`coalesce` takes any number of arguments and returns the first one that isn't null or an empty string.
+
+All of the arguments must be of the same type. Terraform will try to convert mismatched arguments to the most general of the types that all arguments can convert to, or return an error if the types are incompatible. The result type is the same as the type of all of the arguments.
+
+**Examples**
+
+```mdx-code-blocks_codeBlockMargin__xk4yr
+> coalesce("a", "b")
+a
+> coalesce("", "b")
+b
+> coalesce(1,2)
+1
+```
+
+###  cidrhost Function
+
+`cidrhost` calculates a full host IP address for a given host number within a given IP network address prefix.
+
+**Example**
+
+```
+> cidrhost("10.12.112.0/20", 16)
+10.12.112.16
+> cidrhost("10.12.112.0/20", 268)
+10.12.113.12
+> cidrhost("fd00:fd12:3456:7890:00a2::/72", 34)
+fd00:fd12:3456:7890::22
+
+```
+
+
+
+## Terraform state
+
+main.tf
+
+```
+# Deploy Azure Windows Virtual Machine
+resource "azurerm_resource_group" "example-rg" {
+  name     = "example-rg"
+  location = "eastus"
+}
+
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example-rg.location
+  resource_group_name = azurerm_resource_group.example-rg.name
+}
+
+resource "azurerm_subnet" "example" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.example-rg.name
+  virtual_network_name = azurerm_virtual_network.example.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_network_interface" "example" {
+  name                = "example-nic"
+  location            = azurerm_resource_group.example-rg.location
+  resource_group_name = azurerm_resource_group.example-rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.example.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_windows_virtual_machine" "example" {
+  name                = "example-machine"
+  resource_group_name = azurerm_resource_group.example-rg.name
+  location            = azurerm_resource_group.example-rg .location
+  size                = "Standard_F2"
+  admin_username      = "adminuser"
+  admin_password      = "P@$$w0rd1234!"
+  network_interface_ids = [
+    azurerm_network_interface.example.id,
+  ]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2016-Datacenter"
+    version   = "latest"
+  }
+}
+```
+
+```
+$ terraform state list
+azurerm_network_interface.example
+azurerm_resource_group.example-rg
+azurerm_subnet.example
+azurerm_virtual_network.example
+azurerm_windows_virtual_machine.example
+```
+
+```
+$ terraform state show azurerm_subnet.example
+# azurerm_subnet.example:
+resource "azurerm_subnet" "example" {
+    address_prefixes                               = [
+        "10.0.2.0/24",
+    ]
+    enforce_private_link_endpoint_network_policies = false
+    enforce_private_link_service_network_policies  = false
+    id                                             = "/subscriptions/2120c628-c057-48b9-ace5-14fddbf72365/resourceGroups/example-rg/providers/Microsoft.Network/virtualNetworks/example-network/subnets/internal"
+    name                                           = "internal"
+    private_endpoint_network_policies_enabled      = true
+    private_link_service_network_policies_enabled  = true
+    resource_group_name                            = "example-rg"
+    virtual_network_name                           = "example-network"
+}
+```
+
+```
+$ terraform state mv azurerm_subnet.example azurerm_subnet.owen-subnet
+Move "azurerm_subnet.example" to "azurerm_subnet.owen-subnet"
+Successfully moved 1 object(s).
+```
+
+```
+$ terraform state list       
+azurerm_network_interface.example
+azurerm_resource_group.example-rg
+azurerm_subnet.owen-subnet
+azurerm_virtual_network.example
+azurerm_windows_virtual_machine.example
+```
+
+## Terraform drift
+
+### terraform apply replace
+
+main.tf
+
+```
+# Deploy Azure Windows Virtual Machine
+resource "azurerm_resource_group" "example-rg" {
+  name     = "example-rg"
+  location = "eastus"
+}
+
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example-rg.location
+  resource_group_name = azurerm_resource_group.example-rg.name
+}
+
+resource "azurerm_subnet" "owen-subnet" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.example-rg.name
+  virtual_network_name = azurerm_virtual_network.example.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_network_interface" "example" {
+  name                = "example-nic"
+  location            = azurerm_resource_group.example-rg.location
+  resource_group_name = azurerm_resource_group.example-rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.owen-subnet.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_windows_virtual_machine" "example" {
+  name                = "example-machine"
+  resource_group_name = azurerm_resource_group.example-rg.name
+  location            = azurerm_resource_group.example-rg .location
+  size                = "Standard_F2"
+  admin_username      = "adminuser"
+  admin_password      = "P@$$w0rd1234!"
+  network_interface_ids = [
+    azurerm_network_interface.example.id,
+  ]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2016-Datacenter"
+    version   = "latest"
+  }
+}
+```
+
+provider.tf
+
+```
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.99.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {
+  }
+}
+```
+
+
+
+```
+$ terraform apply -replace=azurerm_windows_virtual_machine.example
+```
+
+
+
+### terraform apply refresh
+
+Delete azurerm_windows_virtual_machine.example in Azure console
+
+- Use refresh-only mode to sync Terraform state
+
+```
+$ terraform apply -refresh-only
+```
+
+
+
+### terraform import
+
+Create placeholder in main.tf
+
+```
+# Deploy Azure Windows Virtual Machine
+resource "azurerm_resource_group" "example-rg" {
+  name     = "example-rg"
+  location = "eastus"
+}
+
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example-rg.location
+  resource_group_name = azurerm_resource_group.example-rg.name
+}
+
+resource "azurerm_subnet" "owen-subnet" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.example-rg.name
+  virtual_network_name = azurerm_virtual_network.example.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_network_interface" "example" {
+  name                = "example-nic"
+  location            = azurerm_resource_group.example-rg.location
+  resource_group_name = azurerm_resource_group.example-rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.owen-subnet.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_windows_virtual_machine" "example" {
+  name                = "example-machine"
+  resource_group_name = azurerm_resource_group.example-rg.name
+  location            = azurerm_resource_group.example-rg .location
+  size                = "Standard_F2"
+  admin_username      = "adminuser"
+  admin_password      = "P@$$w0rd1234!"
+  network_interface_ids = [
+    azurerm_network_interface.example.id,
+  ]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2016-Datacenter"
+    version   = "latest"
+  }
+}
+
+resource "azurerm_storage_account" "mystorage" {
+  name = "owenstorageterraform"
+}
+```
+
+
+
+- Goto StorageAccount > Settings > Endpoint 
+
+- Get the Storage account resource ID
+
+```
+$ terraform import azurerm_storage_account.mystora
+ge [Storage account resource ID]
+```
+
+```
+$ terraform import azurerm_storage_account.mystora
+ge /subscriptions/2120c628-c057-48b9-ace5-14fddbf72365/resourceGroups/example-rg/providers/Microsoft.Storage/storageAccounts/owenstorageterraform
+```
+
+After the import modify main.,tf add the arguments needed
+
+```
+# Deploy Azure Windows Virtual Machine
+resource "azurerm_resource_group" "example-rg" {
+  name     = "example-rg"
+  location = "eastus"
+}
+
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example-rg.location
+  resource_group_name = azurerm_resource_group.example-rg.name
+}
+
+resource "azurerm_subnet" "owen-subnet" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.example-rg.name
+  virtual_network_name = azurerm_virtual_network.example.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_network_interface" "example" {
+  name                = "example-nic"
+  location            = azurerm_resource_group.example-rg.location
+  resource_group_name = azurerm_resource_group.example-rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.owen-subnet.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_windows_virtual_machine" "example" {
+  name                = "example-machine"
+  resource_group_name = azurerm_resource_group.example-rg.name
+  location            = azurerm_resource_group.example-rg .location
+  size                = "Standard_F2"
+  admin_username      = "adminuser"
+  admin_password      = "P@$$w0rd1234!"
+  network_interface_ids = [
+    azurerm_network_interface.example.id,
+  ]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2016-Datacenter"
+    version   = "latest"
+  }
+}
+
+resource "azurerm_storage_account" "mystorage" {
+  name = "owenstorageterraform"
+  resource_group_name      = "example-rg"
+  location                 = azurerm_resource_group.example-rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+```
+
+## Terraform Module
+
