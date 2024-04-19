@@ -1706,3 +1706,130 @@ resource "azurerm_storage_account" "mystorage" {
 
 ## Terraform Module
 
+Module Folder
+
+- Create folder OwenModule
+
+Main.tf
+
+```
+resource "azurerm_resource_group" "example" {
+  name     = "example"
+  location = var.azregion
+}
+
+resource "azurerm_storage_account" "mystorage" {
+  name                     = "owenteststorage001"
+  resource_group_name      = azurerm_resource_group.example.name
+  location                 = azurerm_resource_group.example.location
+  account_tier             = var.accesstier
+  account_replication_type = var.replicationtype
+
+  tags = {
+    environment = "staging"
+    owner = "Mr. ${local.name}"
+  }
+}
+
+output "primarykey" {
+  value = azurerm_storage_account.mystorage.primary_access_key
+  sensitive = true
+}
+```
+
+Variables.tf
+
+```
+variable "azregion" {
+  type = string
+  description = "This is the Azure Region"
+  default = "EastUs"
+}
+
+variable "storagename" {
+  type = string
+  description = "This is the Azure Storage Name"
+  default = "owenstorageacc001"
+}
+
+variable "accesstier" {
+  type = string
+  description = "This is the Azure Access Tier"
+  default = "Standard"
+}
+
+variable "replicationtype" {
+  type = string
+  description = "This is the Azure Storage Replication Type"
+  default = "LRS"
+}
+```
+
+Locals.tf
+
+```
+locals {
+  name = "Sherwin Adriano"
+}
+```
+
+Main folder
+
+main.tf
+
+```
+module "owenmodule" {
+  source = "./OwenModule"
+}
+
+output "resource_primary_key" {
+  value = module.owenmodule.primarykey
+  sensitive = true
+}
+```
+
+provider.tf
+
+```
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.99.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {
+  }
+}
+```
+
+Notice: There is initialization in module
+
+```
+$ terraform init 
+
+Initializing the backend...
+Initializing modules...
+- owenmodule in OwenModule
+
+Initializing provider plugins...
+- Finding hashicorp/azurerm versions matching "3.99.0"...
+- Installing hashicorp/azurerm v3.99.0...
+- Installed hashicorp/azurerm v3.99.0 (signed by HashiCorp)
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+```
+
+## Terraform Module Registry 
