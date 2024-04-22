@@ -1916,3 +1916,71 @@ The list below contains all the requirements for publishing a module:
 - **Repository description.** The GitHub repository description is used to populate the short description of the module. This should be a simple one sentence description of the module.
 - **Standard module structure.** The module must adhere to the [standard module structure](https://developer.hashicorp.com/terraform/language/modules/develop/structure). This allows the registry to inspect your module and generate documentation, track resource usage, parse submodules and examples, and more.
 - **`x.y.z` tags for releases.** The registry uses tags to identify module versions. Release tag names must be a [semantic version](http://semver.org), which can optionally be prefixed with a `v`. For example, `v1.0.4` and `0.9.2`. To publish a module initially, at least one release tag must be present. Tags that don't look like version numbers are ignored.
+
+### Publish a Terraform module you have to follow the steps below:
+
+1. Create your Terraform module configuration.
+2. Create a GitHub repository for your module in the following format – terraform-<Provider_Name>-<Module_Name>.
+3. Push the content of your module configuration to the created repository.
+4. Create a tag for your repository.
+5. Go to the [Terraform registry](https://registry.terraform.io) and sign in with GitHub.
+6. Click on publish and select module.
+7. Select that GitHub repository.
+8. Success, your module has been published!
+
+# 09-Backends
+
+## Terraform Local Backend
+
+provider.tf
+
+```
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.99.0"
+    }
+  }
+  backend "local" {
+    path = "./secret/terraform.tfstate"
+  }
+}
+
+provider "azurerm" {
+  features {
+  }
+}
+```
+
+
+
+## Terraform Azure Backend
+
+provider.tf
+
+```
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.99.0"
+    }
+  }
+  /* backend "local" {
+    path = "./secret/terraform.tfstate" 
+  } */
+  backend "azurerm" {
+    resource_group_name = "mytfstateorg"
+    storage_account_name = "mytfstatesa"
+    container_name = "mytfstatecon"
+    key = "terraform.tfstate"
+  }
+}
+
+provider "azurerm" {
+  features {
+  }
+}
+```
+
