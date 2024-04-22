@@ -1051,7 +1051,9 @@ resource "azurerm_storage_account" "mystorage" {
 
 
 
-# HCL Language
+# 04-HCL
+
+## HCL Language
 
 ## Using Count
 
@@ -1704,13 +1706,15 @@ resource "azurerm_storage_account" "mystorage" {
 }
 ```
 
+# 07-Modules
+
 ## Terraform Module
 
 Module Folder
 
 - Create folder OwenModule
 
-Main.tf
+main.tf
 
 ```
 resource "azurerm_resource_group" "example" {
@@ -1737,7 +1741,7 @@ output "primarykey" {
 }
 ```
 
-Variables.tf
+variables.tf
 
 ```
 variable "azregion" {
@@ -1833,3 +1837,82 @@ should now work.
 ```
 
 ## Terraform Module Registry 
+
+**Terraform Azure RM Compute Module**
+
+https://registry.terraform.io/modules/Azure/compute/azurerm/latest?tab=inputs
+
+compute.tf
+
+```
+data "azurerm_subnet" "subnet" {
+  resource_group_name = "example"
+  name = "subnet1"
+  virtual_network_name = "example-network"
+}
+
+module "compute" {
+  source  = "Azure/compute/azurerm"
+  version = "5.3.0"
+  # insert the 2 required variables here
+   resource_group_name = "example"
+   vnet_subnet_id = data.azurerm_subnet.subnet.id
+   is_windows_image = true
+   vm_os_simple = "WindowsServer"
+   availability_set_enabled = false
+   admin_username = "owenadmin"
+   admin_password = "[Abcd@1234]"
+}
+```
+
+# 08-PublicModule
+
+## Terraform with Github for module
+
+1. Create the follwing files:
+
+- LICENSE
+- Readme.md
+- .gitignore
+
+
+
+2. Create repository in GitHub
+
+```
+
+$ git add .
+$ git commit -m "My first commit"
+$ git branch -M main
+$ git remote add origin git@github.com:sherwin-ad/TerraformSherwinOwenModule.git
+$ git push -u origin main
+```
+
+**Terraform Module Sources**
+
+https://developer.hashicorp.com/terraform/language/modules/sources
+
+testgithubmodule.tf
+
+```
+module "mySherwinOwen" {
+  source = "github.com/sherwin-ad/TerraformSherwinOwenModule.git"
+  azregion = "eastus"
+}
+```
+
+
+
+## Terraform Module Publication
+
+https://developer.hashicorp.com/terraform/registry/modules/publish
+
+### Requirements
+
+The list below contains all the requirements for publishing a module:
+
+- **GitHub.** The module must be on GitHub and must be a public repo. This is only a requirement for the [public registry](https://registry.terraform.io). If you're using a private registry, you may ignore this requirement.
+- **Named `terraform-<PROVIDER>-<NAME>`.** Module repositories must use this three-part name format, where `<NAME>` reflects the type of infrastructure the module manages and `<PROVIDER>` is the main provider where it creates that infrastructure. The `<NAME>` segment can contain additional hyphens. Examples: `terraform-google-vault` or `terraform-aws-ec2-instance`.
+- **Repository description.** The GitHub repository description is used to populate the short description of the module. This should be a simple one sentence description of the module.
+- **Standard module structure.** The module must adhere to the [standard module structure](https://developer.hashicorp.com/terraform/language/modules/develop/structure). This allows the registry to inspect your module and generate documentation, track resource usage, parse submodules and examples, and more.
+- **`x.y.z` tags for releases.** The registry uses tags to identify module versions. Release tag names must be a [semantic version](http://semver.org), which can optionally be prefixed with a `v`. For example, `v1.0.4` and `0.9.2`. To publish a module initially, at least one release tag must be present. Tags that don't look like version numbers are ignored.
