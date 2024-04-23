@@ -2019,21 +2019,21 @@ provider "azurerm" {
 $ terraform login
 ```
 
-Get the Subscription ID
+2. Get the Subscription ID
 
 ```
 $ az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/2120c628-c057-48b9-ace5-14fddbf72365"
 Creating 'Contributor' role assignment under scope '/subscriptions/2120c628-c057-48b9-ace5-14fddbf72365'
 The output includes credentials that you must protect. Be sure that you do not include these credentials in your code or check the credentials into your source control. For more information, see https://aka.ms/azadsp-cli
 {
-  "appId": "aaf7fbf1-de3b-4b8a-8eb9-9bfdac41bee5",
-  "displayName": "azure-cli-2024-04-23-01-21-49",
-  "password": "ZHN8Q~.S6ECa6CQb8Ik.nflC2tt~8DZGKQKyVcXz",
-  "tenant": "c710cb72-d86b-423a-ad42-9f4d6ed6dcb4"
+  "appId": "",
+  "displayName": "",
+  "password": "",
+  "tenant": ""
 }
 ```
 
-2. Create workspace variables
+3. Create workspace variables
 
-   ![image-20240423111834084](images/sudo.png)
+![image-20240423111834084](images/sudo.png)
 
