@@ -2037,3 +2037,108 @@ The output includes credentials that you must protect. Be sure that you do not i
 
 ![image-20240423111834084](images/sudo.png)
 
+# 11-Samples
+
+## Create an Azure Web App Services with Azure Web Service Plan
+
+provider.tf
+
+```
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.100.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {
+  }
+}
+```
+
+webapp.tf
+
+```
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "EastUs"
+}
+
+resource "azurerm_service_plan" "example" {
+  name                = "example-serviceplan"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  os_type             = "Linux"
+  sku_name            = "P1v2"
+}
+
+resource "azurerm_linux_web_app" "example" {
+  name                = "owenexamplewebapp"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_service_plan.example.location
+  service_plan_id     = azurerm_service_plan.example.id
+
+  site_config {}
+}
+```
+
+
+
+## Create an Azure SQL Database
+
+sql.tf
+
+```
+resource "azurerm_mssql_server" "example" {
+  name                         = "owen-example-sqlserver"
+  resource_group_name          = azurerm_resource_group.example.name
+  location                     = azurerm_resource_group.example.location
+  version                      = "12.0"
+  administrator_login          = "4dm1n157r470r"
+  administrator_login_password = "4-v3ry-53cr37-p455w0rd"
+}
+
+resource "azurerm_mssql_database" "example" {
+  name           = "example-db"
+  server_id      = azurerm_mssql_server.example.id
+  collation      = "SQL_Latin1_General_CP1_CI_AS"
+  license_type   = "LicenseIncluded"
+  read_scale     = true
+  sku_name       = "P2"
+  zone_redundant = true 
+  enclave_type   = "VBS"
+
+  tags = {
+    foo = "bar"
+  }
+}
+```
+
+output.tf
+
+```
+output "webapphostname" {
+  value = azurerm_linux_web_app.example.default_hostname
+}
+```
+
+## Create a Databricks resources in Azure
+
+databricks.tf
+
+```
+resource "azurerm_databricks_workspace" "example" {
+  name                = "databricks-test"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  sku                 = "standard"
+
+  tags = {
+    Environment = "Production"
+  }
+}
+```
+
