@@ -2,6 +2,12 @@
 
 # Google Kubernetes Engine (GKE)
 
+**Git Repository**
+
+https://github.com/sherwin-ad/owen-devops-master-class.git
+
+
+
 **Create deployment**
 
 ```
@@ -429,3 +435,617 @@ deployment.apps "hello-world-rest-api-v2" deleted
 - Ansible
 - Chef
 - Puppet
+
+# Continues Integration Deployment and Delivery
+
+## Tools for Continues Integration Deployment and Delivery
+
+- **Azure Devops**
+- **Jenkins**
+
+## Steps in CI/CD Pipeline
+
+1. **Code Commit**
+
+   **Tools**
+
+   - Git Repository
+
+2. **Unit Test**
+
+   - is a quality assurance technique where application code is broken down into component building blocks – along with each block or unit’s associated data, usage processes, and functions – to ensure that each block works as expected. 
+
+   **Tools**
+
+   - Mocha / Jest (Javascript)
+   - Pytest (Python)
+   - Unit (Java)
+
+3. Integration Tests
+
+   - These tests validate the interactions between different components of the application, ensuring they work seamlessly together.
+
+   **Tools**
+
+   - Cucumber
+   - Selenium
+   - Protractor
+
+4. **Package**
+
+   - Once all of the tests are passing, you can now move on to packaging the code. Exactly how you package your application depends on your programming language and target environment.
+
+   **Package Manager Tools**
+
+   - NPM (javascript)
+   - PIP (python)
+   - MAVEN / GRADLE (java)
+
+5. **Deploy**
+
+   - The deploy stage is the final part of the CI/CD pipeline, where the application is released into the production environment, making it accessible to end-users. 
+   - The deployment process varies based on the nature of the application and the production environment. For instance, it could involve deploying
+     -  **a Docker container to a Kubernetes cluster,** 
+     - **updating a web application on a cloud service like AWS or Google Cloud, or simply uploading files to a server.**
+
+   **Tools**
+
+   - Azure Devops
+   - Jenkins
+
+6. **Automated Tests**
+
+   - Smoke test
+   - Load test
+   - Performance test
+## Continues Integration
+
+- is the practice where developers merge the changes to the code base to the main branch as often as possible. 
+- These changes are validated by creating a build and then running automated tests against the build. 
+- If these tests don’t pass, the changes aren’t merged, and developers avoid integration challenges that can happen. 
+
+### Benefits of Continuous Integration 
+
+This process also causes fewer bugs to be shipped to production as the issues are caught early and integration issues are solved before release. 
+
+
+
+## Continues Delivery
+
+- is an extension of CI since it enables automation to deploy all the code changes to an environment (dev, qa, stage, prod, etc.) after the changes have been merged. 
+- The artifact may be built as part of CI or as part of this process since the source of truth (your repository) is reliable given your CI process. 
+
+### Benefits of Continuous Delivery 
+
+Since developers can deploy their changes at any time, it’s recommended to deploy the changes to production as often as possible, making troubleshooting easier and providing your users with access to the best your product has to offer as soon as possible.
+
+## Continues Deployment
+
+- takes the process one step further than continuous delivery. Here, all changes that pass the verification steps at each stage in the pipeline are released to production. 
+- This process is completely automated and only a failed verification step will prevent pushing the changes to production. 
+
+### Benefits of Continuous Deployment 
+
+- Apart from the fact that customers get updates quicker, developers also get feedback faster which means there is less pressure as small changes are pushed incrementally compared to big updates not that often. 
+- In order to successfully accomplish Continuous Deployment, tracking metrics around **Mean Time to Repair** and **Change Failure Rate** is critical to the success of fully automated deployments. 
+
+
+
+# Azure Devops
+
+1. Create project in Azure Devops
+
+   **Project name**: azure-devops-kubernetes-terraform
+
+2. Setting up Git Repository for Azure Devops Pipeline
+
+   **Git Repository**
+
+   https://github.com/sherwin-ad/azure-devops-kubernetes-terraform-pipeline.git
+
+3. Create Azure Devops Pipeline
+
+   1. Sign in to your Azure DevOps organization and go to your project.
+   2. Go to **Pipelines**, and then select **New pipeline** or **Create pipeline** if creating your first pipeline.
+   3. Do the steps of the wizard by first selecting **GitHub** as the location of your source code.
+   4. You might be redirected to GitHub to sign in. If so, enter your GitHub credentials.
+   5. When you see the list of repositories, select your repository.
+   6. You might be redirected to GitHub to install the Azure Pipelines app. If so, select **Approve & install**.
+   7. Select Starter pipeline![image-20240424113059094](images/owen_devops_lecture.png)
+   8. Review, save and run
+
+4. Azure Devops Agents and Jobs
+
+   01-first-azure-pipelines.yml
+
+   ```
+   # Starter pipeline
+   # Start with a minimal pipeline that you can customize to build and deploy your code.
+   # Add steps that build, run tests, deploy, and more:
+   # https://aka.ms/yaml
+   
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   steps:
+   - script: echo Hello, world, changed!
+     displayName: 'Run a one-line script'
+   
+   - script: |
+       echo Add other tasks to build, test, and deploy your project.
+       echo See https://aka.ms/yaml
+       echo more information
+     displayName: 'Run a multi-line script'
+   ```
+
+5. Azure Devops Agents and Job2
+
+   01-first-azure-pipelines.yml
+
+   ```
+   # Starter pipeline
+   # Start with a minimal pipeline that you can customize to build and deploy your code.
+   # Add steps that build, run tests, deploy, and more:
+   # https://aka.ms/yaml
+   
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   jobs:
+   - job: Job1
+     steps:
+     - script: echo Job1 -  Hello, world, changed!
+       displayName: 'Run a one-line script'
+     - script: |
+         echo Add other tasks to build, test, and deploy your project.
+         echo See https://aka.ms/yaml
+         echo more information
+       displayName: 'Run a multi-line script'
+   
+   - job: Job2
+     steps:
+     - script: echo Job2!
+       displayName: 'Run a one-line script'   
+   ```
+
+6. Using dependsOn with jobs
+
+   01-first-azure-pipelines.yml
+
+   ```
+   # Starter pipeline
+   # Start with a minimal pipeline that you can customize to build and deploy your code.
+   # Add steps that build, run tests, deploy, and more:
+   # https://aka.ms/yaml
+   
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   jobs:
+   - job: Job1
+     steps:
+     - script: echo Job1 -  Hello, world, changed!
+       displayName: 'Run a one-line script'
+     - script: |
+         echo Add other tasks to build, test, and deploy your project.
+         echo See https://aka.ms/yaml
+         echo more information
+       displayName: 'Run a multi-line script'
+   
+   - job: Job2
+     dependsOn: Job1
+     steps:
+     - script: echo Job2!
+       displayName: 'Run a one-line script'   
+   
+   - job: Job3
+     dependsOn: Job1
+     steps:
+     - script: echo Job3!
+       displayName: 'Run a one-line script'   
+   
+   - job: Job4
+     dependsOn: 
+     - Job2
+     - Job3
+     steps:
+     - script: echo Job4!
+       displayName: 'Run a one-line script'
+   ```
+
+7. Creating Azure Devops Pipeline for Playing with Stages
+
+   02-understanding-stages.yml
+
+   ```
+   # Starter pipeline
+   # Start with a minimal pipeline that you can customize to build and deploy your code.
+   # Add steps that build, run tests, deploy, and more:
+   # https://aka.ms/yaml
+   
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   stages:
+   - stage: Build
+     jobs:
+     - job: FirstJob
+       steps:
+       - bash: echo BuildFirstJob
+     - job: SecondJob
+       steps:
+       - bash: echo BuildSecondJob  
+   
+   - stage: DevDeploy
+     dependsOn: Build
+     jobs:
+     - job: DevDeployJob
+       steps:
+       - bash: echo DevDeployJob
+   
+   - stage: QADeploy
+     dependsOn: Build
+     jobs:
+     - job: QADeployJob
+       steps:
+       - bash: echo QADeployJob
+   
+   - stage: ProdDeploy
+     dependsOn:
+     - DevDeploy
+     - QADeploy 
+     jobs:
+     - job: ProdDeployJob
+       steps:
+       - bash: echo ProdDeployJob
+   ```
+
+8. Playing with variables and dependson for stages
+
+   ```
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   stages:
+   - stage: Build
+     jobs:
+     - job: FirstJob
+       variables:
+         jobnum: First
+       steps:
+       - bash: echo Build$(jobnum)Job
+       - bash: echo $(PipelineLevelVariable)
+     - job: SecondJob
+       steps:
+       - bash: echo BuildSecondJob
+   
+   - stage: DevDeploy
+     variables:
+       environment: Dev
+     dependsOn: Build
+     jobs:
+     - job: DevDeployJob
+       steps:
+       - bash: echo $(environment)DeployJob
+   
+   - stage: QADeploy
+     variables:
+       environment: QA
+     dependsOn: Build
+     jobs:
+     - job: QADeployJob
+       steps:
+       - bash: echo $(environment)DeployJob
+   
+   - stage: ProdDeploy
+     variables:
+       environment: Prod
+     dependsOn:
+     - DevDeploy
+     - QADeploy 
+     jobs:
+     - job: ProdDeployJob
+       steps:
+       - bash: echo $(environment)DeployJob
+   ```
+
+9. Understanding Azure DevopsPipeline Variables
+
+   **Predefined variables in Azure Devops**
+
+   https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
+
+   ```
+   # Starter pipeline
+   # Start with a minimal pipeline that you can customize to build and deploy your code.
+   # Add steps that build, run tests, deploy, and more:
+   # https://aka.ms/yaml
+   
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   stages:
+   - stage: Build
+     jobs:
+     - job: FirstJob
+       variables:
+         jobnum: First
+       steps:
+       - bash: echo Build$(jobnum)Job
+       - bash: echo $(PipelineLevelVariable)
+       - bash: echo $(Build.BuildNumber)
+       - bash: echo $(Build.BuildId)
+       - bash: echo $(Build.SourceBranchName)
+       - bash: echo $(Build.SourceDirectory)
+       - bash: echo $(System.DefaultWorkingDirectory)
+       - bash: ls -R $(System.DefaultWorkingDirectory)
+       - bash: echo $(Build.ArtifactStagingDirectory)
+     # - job: SecondJob
+     #   steps:
+     #   - bash: echo BuildSecondJob
+   
+   # - stage: DevDeploy
+   #   variables:
+   #     environment: Dev
+   #   dependsOn: Build
+   #   jobs:
+   #   - job: DevDeployJob
+   #     steps:
+   #     - bash: echo $(environment)DeployJob
+   
+   # - stage: QADeploy
+   #   variables:
+   #     environment: QA
+   #   dependsOn: Build
+   #   jobs:
+   #   - job: QADeployJob
+   #     steps:
+   #     - bash: echo $(environment)DeployJob
+   
+   # - stage: ProdDeploy
+   #   variables:
+   #     environment: Prod
+   #   dependsOn:
+   #   - DevDeploy
+   #   - QADeploy 
+   #   jobs:
+   #   - job: ProdDeployJob
+   #     steps:
+   #     - bash: echo $(environment)DeployJob
+   ```
+
+10. Task for copy files and publish artifacts
+
+   **Copy files**
+
+   ```
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   stages:
+   - stage: Build
+     jobs:
+     - job: FirstJob
+       variables:
+         jobnum: First 
+       steps:
+       - bash: echo Build$(jobnum)Job
+       - bash: echo $(PipelineLevelVariable)
+       - bash: echo $(Build.BuildNumber)
+       - bash: echo $(Build.BuildId)
+       - bash: echo $(Build.SourceBranchName)
+       - bash: echo $(Build.SourceDirectory)
+       - bash: echo $(System.DefaultWorkingDirectory)
+       - bash: ls -R $(System.DefaultWorkingDirectory)
+       - bash: echo $(Build.ArtifactStagingDirectory)
+       - bash: java -version
+       - bash: node --version
+       - bash: python --version
+       - bash: mvn -version
+       - bash: ls -R $(Build.ArtifactStagingDirectory)
+       - task: CopyFiles@2
+         inputs:
+           SourceFolder: '$(System.DefaultWorkingDirectory)'
+           Contents: |
+             **/*.yaml
+             **/*.tf
+           TargetFolder: '$(Build.ArtifactStagingDirectory)'
+       - bash: ls -R $(Build.ArtifactStagingDirectory)    
+   ```
+
+   **Publish build artifacts**
+
+   ```
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   stages:
+   - stage: Build
+     jobs:
+     - job: FirstJob
+       variables:
+         jobnum: First 
+       steps:
+       - bash: echo Build$(jobnum)Job
+       - bash: echo $(PipelineLevelVariable)
+       - bash: echo $(Build.BuildNumber)
+       - bash: echo $(Build.BuildId)
+       - bash: echo $(Build.SourceBranchName)
+       - bash: echo $(Build.SourceDirectory)
+       - bash: echo $(System.DefaultWorkingDirectory)
+       - bash: ls -R $(System.DefaultWorkingDirectory)
+       - bash: echo $(Build.ArtifactStagingDirectory)
+       - bash: java -version
+       - bash: node --version
+       - bash: python --version
+       - bash: mvn -version
+       - bash: ls -R $(Build.ArtifactStagingDirectory)
+       - task: CopyFiles@2
+         inputs:
+           SourceFolder: '$(System.DefaultWorkingDirectory)'
+           Contents: |
+             **/*.yaml
+             **/*.tf
+           TargetFolder: '$(Build.ArtifactStagingDirectory)'
+       - bash: ls -R $(Build.ArtifactStagingDirectory)
+       - task: PublishBuildArtifacts@1
+         inputs:
+           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+           ArtifactName: 'drop'
+           publishLocation: 'Container'
+   ```
+
+11. Running Azure Devops Jobs on Multiple Agents
+
+    ```
+    trigger:
+    - main
+    
+    strategy:
+     matrix:
+       linux:
+         operatingSystem: 'ubuntu-latest'
+       mac:
+         operatingSystem: 'macos-latest'  
+    
+    pool:
+      vmImage: $(operatingSystem)
+    
+    steps:
+    - script: echo Running on $(operatingSystem)!
+      displayName: 'Run a one-line script'
+    ```
+
+12. Understanding Azure Devops Deployment Jobs Environments and Approval
+
+    ```
+    trigger:
+    - main
+    
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    stages:
+    - stage: Build
+      jobs:
+      - job: BuildJob
+        steps:
+        - bash: echo "Do the build"
+    - stage: DevDeploy
+      jobs:
+      - deployment: DevDeployJob
+        environment: Dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: echo deploy to Dev 
+    - stage: QADeploy
+      jobs:
+      - deployment: QADeployJob
+        environment: QA
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: echo deploy to QA 
+    ```
+
+13. Build and Push Docker Image in Azure Devops
+
+    1. Goto Project Settings > Pipelines > Service connections  
+
+       Click New Service connection > select Docker Registry
+
+    ![image-20240425175534293](images/image-20240425175534293.png)
+
+
+
+2. Crreate new pipeline
+
+   - Connect - Github
+
+   - Select Repository - azure-devops-kubernetes-terraform-pipeline
+
+   - Configure - Build a docker image
+
+     ![image-20240426150447734](images/image-20240426150447734.png)
+
+   ![image-20240426151014892](images/image-20240426151014892.png)
+
+   ```
+   trigger:
+   - main
+   
+   resources:
+   - repo: self
+   
+   variables:
+     tag: '$(Build.BuildId)'
+   
+   stages:
+   - stage: Build
+     displayName: Build image
+     jobs:
+     - job: Build
+       displayName: Build
+       pool:
+         vmImage: ubuntu-latest
+       steps:
+       - task: Docker@2
+         displayName: Build an image
+         inputs:
+           containerRegistry: 'sherwinowen-docker-hub'
+           repository: 'sherwinowen/currency-exchange-devops'
+           command: 'buildAndPush'
+           Dockerfile: '**/Dockerfile'
+           tags: '$(tag)'
+   ```
+
+   
+
+13. Playing with Azure Devops Releases
+
+    1. Goto Releases and click New pipeline and select Empty job
+
+    2. Add an Artifact
+
+       ![image-20240426181114965](images/image-20240426181114965.png)
+
+    3. Enable deployment trigger in Artifacts
+
+       ![image-20240426181540076](images/image-20240426181540076.png)
+
+    4. Goto Dev Stage and Add task - Bash
+    
+       ![image-20240426182334699](images/image-20240426182334699.png)
+    
+       Goto Agent job and select ubuntu lates in the Agent Specification
+    
+       ![image-20240426184314828](images/image-20240426184314828.png)
+
+# IAAC Azure AKS with Azure Devops, Terraform and Kubernetes
