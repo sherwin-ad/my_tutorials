@@ -438,6 +438,8 @@ deployment.apps "hello-world-rest-api-v2" deleted
 
 # Continues Integration Deployment and Delivery
 
+https://github.com/sherwin-ad/azure-devops-kubernetes-terraform-pipeline.git
+
 ## Tools for Continues Integration Deployment and Delivery
 
 - **Azure Devops**
@@ -1049,3 +1051,145 @@ Since developers can deploy their changes at any time, it’s recommended to dep
        ![image-20240426184314828](images/image-20240426184314828.png)
 
 # IAAC Azure AKS with Azure Devops, Terraform and Kubernetes
+
+https://github.com/sherwin-ad/azure-devops-kubernetes-terraform-pipeline.git
+
+**Prerequisite**
+
+- Azure Account
+- Azure Devops
+- Docker
+- Kubernetes
+- Terraform
+- Visual Studio
+
+## Azure Kubernetes Cluster Creation
+
+### Create Service Account To Create Azure K8S Cluster using Terraform
+
+```
+$ az login
+$ az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/<<azure_subscription_id>>"
+```
+
+### Create Azure Devops Pipeline for Azure Kubernetes Cluster IAAC
+
+Goto Project Settings > Service connections > create New service connection
+
+Choose a service or connection type > Azure Resource Manager
+
+![image-20240429100934060](images/image-20240429100934060.png)
+
+#### Install Terraform plugins in Azure Devops
+
+- Terraform 1 (https://marketplace.visualstudio.com/items?itemName=ms-devlabs.custom-terraform-tasks)
+- Terraform 2 (https://marketplace.visualstudio.com/acquisition?itemName=JasonBJohnson.azure-pipelines-tasks-terraform)
+
+#### Add public key
+
+Goto Pipelines > Library > Secure files > add the ssh public key
+
+#### Create pipeline
+
+05-azure-kubernetes-cluster-iaac-pipeline.yml
+
+```
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: echo K8s Terraform Azure!
+  displayName: 'Run a one-line script'
+
+- task: DownloadSecureFile@1
+  name: publickey
+  inputs:
+    secureFile: 'id_rsa.pub'
+  
+- task: TerraformCLI@2
+  inputs:
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+    commandOptions: '-var client_id=$(lesclient_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
+    backendType: 'azurerm'
+    backendServiceArm: 'azure-resource-manager-service-connection'
+    ensureBackend: true
+    backendAzureRmResourceGroupName: 'terraform-backend-rg'
+    backendAzureRmResourceGroupLocation: 'westeurope'
+    backendAzureRmStorageAccountName: 'storageacctowen001'
+    backendAzureRmContainerName: 'storageacctcontainer'
+    backendAzureRmKey: 'kubernetes-dev-tfstate'
+    allowTelemetryCollection: true
+```
+
+#### Add variables
+
+![image-20240429115947885](images/image-20240429115947885.png)
+
+05-azure-kubernetes-cluster-iaac-pipeline.yml
+
+```
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: echo K8s Terraform Azure!
+  displayName: 'Run a one-line script'
+
+- task: DownloadSecureFile@1
+  name: publickey
+  inputs:
+    secureFile: 'id_rsa.pub'
+  
+- task: TerraformCLI@2
+  inputs:
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+    # commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
+    backendType: 'azurerm'
+    backendServiceArm: 'azure-resource-manager-service-connection'
+    ensureBackend: true
+    backendAzureRmResourceGroupName: 'terraform-backend-rg'
+    backendAzureRmResourceGroupLocation: 'westeurope'
+    backendAzureRmStorageAccountName: 'storageacctowen001'
+    backendAzureRmContainerName: 'storageacctcontainer'
+    backendAzureRmKey: 'kubernetes-dev-tfstate'
+
+- task: TerraformCLI@2
+  inputs:
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+    environmentServiceName: 'azure-resource-manager-service-connection'
+    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
+```
+
+### Connecting to Azure Kubernetes Cluster using Azure CLI
+
+**Get access credentials for a managed Kubernetes cluster.**
+
+```
+$ az aks get-credentials --name k8stest_dev --resource-group kubernetes_dev
+Merged "k8stest_dev" as current context in /Users/sherwinowen/.kube/config
+
+$ kubectl get nodes
+NAME                                STATUS   ROLES   AGE   VERSION
+aks-agentpool-43035792-vmss000000   Ready    agent   32m   v1.28.5
+aks-agentpool-43035792-vmss000001   Ready    agent   33m   v1.28.5
+
+```
+
+### Creating Azure Devops Pipeline for Deploying Microservices to Azure AKS
+
+#### Create connection to the Azure Kubernetes Cluster
+
+Goto to Project Settings > Pipelines > Service connections > select Kubernetes
+
+![image-20240429173423699](images/image-20240429173423699.png)
+
+#### Create new pipeline
