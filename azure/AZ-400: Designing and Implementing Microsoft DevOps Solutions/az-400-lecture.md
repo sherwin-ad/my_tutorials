@@ -1,4 +1,4 @@
-# Microsoft Certified DevOps Engineer Expert - AZ-400
+#  Microsoft Certified DevOps Engineer Expert - AZ-400
 
 # What is DevOps?
 
@@ -1032,6 +1032,47 @@ Group of agents scoped to the entire organization
 
 Azure Pipelines: `https://dev.azure.com/{your-organization}`
 
+```
+A copy of the Team Explorer Everywhere license agreement can be found at:
+  /Users/sherwinowen/myagent/license.html
+
+Enter (Y/N) Accept the Team Explorer Everywhere license agreement now? (press enter for N) > Y
+
+>> Connect:
+
+Enter server URL > https://dev.azure.com/beesuite
+Enter authentication type (press enter for PAT) >
+Enter personal access token > ****************************************************
+Connecting to server ...
+
+>> Register Agent:
+
+Enter agent pool (press enter for default) >
+Enter agent name (press enter for Owen-MBA) >
+Scanning for tool capabilities.
+Connecting to the server.
+Successfully added the agent
+Testing agent connection.
+Enter work folder (press enter for _work) >
+2024-05-03 10:53:31Z: Settings Saved.
+Execute managed assembly exit code: 0x0
+```
+
+**Start the agent**
+
+```
+ ./svc.sh start
+starting vsts.agent.beesuite.Default.Owen-MBA
+status vsts.agent.beesuite.Default.Owen-MBA:
+
+/Users/sherwinowen/Library/LaunchAgents/vsts.agent.beesuite.Default.Owen-MBA.plist
+
+Started:
+12378 0 vsts.agent.beesuite.Default.Owen-MBA
+```
+
+
+
 ### Create classic azure pipeline
 
 1. Sign in to your Azure DevOps instance.
@@ -1086,7 +1127,7 @@ Azure Pipelines: `https://dev.azure.com/{your-organization}`
 
    ![Created pipeline.](images/create-pipeline.png)
 
-5. Select **Azure Repos Git Yaml**:
+5. Select **Azure Repos Git Yaml** > and click Starter pipeline
 
    ![Classic editor.](images/use-classic-editor.png)
 
@@ -1190,8 +1231,6 @@ Read-only list of specific package versions while keeping others private
 
 - **@local (default)**: all published packages and saved upstream packages
 
-
-
 **UPSTREAM SOURCES**
 Manage dependencies (packages produced by your team & packages from
 public package repositories) in a single feed
@@ -1203,8 +1242,6 @@ Used to convey the nature, risk, and quality of code change
 **RECYCLE BIN**
 Deleted packages will be permanently deleted after 30 days
 
-
-
 **ADDITIONAL PACKAGE MANAGEMENT TOOLS**
 
 - **Jfrog Artifactory**: Universal package repository (helm, maven, conda, php,
@@ -1212,9 +1249,40 @@ docker, npm, and more)
 
 - **Github Packages**: Host and manage packages for: npm, rubygems, maven, gradle, docker and nuget.
 
-### Create packages
+### Create packages 
 
 https://code.visualstudio.com/docs/java/java-tutorial
+
+1. Got to Command Palette > Cretae Java Project > Maven > maven-archetype-quickstart > 1.4  > Input group ID > Input artifact ID
+
+2. Goto > src  > main > App.java - right click Run Java
+
+3. Goto root folder.
+
+   ```
+   mvn package
+   ```
+
+   **Note:** 
+
+   If there is a compilation error
+
+   **[ERROR] Source option 7 is no longer supported. Use 8 or later.**
+   **[ERROR] Target option 7 is no longer supported. Use 8 or later.**
+
+   Add the following in your pom.xml and do CTRL+S, it will automatically build the project.
+
+   ```xml
+   <plugin> 
+       <groupId>org.apache.maven.plugins</groupId> 
+       <artifactId>maven-compiler-plugin</artifactId> 
+       <version>3.5.1</version> 
+       <configuration>
+           <source>1.8</source> 
+           <target>1.8</target> 
+       </configuration> 
+   </plugin>
+   ```
 
 ### Push github repo to azure devops repo
 
@@ -1232,6 +1300,94 @@ git push -u ado --all
 ```
 
 ### Set up feeds
+
+1. Goto Artifacts > Connect ot Feed > Maven
+
+   Project setup
+
+   Add the repo to **both** your pom.xml's `<repositories>` and `<distributionManagement>` sections
+
+   pom.xml
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   
+   <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+   
+     <groupId>beesuite</groupId>
+     <artifactId>lab46javapkg</artifactId>
+     <version>1.0-SNAPSHOT</version>
+   
+     <name>lab46javapkg</name>
+     <!-- FIXME change it to the project's website -->
+     <url>http://www.example.com</url>
+   
+     <properties>
+       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+       <maven.compiler.source>1.7</maven.compiler.source>
+       <maven.compiler.target>1.7</maven.compiler.target>
+     </properties>
+   
+     <distributionManagement>
+       <repository>
+         <id>beesuite</id>
+         <url>https://pkgs.dev.azure.com/beesuite/_packaging/beesuite/maven/v1</url>
+         <releases>
+           <enabled>true</enabled>
+         </releases>
+         <snapshots>
+           <enabled>true</enabled>
+         </snapshots>
+       </repository>
+     </distributionManagement>
+   
+     <repositories>
+       <repository>
+         <id>beesuite</id>
+         <url>https://pkgs.dev.azure.com/beesuite/_packaging/beesuite/maven/v1</url>
+         <releases>
+           <enabled>true</enabled>
+         </releases>
+         <snapshots>
+           <enabled>true</enabled>
+         </snapshots>
+       </repository>
+     </repositories>  
+   
+     <dependencies>
+       <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>4.11</version>
+         <scope>test</scope>
+       </dependency>
+     </dependencies>
+   ```
+
+   Add or edit the `settings.xml` file 
+
+   - Finally, generate a [Personal Access Token](https://dev.azure.com/beesuite/_details/security/tokens) with *Packaging* read & write scopes and paste it into the <password> tag.
+
+   ```
+   <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+     <servers>
+       <server>
+         <id>beesuite</id>
+         <username>beesuite</username>
+         <password>[PERSONAL_ACCESS_TOKEN]</password>
+       </server>
+     </servers>
+   </settings>
+   ```
+
+2. Create pipeline
+
+   Goto Pipelines > Create pipelines > Azure Repos Git > select repository > select Maven
 
 ## Learn about containers
 
@@ -1258,7 +1414,7 @@ Store container images to make them available for download
 
 **RUN**: Execute commands
 
-**WORKDIR**: Set working directory for dockerfile commands
+**WORKDIR**: Set working directory for dockerfile commands 
 
 **COPY**: Copy files or directories from a specific location
 
