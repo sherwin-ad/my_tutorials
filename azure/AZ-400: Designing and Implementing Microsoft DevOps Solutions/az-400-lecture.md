@@ -1255,9 +1255,13 @@ https://code.visualstudio.com/docs/java/java-tutorial
 
 1. Got to Command Palette > Cretae Java Project > Maven > maven-archetype-quickstart > 1.4  > Input group ID > Input artifact ID
 
+   Group ID = bee suite
+
+   Artifact ID = lab46javapkg
+
 2. Goto > src  > main > App.java - right click Run Java
 
-3. Goto root folder.
+3. Goto root folder and run this command. 
 
    ```
    mvn package
@@ -1265,7 +1269,7 @@ https://code.visualstudio.com/docs/java/java-tutorial
 
    **Note:** 
 
-   If there is a compilation error
+   If there is an compilation error
 
    **[ERROR] Source option 7 is no longer supported. Use 8 or later.**
    **[ERROR] Target option 7 is no longer supported. Use 8 or later.**
@@ -1301,7 +1305,11 @@ git push -u ado --all
 
 ### Set up feeds
 
-1. Goto Artifacts > Connect ot Feed > Maven
+1. Goto Artifacts  > Create new feed
+
+   ![image-20240514161605653](images/image-20240514161605653.png)
+
+2. Goto Artifacts > Connect ot Feed > Maven
 
    Project setup
 
@@ -1332,38 +1340,29 @@ git push -u ado --all
    
      <distributionManagement>
        <repository>
-         <id>beesuite</id>
-         <url>https://pkgs.dev.azure.com/beesuite/_packaging/beesuite/maven/v1</url>
-         <releases>
-           <enabled>true</enabled>
-         </releases>
-         <snapshots>
-           <enabled>true</enabled>
-         </snapshots>
+         <id>lab46feed</id>
+     <url>https://pkgs.dev.azure.com/beesuite/lab46javapkg/_packaging/lab46feed/maven/v1</url>
+     <releases>
+       <enabled>true</enabled>
+     </releases>
+     <snapshots>
+       <enabled>true</enabled>
+     </snapshots>
        </repository>
      </distributionManagement>
    
      <repositories>
        <repository>
-         <id>beesuite</id>
-         <url>https://pkgs.dev.azure.com/beesuite/_packaging/beesuite/maven/v1</url>
-         <releases>
-           <enabled>true</enabled>
-         </releases>
-         <snapshots>
-           <enabled>true</enabled>
-         </snapshots>
+         <id>lab46feed</id>
+     <url>https://pkgs.dev.azure.com/beesuite/lab46javapkg/_packaging/lab46feed/maven/v1</url>
+     <releases>
+       <enabled>true</enabled>
+     </releases>
+     <snapshots>
+       <enabled>true</enabled>
+     </snapshots>
        </repository>
-     </repositories>  
-   
-     <dependencies>
-       <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-         <version>4.11</version>
-         <scope>test</scope>
-       </dependency>
-     </dependencies>
+     </repositories>
    ```
 
    Add or edit the `settings.xml` file 
@@ -1385,7 +1384,7 @@ git push -u ado --all
    </settings>
    ```
 
-2. Create pipeline
+3. Create pipeline
 
    Goto Pipelines > Create pipelines > Azure Repos Git > select repository > select Maven
 
@@ -1456,7 +1455,7 @@ Docker push/pull; Docker - Build and push tasks
 
 ## Lab container image
 
-**Build docker image**
+**Build container image for docker file**
 
 dockerfile
 
@@ -1481,11 +1480,17 @@ $ docker run java-hello-world:v1
 Hello World!
 ```
 
+## Lab Run and Push container images
 
+1. Create Container Registry in Azure
 
+   Goto Container registries > Create container registry
 
+2. Create service connection
 
-## Learn about code quality and security
+   Goto Azure devops > Project Settings > Docker Registry > 
+
+   ![image-20240514110929284](images/image-20240514110929284.png)
 
 Quality code is produced by using a coding standard, analyzing code through testing, reviewing code, and refactoring legacy code.
 

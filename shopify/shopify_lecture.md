@@ -85,4 +85,126 @@ Index.liquid
 {{ mainProduct.url }}
 ```
 
-​	
+# Create Shopify Theme Project	
+
+To use this repository for making Shopify themes, use the following command of Shopify CLI.
+
+```
+$ shopify theme init [ NAME OF YOUR THEME ] --clone-url https://github.com/polidario/Elizabeth_Clean
+```
+
+
+
+```
+$ shopify theme dev
+╭─ success ────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│  Preview your theme                                                          │
+│    • http://127.0.0.1:9292                                                   │
+│                                                                              │
+│  Next steps                                                                  │
+│    • Customize your theme at the theme editor                                │
+│    • Share your theme preview (https://owen-onlinestore.myshopify.com/?prev  │
+│      iew_theme_id=141927252189)                                              │
+│                                                                              │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+* Syncing theme #141927252189 on owen-onlinestore.myshopify.com
+                                                                                                       100%
+  • 06:28:49 Synced » update assets/application.js
+  • 06:28:49 Synced » update assets/application.css
+  • 06:28:50 Synced » update assets/weeklyhow-logo.png
+```
+
+# Installing TailwindCSS
+
+- It will create package.json
+
+```
+$ npm init -y
+Wrote to /Users/sherwinowen/my_doc/shopify_themes/Elizabeth/package.json:
+
+{
+  "name": "elizabeth",
+  "version": "1.0.0",
+  "description": "[![Generic badge](https://img.shields.io/badge/course%20available%3F-yes-green.svg)](https://shields.io/)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+```
+
+Install packages
+
+```
+npm install -D tailwindcss postcss autoprefixer
+
+added 121 packages, and audited 123 packages in 21s
+
+34 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+```
+
+Create posts.config.js	
+
+```javascript
+module.exports = {
+    plugins: {
+        tailwindcss: {},
+        autoprefixer: {}
+    }
+}
+```
+
+- This will create tailwind.config.js
+
+````
+$ npx tailwindcss init
+
+Created Tailwind CSS config file: tailwind.config.js
+````
+
+Create new folder "src" and create file tailwind.css file inside the folder
+
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+- This will create /assets/application.css file
+
+```
+npx tailwindcss -i ./src/tailwind.css -o ./assets/application.css
+```
+
+
+
+
+
+
+
+application.css
+
+```
+body {
+    background-color: rgb(251, 251, 232);
+}
+
+.homepage {
+    text-align: center;
+    padding-top: 10em;
+}
+
+.logo {
+    width: 25%;
+}
+```
+
