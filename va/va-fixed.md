@@ -1201,3 +1201,246 @@ https://geekflare.com/wordpress-x-frame-options-httponly-cookie/
 # Fix HTTP Headers and cookies vulnerabilities in WordPress
 
 - Install Http Headers plugins in Wordpress and configure
+
+
+
+# Lack of DNSSEC
+
+## What is DNSSEC?
+
+- DNSSEC stands for Domain Name System Security Extensions. It's a security protocol that adds an extra layer of protection to the Domain Name System (DNS) — the [contacts list of the internet](https://ph.godaddy.com/help/what-is-dns-665). 
+- DNSSEC works by digitally signing DNS records to ensure they aren't tampered with or forged during transit. DNSSEC helps prevent cybercriminals from redirecting internet traffic to malicious websites, such as phishing websites.
+
+## Proof of Concept 
+
+```
+delv -t A www.tpb.gov.ph
+;; validating www.tpb.gov.ph/A: no valid signature found
+; unsigned answer
+www.tpb.gov.ph.		300	IN	A	104.22.50.235
+www.tpb.gov.ph.		300	IN	A	104.22.51.235
+www.tpb.gov.ph.		300	IN	A	172.67.25.112
+www.tpb.gov.ph.		300	IN	RRSIG	A 13 4 300 20240510012005 20240507232005 34505 tpb.gov.ph. alSAkiqDlQST7GIJO52BN8BwhF0mqhmabStyLRxFVXwPwJwKxXr5L3U2 LCNwocBsFK1Slpb6Q5r6YWMfN26YTg==
+```
+
+**Online Proof of Concept **
+
+- https://dnsviz.net/
+
+- https://dnssec-debugger.verisignlabs.com/
+
+![image-20240509092318521](images/image-20240509092318521.png)
+
+## Solution
+
+1. Enable DNSSEC
+2. Add DS record in DNS server Domain Registrar
+
+
+
+# Directory Listing
+
+- Directory listing allows the client to view a simple list of all the files and folders hosted on the web server. The client is then able to traverse each directory and download the files. 
+
+## Solution
+
+**3 ways**
+
+1. Add .htaccess restriction for Directory Listing 
+
+Add the following at the end of .htaccess 
+
+```
+Options -Indexes
+```
+
+2. Create black index.php file
+
+3. WHM
+
+   1) Log in to WHM and navigate to the following location.
+
+      Home » Service Configuration » Apache Configuration » Global Configuration
+
+   2) Uncheck the "Indexes" check box
+
+   3) Click the "Save" button at the bottom of the page.
+
+   4) On the next page, click the "Rebuild Configuration and Restart Apache" button.
+
+4. CPANEL
+   1. Log in to cPanel.
+   2. In the “Advanced” section, click the **Indexes** link or icon.
+   3. To configure a directory to turn indexing on or off click the **EDIT** button.
+   4. Select **No Indexing** and click **Save**
+
+## Hide WP-includes from Your WordPress
+
+```
+# Block wp-includes folder and files
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^wp-admin/includes/ - [F,L]
+RewriteRule !^wp-includes/ - [S=3]
+RewriteRule ^wp-includes/.*\.php$ - [F,L]
+RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
+RewriteRule ^wp-includes/theme-compat/ - [F,L]
+</IfModule>
+```
+
+
+
+# Enabled xmlrpc.php in Wordpress 
+
+## Proof
+
+https://motorcycletourism.tpb.gov.ph/xmlrpc.php
+
+## Disable XML-RPC in WordPress
+
+### **Using a plugin**
+
+Several plugins can disable XML-RPC in WordPress, such as [Disable XML-RPC](https://wordpress.org/plugins/disable-xml-rpc/), or [Stop XML-RPC Attack](https://wordpress.org/plugins/stop-xml-rpc-attacks/). These plugins can be installed and activated from the WordPress dashboard and will block any requests to XML-RPC. It is a quick and easy way to disable this functionality without needing to learn how to code.
+
+### **Using .htaccess**
+
+The *.htaccess* file is a configuration file that can be used to control the behavior of a web server. Users can edit the *.htaccess* file and **add the following code to disable XML-RPC**:
+
+```apacheconf
+<Files xmlrpc.php>
+
+order deny,allow
+
+deny from all
+
+</Files>
+```
+
+
+
+# Missing Content-Security-Policy Header 
+
+- https://blog.sucuri.net/2023/04/how-to-set-up-a-content-security-policy-csp-in-3-steps.html
+
+## **Description** 
+
+The Missing Content Security Policy (CSP) Header vulnerability occurs when a web server does not include a Content Security Policy header in its HTTP responses. CSP is a security feature that allows web developers to control which resources (such as scripts, stylesheets, and fonts) can be loaded and executed by a web page. Without a CSP header, the website is vulnerable to various types of attacks, including cross-site scripting (XSS) and data injection. 
+
+## **Finding a CSP in a Response Header**
+
+**OPTION 1**
+
+- https://securityheaders.com/
+
+**OPTION 2: Use developer tools to find a CSP in a response header**
+
+1. Using a browser, open developer tools (we used Chrome’s DevTools) and then go to the website of choice. Open up the Network tab.
+2. Look for the file that builds the page. It should have the same domain as the website you’re on (e.g., www.twitter.com), and will usually be the first item on the Network tab.
+3. Once you click on the file, more information will come up. Look for a 200 OK response code.
+4. Scroll down to the Response Header Section. If a CSP is being used, it will appear here.
+
+###### ![Image #1 CSP Header](https://bluetriangle.com/hs-fs/hubfs/Image%20%231%20CSP%20Header.jpg?width=574&name=Image%20%231%20CSP%20Header.jpg)
+
+**Option #2 - Use a 3rd party browser extension to find a CSP in the response header**
+
+There is a browser extension available in Chrome called “CSP Evaluator” that will automatically pull any CSP from the response header for the page, but not a CSP in a meta tag.
+
+- Be cautious – extensions have potentially risky access to your web data.
+- You might want to restrict its data reach under “manage extension,” or disable it when not in use.
+
+The tool can be found under the Chrome Extension Store: [CSP Evaluator](https://chrome.google.com/webstore/detail/csp-evaluator/fjohamlofnakbnbfjkohkbdigoodcejf?hl=en-US) 
+
+![Image #3 CSP Evaluator - Chroms Extension](https://bluetriangle.com/hs-fs/hubfs/Image%20%233%20CSP%20Evaluator%20-%20Chroms%20Extension.jpg?width=408&name=Image%20%233%20CSP%20Evaluator%20-%20Chroms%20Extension.jpg)
+
+## Enable Content-Security-Policy (CSP) in WHM
+
+1. Log into WHM
+2. Select **Tweak Settings**
+3. Search for “header” and select *On* beside **Enable Content-Security-Policy on some interfaces**
+4. At the bottom, select **Save**
+
+
+
+
+
+## Enable Content-Security-Policy (CSP) in Cloudflare
+
+### CloudFlare CSP Header Example
+
+The easiest way to add a `Content-Security-Policy` (CSP) response header to your CloudFlare site is to create a *Modify Response Header* rule, under *Transform Rules*. From the CloudFlare Dashboard:
+
+1. Login to CloudFlare
+2. Select your site
+3. Expend the ***Rules\*** menu in the left nav
+4. Click on ***Transform Rules\***
+5. Select ***Modify Response Header\***
+6. Click the ***Create Rule\*** button
+
+### Creating a CloudFlare Respond Header Transform Rule for CSP
+
+1. Give the rule a name, for example: CSP
+2. If you want to add the header to all pages on your site select ***All incoming requests\***. Otherwise you can create a *Custom filter expression* and match certain URIs, etc.
+3. Under the *Then* section, select *Add* to add a new CSP header to the HTTP response.
+4. Under *Header name* enter: `Content-Security-Policy` or [Content-Security-Policy-Report-Only](https://content-security-policy.com/report-only/) if you don't want to block anything yet.
+5. Under *Value* enter your CSP policy, a quick easy one to start with is: `default-src 'self'`, which will allow only scripts, images, etc from the same origin.
+
+In the above example we are simply setting a policy:
+
+```
+default-src 'self';
+```
+
+
+
+# Missing XSS Protection Header 
+
+## **Description** 
+
+The Missing XSS Protection Header vulnerability occurs when a web application fails to implement the appropriate Cross-Site Scripting (XSS) protection mechanisms in its HTTP response headers. Without proper XSS protection headers, the application becomes more vulnerable to XSS attacks, which could lead to the execution of malicious scripts in users' browsers. This vulnerability poses significant risks to the confidentiality, integrity, and availability of the application and its users' data. 
+
+
+
+## Configure the X-Frame-Options Header in WordPress
+
+**Edit .htaccess file**
+
+Add the following lines:
+
+```
+<ifModule mod_headers.c>
+Header set X-Frame-Options DENY
+</ifModule>
+```
+
+## Configure the X-Frame-Options Header in Cloudflare
+
+## Setup HTTP Security Header Using Cloudflare
+
+1. Make sure you have **added your domain to Cloudflare** and have **activated the orange cloud**.
+2. From your domain dashboard, go to Rules and navigate to **Transform Rules**.
+3. On the Transform Rules page, select **Modify Response Header**.
+4. Click the **Create rule** button to create a new rule.
+5. **Give the rule a name**; here, I will name mine “Security Header”.
+6. Since I need to apply this rule to **All incoming requests** to my website, I select the first option for the **If…** section.
+7. In the **Then…** section, I will use **Set static** to set up security headers for my site. Here, I will add 5 recommended security headers:
+
+| Header name               | Value                                        |
+| ------------------------- | -------------------------------------------- |
+| x-content-type-options    | nosniff                                      |
+| x-frame-options           | SAMEORIGIN                                   |
+| x-xss-protection          | 1; mode=block                                |
+| strict-transport-security | max-age=31536000; includeSubDomains; preload |
+| referrer-policy           | no-referrer-when-downgrade                   |
+
+# Unauthenticated SQL Injection 
+
+## **Description** 
+
+SQL injection, also known as SQLI, is a common attack vector that uses malicious SQL code for backend database manipulation to access information that was not intended to be displayed. This information may include any number of items, including sensitive company data, user lists or private customer details. 
+
+## **Proof of Concept** 
+
+1. https://motorcycletourism.tpb.gov.ph 
+
+Upon checking for outdated wordpress plugins, we found that Parameter “time=” in “*https://motorcycletourism.tpb.gov.ph/wp-admin/admin-ajax.php?action=mec_load_single_page&time=1*” is Vulnerable to Time-Based Blind SQL Injection 

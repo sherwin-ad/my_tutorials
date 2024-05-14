@@ -1454,6 +1454,8 @@ Docker login; Docker registry service connection
 **PUSH/PULL IMAGE FROM A CONTAINER REGISTRY**
 Docker push/pull; Docker - Build and push tasks
 
+## Lab container image
+
 
 
 ## Learn about code quality and security
