@@ -1456,6 +1456,33 @@ Docker push/pull; Docker - Build and push tasks
 
 ## Lab container image
 
+**Build docker image**
+
+dockerfile
+
+```
+FROM openjdk:8-jdk-alpine
+COPY target/lab46javapkg-1.0-SNAPSHOT.jar javaapp.jar
+ENTRYPOINT exec java -cp javaapp.jar beesuite.App
+```
+
+**List docker image**
+
+```
+$ docker images
+REPOSITORY                             TAG               IMAGE ID       CREATED          SIZE
+java-hello-world                       v1                e4ec09bd1f25   15 seconds ago   103MB
+```
+
+**Docker run image**
+
+```
+$ docker run java-hello-world:v1 
+Hello World!
+```
+
+
+
 
 
 ## Learn about code quality and security
