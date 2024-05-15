@@ -85,7 +85,68 @@ Index.liquid
 {{ mainProduct.url }}
 ```
 
-# Create Shopify Theme Project	
+
+
+
+
+# Installing Local Development Tools
+
+## External assets links
+
+Download-Visual-Studio-Code
+https://code.visualstudio.com/
+
+Download-NodeJS
+https://nodejs.org
+
+Shopify-Developers
+https://shopify.dev
+
+Download-Ruby
+https://rubyinstaller.org/downloads
+
+
+
+## Installing Shopify Cli
+
+**MacOS**
+
+[Anchor link to section titled "MacOS"](https://shopify.dev/docs/themes/tools/cli/cli-2/upgrade-uninstall#macos)
+
+Shopify CLI is available for macOS through [RubyGems.org](https://rubygems.org/).
+
+**RubyGems.org**
+
+[Anchor link to section titled "RubyGems.org"](https://shopify.dev/docs/themes/tools/cli/cli-2/upgrade-uninstall#rubygems-org)
+
+In a new terminal window, navigate to your home directory and run the following command
+
+```bash
+gem install shopify-cli
+```
+
+
+
+# Getting Started
+
+## External assets links
+
+Shopify-CLI-Theme-Commands
+https://shopify.dev/themes/tools/cli/theme-commands
+
+Shopify-CLI-Core-Commands
+https://shopify.dev/themes/tools/cli/core-commands
+
+Elizabeth-Clean-Git-Repository
+https://github.com/bbbpppolly/Elizabeth_Clean
+
+Source-Code-Repository-
+https://github.com/bbbpppolly/Elizabeth/tree/d1c96cdb3462480d3f2b8cbea017dd4a657e33fa
+
+TailwindCSS-Installation
+https://tailwindcss.com/docs/installation
+
+## Create Shopify Theme Project	
 
 To use this repository for making Shopify themes, use the following command of Shopify CLI.
 
@@ -117,7 +178,7 @@ $ shopify theme dev
   • 06:28:50 Synced » update assets/weeklyhow-logo.png
 ```
 
-# Installing TailwindCSS
+## Installing TailwindCSS
 
 - It will create package.json
 
@@ -184,12 +245,6 @@ Create new folder "src" and create file tailwind.css file inside the folder
 ```
 npx tailwindcss -i ./src/tailwind.css -o ./assets/application.css
 ```
-
-
-
-
-
-
 
 application.css
 

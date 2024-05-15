@@ -883,7 +883,7 @@ Help protect branches, enforce guidelines, restrict use, limit access
 
  https://github.com/codespaces
 
-## Develop build pipelines
+# Lesson 4 Develop build pipelines
 
 **PIPELINE COMPONENTS**
 
@@ -962,9 +962,9 @@ Group of agents scoped to the entire organization
 - Personal Access token with “read” and “manage” permissions in the Agent
   Pools scope.
 
-### Setup up build agents
+## Setup up build agents
 
-#### Create a Personal Access Tokens
+## Create a Personal Access Tokens
 
 1. Sign in to your organization (`https://dev.azure.com/{yourorganization}`).
 
@@ -996,9 +996,7 @@ Group of agents scoped to the entire organization
 
 
 
-#### Download and configure the agent
-
-
+## Download and configure the agent
 
 **Azure Pipelines**
 
@@ -1073,7 +1071,7 @@ Started:
 
 
 
-### Create classic azure pipeline
+## Create classic azure pipeline
 
 1. Sign in to your Azure DevOps instance.
 
@@ -1115,7 +1113,7 @@ Started:
 
 
 
-### Create YAML pipelines
+## Create YAML pipelines
 
 1. Sign in to your Azure DevOps instance.
 
@@ -1249,7 +1247,7 @@ docker, npm, and more)
 
 - **Github Packages**: Host and manage packages for: npm, rubygems, maven, gradle, docker and nuget.
 
-### Create packages 
+## Create packages 
 
 https://code.visualstudio.com/docs/java/java-tutorial
 
@@ -1288,7 +1286,7 @@ https://code.visualstudio.com/docs/java/java-tutorial
    </plugin>
    ```
 
-### Push github repo to azure devops repo
+## Push github repo to azure devops repo
 
 **Remove remote** 
 
@@ -1303,7 +1301,7 @@ git remote add ado https://[organization]:[Git credentials]@dev.azure.com
 git push -u ado --all
 ```
 
-### Set up feeds
+## Set up feeds
 
 1. Goto Artifacts  > Create new feed
 
@@ -1388,6 +1386,59 @@ git push -u ado --all
 
    Goto Pipelines > Create pipelines > Azure Repos Git > select repository > select Maven
 
+   azure-pipelines
+
+   ```
+   # Maven
+   # Build your Java project and run tests with Apache Maven.
+   # Add steps that analyze code, save build artifacts, deploy, and more:
+   # https://docs.microsoft.com/azure/devops/pipelines/languages/java
+   
+   trigger:
+   - master
+   
+   pool:
+     vmImage: macOS-14
+   
+   steps:
+   - task: Maven@3
+     inputs:
+       mavenPomFile: 'lab46javapkg/pom.xml'
+       publishJUnitResults: false
+       javaHomeOption: 'JDKVersion'
+       jdkVersionOption: '1.8'
+       mavenVersionOption: 'Default'
+       mavenOptions: '-Xmx3072m'
+       mavenAuthenticateFeed: false
+       effectivePomSkip: false
+       sonarQubeRunAnalysis: false
+   
+   - task: Maven@3
+     inputs:
+       mavenPomFile: 'lab46javapkg/pom.xml'
+       goals: 'deploy'
+       publishJUnitResults: false
+       javaHomeOption: 'JDKVersion'
+       mavenVersionOption: 'Default'
+       mavenAuthenticateFeed: true
+       effectivePomSkip: false
+       sonarQubeRunAnalysis: false
+   ```
+
+4. Add Artifact feed setting permission
+
+   Goto Artifacts > Feed Settings > Permission
+
+   - Add [Project] Build Service [Organization] as Contributor
+
+   ![image-20240515092822919](images/image-20240515092822919.png)
+
+5. Run the pipeline
+
+   Check the package upload in Artifact feed
+
+   ![image-20240515093048571](images/image-20240515093048571.png)
+
 ## Learn about containers
 
 **CONTAINER IMAGE:**
@@ -1407,7 +1458,7 @@ Store container images to make them available for download
 - ﻿﻿**Azure Container Registry**: Azure subscription and ACR
 - ﻿﻿**Dockerhub or others**: URL, Account, Password/PAT
 
-### Create a dockerfile
+## Create a dockerfile
 
 **FROM**: Specify parent image, by default will try and fetch from dockerhub
 
@@ -1492,12 +1543,111 @@ Hello World!
 
    ![image-20240514110929284](images/image-20240514110929284.png)
 
+3. Create service connection for Azure Container Registry
+
+   Goto Project settings > Pipelines > Service connection > Docker Registry
+
+   ![image-20240515095225591](images/image-20240515095225591.png)
+
+4. Edit pipeline
+
+   ```
+   # Maven
+   # Build your Java project and run tests with Apache Maven.
+   # Add steps that analyze code, save build artifacts, deploy, and more:
+   # https://docs.microsoft.com/azure/devops/pipelines/languages/java
+   
+   trigger:
+   - master
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   steps:
+   - task: Maven@3
+     inputs:
+       mavenPomFile: 'lab46javapkg/pom.xml'
+       publishJUnitResults: false
+       javaHomeOption: 'JDKVersion'
+       jdkVersionOption: '1.8'
+       mavenVersionOption: 'Default'
+       mavenOptions: '-Xmx3072m'
+       mavenAuthenticateFeed: false
+       effectivePomSkip: false
+       sonarQubeRunAnalysis: false
+   
+   # Upload maven package in Artifact feed
+   # - task: Maven@3
+   #   inputs:
+   #     mavenPomFile: 'lab46javapkg/pom.xml'
+   #     goals: 'deploy'
+   #     publishJUnitResults: false
+   #     javaHomeOption: 'JDKVersion'
+   #     mavenVersionOption: 'Default'
+   #     mavenAuthenticateFeed: true
+   #     effectivePomSkip: false
+   #     sonarQubeRunAnalysis: false
+   
+   # Build and push docker image and to Azure Container Registry
+   - task: Docker@2
+     inputs:
+       containerRegistry: 'owenlab46cr'
+       repository: 'lab46repository'
+       command: 'buildAndPush'
+       Dockerfile: '**/dockerfile'
+   ```
+
+5. Check docker image in Azure Container Registry
+
+   Goto Azure console > Container registries > owenlab46cr > Services > Repositories > lab46repository
+
+   ![image-20240515102146031](images/image-20240515102146031.png)
+
+6. Pull the images in the Azure Container Regitries repository
+
+   Goto Azure Container Regitries >  lab46repository > Settings > Access keys
+
+   - Enable Admin user to get username and password
+
+   ```
+   $ docker login owenlab46cr.azurecr.io
+   Username: owenlab46cr
+   Password: 
+   Login Succeeded
+   
+   $ docker pull owenlab46cr.azurecr.io/lab46repository:131
+   131: Pulling from lab46repository
+   e7c96db7181b: Already exists 
+   f910a506b6cb: Already exists 
+   c2274a1a0e27: Already exists 
+   79bfe5c94e31: Pull complete 
+   Digest: sha256:06f48b40e9549db47fa66e6bbce20afbea0b0bd43e014aaa8df0048e97f9ebbb
+   Status: Downloaded newer image for owenlab46cr.azurecr.io/lab46repository:131
+   owenlab46cr.azurecr.io/lab46repository:131
+   
+   What's Next?
+     View a summary of image vulnerabilities and recommendations → docker scout quickview owenlab46cr.azurecr.io/lab46repository:131
+   
+   $ docker images
+   REPOSITORY                               TAG               IMAGE ID       CREATED          SIZE
+   owenlab46cr.azurecr.io/lab46repository   131               e6edf6a7155c   23 minutes ago   105MB
+   java-hello-world                         v1                2db868b8ea02   45 minutes ago   103MB
+   
+   $ docker run owenlab46cr.azurecr.io/lab46repository:131
+   WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+   Hello World!
+   ```
+
+## Learn about code quality and security
+
 Quality code is produced by using a coding standard, analyzing code through testing, reviewing code, and refactoring legacy code.
 
-**BUGS**
+### **BUGS**
+
 Issues that may break the code/make it unreliable
 
-**LINTING**
+### **LINTING**
+
 Programmatic and stylistic errors, such as formatting discrepancy, complexity, bugs, logical errors, unreachable code, check best practices are being applied, dangerous data type combinations
 
 - ﻿﻿**Net**: FxCop
@@ -1507,7 +1657,7 @@ Programmatic and stylistic errors, such as formatting discrepancy, complexity, b
 
 
 
-**UNIT TESTS**
+### **UNIT TESTS**
 
 Testing smallest piece of independent code, such as a function, method, or property, to make sure it works as expected.
 
@@ -1516,50 +1666,169 @@ Testing smallest piece of independent code, such as a function, method, or prope
 - ﻿﻿**Javascript**: Grunt/Gulp/mocha/jasmine
 - ﻿﻿**Python**: PyTest
 
-**CODE COVERAGE**
+### **CODE COVERAGE**
+
 Determines what portion of your code is being tested
 
 - Publish code coverage results task: Cobertura, Jacoco, Istanbul
 
-**TECHNICAL DEBT**
+
+
+### **TECHNICAL DEBT**
+
 Can be managed by reducing code complexity, bugs and vulnerabilities
 
 - Tools: Sonarcloud/Sonarqube/Github advanced security
 
+### **STATIC APPLICATION SECURITY TESTING (SAST)**
 
-
-**STATIC APPLICATION SECURITY TESTING (SAST)**
 Application with several tools to inspect your code to identify vulnerabilities and bugs with support for a variety of programming languages
 
 - Tools: SonarQube/SonarCloud/Whitesource Bolt/GitHub Advanced
   Security/CodeQL Analysis
 
-**VULNERABILITIES**
+### **VULNERABILITIES**
+
 Security related issues/potential backdoor that can put your code at risk of attack
 
-**SHIFT-LEFT TESTING**
+### **SHIFT-LEFT TESTING**
+
 Moving security thinking to the early stages of planning and development
 
-**DEPENDENCY SCANNING**
+### **DEPENDENCY SCANNING**
+
 Identify outdated/vulnerable dependencies
 
 - Tools: Whitesource Bolt/Nu Keeper/GH dependency review/GitHub
   Dependabot (creates pull request)
 
-**CONTAINER SCANNING**
+### **CONTAINER SCANNING**
+
 Scans Linux container images in Azure container registry and private registries.
 
 - Tools: Microsoft defender for containers
 
-**SECRETS SCANNING**
+### **SECRETS SCANNING**
+
 Scans entire git history for any secrets
 
 - Tools: GitHub Secret scanning, git leaks
 
-**LICENSE COMPLIANCE SCANNING**
+### **LICENSE COMPLIANCE SCANNING**
+
 Identify security and license compliance risks in software and dependencies
 
 - Tool: Whitesource Bolt
+
+## Lab Implement code quality
+
+1. Disable continuous integration
+
+- Goto Pipeline > Edit > Triggers
+
+  ![image-20240515104631915](images/image-20240515104631915.png)
+
+2. Enable Junit test result > check Publish to Azure Pipelines
+
+   azure-pipelines.yml
+
+   ```
+   ...
+   steps:
+   - task: Maven@3
+     inputs:
+       mavenPomFile: 'lab46javapkg/pom.xml'
+       publishJUnitResults: true
+       testResultsFiles: '**/surefire-reports/TEST-*.xml'
+       codeCoverageToolOption: 'Cobertura'
+       javaHomeOption: 'JDKVersion'
+       jdkVersionOption: '1.8'
+       mavenVersionOption: 'Default'
+       mavenOptions: '-Xmx3072m'
+       mavenAuthenticateFeed: false
+       effectivePomSkip: false
+       sonarQubeRunAnalysis: false
+       pmdRunAnalysis: true
+   ...
+   ```
+
+3. Edit /src/main/java/beesuite.App.java
+
+   ```
+   package beesuite;
+   
+   import java.util.ArrayList;
+   import java.util.Arrays;
+   import java.util.List;
+   
+   import java.util.Scanner;
+   
+   /**
+    * Hello world!
+    *
+    */
+   public class App 
+   {
+       static List<String> favoriteFruits = new ArrayList<>(Arrays.asList("pitaya", "pineapple", "grapes"));
+       public static void main( String[] args )
+       {
+           System.out.println( "Hello World!" );
+       }
+   }
+   ```
+
+4. Edit /src/test/java/beesuite/AppTest.java
+
+   ```
+   package beesuite;
+   
+   import static org.junit.Assert.assertTrue;
+   import static org.junit.Assert.assertEquals;
+   
+   import org.junit.Test;
+   
+   /**
+    * Unit test for simple App.
+    */
+   public class AppTest 
+   {
+       /**
+        * Rigorous Test :-)
+        */
+       @Test
+       public void shouldAnswerWithTrue()
+       {
+           assertEquals("should be grapes", "grapes", App.favoriteFruits.get(2));
+           assertEquals("should be pineapple", "pineapple", App.favoriteFruits.get(1)); 
+           assertEquals("should be pitaya", "pitaya", App.favoriteFruits.get(0));
+       }
+   }
+   ```
+
+5. Run pipeline 
+
+   **Check the test for the error**
+
+   ![image-20240515144934469](images/image-20240515144934469.png)
+
+   **Check the Artifacts**
+
+   **Goto Summary > Related published**
+
+   ![image-20240515160200258](images/image-20240515160200258.png)
+
+   **Check the PMD report**
+
+   ![image-20240515160441307](images/image-20240515160441307.png)
+
+   ![image-20240515160609410](images/image-20240515160609410.png)
+## Lab Implement DevSecOps
+
+- Integrating SonarCloud with Azure DevOps
+
+# Lesson 5 Optimize Build Pipelines
+
+
 
 ## Integrating external tools
 
@@ -1593,6 +1862,61 @@ Identify security and license compliance risks in software and dependencies
 - GitHub actions and Azure Artifacts
 
 - Trigger ADO Pipelines from GitHub Actions
+
+  
+
+## Lab Integrate Azure pipelines with Github
+
+1. Create github repository
+
+   repository name: lab52
+
+   - Create file1
+
+     ```
+     this is file 1
+     ```
+
+2. Create new project in Azure deveops
+
+   project name: lab52
+
+3. Create pipeline 
+
+   - Connect > Github
+
+   - Select > sherwin-ad/lab42 repository
+
+   - Configure > Strater pipeline
+
+     azure-pipeline.yml
+
+     ```
+     # Starter pipeline
+     # Start with a minimal pipeline that you can customize to build and deploy your code.
+     # Add steps that build, run tests, deploy, and more:
+     # https://aka.ms/yaml
+     
+     trigger:
+     - main
+     
+     pool:
+       vmImage: ubuntu-latest
+     
+     steps:
+     - script: echo Hello, world!
+       displayName: 'Run a one-line script'
+     
+     - script: |
+         echo Add other tasks to build, test, and deploy your project.
+         echo See https://aka.ms/yaml
+       displayName: 'Run a multi-line script'
+     
+     - script: cat file1
+       displayName: output GH file contents
+     ```
+
+     
 
 ## Optimize build
 
@@ -2834,6 +3158,8 @@ One solution to this problem is to revert the previous commit.
 11. Finally, open the *index.html* file to make sure the content is the correct version.
 
 Reverting isn't the only way to remedy this situation; you could just edit *index.html* and commit the corrected file. That option is harder if the changes you committed were extensive. In any case, `git revert` is a good way to signal your intent.
+
+
 
 # Collaborate with Git
 
