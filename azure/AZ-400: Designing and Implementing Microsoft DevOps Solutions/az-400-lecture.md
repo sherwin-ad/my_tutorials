@@ -1925,7 +1925,6 @@ Helps reduce build time by reusing files & dependencies from previous runs.
 
 - Setting it up: Use the “Cache” pipeline task, define key and path.
 
-  
 
 **PARALLEL JOBS:**
 Reduce time it takes to execute a pipeline by running jobs simultaneously
@@ -1970,7 +1969,16 @@ effective alternative.
   ENTRYPOINT [“dotnet”, “test.d1l”]
   ```
 
-  
+
+
+
+## Lab Optimize pipeline performance
+
+project: lab54
+
+
+
+
 
 ## Integrate azure pipelines with GitHub
 

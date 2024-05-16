@@ -89,7 +89,7 @@ Index.liquid
 
 
 
-# Installing Local Development Tools
+# 3. Installing Local Development Tools
 
 ## External assets links
 
@@ -127,7 +127,7 @@ gem install shopify-cli
 
 
 
-# Getting Started
+# 4. Getting Started
 
 ## External assets links
 
@@ -154,7 +154,17 @@ To use this repository for making Shopify themes, use the following command of S
 $ shopify theme init [ NAME OF YOUR THEME ] --clone-url https://github.com/polidario/Elizabeth_Clean
 ```
 
+shopify cli version 2
 
+```
+$ shopify login --store [store name]
+
+$ shopify theme serve
+```
+
+
+
+shopify cli version 3
 
 ```
 $ shopify theme dev
@@ -180,7 +190,7 @@ $ shopify theme dev
 
 ## Installing TailwindCSS
 
-- It will create package.json
+1. It will create package.json
 
 ```
 $ npm init -y
@@ -200,7 +210,7 @@ Wrote to /Users/sherwinowen/my_doc/shopify_themes/Elizabeth/package.json:
 }
 ```
 
-Install packages
+2. Install packages
 
 ```
 npm install -D tailwindcss postcss autoprefixer
@@ -213,7 +223,7 @@ added 121 packages, and audited 123 packages in 21s
 found 0 vulnerabilities
 ```
 
-Create posts.config.js	
+3. Create postcss.config.js	
 
 ```javascript
 module.exports = {
@@ -224,7 +234,7 @@ module.exports = {
 }
 ```
 
-- This will create tailwind.config.js
+4. This will create tailwind.config.js
 
 ````
 $ npx tailwindcss init
@@ -232,7 +242,7 @@ $ npx tailwindcss init
 Created Tailwind CSS config file: tailwind.config.js
 ````
 
-Create new folder "src" and create file tailwind.css file inside the folder
+5. Create new folder "src" and create file tailwind.css file inside the folder
 
 ```
 @tailwind base;
@@ -240,26 +250,54 @@ Create new folder "src" and create file tailwind.css file inside the folder
 @tailwind utilities;
 ```
 
+6. Delete assets/application.css file
+
 - This will create /assets/application.css file
 
 ```
 npx tailwindcss -i ./src/tailwind.css -o ./assets/application.css
 ```
 
-application.css
 
-```
-body {
-    background-color: rgb(251, 251, 232);
-}
 
-.homepage {
-    text-align: center;
-    padding-top: 10em;
-}
+# 5. Creating The Responsive Navigational Bar
 
-.logo {
-    width: 25%;
-}
-```
+## The Navigational Bar
 
+1. Create folder "sections" and file "header.liquid"
+
+   ```
+   I AM THE HEADER
+   ```
+
+2. Modify layout/theme.liquid
+
+   - Add  "{% section 'header' %}'' to the body
+
+   ```
+   <!doctype html>
+   <html>
+     <head>
+       <title>{{ page_title }}</title>
+       <meta charset="utf-8">
+       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+       <meta name="description" content="{{ page_description | escape }}">
+       <link rel="canonical" href="{{ canonical_url }}">
+       <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+       {{ content_for_header }}
+       <!-- Header hook for plugins -->
+       {{ 'application.css' | asset_url | stylesheet_tag }}
+       {{ 'application.js' | asset_url | script_tag }}
+     </head>
+     <body>
+   
+       {% section 'header' %}
+   
+       <main role="main">
+         {{ content_for_layout }}
+       </main>
+     </body>
+   </html>
+   ```
+
+   
