@@ -1974,64 +1974,132 @@ effective alternative.
 
 ## Lab Optimize pipeline performance
 
+### Parallel jobs
+
 project: lab54
 
+1. Install 2 azure agents locally
 
+2. Goto Project settings > Agents pools > Security
 
+   - Add Pipeline permissions for the project
 
+3. initialized Project Repos
 
-## Integrate azure pipelines with GitHub
+4. Create pipelne
 
+   Connect > Azure repo
 
+   Select > lab54
 
-## Multi-stage docker builds
+   Confiure > Starter pipeline
 
-Dockerfile
+   azure-pipeline.yml
 
-```
-FROM mcr.microsoft.com/dotnet/sdk:8.0
-RUN dotnet new console -o MyApp -f net8.0
-WORKDIR /MyApp
-CMD dotnet run
-```
+   ```
+   trigger:
+   - main
+   
+   pool: Default
+   
+   jobs:
+   - job: job1
+     steps:
+       - script: echo This is job 1
+         displayName: 'The job number'
+       - script: ping 127.0.0.1 -c 100
+         displayName: 'make the job take some time' 
+   
+   - job: job2
+     steps:
+       - script: echo This is job 2
+         displayName: 'The job number'
+       - script: ping 127.0.0.1 -c 100
+         displayName: 'make the job take some time'
+   ```
 
+## Lab Muti-stage docker builds
 
+### **Create dotnet application**
 
-docker build -t mydockerimage:v1 .
+1. Create github repository "multistagedockerlab"
 
-```
-$ docker build -t mydockerimage:v1 .
+2. Create dotnet app
 
-$ docker images
-REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
-mydockerimage   v1        842cf1aa43d7   3 minutes ago    867MB
-```
+   ```
+   $ dotnet new console -o MyApp -f net8.0
+   The template "Console App" was created successfully.
+   
+   Processing post-creation actions...
+   Restoring /Users/sherwinowen/my_doc/owen-git/multistagedockerlab/MyApp/MyApp.csproj:
+     Determining projects to restore...
+     Restored /Users/sherwinowen/my_doc/owen-git/multistagedockerlab/MyApp/MyApp.csproj (in 48 ms).
+   Restore succeeded.
+   ```
 
-Dockerfile
+3. Run MyApp
 
-```
-FROM mcr.microsoft.com/dotnet/sdk:8.0 As build
-RUN dotnet new console -o MyApp -f net8.0
-WORKDIR /MyApp
-RUN dotnet run
+   ```
+   $ Cd MyApp
+   $ % dotnet run
+   Hello, World!
+   ```
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
-COPY --from=build /MyApp/bin/Debug/net8.0 ./
-ENTRYPOINT ["dotnet", "MyApp.dll"]
-```
+### Containerized dotapp we created
 
+1. Create Dockerfile
 
+   ```
+   FROM mcr.microsoft.com/dotnet/sdk:8.0
+   RUN dotnet new console -o MyApp -f net8.0
+   WORKDIR /MyApp
+   CMD dotnet run
+   ```
 
-```
-$ docker build -t mydockerimage:v2 .
+2. Build the docker image
 
-$ docker images
-REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
-mydockerimage   v2        7d7d1bd3a328   38 seconds ago   217MB
-mydockerimage   v1        842cf1aa43d7   3 minutes ago    867MB
-```
+   ```
+   $ docker build -t mydockerimage:v1 . 
+   ```
 
+   List the docker images
 
+   ```
+   $ docker images
+   REPOSITORY                               TAG               IMAGE ID       CREATED         SIZE
+   mydockerimage                            v1                d79f777a5766   2 minutes ago   911MB
+   ```
+
+   Run docker image
+
+   ```
+   $ docker run mydockerimage:v1
+   Hello, World!
+   ```
+
+3. Edit Dockerfile to multistage build
+
+   ```
+   FROM mcr.microsoft.com/dotnet/sdk:8.0 As build
+   RUN dotnet new console -o MyApp -f net8.0
+   WORKDIR /MyApp
+   RUN dotnet run
+   
+   FROM mcr.microsoft.com/dotnet/aspnet:8.0
+   COPY --from=build /MyApp/bin/Debug/net8.0 ./
+   ENTRYPOINT ["dotnet", "MyApp.dll"]
+   ```
+
+   Build docker image
+
+   ```
+   $ docker build -t mydockerimage:v2 .
+   
+   $ docker images
+   REPOSITORY                               TAG             IMAGE ID       CREATED         SIZE
+   mydockerimage                            v2              49a5fef3fd7b   8 seconds ago   249MB
+   mydockerimage                            v1              d79f777a5766   3 hours ago     911MB
+   ```
 
 
 
@@ -2057,6 +2125,8 @@ Tests that pass/fail even when there are no changes in code.
 - ﻿﻿Custom detection: uses your own mechanism
 
 You can prevent pipeline failures due to flaky tests by removing them from the test summary report.
+
+# Lab Review pipeline monitoring and analytics
 
 
 
@@ -2123,6 +2193,26 @@ Configure job order through dependencies:
 
 - ﻿﻿Special type of job that maintains deployment history.
 - ﻿﻿Allows you to define how your application will be rolled out
+
+
+
+# Lab Setup a release pipeline
+
+1. Create new project
+
+   Project: lab62
+
+2. Initialized Repos with README.md file
+
+3. Create new pipeline
+
+   - Use classic editor > select Azure Repos Git > and click continue
+
+     ![image-20240517160756063](images/image-20240517160756063.png)
+
+   - Select template > click "empty job"
+
+
 
 # Getting started with GIT 
 
