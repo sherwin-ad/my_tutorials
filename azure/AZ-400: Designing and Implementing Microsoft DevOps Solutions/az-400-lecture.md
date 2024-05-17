@@ -1437,7 +1437,7 @@ git push -u ado --all
 
    Check the package upload in Artifact feed
 
-   ![image-20240515093048571](images/image-20240515093048571.png)
+   ###### ![image-20240515093048571](images/image-20240515093048571.png)
 
 ## Learn about containers
 
@@ -2198,6 +2198,8 @@ Configure job order through dependencies:
 
 # Lab Setup a release pipeline
 
+## Creating CI pipeline using classic editor (GUI)
+
 1. Create new project
 
    Project: lab62
@@ -2206,11 +2208,91 @@ Configure job order through dependencies:
 
 3. Create new pipeline
 
-   - Use classic editor > select Azure Repos Git > and click continue
+   - Use **classic editor** > select Azure Repos Git > and click continue
 
      ![image-20240517160756063](images/image-20240517160756063.png)
 
-   - Select template > click "empty job"
+   - Select template > click "empty job" (We are not using template)
+
+4. Add tasks
+
+   - Command line
+
+     ![file:///home/sherwinowen/Pictures/Screenshots/Screenshot%20from%202024-05-17%2018-26-34.png](images/Screenshot from 2024-05-17 18-26-34.png)
+
+     ```
+     echo Write your commands here
+     
+     echo Hello world
+     
+     npm install -g gatsby-cli
+     
+     gatsby new lab62sw
+     
+     cd lab62sw
+     
+     gatsby build
+     ```
+
+   - Publish build artifacts
+
+     ![image-20240517182931560](images/image-20240517182931560.png)
+
+5. Run the pipeline and check the jobs, publish and consumed artifacts
+
+   ![image-20240517183454915](images/image-20240517183454915.png)
+
+   ![image-20240517183526583](images/image-20240517183526583.png)
+
+## Creating Deployment pipeline
+
+1. Create deployment pipeline
+
+   Goto Pipelines > Releases > click New pipeline > click Empty job (We are not using template)
+
+2. Click Add and artifact
+
+   ![image-20240517184229454](images/image-20240517184229454.png)
+
+3. Setup Agent job
+
+   Agent pool: Azure Pipelines
+
+   Agent specification: ubuntu latest
+
+4. Create "**Static Web Apps**" in Azure
+
+   ![image-20240517185248120](images/image-20240517185248120.png)
+
+   - Click Review and create
+
+5. Add task
+
+   - Add variables
+
+     - Deployment token in Static Wen App created in Azure
+
+     ![image-20240517185933359](images/image-20240517185933359.png)
+
+   - Add Deploy Azure Static Web App
+
+     ![image-20240517190206744](images/image-20240517190206744.png)
+
+     - Click Create release and Create
+
+6. Check the release
+
+   ![image-20240517190714613](images/image-20240517190714613.png)
+
+
+
+# Lab Set dependencies approvals and gates
+
+
+
+
+
+
 
 
 
