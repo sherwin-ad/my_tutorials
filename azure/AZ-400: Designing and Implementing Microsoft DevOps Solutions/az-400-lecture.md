@@ -2288,10 +2288,715 @@ Configure job order through dependencies:
 
 # Lab Set dependencies approvals and gates
 
+Goto Pipeline > Releases > Edit > Goto Pre-deployment contains
+
+![image-20240520083529479](images/image-20240520083529479.png)
+
+Sample dependsOn pipeline
+
+```
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Test
+
+
+- stage: Deploy
+  dependsOn: Test
+```
 
 
 
+# Undestand Infrustructure as code
 
+**INFRASTRUCTURE AS CODE:**
+
+Automate deployments by defining infrastructure with code using the AzureResource Manager API.
+
+- ﻿﻿**Azure Resource Manager (ARM) Template**s: Azure proprietary, JSON
+- ﻿﻿**Terraform**: multi-cloud, HCL
+
+**AZURE RESOURCE MANAGER (ARM):**
+
+Create, manage, update & delete Azure resources
+
+- Scope: Tenant < Management groups < Subscriptions < Resource Groups
+
+**JavaScript Object Notation (JSON):**
+
+ **Data Types**: string, number, object, array, Boolean, null
+
+- ﻿﻿**Data**: name/value pairs separated by comma's {"name1": value, "name2" ; value, "name3": value }
+
+- ﻿﻿**Arrays**: Square brackets [] :
+   { "array": ["value1", "value2", "value3"] }
+
+- **Objects**: Curly braces (} :
+
+  { "Objectname": {"name1": value, "array1":["arrval1, arrval2"]} }
+
+
+  **ARM TEMPLATE ELEMENTS:**
+
+  **$schema** - Specifies location of JSON schema file 
+
+  **contentVersion** - Defines the version of your template 
+
+  **resources** - Defines items you want to update or deploy 
+
+  **Optional**: parameters, variables, functions, outputs, apiProfile
+
+  ```
+  {
+  		"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
+  		"contentVersion": "1.0.0.0",
+  		"parameters": (),
+  		"variables": (},
+  		"resources": [],
+  		"outputs":
+  }
+  ```
+
+
+
+**NESTED TEMPLATES**
+
+- Template embedded within the main template
+
+```
+"resources": [
+
+	{
+		"name": "nestedTemplate",
+		"type": "Microsoft .Resources/deployments",
+		"apiVersion": "2021-04-01",
+		"properties": {
+			"mode": "Incremental",
+			"template": {
+				"$schema": "http://schema.management.azure.com/schemas/2015-01-
+					01/deploymentTemplate. json#".
+					"contentVersion": "1.0.0.0",
+					"parameters": 0},
+					"variables": (),
+					"resources": [],
+	},...
+```
+
+**LINKED TEMPLATES**
+
+- A template that can be included in another template as a resource via link
+
+**LINKED TEMPLATE:**
+
+```
+"resources": [
+		{
+			"name": "linkedTemplate",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2021-04-01",
+			"properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			"relativePath" : "linkedStorageAccount.json"
+			},...
+
+```
+
+**DEPLOYING ARM TEMPLATES**
+
+Azure portal, Azure CLI, Azure Cloudshell, Powershell, REST API
+
+**Powershell:**
+
+```New-AzResourceGroupDeployment New-AzSubscriptionDeployment
+New-AzResourceGroupDeployment 
+New-AzSubscriptionDeployment 
+New-AzManagementGroupDeployment
+New-Az TenantDeployment
+```
+
+**Azure CLI:**
+
+```
+az deployment group create 
+az deployment sub create 
+az deployment mg create 
+az deployment tenant create
+```
+
+# Lab Deploy ARM templates
+
+**Create Ubuntu Azure VM**
+
+1. Create ARM template
+
+   Goto Azure > Deploy a custom template > click Build your own template in the editor
+
+   ![image-20240520112517021](images/image-20240520112517021.png)
+
+2. Create new project
+
+   Project name: lab65
+
+3. Initialized Repo with README file.
+
+   Goto > Repos anand initialize
+
+4. Create new file name "armtemplate" in the new repository
+
+   ```
+   {
+       "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+       "contentVersion": "1.0.0.0",
+       "parameters": {
+           "az400vmName": {
+               "type": "string",
+               "minLength": 1
+           },
+           "az400vmAdminUserName": {
+               "type": "string",
+               "minLength": 1
+           },
+           "az400vmAdminPassword": {
+               "type": "securestring"
+           },
+           "az400vmUbuntuOSVersion": {
+               "type": "string",
+               "defaultValue": "18.04-LTS",
+               "allowedValues": [
+                   "18.04-LTS",
+                   "14.04.2-LTS",
+                   "15.04"
+               ]
+           },
+           "az400saType": {
+               "type": "string",
+               "defaultValue": "Standard_LRS",
+               "allowedValues": [
+                   "Standard_LRS",
+                   "Standard_ZRS",
+                   "Standard_GRS",
+                   "Standard_RAGRS",
+                   "Premium_LRS"
+               ]
+           }
+       },
+       "resources": [
+           {
+               "name": "[variables('az400vmNicName')]",
+               "type": "Microsoft.Network/networkInterfaces",
+               "location": "[resourceGroup().location]",
+               "apiVersion": "2015-06-15",
+               "dependsOn": [
+                   "[concat('Microsoft.Network/virtualNetworks/', 'az400vnet')]"
+               ],
+               "tags": {
+                   "displayName": "az400vmNic"
+               },
+               "properties": {
+                   "ipConfigurations": [
+                       {
+                           "name": "ipconfig1",
+                           "properties": {
+                               "privateIPAllocationMethod": "Dynamic",
+                               "subnet": {
+                                   "id": "[variables('az400vmSubnetRef')]"
+                               }
+                           }
+                       }
+                   ]
+               }
+           },
+           {
+               "name": "[parameters('az400vmName')]",
+               "type": "Microsoft.Compute/virtualMachines",
+               "location": "[resourceGroup().location]",
+               "apiVersion": "2015-06-15",
+               "dependsOn": [
+                   "[concat('Microsoft.Storage/storageAccounts/', variables('az400saName'))]",
+                   "[concat('Microsoft.Network/networkInterfaces/', variables('az400vmNicName'))]"
+               ],
+               "tags": {
+                   "displayName": "az400vm"
+               },
+               "properties": {
+                   "hardwareProfile": {
+                       "vmSize": "[variables('az400vmVmSize')]"
+                   },
+                   "osProfile": {
+                       "computerName": "[parameters('az400vmName')]",
+                       "adminUsername": "[parameters('az400vmAdminUsername')]",
+                       "adminPassword": "[parameters('az400vmAdminPassword')]"
+                   },
+                   "storageProfile": {
+                       "imageReference": {
+                           "publisher": "[variables('az400vmImagePublisher')]",
+                           "offer": "[variables('az400vmImageOffer')]",
+                           "sku": "[parameters('az400vmUbuntuOSVersion')]",
+                           "version": "latest"
+                       },
+                       "osDisk": {
+                           "name": "az400vmOSDisk",
+                           "vhd": {
+                               "uri": "[concat('http://', variables('az400saName'), '.blob.core.windows.net/', variables('az400vmStorageAccountContainerName'), '/', variables('az400vmOSDiskName'), '.vhd')]"
+                           },
+                           "caching": "ReadWrite",
+                           "createOption": "FromImage"
+                       }
+                   },
+                   "networkProfile": {
+                       "networkInterfaces": [
+                           {
+                               "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('az400vmNicName'))]"
+                           }
+                       ]
+                   }
+               }
+           },
+           {
+               "name": "[variables('az400saName')]",
+               "type": "Microsoft.Storage/storageAccounts",
+               "location": "[resourceGroup().location]",
+               "apiVersion": "2015-06-15",
+               "dependsOn": [],
+               "tags": {
+                   "displayName": "az400sa"
+               },
+               "properties": {
+                   "accountType": "[parameters('az400saType')]"
+               }
+           },
+           {
+               "name": "az400vnet",
+               "type": "Microsoft.Network/virtualNetworks",
+               "location": "[resourceGroup().location]",
+               "apiVersion": "2015-06-15",
+               "dependsOn": [],
+               "tags": {
+                   "displayName": "az400vnet"
+               },
+               "properties": {
+                   "addressSpace": {
+                       "addressPrefixes": [
+                           "[variables('az400vnetPrefix')]"
+                       ]
+                   },
+                   "subnets": [
+                       {
+                           "name": "[variables('az400vnetSubnet1Name')]",
+                           "properties": {
+                               "addressPrefix": "[variables('az400vnetSubnet1Prefix')]"
+                           }
+                       },
+                       {
+                           "name": "[variables('az400vnetSubnet2Name')]",
+                           "properties": {
+                               "addressPrefix": "[variables('az400vnetSubnet2Prefix')]"
+                           }
+                       }
+                   ]
+               }
+           }
+       ],
+       "variables": {
+           "az400vmImagePublisher": "Canonical",
+           "az400vmImageOffer": "UbuntuServer",
+           "az400vmOSDiskName": "az400vmOSDisk",
+           "az400vmVmSize": "Standard_D1",
+           "az400vmVnetID": "[resourceId('Microsoft.Network/virtualNetworks', 'az400vnet')]",
+           "az400vmSubnetRef": "[concat(variables('az400vmVnetID'), '/subnets/', variables('az400vnetSubnet1Name'))]",
+           "az400vmStorageAccountContainerName": "vhds",
+           "az400vmNicName": "[concat(parameters('az400vmName'), 'NetworkInterface')]",
+           "az400saName": "[concat('az400sa', uniqueString(resourceGroup().id))]",
+           "az400vnetPrefix": "10.0.0.0/16",
+           "az400vnetSubnet1Name": "Subnet-1",
+           "az400vnetSubnet1Prefix": "10.0.0.0/24",
+           "az400vnetSubnet2Name": "Subnet-2",
+           "az400vnetSubnet2Prefix": "10.0.1.0/24"
+       }
+   }
+   ```
+
+5. Create pipeline
+
+   Goto Pipeline > Releases > 
+
+   - Add an Artifact
+
+     - Source: Azure Reposiroty
+
+     ![image-20240520102412621](images/image-20240520102412621.png)
+
+   - Agent job
+
+     ![image-20240520103856877](images/image-20240520103856877.png)
+
+   - Add task
+
+     - ARM template deployment
+
+     ![image-20240520112350572](/Users/sherwinowen/my_doc/my_tutorials/azure/AZ-400: Designing and Implementing Microsoft DevOps Solutions/images/image-20240520112350572.png)
+
+   
+
+# Learn about configuration management
+
+**CONFIGURATION MANAGEMENT**
+
+- Automate the configuration and installation of software in a VM
+
+**CUSTOM SCRIPT EXTENSIONS:**
+
+Runs only once, downloads one or more scripts to be executed
+
+- ﻿﻿**Scripts must be accessible by the VM**: Azure Storage account or any other accessible internet location
+- ﻿﻿**Run**: ARM, Azure CLI, PowerShell, Azure portal
+- ﻿﻿OS:
+  - **Windows** - Custom Script Extension
+  - **Linux** - Custom Script For Linux
+
+**DESIRED STATE CONFIGURATION (DSC):**
+
+- ﻿﻿Can be integrated into Azure Automation State Configuration Service (cloud) or pull server (on-premises) to maintain state
+- ﻿﻿Built-in monitoring and reporting
+- ﻿﻿**Script**:
+  - ﻿﻿PS Script that starts with a "configuration" code block
+  - PS Script must be compiled to MOF file before applying
+- ﻿﻿**OS**:
+  - Windows - DSC
+  - Linux - DSCForLinux
+
+**AZURE AUTOMATION STATE CONFIGURATION:**
+
+- ﻿﻿Service that allows you to maintain your VMs in a consistent state
+- ﻿﻿Report & manage DSC configurations for clients in any cloud & on-prem DC
+- ﻿﻿Reporting data can be sent to Azure Monitor Logs to retain data >30 days
+- ﻿﻿Requirements:
+  - Azure automation account
+  - Import & compile configuration file
+  - ﻿Register VM
+  - Assign node configuration
+
+# Lab Use of custom script extension
+
+## Install Apache 
+
+1. Create simple bash script installing apache web server
+
+   ```
+   #!/bin/sh
+   sudo apt update -y
+   sudo apt upgrade -y
+   sudo apt install apache2 -y
+   ```
+
+1. Goto Virtual Machine 
+
+   - Goto Settings > Extensions + applications > Add Custom script for linux > Upload the bash script
+
+     ![image-20240520141719247](images/image-20240520141719247.png)
+
+1. Check extension status
+
+   ![image-20240520142119362](images/image-20240520142119362.png)
+
+1. Browse the public IP of the VM
+
+   ![image-20240520142242449](images/image-20240520142242449.png)
+
+
+
+# Lab Configure desired state configuration
+
+## Istall IIS Web Server in Windows VM
+
+1. Create Windows VM in Azure
+
+2. Create powershell script 
+
+   ```  
+   Configuration DscConfiguration {
+   
+       # The Node statement specifies which targets this configuration will be applied to.
+       Node 'localhost' {
+   
+           # The first resource block ensures that the Web-Server (IIS) feature is enabled.
+           WindowsFeature IISWebServer {
+               Ensure = "Present"
+               Name   = "Web-Server"
+           }
+       }
+   }
+   ```
+
+3. Compress powershell script using zip
+
+4. Goto Virtual Machine 
+
+   - Goto Settings > Extensions + applications > Add PowerShell Desired State Configuration > Upload the powelshell script zip file
+
+     ![image-20240520154253695](images/image-20240520154253695.png)
+
+5. Check if IIS is installed
+
+   ![image-20240520154821881](images/image-20240520154821881.png)
+
+
+
+# Lab Setup automation state configuration
+
+1. Goto Azure > Automation accounts > Click Create
+
+   ![image-20240520160427620](images/image-20240520160427620.png)
+
+2. Add configuration
+
+   - Goto Automation Account created > Configuration Management > State Configuration > Click Add 
+
+   ![image-20240520161153820](/Users/sherwinowen/my_doc/my_tutorials/azure/AZ-400: Designing and Implementing Microsoft DevOps Solutions/images/image-20240520161153820.png)
+
+3. Compile configuration
+
+   - Click the added configuration file and compile it
+
+   ![image-20240520161622843](images/image-20240520161622843.png)
+
+   - Click Compile
+
+   ![image-20240520161740169](images/image-20240520161740169.png)
+
+4. Check the compiled configuration
+
+   - Goto Automation Account > [AA Name] > Configuration Management > Compiled Configuration
+
+   ![image-20240520162553307](images/image-20240520162553307.png)
+
+5. Add node
+
+   - Goto Automation Account > [AA Name] > Configuration Management > Nodes > Click Add
+
+   ![image-20240520163045696](images/image-20240520163045696.png)
+
+6. Check nodes status
+
+   - Goto Automation Account > [AA Name] > Configuration Management > Nodes
+
+   ![image-20240520163341892](images/image-20240520163341892.png)
+
+# Learn about Azure App Configuration
+
+**AZURE APP CONFIGURATION:**
+
+- ﻿﻿Service that manages application settings and feature flags
+- ﻿﻿Allows you to define settings that can be shared among multiple apps
+- ﻿﻿Stores configuration data as key-value
+
+**SUPPORTS:**
+
+- ﻿﻿Hierarchical namespaces
+- ﻿﻿Labeling
+- ﻿﻿Extensive queries
+- ﻿﻿Feature management user interface
+
+# Lab Azure App Configuration
+
+1.   Goto Azure > App Configuration > Click Create app configuration
+
+
+
+# Setup release targets
+
+**SERVERS:**
+
+- ﻿﻿Physical/Virtual Machines; Windows/Linux OS
+- ﻿﻿Environments/Deployment groups: Grouping of target machines that represent different deployment environments (Dev, Prod, Test...)
+
+**VIRTUAL MACHINE SCALE SETS:**
+
+- Deploy and manage identical, autoscaling virtual machines
+  - **Create custom image task**: Azure VM Image Builder (YAML) / Build machine image (classic)
+
+**AZURE APP SERVICE:**
+
+- HTTP-based service for hosting web applications, REST APls and mobile backends.
+  - **Host**: Windows/Linux Web Apps, Docker Containers, Azure Functions
+
+**AZURE KUBERNETES SERVICE:**
+
+Open-source orchestration software for deploying, managing and scaling containers.
+
+- ﻿﻿**Manifest files**: deployment.yml & service.yml
+- ﻿﻿**Helm**: Package management solution that allows you to define, version, share, install and upgrade Kubernetes applications
+- ﻿﻿**Helm Charts**: The helm package that combines multiple Kubernetes manifests (yaml), such as service, deployments, configmaps, etc.
+
+
+
+# Lab Learn about deployment groups
+
+1. Create Windows VM in Azure
+
+2. Add Deployment group
+
+   Goto Azure Devops Project > Pipelines > Development groups
+
+   ![image-20240521103748871](images/image-20240521103748871.png)
+
+3. RDP to Windows VM and run the script
+
+   ![image-20240521105123512](images/image-20240521105123512.png)
+
+4. Check the status of the VM added to the Deployment group
+
+   ![image-20240521105857868](images/image-20240521105857868.png)
+
+5. Create New Release Pipeline
+
+   - Goto Pipeline > Releases > New Release pipeline
+
+   - Add Artifacts
+
+     ![image-20240521124432776](images/image-20240521124432776.png)
+
+   - Add a Deployment group job
+
+     ![image-20240521124636373](images/image-20240521124636373.png)
+
+   - Add task "IIS web app deploy"
+
+     ![image-20240521124953633](images/image-20240521124953633.png)
+
+6. Create release
+
+   ![image-20240521125527564](images/image-20240521125527564.png)
+
+
+
+# Lab Configure a virtual machine scale sets
+
+1. Create Virtual Machine Scale Set
+
+2. Create new project in Azure Devops
+
+   Project: lab73
+
+3. Initialized repository with README.md
+
+4. Create powershell script in the repository
+
+5. Create new pipeline release
+
+   - Goto >Project > Pipeline > Releases > New pipeline
+
+   - Add An Artifact
+
+     ![image-20240521151905140](images/image-20240521151905140.png)
+     
+   - Add task "Azure VM Scale set deplyment"
+
+     ![image-20240521162439319](images/image-20240521162439319.png)
+
+   - Add another task "Azure CLI"
+
+     ![image-20240521163418132](images/image-20240521163418132.png)
+
+6. Create Release
+
+
+
+# Learn About Azure App service
+
+1. Create Azure App Service
+
+   - Goto Azure > App Services > Click Create Web App
+
+2. Create new project in Azure Devops
+
+   - Project: lab74
+
+3. Create repository with README.md file
+
+4. Create Service Connection
+
+   - Goto Project Settings > Pipelines > Service Connections > 
+
+     Select Azure Resource Manager 
+
+     - Authentication method: Service Principal (automatic)
+
+     ![image-20240521181110843](images/image-20240521181110843.png)
+
+5. Create pipeline
+
+   - Connect: Azure Repos Git
+   - Select: lab74
+   - Configure: Starter pipeline
+
+
+   lab74/azure-pipelines.yml
+
+   ```
+   # Starter pipeline
+   # Start with a minimal pipeline that you can customize to build and deploy your code.
+   # Add steps that build, run tests, deploy, and more:
+   # https://aka.ms/yaml
+   
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   steps:
+   - task: CmdLine@2
+     inputs:
+       script: |
+         dotnet --version
+         mkdir AzureWebApp
+         cd AzureWebApp
+         dotnet new webapp -f net6.0
+         dotnet build --configuration 'Release'
+   
+   - task: DotNetCoreCLI@2
+     inputs:
+       command: 'publish'
+       publishWebProjects: true
+   
+   - task: AzureWebApp@1
+     inputs:
+       azureSubscription: 'az400-app-svc'
+       appType: 'webAppLinux'
+       appName: 'az400appsvc'
+       package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+   ```
+
+6. Run the pipeline
+
+   ![image-20240522083603881](images/image-20240522083603881.png)
+
+# Lab Set up Kubernetes
+
+1. Creare AKS cluster
+
+   - Create service principal
+
+     ```
+     az ad sp create-for-rbac --name aksclustersvcprincipal 
+     The output includes credentials that you must protect. Be sure that you do not include these credentials in your code or check the credentials into your source control. For more information, see https://aka.ms/azadsp-cli
+     {
+       "appId": "bf080cc5-f6b1-4601-b093-d3e16466fdd9",
+       "displayName": "aksclustersvcprincipal",
+       "password": "rKI8Q~QFwy5kizEeKJPl1kFn0wAMBqYzI2ooNcN5",
+       "tenant": "c710cb72-d86b-423a-ad42-9f4d6ed6dcb4"
+     }
+     ```
+
+     
+
+   
 
 
 
