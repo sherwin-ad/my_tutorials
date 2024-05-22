@@ -2984,14 +2984,7 @@ Open-source orchestration software for deploying, managing and scaling container
    - Create service principal
 
      ```
-     az ad sp create-for-rbac --name aksclustersvcprincipal 
-     The output includes credentials that you must protect. Be sure that you do not include these credentials in your code or check the credentials into your source control. For more information, see https://aka.ms/azadsp-cli
-     {
-       "appId": "bf080cc5-f6b1-4601-b093-d3e16466fdd9",
-       "displayName": "aksclustersvcprincipal",
-       "password": "rKI8Q~QFwy5kizEeKJPl1kFn0wAMBqYzI2ooNcN5",
-       "tenant": "c710cb72-d86b-423a-ad42-9f4d6ed6dcb4"
-     }
+     $ az ad sp create-for-rbac --name aksclustersvcprincipal 
      ```
 
      
