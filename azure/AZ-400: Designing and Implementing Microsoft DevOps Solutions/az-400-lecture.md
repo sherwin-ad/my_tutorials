@@ -2984,12 +2984,435 @@ Open-source orchestration software for deploying, managing and scaling container
    - Create service principal
 
      ```
-     $ az ad sp create-for-rbac --name aksclustersvcprincipal 
+   $ az ad sp create-for-rbac --name aksclustersvcprincipal 
      ```
 
-     
+   - Create AKS cluster
 
+     ```
+     az aks create --resource-group test_rg --name az400aks --service-principal [appId] --client-secret [password] --node-count 1 --node-vm-size standard_b2s --generate-ssh-keys
+     ```2. 
+     ```
+
+2. Create new project in Azure Devops
+
+   Project: lab75
+
+3. Create Service connectio
+
+   - Goto Project settings > Pipeline > Service connections > Select Azure Resource Manager > Service principal (automatic)
+
+     ![image-20240522092225724](images/image-20240522092225724.png)
+
+4. Create Azure Repos with README.md file and initialized
+
+5. Create deployment.yaml
+
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: myapp
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: myapp
+     template:
+       metadata:
+         labels:
+           app: myapp
+       spec:
+         containers:
+         - name: myapp
+           image: dockersamples/101-tutorial
+           ports:
+           - containerPort: 80
+   ---
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: myapp-svc
+   spec:
+     selector:
+       app: myapp
+     type: LoadBalancer # ClusterIP, NodePort, LoadBalancer, ExternalName
+     #  sessionAffinity: ClientIP
+     ports:
+     - port: 80
    
+   ```
+
+6. Create pipeline
+
+   Goto to Pipeline > Create pipeline
+
+   - Connect: Azure Repos Git
+   - Select: lab75
+   - Configure: Statrter pipeline
+
+   ```
+   trigger:
+   - main
+   
+   pool:
+     vmImage: ubuntu-latest
+   
+   steps:
+   - task: Kubernetes@1
+     inputs:
+       connectionType: 'Azure Resource Manager'
+       azureSubscriptionEndpoint: 'azure kubernetes service'
+       azureResourceGroup: 'test_rg'
+       kubernetesCluster: 'az400aks'
+       namespace: 'default'
+       command: 'apply'
+       arguments: '-f $(System.DefaultWorkingDirectory)/deployment.yaml'
+       secretType: 'dockerRegistry'
+       containerRegistryType: 'Azure Container Registry'
+   ```
+
+7. Run the pipeline
+
+8. Check the Worlload in AKS cluster "az400aks"
+
+   ![image-20240522111920121](images/image-20240522111920121.png)
+
+9. Check the Service and ingress in AKS cluster "az400aks"
+
+   ![image-20240522112210896](images/image-20240522112210896.png) 
+
+10. Browse the external IP in the Service
+
+    ![image-20240522112341076](images/image-20240522112341076.png)
+
+
+
+# Test your application
+
+**AZURE DEVOPS TEST PLANS:**
+
+- Service in Azure DevOps to perform application testing
+
+**MANUAL & EXPLORATORY TESTING**
+
+- Tests carried out by designated testers, developers, users to gather feedback and improve the overall quality of the application
+
+- ﻿﻿**Microsoft test runner**: Run manual tests, record test results, screenshots video & voice
+- ﻿﻿**Test & Feedback extension**: Install in Edge, Firefox, Chrome to test web applications. Captures screen, load data, create bugs.
+
+**AUTOMATED TESTING (UI/FUNCTIONAL)**
+
+Tests that help us ensure application is working as expected
+
+- ﻿﻿**Visible Ul**: Agent must be preconfigured with browsers and web-driver versions. App must be in focus for keyboard and mouse events to work
+- ﻿﻿**Headless**: No visible Ul components. Tests can run in parallel
+- ﻿﻿**Tools**: Selenium, Appium, Coded Ul Test, and more
+
+**REPORTING AND ANALYSIS**
+
+Configurable test charts, progress report, test runs, dashboard widgets and test analytics
+
+- ﻿﻿Progress report: review and track testing progress
+- ﻿﻿Analytics extension: Identify patterns and summary of failures
+
+
+
+# Lab Learn about manual and exploratory testing
+
+
+
+# Design and implement a release strategy
+
+**Deployment job/Deployment group job**: Collection of steps that run sequentially against an environment/deployment group.
+
+**RUN ONCE:**
+
+- All deployment steps are executed once.
+
+**ROLLING:**
+
+- Replaces previous versions of an application with a new one iteratively in fixed sets of virtual machines.
+
+**CANARY:**
+
+- New version is deployed in a small subset of machines so that both versions coexist (both are prod) and can be compared in order to proceed with a complete rollout or reject the change and rollback.
+
+**BLUE/GREEN:**
+
+- Set up and run different instances of your application that can be swapped.
+
+- Deployment slots: Azure app service feature that allows you to setup different instances (environments) in slots that can be swapped/toggled on demand.
+
+**TRAFFIC MANAGER**
+
+Directs traffic with DNS based on a routing method:
+
+- ﻿﻿**Priority**: Primary service endpoint for all traffic and others as backup
+- ﻿﻿**Weighted**: Distribute traffic across endpoints based on weight
+- ﻿﻿**Performance**: Lower latency to user by routing to closest endpoint
+- ﻿﻿**Geographic**: Direct users to geographic region based on their location
+
+
+
+# Lab Setup rolling deployment
+
+1. Create Virtual Machines
+2. Add Virtual Machines in the Deployment group
+3. Create new relear pipeline
+   - Goto Pipeline > Releases > Click New release pipeline
+   - Select Template: Rolling Deployment on Windows Vrtual Machines
+
+
+
+# Lab Configure Canary deployment
+
+1. Create Virtual Machines
+2. Add Virtual Machines in the Deployment group
+   - Put "Canary" and "Prod" tags in the VMs 
+3. Create new relear pipeline
+   - Goto Pipeline > Releases > Click New release pipeline
+   - Select Template: Canary Deployment on Windows Vrtual Machines
+
+
+
+# Lab Learn about blue green deplyment
+
+
+
+# Understand Site Reliability Engineering
+
+**SITE RELIABILITY ENGINEERING**
+
+- Discipline focused on maintaining system and application reliability by reducing downtime and latency/slowness
+
+**AZURE SERVICE HEALTH**
+
+Set of services that provide information about the health of the Azure services and regions
+
+- ﻿﻿**Active events**: Lists current & upcoming issues, health advisories and security advisories
+- ﻿﻿**History**: Lists previous events (<=90 days)
+- ﻿﻿**Resource health**: Status of individual cloud resources you are using
+- ﻿﻿**Health alerts**: Notifications that inform you of resource availability changes
+- ﻿﻿**Queries**: Azure Service health can be queried with Azure Resource Graph
+
+**AZURE STATUS PAGE**
+
+Provides global view of the health of Azure services and regions https://status.azure.com/en-us/status
+
+
+
+# Lab Azure Service Health
+
+**Service Health**
+
+![image-20240522183558998](images/image-20240522183558998.png)
+
+**AZURE STATUS PAGE**
+
+![image-20240522183746920](images/image-20240522183746920.png)
+
+
+
+# Learn About elasticity and load balancing
+
+**ELASTICITY:**
+
+Bringing more resources online to improve performance and throughput as well as bringing them offline when no longer needed
+
+- ﻿﻿**Scale-out (horizontal)**: Provisioning additional resources
+- ﻿﻿**Scale-up (vertical)**: Provisioning larger resources
+
+**AUTO-SCALING:**
+
+Automatically scale based on predefined metrics or schedule
+
+- ﻿﻿**Metrics-based**: Scales resources based on monitored metrics such as cpu/memory utilization. Ideal for unpredictable loads
+- ﻿**Time-based**: Scale resources on a predetermined schedule where loads fluctuate in a predictable manner.
+
+**LOAD BALANCER**
+
+Distributes client traffic from a single IP address (front-end) to a set of healthy addresses (back-end) running an instance of your application.
+
+- ﻿﻿**Internal LB**: Traffic distributed within a Vnet, no incoming internet traffic
+- ﻿﻿**Public LB**: Distributes internet traffic across backend through a Public IP
+
+**TRAFFIC DISTRIBUTION MODES**
+
+- ﻿﻿**Session persistence (Source IP affinity)**: same client routed to same backend instance. Can be source IP based or source IP + protocol
+- ﻿﻿**Hash based**: same client IP routed to any healthy backend instance
+
+SKUs
+
+- ﻿﻿**Basic SKU**: TCP/HTTP Health probes, Open by default, NIC based backend
+- ﻿﻿**Standard SKU**: Basic + HTTPS Health probe, NIC & IP based backend, secure by default, diagnostics/metrics support
+
+# Learn about scaleset
+
+**LOAD BALANCER HEALTH PROBES**
+
+Detect the failure of an application on a backend endpoint.
+
+- ﻿﻿**TCP Listener Probe**: Failed based on number of unhealthy responses
+- ﻿﻿**HTTP(S) endpoint Probe**: Failed based on HTTP Status code not = 200
+
+**CONTAINER LIVENESS PROBES**
+
+Detect and restart containers in an unhealthy state
+
+\- **Containers Properties Object**: livenessProbe
+
+**CONTAINER READINESS PROBES**
+
+Prevents a container from being accessed under certain conditions.
+
+\- **Containers Properies Object**: readinessProbe
+
+**CONTAINERPROBE OBJECT PROPERTIES**
+
+- ﻿﻿**exec**: The execution command to probe
+- ﻿﻿**httpGet**: The HTTP get settings to probe
+- ﻿﻿**initialDelaySeconds**: The initial delay seconds
+
+- ﻿﻿periodSeconds: the period seconds
+- ﻿﻿failureThreshold: The failure threshold
+- ﻿﻿successThreshold: The success threshold
+- ﻿﻿timeoutSeconds: The timeout seconds
+
+CONTAINER LIVENESS PROBES:
+
+```
+apiVersion: 2019-12-01
+location: eastus 
+name: livenesstest 
+properties:
+  containers:
+  - name: myContainer 
+    properties:
+      ... 
+      livenessProbe:
+         exec:
+            command: 
+         periodSeconds:
+```
+
+
+
+**APPLICATION HEALTH EXTENSION**
+
+- Monitors the application health of each instance in a scale set
+- Reports health within a VM
+- Mainly used in situations where Azure Load balancer probes cannot be used
+  - **Deploy**: REST API, Azure CLI and Powershell
+
+
+
+# Learn about Azure Monitor
+
+Review application performance, identify issues across applications and dependencies.
+
+**AZURE MONITOR DATA TYPES**
+
+- ﻿﻿**Metrics**: Numerical values collected at regular intervals
+- ﻿﻿**Logs**: Time-stamped events that occur within the system
+
+**DATA SOURCES**
+
+- ﻿﻿**Application**: Performance/functionality of your code
+- ﻿﻿**Guest OS**: Multi-Cloud/On-premises OS data
+- ﻿﻿**Azure resources**: Operation of Azure resources
+- ﻿﻿**Azure subscription**: Management of Azure subscription
+- ﻿﻿**Azure tenant**: Tenant-level Azure resources
+- ﻿﻿**Custom sources**: REST CLIENT with Data Collector API
+
+**ALERTS**
+
+- Notification of issues/critical conditions & take action with action groups
+
+
+
+**DATA STORAGE**
+
+- ﻿﻿**Metrics**: Azure Monitor Metrics Database
+- ﻿﻿**Logs**: Log Analytics workspace
+- ﻿﻿**Stream**: Azure Event hubs
+
+**INSIGHTS**
+
+- ﻿﻿**Application**: Web application availability, performance, errors & usage
+- ﻿﻿**Container**: AKS, controller, node and container metrics & container logs
+- ﻿﻿**VM**: Multi-Cloud/On-premises VM performance & health
+
+**VISUALIZATIONS**
+
+- ﻿﻿**Dashboards**: Combine different kinds of data and visualize it with graphs, tables, charts and more within a single pane.
+- ﻿﻿**Workbooks**: Interactive canvas for data analysis and rich visual reports
+- ﻿﻿**PowerBI**: Business analytics service with interactive visualizations. Make data available to others within & outside of your organization.
+
+**THIRD-PARTY MONITORING TOOLS**
+
+- ﻿﻿**Prometheus**: Open-source monitoring and alerting. Scrapes and stores metrics
+- ﻿﻿**New** **Relic**: Application/Mobile/Browser/Infrastructure agent. Sends data to a central hub. Generates reports, alerts, dashboards and service map.
+- ﻿﻿**Sumo Logic**: Agentless monitoring tool, gathers logs from specified directories
+
+
+
+# Lab Azure Monitor Overview
+
+1. Goto Monitor
+
+
+
+# Learn about logging and metrics
+
+**LOG ANALYTICS WORKSPACE**
+
+Logs Storage. Contains multiple tables to store and retrieve logs.
+
+- ﻿﻿**Sources**: Azure resources, on-prem computers monitored by SCOM, device collections from configuration manager, Azure storage diagnostics/log data
+- ﻿﻿**Data Retention**: 30 - 730 days
+
+**LOG ANALYTICS**
+
+- Edit and run log queries from Azure Monitor logs data
+
+**KUSTO QUERY LANGUAGE (KQL)**
+
+Request and process data from the log store.
+
+- ﻿﻿Query statements separated by ; (semicolon)
+- ﻿﻿A simple query just specifies a source; you can add operators for complex queries:
+
+```
+- Event
+|I where RenderedDescription contains "started"
+|summarize count() by EventID
+|I render columnchart
+```
+
+
+
+**MOST USED KQL OPERATORS**
+
+- ﻿﻿count: counts records
+- ﻿﻿summarize: groups rows
+- ﻿﻿distinct: distinct combination of provided columns
+- ﻿﻿join: merges rows of two tables
+- ﻿﻿union: takes two or more tables and returns their rows
+- ﻿﻿render: renders graphical output
+
+**AZURE MONITOR METRIC DATABASE**
+
+Stores metrics in a time-series database
+
+- ﻿﻿**Sources**: Azure resources, applications, virtual machine agents, custom metrics
+- ﻿﻿**Properties**: Time, resource, namespace, metric name, value/multi
+
+**METRICS EXPLORER**
+
+Interactively analyze metrics data and create charts
+
+- **Data Retention**: 93 days (send to Log Analytics Workspace for long term)
 
 
 
