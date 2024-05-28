@@ -1094,9 +1094,85 @@ $ docker network inspect owen-network
 
 
 
-## NODE
+# Nginx
 
-### Express
+index.html
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+</head>
+<body>
+    <h1>Hello from the First Nginx!</h1>
+</body>
+</html>
+```
+
+```
+$ docker run -it -v $PWD:/usr/share/nginx/html -p 80:80 -d nginx
+```
+
+
+
+# Python
+
+hello-world.py
+
+```
+print('Hello from the Python container')
+```
+
+```
+$ docker run -it -v $PWD:/app -w /app python python3 hello-world.py
+Hello from the Python container
+```
+
+aalendar-app.py
+
+```
+import calendar
+
+print('Welcome to the Calendar application!')
+
+year = int(input('Please enter any year:'))
+month = int(input('Please enter any month number:'))
+
+print(calendar.month(year, month))
+
+print('Have a nice day!')
+```
+
+```
+$ docker run -it -v $PWD:/app -w /app python python3 calendar-app.py
+Welcome to the Calendar application!
+Please enter any year:1976
+Please enter any month number:11
+   November 1976
+Mo Tu We Th Fr Sa Su
+ 1  2  3  4  5  6  7
+ 8  9 10 11 12 13 14
+15 16 17 18 19 20 21
+22 23 24 25 26 27 28
+29 30
+
+Have a nice day!
+```
+
+
+
+# Node
+
+## Express
+
+- Add handling of the SIGINT and SIGTERM signals
 
 index.js
 
@@ -1122,9 +1198,146 @@ app.get('/', function (req, res) {
 app.listen(3000)
 ```
 
+```
+docker run -v$PWD:/app -w /app -it node npm init
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
 
+See `npm help init` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (app)
+version: (1.0.0)
+description:
+git repository:
+keywords:
+author:
+license: (ISC)
+About to write to /app/package.json:
+
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {},
+  "description": ""
+}
+
+
+Is this OK? (yes)
+
+npm notice
+npm notice New minor version of npm available! 10.7.0 -> 10.8.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v10.8.0
+npm notice To update run: npm install -g npm@10.8.0
+npm notice
+```
+
+```
+$ docker run -v $PWD:/app -w /app node npm install express
+```
 
 ```
 $ docker run -it -p 3000:3000 -v $PWD:/app -w /app node node index.js
+```
+
+
+
+file/index.js
+
+```
+const fs = require('fs')
+const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout
+})
+
+readline.question('Enter filename: ', filename => {
+    readline.question('Enter some text: ', text => {
+        fs.writeFile(`${filename}.txt`, text, err => {
+            if (err) throw err
+            console.log('File was created')
+            readline.close()
+        })
+    })
+})
+```
+
+```
+docker run -it -v $PWD:/app -w /app node node index.js
+Enter filename: myfile
+Enter some text: Hey there
+File was created
+```
+
+
+
+# Mongodb
+
+Start a mongo server instance
+
+```console
+$ docker run --name some-mongo -d mongo
+```
+
+Connect to MongoDB  Docker container
+
+```
+$ docker exec -it some-mongo  mongosh
+sherwinowen@Owen-MBA ~ % docker exec -it some-mongo  mongosh
+Current Mongosh Log ID:	66551cda6fa851438099ea71
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.2.5
+Using MongoDB:		7.0.9
+Using Mongosh:		2.2.5
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2024-05-27T23:50:41.721+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2024-05-27T23:50:42.862+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2024-05-27T23:50:42.863+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never' in this binary version
+   2024-05-27T23:50:42.863+00:00: vm.max_map_count is too low
+------
+test> db.version()
+7.0.9
+test> show dbs
+admin   40.00 KiB
+config  12.00 KiB
+local   40.00 KiB
+test> db.animals.insert({"animal": "cat"})
+DeprecationWarning: Collection.insert() is deprecated. Use insertOne, insertMany, or bulkWrite.
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('66551da26fa851438099ea72') }
+}
+test> db.animals.insert({"animal": "dog"})
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('66551ddc6fa851438099ea73') }
+}
+test> db.animals.insert({"animal": "monkey"})
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('66551dee6fa851438099ea74') }
+}
+test> db.animals.find()
+[
+  { _id: ObjectId('66551da26fa851438099ea72'), animal: 'cat' },
+  { _id: ObjectId('66551ddc6fa851438099ea73'), animal: 'dog' },
+  { _id: ObjectId('66551dee6fa851438099ea74'), animal: 'monkey' }
+]
 ```
 
