@@ -901,7 +901,61 @@ RewriteCond %{REQUEST_METHOD} !=POST
 RewriteRule .* /error/405.html [R=405,L] 
 ```
 
+## Configure Apache to allow/restrict certain HTTP methods or verbs
 
+To restrict HTTP methods in Apache servers, we need to modify the apache configuration file for your website or virtual host. In Apache servers, this is typically the `.htaccess` file located in the (web) root directory of your website. If you do not have this file, you can create it by executing this command:
+
+```
+$ sudo touch /var/www/domain.com/public_html/.htaccess
+```
+
+To restrict HTTP methods in apache, you will need to use the `Limit `directive. This directive allows you to specify which methods should be allowed and denied. For example, to allow only GET and PUT methods, you would use the following configuration:
+
+```
+<Limit GET PUT>
+    Order allow,deny
+    Allow from all
+</Limit>
+```
+
+To restrict all HTTP methods except for GET and PUT, you would use the following configuration:
+
+```
+<LimitExcept GET PUT>
+    Order deny,allow
+    Deny from all
+</LimitExcept>
+```
+
+It is very important to note that the `Limit `and `LimitExcept `directives apply to all resources on the server, not just for a specific file or directory.
+
+### Commands:
+
+In addition to modifying the Apache configuration file, you can also use the following Apache commands to restrict HTTP methods:
+
+- `mod_rewrite`: This Apache module allows you to rewrite URLs based on certain rules. To restrict HTTP methods using `mod_rewrite`, you can use the following rule in your server config:
+
+```
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} !^(GET|PUT)$
+RewriteRule .* - [F]
+```
+
+This rule will block all requests which is not a GET or PUT method.
+
+- `mod_authz_host`: This module allows you to control access to resources based on hostname, IP address, and other factors. To restrict HTTP methods using `mod_authz_host`, you can use the following configuration:
+
+```
+<Location />
+    Order allow,deny
+    Allow from all
+    <Limit GET PUT>
+        Allow from all
+    </Limit>
+</Location>
+```
+
+This configuration will allow all GET and PUT methods, but block all other HTTP request methods.
 
 # Cache-Control Header
 
