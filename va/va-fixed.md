@@ -876,6 +876,8 @@ This example is written using the netcat package from openbsd (standard with mos
 
 If you are able to analyze your application via simple HTTP status codes (200 OK, 501 Error, etc) - then the following bash script will test all available HTTP methods.
 
+http-verb.tamper.sh
+
 ```
 #!/bin/bash
 
@@ -887,6 +889,14 @@ printf "$webservmethod / HTTP/1.1\nHost: $1\n\n" | nc -q 1 $1 80 | grep "HTTP/1.
 
 done
 ```
+
+```
+./http-verb.tamper.sh tpb.gov.ph
+GET POST PUT TRACE HTTP/1.1 405 Not Allowed
+CONNECT OPTIONS PROPFIND
+```
+
+
 
 ## Limit HTTP VERBS on Apache2
 
