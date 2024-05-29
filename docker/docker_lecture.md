@@ -1286,13 +1286,13 @@ File was created
 
 # Mongodb
 
-Start a mongo server instance
+**Start a mongo server instance**
 
 ```console
 $ docker run --name some-mongo -d mongo
 ```
 
-Connect to MongoDB  Docker container
+**Connect to MongoDB  Docker container**
 
 ```
 $ docker exec -it some-mongo  mongosh
@@ -1339,5 +1339,67 @@ test> db.animals.find()
   { _id: ObjectId('66551ddc6fa851438099ea73'), animal: 'dog' },
   { _id: ObjectId('66551dee6fa851438099ea74'), animal: 'monkey' }
 ]
+```
+
+
+
+**Start mongodb container with volume**
+
+```
+$ docker run -d --name owen-mongo -v $PWD/db:/data/db mongo
+```
+
+**Connect to MongoDB  Docker container**
+
+```
+docker exec -it owen-mongo bash
+root@ab5cdd72b2c5:/# mongosh
+Current Mongosh Log ID:	66566e2af3313fc4c199ea71
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.2.5
+Using MongoDB:		7.0.9
+Using Mongosh:		2.2.5
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+
+To help improve our products, anonymous usage data is collected and sent to MongoDB periodically (https://www.mongodb.com/legal/privacy-policy).
+You can opt-out by running the disableTelemetry() command.
+
+------
+   The server generated these startup warnings when booting
+   2024-05-28T23:50:54.732+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2024-05-28T23:50:54.734+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never' in this binary version
+   2024-05-28T23:50:54.737+00:00: vm.max_map_count is too low
+------
+
+test> use mydb
+switched to db mydb
+mydb> show dbs
+admin   40.00 KiB
+config  12.00 KiB
+local   40.00 KiB
+mydb> db.posts.insert({"post": "Hey there"})
+DeprecationWarning: Collection.insert() is deprecated. Use insertOne, insertMany, or bulkWrite.
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('66566e79f3313fc4c199ea72') }
+}
+mydb> db.posts.insert({"post": "How are you?"})
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('66566e9ff3313fc4c199ea73') }
+}
+mydb> db.posts.insert({"post": "Doing well"})
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('66566eaaf3313fc4c199ea74') }
+}
+mydb> db.posts.find()
+[
+  { _id: ObjectId('66566e79f3313fc4c199ea72'), post: 'Hey there' },
+  { _id: ObjectId('66566e9ff3313fc4c199ea73'), post: 'How are you?' },
+  { _id: ObjectId('66566eaaf3313fc4c199ea74'), post: 'Doing well' }
+]
+mydb> exit
 ```
 
