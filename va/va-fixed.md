@@ -967,6 +967,23 @@ This rule will block all requests which is not a GET or PUT method.
 
 This configuration will allow all GET and PUT methods, but block all other HTTP request methods.
 
+```
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block all HTTP methods
+    RewriteCond %{REQUEST_METHOD} ^(OPTIONS|HEAD|PUT|DELETE|TRACE|CONNECT|PATCH|PROPFIND|PROPPATCH|MKCOL|COPY|MOVE|LOCK|UNLOCK)$ [NC]
+    RewriteRule .* - [F,L]
+
+    # Allow specific HTTP methods
+    <Limit GET POST>
+        Require all granted
+    </Limit>
+</IfModule>
+```
+
+
+
 # Cache-Control Header
 
 Cache-Control, in simple terms, is a set of instructions used by websites to tell web browsers and other services how to store and manage the website's content. These instructions help websites load faster, save internet bandwidth, and ensure users see the most recent version of the content.
@@ -1166,6 +1183,56 @@ Add this code at the bottom of the .htaccess file to turn off caching. Delete th
     </IfModule>
 </FilesMatch>
 ```
+
+
+
+## Disable caching in WHM
+
+1. **Log in to WHM**:
+
+- Access your WHM control panel.
+
+2. **Access Apache Configuration**:
+
+- Go to **Service Configuration** > **Apache Configuration** > **Include Editor**.
+
+3. **Add Custom Configuration**:
+
+- There are different sections where you can add custom configurations: Pre Main Include, Post Main Include, Pre VirtualHost Include, Post VirtualHost Include.
+- Choose the appropriate section (e.g., **Pre VirtualHost Include** for all virtual hosts or specific IPs).
+
+4. **Add the Header Directives**:
+
+- In the appropriate section, add your custom `Header` directives.
+
+```
+apache
+Copy code
+<IfModule mod_headers.c>
+    # Set Cache-Control and Pragma headers for sensitive pages
+    <FilesMatch "\.(html|htm|php)$">
+        Header set Cache-Control "no-store"
+        Header set Pragma "no-cache"
+    </FilesMatch>
+
+    # General caching rules
+    # Cache images for 1 week
+    <FilesMatch "\.(jpg|jpeg|png|gif|ico)$">
+        Header set Cache-Control "max-age=604800, public"
+    </FilesMatch>
+
+    # Cache CSS and JavaScript files for 1 week
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "max-age=604800, public"
+    </FilesMatch>
+</IfModule>
+```
+
+5. **Restart Apache**:
+
+
+
+
 
 # Secure cookie with HttpOnly and Secure flag in Apache
 

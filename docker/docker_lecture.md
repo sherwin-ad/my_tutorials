@@ -1403,3 +1403,228 @@ mydb> db.posts.find()
 mydb> exit
 ```
 
+
+
+# Wordpress 
+
+## Network and communication between containers
+
+**Run 2 busybox containers**
+
+**busybox1 container**
+
+````
+$ docker run -it --name busybox1 busybox
+/ # hostname -i
+172.17.0.2
+/ # ping 172.17.0.3
+PING 172.17.0.3 (172.17.0.3): 56 data bytes
+64 bytes from 172.17.0.3: seq=0 ttl=64 time=2.405 ms
+64 bytes from 172.17.0.3: seq=1 ttl=64 time=1.217 ms
+64 bytes from 172.17.0.3: seq=2 ttl=64 time=0.425 ms
+64 bytes from 172.17.0.3: seq=3 ttl=64 time=0.514 ms
+64 bytes from 172.17.0.3: seq=4 ttl=64 time=0.718 ms
+^C
+--- 172.17.0.3 ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 0.425/1.055/2.405 ms
+````
+
+**busybox2 container**
+
+```
+$ docker run -it --name busybox2 busybox
+/ # hostname -i
+172.17.0.3
+/ # ping 172.17.0.2
+PING 172.17.0.2 (172.17.0.2): 56 data bytes
+64 bytes from 172.17.0.2: seq=0 ttl=64 time=2.162 ms
+64 bytes from 172.17.0.2: seq=1 ttl=64 time=0.217 ms
+64 bytes from 172.17.0.2: seq=2 ttl=64 time=0.243 ms
+64 bytes from 172.17.0.2: seq=3 ttl=64 time=0.605 ms
+64 bytes from 172.17.0.2: seq=4 ttl=64 time=0.276 ms
+^C
+--- 172.17.0.2 ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 0.217/0.700/2.162 ms
+```
+
+## Exploring environment variables
+
+```
+$ docker run -it busybox
+/ # env
+HOSTNAME=b6de0e65fccf
+SHLVL=1
+HOME=/root
+TERM=xterm
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/
+```
+
+```
+$ docker exec b6de0e65fccf env
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=b6de0e65fccf
+HOME=/root
+```
+
+# Mysql container with environment variable
+
+```
+$ docker run mysql
+2024-05-29 23:52:53+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.0-1.el9 started.
+2024-05-29 23:52:53+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+2024-05-29 23:52:53+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.0-1.el9 started.
+2024-05-29 23:52:54+00:00 [ERROR] [Entrypoint]: Database is uninitialized and password option is not specified
+    You need to specify one of the following as an environment variable:
+    - MYSQL_ROOT_PASSWORD
+    - MYSQL_ALLOW_EMPTY_PASSWORD
+    - MYSQL_RANDOM_ROOT_PASSWORD
+```
+
+```
+$ docker run -e MYSQL_ROOT_PASSWORD=Abcd@1234 mysql
+```
+
+```
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS                 NAMES
+7b0b324da3f6   mysql     "docker-entrypoint.s…"   40 seconds ago   Up 39 seconds   3306/tcp, 33060/tcp   crazy_lamarr
+```
+
+```
+docker exec 7b0b324da3f6 env
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=7b0b324da3f6
+MYSQL_ROOT_PASSWORD=Abcd@1234
+GOSU_VERSION=1.17
+MYSQL_MAJOR=8.4
+MYSQL_VERSION=8.4.0-1.el9
+MYSQL_SHELL_VERSION=8.4.0-1.el9
+HOME=/root
+```
+
+# Launching phpMyAdmin container
+
+```
+$ docker run -d -p 8080:80 phpmyadmin/phpmyadmin
+```
+
+```
+$ docker ps
+CONTAINER ID   IMAGE                   COMMAND                  CREATED          STATUS          PORTS                  NAMES
+9eb307f504e8   phpmyadmin/phpmyadmin   "/docker-entrypoint.…"   6 seconds ago    Up 5 seconds    0.0.0.0:8080->80/tcp   jolly_matsumoto
+7b0b324da3f6   mysql                   "docker-entrypoint.s…"   32 minutes ago   Up 32 minutes   3306/tcp, 33060/tcp    crazy_lamarr
+```
+
+![image-20240530084744484](images/image-20240530084744484.png)
+
+# Connecting phpmyadmin to mysql container
+
+Run phpmyadmin container
+
+- Get the IP of the mysql container
+
+  ```
+  $ docker inspect (mysql container)
+  ```
+
+  
+
+```
+$ docker run -p 8080:80 -d -e PMA_HOST=172.17.0.2 phpmyadmin/phpmyadmin
+```
+
+![image-20240530173433380](images/image-20240530173433380.png)
+
+
+
+# Creating busybox containers in the custom network
+
+Create new custom bridge network
+
+```
+$ docker network create custom
+```
+
+Run 2 busybox container
+
+```
+$ docker run -it --network custom busybox
+/ # hostname -i
+172.18.0.2
+/ # hostname
+4a1e566d6c77
+/ # ping 4ffaaaee9986
+PING 4ffaaaee9986 (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=1.322 ms
+64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.279 ms
+64 bytes from 172.18.0.3: seq=2 ttl=64 time=0.136 ms
+64 bytes from 172.18.0.3: seq=3 ttl=64 time=0.161 ms
+64 bytes from 172.18.0.3: seq=4 ttl=64 time=1.875 ms
+64 bytes from 172.18.0.3: seq=5 ttl=64 time=0.201 ms
+64 bytes from 172.18.0.3: seq=6 ttl=64 time=1.142 ms
+64 bytes from 172.18.0.3: seq=7 ttl=64 time=0.205 ms
+^C
+--- 4ffaaaee9986 ping statistics ---
+8 packets transmitted, 8 packets received, 0% packet loss
+round-trip min/avg/max = 0.136/0.665/1.875 ms
+```
+
+
+
+```
+$ docker run -it --network custom busybox
+/ # hostname -i
+172.18.0.3
+/ # hostname
+4ffaaaee9986
+/ # ping 4a1e566d6c77
+PING 4a1e566d6c77 (172.18.0.2): 56 data bytes
+64 bytes from 172.18.0.2: seq=0 ttl=64 time=2.495 ms
+64 bytes from 172.18.0.2: seq=1 ttl=64 time=0.162 ms
+64 bytes from 172.18.0.2: seq=2 ttl=64 time=0.328 ms
+64 bytes from 172.18.0.2: seq=3 ttl=64 time=0.552 ms
+64 bytes from 172.18.0.2: seq=4 ttl=64 time=0.217 ms
+^C
+--- 4a1e566d6c77 ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 0.162/0.750/2.495 ms
+/ #
+```
+
+
+
+# Using custom persistent names for connectivity in the custom network
+
+Run 2 busybox container
+
+```
+$ docker run -it --network custom --name busybox1 busybox
+/ # hostname
+2c7207152f48
+/ # ping busybox2
+PING busybox2 (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=2.012 ms
+64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.380 ms
+64 bytes from 172.18.0.3: seq=2 ttl=64 time=0.203 ms
+64 bytes from 172.18.0.3: seq=3 ttl=64 time=3.536 ms
+64 bytes from 172.18.0.3: seq=4 ttl=64 time=0.356 ms
+```
+
+
+
+```
+$ docker run -it --network custom --name busybox2 busybox
+/ # hostname
+f16bc2f58dcd
+/ # ping busybox1
+PING busybox1 (172.18.0.2): 56 data bytes
+64 bytes from 172.18.0.2: seq=0 ttl=64 time=1.055 ms
+64 bytes from 172.18.0.2: seq=1 ttl=64 time=0.646 ms
+64 bytes from 172.18.0.2: seq=2 ttl=64 time=0.443 ms
+```
+
+
+
