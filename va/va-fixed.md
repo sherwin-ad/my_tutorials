@@ -1,3 +1,60 @@
+# SSL/TLS Weak Cipher Suites Supported
+
+### To disable weak ciphers in Cloudflare and ensure that only secure ciphers are used, follow these steps:
+
+### 1. Log in to Cloudflare
+
+1. Go to [Cloudflare's website](https://www.cloudflare.com/) and log in to your account.
+
+### 2. Select Your Site
+
+1. From the dashboard, select the site you want to configure.
+
+### 3. Navigate to SSL/TLS Settings
+
+1. Click on the **SSL/TLS** tab at the top of the dashboard.
+
+### 4. Configure SSL/TLS Settings
+
+1. **Edge Certificates:** Select the **Edge Certificates** section.
+2. **Minimum TLS Version:**
+   - Set the minimum TLS version to TLS 1.2 or TLS 1.3.
+   - TLS 1.3 is the most secure and recommended if all your clients support it.
+3. **Cipher Suites:**
+   - Cloudflare automatically enables strong ciphers by default. However, you can review and ensure that weak ciphers are not enabled.
+4. **Disable Opportunistic Encryption:** (Optional, depending on your use case)
+   - You can also disable opportunistic encryption to ensure strict control over the ciphers used.
+
+### 5. Advanced Certificate Management (For Enterprise Plans)
+
+If you have an Enterprise plan, you can gain more granular control over the cipher suites:
+
+1. SSL/TLS Custom Cipher Suite Preference:
+   - In the **Advanced Certificate Management** section, you can customize the cipher suite preferences.
+
+### Example Cipher Suite Configuration
+
+For maximum security, you should aim to use strong cipher suites like those recommended by industry standards. Here’s an example of strong cipher suites that are typically used:
+
+```
+ECDHE-ECDSA-AES128-GCM-SHA256
+ECDHE-RSA-AES128-GCM-SHA256
+ECDHE-ECDSA-AES256-GCM-SHA384
+ECDHE-RSA-AES256-GCM-SHA384
+DHE-RSA-AES128-GCM-SHA256
+DHE-RSA-AES256-GCM-SHA384
+```
+
+### Verifying the Configuration
+
+After configuring your settings, it's important to verify that weak ciphers are indeed disabled. You can use tools like SSL Labs' SSL Test:
+
+1. Go to SSL Labs SSL Test.
+2. Enter your domain name and start the test.
+3. Review the report to ensure that weak ciphers and protocols are not supported.
+
+
+
 # SSL/TLS Settings
 
 ## Test your SSL/TLS Settings
@@ -1563,6 +1620,141 @@ Header set X-Frame-Options DENY
 | x-xss-protection          | 1; mode=block                                |
 | strict-transport-security | max-age=31536000; includeSubDomains; preload |
 | referrer-policy           | no-referrer-when-downgrade                   |
+
+
+
+# Missing 'X-Frame-Options' Header
+
+- To enhance the security of your web server, you can configure it to include the `X-Frame-Options` header. This header helps protect your website from clickjacking attacks by specifying whether your site's content can be embedded in an iframe on other sites.
+
+Here’s how to configure the `X-Frame-Options` header for Apache, Nginx, and within Cloudflare.
+
+## Configuring Apache
+
+1. **Open your Apache configuration file**:
+
+   - This is typically located at `/etc/httpd/conf/httpd.conf` or `/etc/apache2/apache2.conf` for the main configuration, or in your site's specific configuration file within `/etc/httpd/conf.d/` or `/etc/apache2/sites-available/`.
+
+2. **Add the X-Frame-Options header**: Add the following directive to include the `X-Frame-Options` header. You can set it to either `DENY` (to prevent all framing) or `SAMEORIGIN` (to allow framing from the same origin).
+
+   ```
+   apache
+   Copy code
+   <IfModule mod_headers.c>
+       Header always set X-Frame-Options "SAMEORIGIN"
+   </IfModule>
+   ```
+
+3. **Restart Apache**: Save the configuration file and restart Apache to apply the changes.
+
+   ```
+   sh
+   Copy code
+   # For CentOS/RHEL
+   sudo systemctl restart httpd
+   
+   # For Debian/Ubuntu
+   sudo systemctl restart apache2
+   ```
+
+## Configuring Nginx
+
+1. **Open your Nginx configuration file**:
+
+   - This is typically located at `/etc/nginx/nginx.conf` or within the server block configuration in `/etc/nginx/sites-available/default`.
+
+2. **Add the X-Frame-Options header**: Add the following directive within the `server` block or a specific `location` block.
+
+   ```
+   nginx
+   Copy code
+   server {
+       listen 80;
+       server_name example.com;
+   
+       add_header X-Frame-Options "SAMEORIGIN";
+   
+       # Other server configuration
+   }
+   ```
+
+3. **Restart Nginx**: Save the configuration file and restart Nginx to apply the changes.
+
+   ```
+   sh
+   Copy code
+   sudo systemctl restart nginx
+   ```
+
+## Configuring Cloudflare
+
+If you're using Cloudflare, you can set the `X-Frame-Options` header using Cloudflare Workers for more granular control. Here’s how you can do it:
+
+1. **Log in to Cloudflare**:
+
+   - Go to [Cloudflare's website](https://www.cloudflare.com/) and log in to your account.
+
+2. **Select Your Site**:
+
+   - From the dashboard, select the site you want to configure.
+
+3. **Navigate to Workers**:
+
+   - Click on the **Workers** section in the left-hand menu.
+   - Click on **Create a Worker**.
+
+4. **Create the Worker Script**: Here’s an example worker script to add the `X-Frame-Options` header:
+
+   ```
+   javascript
+   Copy code
+   addEventListener('fetch', event => {
+     event.respondWith(handleRequest(event.request))
+   })
+   
+   async function handleRequest(request) {
+     let response = await fetch(request)
+   
+     // Clone the response to modify headers
+     response = new Response(response.body, response)
+   
+     // Set X-Frame-Options header
+     response.headers.set('X-Frame-Options', 'SAMEORIGIN')
+   
+     return response
+   }
+   ```
+
+5. **Save and Deploy the Worker**:
+
+   - Click on **Save and Deploy**.
+
+6. **Apply the Worker to Routes**:
+
+   - In the Workers dashboard, click on **Add Route**.
+   - Specify the route pattern (e.g., `*example.com/*`).
+   - Select the Worker you created.
+
+## Verifying the Configuration
+
+To verify that the `X-Frame-Options` header is being set correctly, you can use browser developer tools or an online tool like `cURL` to inspect the response headers:
+
+```
+sh
+Copy code
+curl -I https://www.example.com
+```
+
+You should see the `X-Frame-Options` header in the response:
+
+```
+mathematica
+Copy code
+HTTP/1.1 200 OK
+X-Frame-Options: SAMEORIGIN
+```
+
+By following these steps, you can ensure that your web server is correctly configured to include the `X-Frame-Options` header, enhancing the security of your website against clickjacking attacks.
 
 # Unauthenticated SQL Injection 
 
