@@ -188,3 +188,81 @@ https://github.com/mosu-forge/cryptonote-nodejs-pool.git
 ## Task:
 
 1. Your first sub-goal I think should be to get node and redis images and redis data volume up and running in docker-compose 
+
+
+
+1. Install nodejs
+
+   ```
+   $ sudo apt install nodejs
+   
+   $ node -v
+   v12.22.9
+   ```
+
+2. Install Redis
+
+   ```
+   sudo add-apt-repository ppa:chris-lea/redis-server
+   sudo apt-get update
+   sudo apt-get install redis-server
+   ```
+
+   Check if the service is up and running:
+
+   ```
+   sudo systemctl status redis-server.service
+   ```
+
+   To connect to the Redis server and check if the connection is ok use the command below:
+
+   ```
+   redis-cli
+   ```
+
+   You will notice that the cli will be different as described below:
+
+   ```
+   root@host:~# redis-cli
+   127.0.0.1:6379> ping 
+   PONG
+   ```
+
+   Dont forget to tune redis-server:
+
+   ```
+   echo never > /sys/kernel/mm/transparent_hugepage/enabled
+   echo 1024 > /proc/sys/net/core/somaxconn
+   ```
+
+   Add this lines to your /etc/rc.local and make it executable
+
+   ```
+   chmod +x /etc/rc.local
+   ```
+
+3. **Do not run the pool as root** : create a new user without ssh access to avoid security issues :
+
+   ```
+   sudo adduser --disabled-password --disabled-login your-user
+   ```
+
+   To login with this user :
+
+   ```
+   sudo su - your-user
+   ```
+
+
+
+#### 1) Downloading & Installing
+
+Clone the repository and run `npm update` for all the dependencies to be installed:
+
+```
+git clone https://github.com/dvandal/cryptonote-nodejs-pool.git pool
+
+cd pool
+
+npm update
+```
