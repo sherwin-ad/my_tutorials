@@ -1,4 +1,4 @@
-[TOC]
+
 
 # Docker Lecture
 
@@ -1625,6 +1625,258 @@ PING busybox1 (172.18.0.2): 56 data bytes
 64 bytes from 172.18.0.2: seq=1 ttl=64 time=0.646 ms
 64 bytes from 172.18.0.2: seq=2 ttl=64 time=0.443 ms
 ```
+
+
+
+# Mysql and phpMyadmin in the custom network
+
+**Create custom bridge network**
+
+```
+docker network create mysql
+```
+
+**Create mysql container**
+
+```
+docker run \
+--network mysql \
+-e MYSQL_ROOT_PASSWORD=Abcd@1234 \
+--name mysql \
+-d mysql
+```
+
+**Create phpmyadmin container**
+
+```
+docker run \
+--network mysql \
+-p 8080:80 \
+-e PMA_HOST=mysql \
+-d phpmyadmin/phpmyadmin
+```
+
+# Wordpress with Mysql and phpmyadmin
+
+**Create custom bridge network**
+
+```
+docker network create wordpress
+```
+
+**Create mysql container**
+
+```
+docker run \
+--network wordpress \
+-e MYSQL_ROOT_PASSWORD=Abcde@12345 \
+-e MYSQL_DATABASE=wpdb \
+-e MYSQL_USER=wpuser \
+-e MYSQL_PASSWORD=Abcd@1234 \
+-v $PWD/mysql/dbdata:/var/lib/mysql \
+--name mysql \
+-d mysql:5.7.13
+```
+
+**Create Wordpress container**
+
+```
+docker run \
+--network wordpress \
+-p 8080:80 \
+-v $PWD/wordpress/htdocs:/var/www/html \
+--name wordpress \
+-d wordpress:5.4.2
+```
+
+**Create phpmyadmin container**
+
+```
+docker run \
+--network wordpress \
+-p 8081:80 \
+-e PMA_HOST=mysql \
+--name phpmyadmin \
+-d phpmyadmin/phpmyadmin
+```
+
+
+
+# Getting docker image with curl utility
+
+```
+docker pul appropriate/curl
+```
+
+````
+docker run -it appropriate/curl sh
+WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+/ #
+````
+
+```
+docker run -it appropriate/curl curl google.com
+WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
+<TITLE>301 Moved</TITLE></HEAD><BODY>
+<H1>301 Moved</H1>
+The document has moved
+<A HREF="http://www.google.com/">here</A>.
+</BODY></HTML>
+```
+
+
+
+# Run Elasticsearch and curl containers in the custom network
+
+**Create custom bridge network**
+
+```
+docker network create elasticsearch
+```
+
+**Create elasticsearch container**
+
+```
+docker run -d \
+--network elasticsearch \
+-e "discovery.type=single-node" \
+-p 9200:9200 \
+--name elasticsearch \
+docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+```
+
+**Create appropriate/curl container**
+
+```
+docker run -it \
+--network elasticsearch \
+--name curl \
+appropriate/curl sh
+```
+
+
+
+# Inserting documents into Elasticsearch index
+
+**CREATE INDEX
+
+````
+curl -XPUT http://elasticsearch:9200/my-index
+curl -XGET http://elasticsearch:9200/_cat/indices?v
+````
+
+**INSERT DOCUMENTS INTO THE INDEX**
+
+```
+curl -XPOST http://elasticsearch:9200/my-index/cities/1 \
+    -H 'Content-Type: application/json' \
+    -d '{"city":"New York"}'
+```
+
+```
+curl -XPOST http://elasticsearch:9200/my-index/cities/2 \
+    -H 'Content-Type: application/json' \
+    -d '{"city":"Paris"}'
+```
+
+```
+curl -XPOST http://elasticsearch:9200/my-index/cities/3 \
+    -H 'Content-Type: application/json' \
+    -d '{"city":"London"}'
+```
+
+**READ FIELDS MAPPING FOR THE INDEX**
+
+```
+curl -XGET http://elasticsearch:9200/my-index/_mapping?pretty
+```
+
+**GET DOCUMENT BY ID**
+
+```
+curl -XGET http://elasticsearch:9200/my-index/cities/1?pretty
+```
+
+**SEARCH ALL DOCUMENTS**
+
+```
+curl -XGET http://elasticsearch:9200/my-index/_search?pretty
+```
+
+**SEARCH USING QUERY PARAMETER**
+
+```
+curl -XGET http://elasticsearch:9200/my-index/_search?q=city:new
+```
+
+
+
+# Redis
+
+**Run redis container**
+
+```
+docker run redis
+```
+
+**Connect to redis container**
+
+```
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS      NAMES
+dd82253021e8   redis     "docker-entrypoint.s…"   10 minutes ago   Up 10 minutes   6379/tcp   stoic_wiles
+```
+
+```
+docker exec -it dd redis-cli
+127.0.0.1:6379> ping
+PONG
+127.0.0.1:6379> SET key1 "Hey there"
+OK
+127.0.0.1:6379> GET key1
+"Hey there"
+```
+
+
+
+# Redis and Redis-commander
+
+**Create custom bridge network**
+
+```
+docker network create redis
+```
+
+**Create redistribution container**
+
+```
+docker run \
+	--network redis \
+	--name redis \
+	-d redis
+```
+
+**Create Redis-commander container**
+
+```
+docker run \
+	--network redis \
+	--name redis-commander \
+	-e REDIS_HOST=redis \
+	-p 8081:8081 \
+	-d rediscommander/redis-commander
+```
+
+
+
+# Apache container
+
+```
+docker run -p 8080:80 httpd
+```
+
+
 
 
 
