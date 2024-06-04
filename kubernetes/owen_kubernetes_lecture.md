@@ -1,4 +1,344 @@
-[TOC]
+
+
+
+
+# Kubernetes
+
+## What is Kubernetes?
+
+### KUBERNETES TAKES CARE OF THE FOLLOWING:
+
+- ﻿﻿Automatic deployment of the containerized applications across different servers
+- ﻿﻿Distribution of the load across multiple servers
+- ﻿﻿Auto-scaling of the deployed applications
+- ﻿﻿Monitoring and health check of the containers
+- ﻿﻿Replacement of the failed containers
+
+### Supported container runtimes
+
+- Docker
+- CRI-O
+- Containers
+
+
+
+## What is pod?
+
+- is the smallest unit in the Kubernetes world
+
+### Pod Anatomy
+
+- One container per pod is the most common used case
+
+![image-20240603112217981](images/image-20240603112217981.png)
+
+ 
+
+
+
+## Kubernetes Cluster
+
+![image-20240603112812281](images/image-20240603112812281.png)
+
+![image-20240603112959300](images/image-20240603112959300.png)
+
+## Kubernetes Services
+
+![image-20240603113655295](images/image-20240603113655295.png)
+
+## What is kubectl?
+
+![image-20240603114021581](images/image-20240603114021581.png)
+
+## Creating single pod
+
+**Create pod**
+
+ ```
+ $ kubectl run nginx --image=nginx
+ pod/nginx created
+ ```
+
+**List all pods**
+
+```
+kubectl get pods
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   0          57s
+```
+
+```
+kubectl get pods -o wide
+NAME    READY   STATUS    RESTARTS      AGE   IP          NODE             NOMINATED NODE   READINESS GATES
+nginx   1/1     Running   1 (56m ago)   9h    10.1.0.19   docker-desktop   <none>           <none>
+```
+
+**Delete pod**
+
+```
+kubectl delete pod nginx
+pod "nginx" deleted
+```
+
+**Show details about the pod**
+
+```
+kubectl describe pod nginx
+Name:             nginx
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             docker-desktop/192.168.65.3
+Start Time:       Mon, 03 Jun 2024 12:00:42 +0800
+Labels:           run=nginx
+Annotations:      <none>
+Status:           Running
+IP:               10.1.0.19
+IPs:
+  IP:  10.1.0.19
+Containers:
+  nginx:
+    Container ID:   docker://554181fdf0f8a706d3a581d79b0be017a051d6c52e8c85b6ce8a084113835b07
+    Image:          nginx
+    Image ID:       docker-pullable://nginx@sha256:0f04e4f646a3f14bf31d8bc8d885b6c951fdcf42589d06845f64d18aec6a3c4d
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Mon, 03 Jun 2024 20:57:19 +0800
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    255
+      Started:      Mon, 03 Jun 2024 12:01:13 +0800
+      Finished:     Mon, 03 Jun 2024 20:56:53 +0800
+    Ready:          True
+    Restart Count:  1
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-c2l66 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       True
+  ContainersReady             True
+  PodScheduled                True
+Volumes:
+  kube-api-access-c2l66:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason          Age   From     Message
+  ----    ------          ----  ----     -------
+  Normal  SandboxChanged  64s   kubelet  Pod sandbox changed, it will be killed and re-created.
+  Normal  Pulling         61s   kubelet  Pulling image "nginx"
+  Normal  Pulled          56s   kubelet  Successfully pulled image "nginx" in 4.949s (4.949s including waiting)
+  Normal  Created         56s   kubelet  Created container nginx
+  Normal  Started         56s   kubelet  Started container nginx
+```
+
+
+
+## Creating alias for the kubectl command
+
+```
+alias k="kubectl"
+```
+
+
+
+## Creating deployment
+
+**Create deployment**
+
+```
+$ k create deployment nginx-deployment --image=nginx
+deployment.apps/nginx-deployment created
+```
+
+**List deployments**
+
+```
+k get deployments
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-deployment   1/1     1            1           12s
+```
+
+**List pods**
+
+```
+k get pods
+NAME                                READY   STATUS    RESTARTS   AGE
+nginx-deployment-6d6565499c-7z7mt   1/1     Running   0          12m
+```
+
+## Scaling deployment
+
+**Scale up deployment**
+
+```
+k scale deployment nginx-deployment --replicas=3
+deployment.apps/nginx-deployment scaled
+```
+
+**List pods**
+
+```
+k get pods
+NAME                                READY   STATUS              RESTARTS   AGE
+nginx-deployment-6d6565499c-2whkc   0/1     ContainerCreating   0          9s
+nginx-deployment-6d6565499c-7z7mt   1/1     Running             0          18m
+nginx-deployment-6d6565499c-x78h9   1/1     Running             0          9s
+```
+
+```
+k get pods -o wide
+NAME                                READY   STATUS    RESTARTS   AGE     IP          NODE             NOMINATED NODE   READINESS GATES
+nginx-deployment-6d6565499c-2whkc   1/1     Running   0          2m46s   10.1.0.23   docker-desktop   <none>           <none>
+nginx-deployment-6d6565499c-7z7mt   1/1     Running   0          21m     10.1.0.21   docker-desktop   <none>           <none>
+nginx-deployment-6d6565499c-x78h9   1/1     Running   0          2m46s   10.1.0.22   docker-desktop   <none>           <none>
+```
+
+**Scale down deployment**
+
+```
+k scale deployment nginx-deployment --replicas=2
+deployment.apps/nginx-deployment scaled
+```
+
+```
+k get pods -o wide
+NAME                                READY   STATUS    RESTARTS   AGE     IP          NODE             NOMINATED NODE   READINESS GATES
+nginx-deployment-6d6565499c-7z7mt   1/1     Running   0          23m     10.1.0.21   docker-desktop   <none>           <none>
+nginx-deployment-6d6565499c-x78h9   1/1     Running   0          5m20s   10.1.0.22   docker-desktop   <none>           <none>
+```
+
+## Connecting to the pods using its IP address
+
+```
+minikube ssh
+docker@minikube:~$ curl 10.244.0.4
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+
+## Creating and exploring ClusterIP Service
+
+- ClusterIP is the default and most common service type.
+- Kubernetes will assign a cluster-internal IP address to ClusterIP service. This makes the service only reachable within the cluster.
+
+```
+k expose deployment nginx-deployment --port=8080 --target-port=80
+service/nginx-deployment exposed
+```
+
+```
+k get service
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+kubernetes         ClusterIP   10.96.0.1       <none>        443/TCP    38m
+nginx-deployment   ClusterIP   10.108.22.104   <none>        8080/TCP   8s
+```
+
+
+
+## Connecting to the Deployment using ClusterIP Service
+
+```
+minikube ssh
+docker@minikube:~$ curl 10.108.22.104:8080
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+
+**Show details about the service**
+
+```
+k describe service nginx-deployment
+Name:              nginx-deployment
+Namespace:         default
+Labels:            app=nginx-deployment
+Annotations:       <none>
+Selector:          app=nginx-deployment
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.108.22.104
+IPs:               10.108.22.104
+Port:              <unset>  8080/TCP
+TargetPort:        80/TCP
+Endpoints:         10.244.0.3:80,10.244.0.4:80,10.244.0.5:80
+Session Affinity:  None
+Events:            <none>
+```
+
+## Deleting Deployment and Service
+
+```
+k delete deployments nginx-deployment
+deployment.apps "nginx-deployment" deleted
+
+k delete service nginx-deployment
+service "nginx-deployment" deleted
+
+k get deployments.apps
+No resources found in default namespace.
+
+k get service
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   56m
+```
+
+
+
+
 
 
 

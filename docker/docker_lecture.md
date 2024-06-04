@@ -1878,5 +1878,280 @@ docker run -p 8080:80 httpd
 
 
 
+# Creating dockerfile for python api
 
+https://github.com/sherwin-ad/docker.git
+
+├── Dockerfile
+├── Pipfile
+├── Pipfile.lock
+└── main.py
+
+Dockerfile
+
+```
+FROM python:3.9
+
+WORKDIR /app
+
+EXPOSE 5050
+
+COPY Pipfile Pipfile.lock ./
+
+RUN pip install pipenv
+RUN pipenv requirements > requirements.txt
+RUN pip install -r requirements.txt
+
+COPY . ./
+
+CMD [ "python", "main.py" ]
+```
+
+**Build docker image**
+
+```
+docker build . -t images-gallery-api
+```
+
+**Run docker image**
+
+```
+docker run -d -p 5050:5050 images-gallery-api
+```
+
+![image-20240601095550168](images/image-20240601095550168.png)
+
+# Creating dockerfile for nodejs application
+
+├── Dockerfile
+├── README.md
+├── package-lock.json
+├── package.json
+├── public
+│   ├── android-chrome-192x192.png
+│   ├── android-chrome-512x512.png
+│   ├── apple-touch-icon.png
+│   ├── favicon-16x16.png
+│   ├── favicon-32x32.png
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── manifest.json
+│   └── robots.txt
+└── src
+    ├── App.js
+    ├── components
+    │   ├── Header.js
+    │   ├── ImageCard.js
+    │   ├── Search.js
+    │   └── Welcome.js
+    ├── css
+    │   └── index.css
+    ├── images
+    │   └── logo.svg
+    └── index.js
+
+Dockerfile
+
+````
+FROM node:15.14-alpine
+
+WORKDIR /app
+
+EXPOSE 3000
+
+COPY package.json package-lock.json ./
+
+RUN npm install
+
+COPY . ./
+
+CMD [ "npm", "start" ]
+````
+
+**Build docker image**
+
+```
+docker build . -t images-gallery-frontend
+```
+
+**Run docker image**
+
+```
+docker run -d -p 5050:5050 images-gallery-fronted
+```
+
+![image-20240601100118360](images/image-20240601100118360.png)
+
+# Create docker-compose file
+
+docker-compose.yml
+
+```
+ version: '3'
+ services:
+  frontend:
+    restart: always
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+  api:
+    restart: always
+    build: ./api
+    ports:
+      - '5050:5050'
+    volumes:
+      - ./api:/app
+```
+
+```
+docker compose up -d
+```
+
+# Adding mongo and mongo-express services to the docker-compose file with volume
+
+docker-compose.yml
+
+```
+version: '3'
+services:
+  frontend:
+    restart: always
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+  api:
+    restart: always
+    build: ./api
+    ports:
+      - '5050:5050'
+    volumes:
+      - ./api:/app
+  mongo:
+    image: mongo 
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: Abcde12345
+    volumes:
+      - mongodb_data:/data/db
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: Abcde12345
+      # ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - mongo
+
+volumes:
+  mongodb_data:
+```
+
+**List volumes**
+
+```
+docker volume ls
+DRIVER    VOLUME NAME
+local     httpd_htdocs
+local     images-gallery_mongodb_data
+local     jenkins_home
+local     minikube
+local     mongo_volume
+local     mysql_my-db
+local     portainer_portainer-docker-extension-desktop-extension_portainer_data
+local     some-docker-certs-ca
+local     some-docker-certs-client
+```
+
+**List network**
+
+````
+docker network ls
+NETWORK ID     NAME                                                             DRIVER    SCOPE
+889a56ad8ccf   images-gallery_default                                           bridge    local
+````
+
+**Display detailed information about  images-gallery_default network**
+
+```
+docker network inspect images-gallery_default
+[
+    {
+        "Name": "images-gallery_default",
+        "Id": "889a56ad8ccf3149b319a1e079c1952f12d37ebef0ffc8e6f9a492790fe040e0",
+        "Created": "2024-06-03T00:50:45.5470323Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "192.168.80.0/20",
+                    "Gateway": "192.168.80.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "6a9260b4146a67823982330c43ed224dc0db6cc4bb38c6ecbc2d378a472bcde7": {
+                "Name": "images-gallery-frontend-1",
+                "EndpointID": "3e87158d3eae3b512bb0021b37e3e81ef0921cf532952254da1926289ed5a927",
+                "MacAddress": "02:42:c0:a8:50:03",
+                "IPv4Address": "192.168.80.3/20",
+                "IPv6Address": ""
+            },
+            "787b20be390412cc29abcd58cb9cbc6ea8b707113da715c98d3a1817c95349ed": {
+                "Name": "images-gallery-api-1",
+                "EndpointID": "782af0f90c8d649e3ac72bea2d6532ce4cab97a365673a80cdd58c99ba8c767e",
+                "MacAddress": "02:42:c0:a8:50:04",
+                "IPv4Address": "192.168.80.4/20",
+                "IPv6Address": ""
+            },
+            "ca46d3ea32da3a6e918fc11bbb7055a7742b24c8a1c8fe1c02922499cc6ce916": {
+                "Name": "images-gallery-mongo-express-1",
+                "EndpointID": "ece615cdce09919bd1a0be95b1bc24a883261add761fd952374d1afda745b680",
+                "MacAddress": "02:42:c0:a8:50:05",
+                "IPv4Address": "192.168.80.5/20",
+                "IPv6Address": ""
+            },
+            "f94086e0981e1188ecdcf840d8d0a920ca1f0868299c776459205abd0386a874": {
+                "Name": "images-gallery-mongo-1",
+                "EndpointID": "9dbcda44185e13b494202c3adcc3c2a24f9dbc3317fa8e0c721fa5fa56854622",
+                "MacAddress": "02:42:c0:a8:50:02",
+                "IPv4Address": "192.168.80.2/20",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.network": "default",
+            "com.docker.compose.project": "images-gallery",
+            "com.docker.compose.version": "2.27.0"
+        }
+    }
+]
+```
 

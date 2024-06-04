@@ -1,6 +1,42 @@
 # SSL/TLS Weak Cipher Suites Supported
 
-### To disable weak ciphers in Cloudflare and ensure that only secure ciphers are used, follow these steps:
+## To disable weak ciphers in WHM
+
+Goto Home > Service Configuration > Apache Configuration > Global Configuration
+
+SSL Cipher Suite
+
+Default
+
+```
+ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256
+```
+
+Recommended
+
+````
+ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+````
+
+
+
+SSL/TLS Protocols
+
+Default
+
+```
+all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1
+```
+
+Recommended
+
+```
+all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1 +TLSv1.2 +TLSv1.3
+```
+
+
+
+## To disable weak ciphers in Cloudflare and ensure that only secure ciphers are used, follow these steps:
 
 ### 1. Log in to Cloudflare
 
@@ -50,6 +86,7 @@ DHE-RSA-AES256-GCM-SHA384
 After configuring your settings, it's important to verify that weak ciphers are indeed disabled. You can use tools like SSL Labs' SSL Test:
 
 1. Go to SSL Labs SSL Test.
+   - https://www.ssllabs.com/ssltest/
 2. Enter your domain name and start the test.
 3. Review the report to ensure that weak ciphers and protocols are not supported.
 
@@ -1528,7 +1565,7 @@ The Missing Content Security Policy (CSP) Header vulnerability occurs when a web
 3. Once you click on the file, more information will come up. Look for a 200 OK response code.
 4. Scroll down to the Response Header Section. If a CSP is being used, it will appear here.
 
-###### ![Image #1 CSP Header](https://bluetriangle.com/hs-fs/hubfs/Image%20%231%20CSP%20Header.jpg?width=574&name=Image%20%231%20CSP%20Header.jpg)
+###### <img src="https://bluetriangle.com/hs-fs/hubfs/Image%20%231%20CSP%20Header.jpg?width=574&name=Image%20%231%20CSP%20Header.jpg" alt="Image #1 CSP Header" style="zoom: 150%;" />
 
 **Option #2 - Use a 3rd party browser extension to find a CSP in the response header**
 
@@ -1766,4 +1803,4 @@ SQL injection, also known as SQLI, is a common attack vector that uses malicious
 
 1. https://motorcycletourism.tpb.gov.ph 
 
-Upon checking for outdated wordpress plugins, we found that Parameter “time=” in “*https://motorcycletourism.tpb.gov.ph/wp-admin/admin-ajax.php?action=mec_load_single_page&time=1*” is Vulnerable to Time-Based Blind SQL Injection 
+Upon checking for outdated wordpress plugins, we found that Parameter “time=” in “*https://motorcycletourism.tpb.gov.ph/wp-admin/admin-ajax.php?action=mec_load_single_page&time=1*” is Vulnerable to Time-Based Blind SQL Injection  
