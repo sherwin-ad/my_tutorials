@@ -1804,3 +1804,156 @@ SQL injection, also known as SQLI, is a common attack vector that uses malicious
 1. https://motorcycletourism.tpb.gov.ph 
 
 Upon checking for outdated wordpress plugins, we found that Parameter “time=” in “*https://motorcycletourism.tpb.gov.ph/wp-admin/admin-ajax.php?action=mec_load_single_page&time=1*” is Vulnerable to Time-Based Blind SQL Injection  
+
+
+
+
+
+# HTTP Header Web Server Information Disclosure
+
+## Change Apache Servername in HTTP Headers
+
+cPanel VPS or dedicated server administrators should follow these steps:
+
+1. Log into WebHost Manager (WHM) as root.
+
+2. On the left, select “Apache Configuration.”
+
+3. Select “Global Configuration.”
+
+4. Set “Server Signature” to “Off.”
+
+5. Set “Server Tokens” to “Minimal.”
+
+   ![WHM server signature and server tokens](https://www.inmotionhosting.com/support/wp-content/uploads/2021/09/whm-server-signature-tokens-1024x177.png)
+
+6. Select “Save” at the bottom.
+
+7. Select “Rebuild Configuration and Restart Apache.”
+
+8. Select “Terminal” on the left.
+
+9. Edit your ModSecurity user configuration file:
+
+   ```
+   nano /etc/apache2/conf.d/modsec/modsec2.user.conf
+   ```
+
+10. It’s okay if the file is blank. Add the following lines, changing the custom server signature to your preference:
+
+    ```
+    ServerTokens OS
+    ```
+
+    ```
+    SecServerSignature "CustomSecretiveName"
+    ```
+
+11. Rebuild HTTPD:
+
+    ```
+    /scripts/rebuildhttpdconf
+    ```
+
+12. Restart Apache:
+
+    ```
+    /scripts/restartsrv_httpd
+    ```
+
+13. Check your Apache servername.
+
+    ```
+    curl --head localhost
+    ```
+
+    ![Updated Server results](https://www.inmotionhosting.com/support/wp-content/uploads/2021/09/curl-head-updated.png)
+
+**The steps below are for non-cPanel servers.**
+
+1. Log into SSH as root.
+
+2. Edit your Apache configuration file.
+
+   CentOS:
+
+   ```
+   nano /etc/httpd/conf/httpd.conf
+   ```
+
+   Debian / Ubuntu:
+
+   ```
+   nano /etc/apache2/conf-enabled/security.conf
+   ```
+
+3. Add or change the following lines as follows. For example, if
+
+    
+
+   ```
+   ServerTokens OS
+   ```
+
+    
+
+   is present, change “OS” to “Full.”
+
+   ```
+   SecRuleEngine on
+   ```
+
+   ```
+   ServerTokens Full
+   ```
+
+   ```
+   SecServerSignature "CustomSecretiveName"
+   ```
+
+4. You can remove, or disable (#), the “ServerSignature” line if enabled.
+
+5. Save your changes.
+
+6. Restart Apache.
+
+   CentOS:
+
+   ```
+   systemctl restart httpd
+   ```
+
+   Debian / Ubuntu:
+
+   ```
+   systemctl restart apache2
+   ```
+
+7. Check your Apache servername.
+
+   ![Updated Server results](https://www.inmotionhosting.com/support/wp-content/uploads/2021/09/curl-head-updated.png)
+
+
+
+# jQuery < 3.4.0 Prototype Pollution
+
+## Check jQuery version
+
+Type this command in the Chrome Developer Tools Javascript console window to see what version of the jQuery is being used on this page:
+
+``` 
+> console.log(jQuery().jquery)
+3.3.1
+```
+
+or
+
+```
+> jQuery.fn.jquery
+'3.3.1'
+```
+
+
+
+
+

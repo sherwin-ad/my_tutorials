@@ -338,7 +338,218 @@ kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   56m
 
 
 
+## Running Node.js Application using K8s
 
+https://github.com/bstashchuk/k8s
+
+1. Initialized node js
+
+```
+npm init -y
+
+npm install express
+```
+
+2. Delete node_modules
+
+3. Create index.mjs
+
+index.mjs
+
+```
+import express from 'express'
+import os from 'os'
+
+const app = express()
+const PORT = 3000
+
+app.get("/", (req, res) => {
+  const helloMessage = `<h1>VERSION 2: Hello from the ${os.hostname()}</h1>`
+  console.log(helloMessage)
+  res.send(helloMessage)
+})
+
+app.listen(PORT, () => {
+  console.log(`Web server is listening at port ${PORT}`)
+})
+```
+
+4. Create Dockerfile
+
+   Dockerfile
+
+   ```
+   FROM node:alpine
+   
+   WORKDIR /app
+   
+   EXPOSE 3000
+   
+   COPY package.json package-lock.json ./
+   
+   RUN npm install
+   
+   COPY . ./
+   
+   CMD ["npm", "start"]
+   ```
+
+5. Modify package.json
+
+   ```
+   {
+     "name": "k8",
+     "version": "1.0.0",
+     "description": "",
+     "main": "index.js",
+     "scripts": {
+       "start": "node index.mjs"
+     },
+     "keywords": [],
+     "author": "",
+     "license": "ISC",
+     "dependencies": {
+       "express": "^4.19.2"
+     }
+   }
+   ```
+
+6. Build image
+
+   ```
+   docker build . -t sherwinowen/k8-web-hello
+   ```
+
+7. Push docker image in Docker Hub
+
+   ```
+   docker push sherwinowen/k8-web-hello
+   ```
+
+8. Create deployment
+
+   ```
+   k create deployment k8-web-hello --image sherwinowen/k8-web-hello
+   
+   sherwinowen@Owen-MBA ~ % k get deployment
+   NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+   k8-web-hello   1/1     1            1           3m37s
+   
+   sherwinowen@Owen-MBA ~ % k get pods
+   NAME                           READY   STATUS    RESTARTS   AGE
+   k8-web-hello-bb6bb7754-k5jrg   1/1     Running   0          3m42s
+   ```
+
+9. Create service
+
+   ```
+   sherwinowen@Owen-MBA k8 % k expose deployment k8-web-hello --port=3000
+   service/k8-web-hello exposed
+   sherwinowen@Owen-MBA k8 % k get service
+   NAME           TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+   k8-web-hello   ClusterIP   10.96.102.30   <none>        3000/TCP   7s
+   kubernetes     ClusterIP   10.96.0.1      <none>        443/TCP    24h
+   ```
+
+10. Check from the minikube terminal
+
+    ```
+    sherwinowen@Owen-MBA k8 % minikube ssh
+    docker@minikube:~$ curl 10.96.102.30:3000
+    <h1>VERSION 2: Hello from the k8-web-hello-bb6bb7754-k5jrg</h1>docker@minikube:~$
+    ```
+
+11. Scale deployment
+
+    ```
+    sherwinowen@Owen-MBA k8 % k scale deployment k8-web-hello --replicas=3
+    deployment.apps/k8-web-hello scaled
+    sherwinowen@Owen-MBA k8 % k get pods
+    NAME                           READY   STATUS    RESTARTS   AGE
+    k8-web-hello-bb6bb7754-2hwcv   1/1     Running   0          19s
+    k8-web-hello-bb6bb7754-dpdjf   1/1     Running   0          19s
+    k8-web-hello-bb6bb7754-k5jrg   1/1     Running   0          17m
+    sherwinowen@Owen-MBA k8 % k get pods -o wide
+    NAME                           READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+    k8-web-hello-bb6bb7754-2hwcv   1/1     Running   0          95s   10.244.0.8   minikube   <none>           <none>
+    k8-web-hello-bb6bb7754-dpdjf   1/1     Running   0          95s   10.244.0.7   minikube   <none>           <none>
+    k8-web-hello-bb6bb7754-k5jrg   1/1     Running   0          19m   10.244.0.6   minikube   <none>           <none>
+    ```
+
+12. Check from the minikube terminal
+
+    - See how it load balance the request
+
+    ```
+    sherwinowen@Owen-MBA k8 % minikube ssh
+    docker@minikube:~$ curl 10.96.102.30:3000
+    <h1>VERSION 2: Hello from the k8-web-hello-bb6bb7754-2hwcv</h1>docker@minikube:~$ curl 10.96.102.30:3000
+    <h1>VERSION 2: Hello from the k8-web-hello-bb6bb7754-2hwcv</h1>docker@minikube:~$ curl 10.96.102.30:3000
+    <h1>VERSION 2: Hello from the k8-web-hello-bb6bb7754-dpdjf</h1>docker@minikube:~$ curl 10.96.102.30:3000
+    <h1>VERSION 2: Hello from the k8-web-hello-bb6bb7754-k5jrg</h1>docker@minikube:~$ curl 10.96.102.30:3000
+    <h1>VERSION 2: Hello from the k8-web-hello-bb6bb7754-k5jrg</h1>docker@minikube:~$ curl 10.96.102.30:3000
+    <h1>VERSION 2: Hello from the k8-web-hello-bb6bb7754-2hwcv</h1>docker@minikube:~$ curl 10.96.102.30:3000
+    <h1>VERSION 2: Hello from the k8-web-hello-bb6bb7754-k5jrg</h1>docker@minikube:~$
+    ```
+
+13. Create NodePort Service
+
+    Delete service
+
+    ```
+    k delete service k8-web-hello
+    service "k8-web-hello" deleted
+    ```
+
+    Create service
+
+    ```
+    sherwinowen@Owen-MBA ~ % k expose deployment k8-web-hello --type=NodePort --port=3000
+    service/k8-web-hello exposed
+    sherwinowen@Owen-MBA ~ % k get svc
+    NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+    k8-web-hello   NodePort    10.99.210.229   <none>        3000:32650/TCP   7s
+    kubernetes     ClusterIP   10.96.0.1       <none>        443/TCP          24h
+    ```
+
+    Open the app in minikube to be able to browse in browser
+
+    ```
+    minikube service k8-web-hello
+    |-----------|--------------|-------------|---------------------------|
+    | NAMESPACE |     NAME     | TARGET PORT |            URL            |
+    |-----------|--------------|-------------|---------------------------|
+    | default   | k8-web-hello |        3000 | http://192.168.49.2:32650 |
+    |-----------|--------------|-------------|---------------------------|
+    🏃  Starting tunnel for service k8-web-hello.
+    |-----------|--------------|-------------|------------------------|
+    | NAMESPACE |     NAME     | TARGET PORT |          URL           |
+    |-----------|--------------|-------------|------------------------|
+    | default   | k8-web-hello |             | http://127.0.0.1:52394 |
+    |-----------|--------------|-------------|------------------------|
+    🎉  Opening service default/k8-web-hello in default browser...
+    ❗  Because you are using a Docker driver on darwin, the terminal needs to be open to run it.
+    ```
+
+14. Create LoadBalancer Service
+
+    Delete service
+
+    ```
+    k delete service k8-web-hello
+    service "k8-web-hello" deleted
+    ```
+
+    ```
+    k expose deployment k8-web-hello --type=LoadBalancer --port=3000
+    service/k8-web-hello exposed
+    sherwinowen@Owen-MBA ~ % k get svc
+    NAME           TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+    k8-web-hello   LoadBalancer   10.107.62.48   <pending>     3000:31669/TCP   10s
+    kubernetes     ClusterIP      10.96.0.1      <none>        443/TCP          25h
+    ```
+
+    
 
 
 
