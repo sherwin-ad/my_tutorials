@@ -2045,5 +2045,68 @@ or
 
 
 
+## Update jQuery version
+
+
+
+To update the jQuery version on an AlmaLinux server, you'll need to download the latest version of jQuery and replace the old jQuery file in your web application directory. Here’s a step-by-step guide to doing this:
+
+1. **Backup the existing jQuery file**: Before making any changes, it’s a good idea to back up the existing jQuery file.
+
+   ```
+   sh
+   Copy code
+   cd /path/to/your/jquery/
+   cp jquery.js jquery.js.bak
+   ```
+
+2. **Download the latest version of jQuery**: Use `wget` or `curl` to download the latest version of jQuery from the official jQuery website.
+
+   ```
+   sh
+   Copy code
+   wget https://code.jquery.com/jquery-3.6.4.min.js -O jquery.min.js
+   ```
+
+   Replace `https://code.jquery.com/jquery-3.6.4.min.js` with the URL of the version you want to download.
+
+3. **Replace the old jQuery file**: Once you’ve downloaded the new jQuery file, you need to replace the old jQuery file with the new one. Ensure the naming is consistent with how your web application refers to the jQuery file.
+
+   ```
+   sh
+   Copy code
+   mv jquery.min.js /path/to/your/web/application/js/jquery.js
+   ```
+
+4. **Update the references in your application** (if needed): If your web application refers to jQuery with a specific file name (e.g., `jquery-3.5.1.min.js`), you might need to update the references in your HTML files to match the new file name. This can typically be done by editing the HTML files and updating the script tag.
+
+   ```
+   html
+   Copy code
+   <!-- Update this -->
+   <script src="js/jquery-3.5.1.min.js"></script>
+   
+   <!-- To this -->
+   <script src="js/jquery.min.js"></script>
+   ```
+
+5. **Clear the cache** (if needed): If your application or users’ browsers cache JavaScript files, you may need to clear the cache to ensure the new version is loaded. You can do this by appending a version query string to the script URL.
+
+   ```
+   html
+   Copy code
+   <script src="js/jquery.min.js?v=3.6.4"></script>
+   ```
+
+6. **Verify the update**: Check your web application to ensure that the new version of jQuery is being used and that everything is working as expected. You can verify the jQuery version by running the following in the browser console:
+
+   ```
+   javascript
+   Copy code
+   console.log(jQuery.fn.jquery);
+   ```
+
+This should print the version number of the currently loaded jQuery.
+
 
 
