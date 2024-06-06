@@ -549,7 +549,150 @@ app.listen(PORT, () => {
     kubernetes     ClusterIP      10.96.0.1      <none>        443/TCP          25h
     ```
 
-    
+
+
+## Rolling update of the deployment
+
+1. Modify index.mjs
+
+   index.mjs
+
+```
+import express from 'express'
+import os from 'os'
+
+const app = express()
+const PORT = 3000
+
+app.get("/", (req, res) => {
+  const helloMessage = `<h1>VERSION 3: Hello from the ${os.hostname()}</h1>`
+  console.log(helloMessage)
+  res.send(helloMessage)
+})
+
+app.listen(PORT, () => {
+  console.log(`Web server is listening at port ${PORT}`)
+})
+```
+
+2. Build new image
+
+   ```
+   docker build . -t sherwinowen/k8-web-hello:3.0.0
+   ```
+
+3. Push new image
+
+   ```
+   docker push sherwinowen/k8-web-hello:3.0.0
+   ```
+
+4. Update the image in the deployment
+
+   ```
+   k set image deployment k8-web-hello k8-web-hello=sherwinowen/k8-web-hello:3.0.0
+   ```
+
+5. Check the status of the rollout of new image
+
+   ```
+   $ k rollout status deployment k8-web-hello
+   Waiting for deployment "k8-web-hello" rollout to finish: 1 out of 3 new replicas have been updated...
+   Waiting for deployment "k8-web-hello" rollout to finish: 1 out of 3 new replicas have been updated...
+   Waiting for deployment "k8-web-hello" rollout to finish: 1 out of 3 new replicas have been updated...
+   Waiting for deployment "k8-web-hello" rollout to finish: 2 out of 3 new replicas have been updated...
+   Waiting for deployment "k8-web-hello" rollout to finish: 2 out of 3 new replicas have been updated...
+   Waiting for deployment "k8-web-hello" rollout to finish: 2 out of 3 new replicas have been updated...
+   Waiting for deployment "k8-web-hello" rollout to finish: 1 old replicas are pending termination...
+   Waiting for deployment "k8-web-hello" rollout to finish: 1 old replicas are pending termination...
+   deployment "k8-web-hello" successfully rolled out
+   ```
+
+   ```
+   k get pods
+   NAME                            READY   STATUS    RESTARTS   AGE
+   k8-web-hello-6f4b9c76dc-fk2t2   1/1     Running   0          2m25s
+   k8-web-hello-6f4b9c76dc-k85tw   1/1     Running   0          2m20s
+   k8-web-hello-6f4b9c76dc-pnmcz   1/1     Running   0          2m34s
+   ```
+
+   ```
+   k get svc
+   NAME           TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+   k8-web-hello   LoadBalancer   10.107.62.48   <pending>     3000:31669/TCP   22h
+   kubernetes     ClusterIP      10.96.0.1      <none>        443/TCP          2d
+   ```
+
+6. Open the app in minikube to be able to browse in browser
+
+   ```
+   minikube service k8-web-hello
+   |-----------|--------------|-------------|---------------------------|
+   | NAMESPACE |     NAME     | TARGET PORT |            URL            |
+   |-----------|--------------|-------------|---------------------------|
+   | default   | k8-web-hello |        3000 | http://192.168.49.2:31669 |
+   |-----------|--------------|-------------|---------------------------|
+   🏃  Starting tunnel for service k8-web-hello.
+   |-----------|--------------|-------------|------------------------|
+   | NAMESPACE |     NAME     | TARGET PORT |          URL           |
+   |-----------|--------------|-------------|------------------------|
+   | default   | k8-web-hello |             | http://127.0.0.1:57985 |
+   |-----------|--------------|-------------|------------------------|
+   🎉  Opening service default/k8-web-hello in default browser...
+   ❗  Because you are using a Docker driver on darwin, the terminal needs to be open to run it.
+   ```
+
+   ![image-20240606074621211](images/image-20240606074621211.png)
+
+## Kubernetes Dashboard
+
+```
+$ minikube dashboard
+🔌  Enabling dashboard ...
+    ▪ Using image docker.io/kubernetesui/dashboard:v2.7.0
+    ▪ Using image docker.io/kubernetesui/metrics-scraper:v1.0.8
+💡  Some dashboard features require the metrics-server addon. To enable all features please run:
+
+	minikube addons enable metrics-server
+
+
+🤔  Verifying dashboard health ...
+🚀  Launching proxy ...
+🤔  Verifying proxy health ...
+🎉  Opening http://127.0.0.1:61552/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
+```
+
+![image-20240606083214557](images/image-20240606083214557.png)
+
+## Delete all resources in default namespace
+
+```
+k delete all --all
+pod "k8-web-hello-6f4b9c76dc-fk2t2" deleted
+pod "k8-web-hello-6f4b9c76dc-jwp79" deleted
+pod "k8-web-hello-6f4b9c76dc-pnmcz" deleted
+service "k8-web-hello" deleted
+service "kubernetes" deleted
+deployment.apps "k8-web-hello" deleted
+```
+
+```
+k get pods
+NAME                            READY   STATUS        RESTARTS   AGE
+k8-web-hello-6f4b9c76dc-2x52h   0/1     Terminating   0          10s
+k8-web-hello-6f4b9c76dc-9m75t   0/1     Terminating   0          9s
+k8-web-hello-6f4b9c76dc-ghvfr   1/1     Terminating   0          10s
+```
+
+
+
+## Creating YAML deployment specification file
+
+
+
+
+
+
 
 
 
@@ -1680,7 +1823,7 @@ myapp-deployment-57c6cb89d9-sdfzq   1/1     Running   1 (5m55s ago)   19h   172.
 
    - When you are using a cloud provider to host your Kubernetes cluster.
 
-4. ExternalName
+4. **ExternalName**
 
    - Services of type ExternalName map a Service to a DNS name, not to a typical selector such as my-service.
    - You specify these Services with the `spec.externalName` parameter.

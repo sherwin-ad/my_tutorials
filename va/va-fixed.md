@@ -1578,6 +1578,96 @@ The tool can be found under the Chrome Extension Store: [CSP Evaluator](https://
 
 ![Image #3 CSP Evaluator - Chroms Extension](https://bluetriangle.com/hs-fs/hubfs/Image%20%233%20CSP%20Evaluator%20-%20Chroms%20Extension.jpg?width=408&name=Image%20%233%20CSP%20Evaluator%20-%20Chroms%20Extension.jpg)
 
+
+
+# Set HTTP Security Headers Apache WHM
+
+By Raddy in [Other](https://raddy.dev/blog/category/other/) · July 25, 2022
+
+HTTP Security Headers are a set of HTTP headers that provide additional security for web servers, browsers, and internet service providers. They are used to protect against a variety of attacks, such as cross-site scripting and clickjacking.
+
+**Let’s start by learning how to scan a given website’s security headers.**
+
+## How to scan for Security Headers
+
+Navigate to [Securityheaders.com](https://securityheaders.com/) and simply enter the website that you want to check. The scan will give you a full report of your security headers and also score. If your score is not good enough carry on reading this article.
+
+![Security Headers](https://j2v9w7i9.stackpathcdn.com/wp-content/uploads/2022/06/security-headers-1-1024x215.jpg)
+
+Now let’s look into the different security headers and what they mean.
+
+## Strict-Transport-Security
+
+The HTTP **`Strict-Transport-Security`** response header (often abbreviated as [HSTS](https://developer.mozilla.org/en-US/docs/Glossary/HSTS)) informs browsers that the site should only be accessed using HTTPS, and that any future attempts to access it using HTTP should automatically be converted to HTTPS.
+
+```
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+```
+
+## Content-Security-Policy
+
+The HTTP **`Content-Security-Policy`** response header allows website administrators to control resources the user agent is allowed to load for a given page. With a few exceptions, policies mostly involve specifying server origins and script endpoints. This helps guard against cross-site scripting attacks ([Cross-site_scripting](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting)).
+
+For more information, see the introductory article on [Content Security Policy (CSP)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP).
+
+```
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+```
+
+## X-Frame-Options
+
+The **`X-Frame-Options`** [HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP) response header can be used to indicate whether or not a browser should be allowed to render a page in a [``](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame), [``](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), [``](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed) or [``](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object). Sites can use this to avoid [click-jacking](https://developer.mozilla.org/en-US/docs/Web/Security/Types_of_attacks#click-jacking) attacks, by ensuring that their content is not embedded into other sites.
+
+The added security is provided only if the user accessing the document is using a browser that supports `X-Frame-Options`.
+
+```
+Header set X-Frame-Options: DENY
+
+OR
+
+Header set X-Frame-Options: SAMEORIGIN
+```
+
+## X-Content-Type-Options
+
+The **`X-Content-Type-Options`** response HTTP header is a marker used by the server to indicate that the [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) advertised in the [`Content-Type`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) headers should be followed and not be changed. The header allows you to avoid [MIME type sniffing](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#mime_sniffing) by saying that the MIME types are deliberately configured.
+
+```
+Header set X-Content-Type-Options nosniff
+```
+
+## Referrer-Policy
+
+The **`Referrer-Policy`** [HTTP header](https://developer.mozilla.org/en-US/docs/Glossary/HTTP_header) controls how much [referrer information](https://developer.mozilla.org/en-US/docs/Web/Security/Referer_header:_privacy_and_security_concerns) (sent with the [`Referer`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referer) header) should be included with requests. Aside from the HTTP header, you can [set this policy in HTML](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy#integration_with_html).
+
+## How to Configure Content Security Policy Headers Apache WHM
+
+1. Login with your admin WHM account.
+2. Use the search bar to look for “Apache Configuration”.
+3. Click on “Include Editor”.
+4. Under Pre Main Include, Click on the Select Menu and choose “All Versions”.
+
+Copy and paste the Security Headers Code:
+
+```
+Header set X-Frame-Options SAMEORIGIN
+Header set X-XSS-Protection 1;mode=block
+Header set X-Content-Type-Options nosniff
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+Header always set Referrer-Policy "same-origin"
+Header always set Permissions-Policy: interest-cohort=()  
+```
+
+5. Restart Apache
+
+Your security headers should be updated and work on the entire server, covering all websites. Re-scan your website using [Securityheaders.com](https://securityheaders.com/).
+
+
+
+
+
+
+
 ## Enable Content-Security-Policy (CSP) in WHM
 
 1. Log into WHM
