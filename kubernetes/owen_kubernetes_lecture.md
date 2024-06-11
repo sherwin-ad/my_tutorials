@@ -688,6 +688,119 @@ k8-web-hello-6f4b9c76dc-ghvfr   1/1     Terminating   0          10s
 
 ## Creating YAML deployment specification file
 
+deployment.yaml
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8-web-hello
+spec:
+  selector:
+    matchLabels:
+      app: k8-web-hello
+  template:
+    metadata:
+      labels:
+        app: k8-web-hello
+    spec:
+      containers:
+      - name: k8-web-hello
+        image: sherwinowen/k8-web-hello
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 3000
+```
+
+Create deployment
+
+```
+kubectl apply -f deployment.yaml
+```
+
+Create replicas
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8-web-hello
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: k8-web-hello
+  template:
+    metadata:
+      labels:
+        app: k8-web-hello
+    spec:
+      containers:
+      - name: k8-web-hello
+        image: sherwinowen/k8-web-hello
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 3000
+```
+
+```
+kubectl apply -f deployment.yaml
+```
+
+```
+sherwinowen@Owen-MBA k8-web-hello % k get deployments.apps
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+k8-web-hello   3/3     3            3           7m21s
+
+sherwinowen@Owen-MBA k8-web-hello % k get pods
+NAME                            READY   STATUS    RESTARTS   AGE
+k8-web-hello-66d78bc95d-5fl2z   1/1     Running   0          3m54s
+k8-web-hello-66d78bc95d-fgjbw   1/1     Running   0          3m54s
+k8-web-hello-66d78bc95d-w5hsf   1/1     Running   0          7m27s
+```
+
+## Creating YAML service specification file
+
+service.yaml
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8-web-hello
+spec:
+  type: LoadBalancer
+  selector:
+    app: k8-web-hello
+  ports:
+  - port: 3030
+    targetPort: 3000
+
+```
+
+```
+sherwinowen@Owen-MBA k8-web-hello % kubectl apply -f service.yaml
+service/k8-web-hello created
+sherwinowen@Owen-MBA k8-web-hello % k get service
+NAME           TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+k8-web-hello   LoadBalancer   10.110.211.149   <pending>     3030:30204/TCP   9s
+kubernetes     ClusterIP      10.96.0.1        <none>        443/TCP          24h
+```
+
+## Delete deployment and service
+
+```
+k delete -f deployment.yaml -f service.yaml
+deployment.apps "k8-web-hello" deleted
+service "k8-web-hello" deleted
+```
+
 
 
 

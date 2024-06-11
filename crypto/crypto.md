@@ -266,3 +266,93 @@ cd pool
 
 npm update
 ```
+
+
+
+Dockerfile using ubuntu-18.04
+
+```
+FROM ubuntu:18.04
+
+# replace shell with bash so we can source files
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+# Update system
+RUN apt update -y
+RUN apt upgrade -y
+
+# Install build requirements
+RUN apt install -y git redis python2.7 build-essential libssl-dev libboost-all-dev libsodium-dev curl
+
+
+# nvm environment variables
+ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION 11.0.0
+
+# Install nvm
+RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.2/install.sh | bash
+#CMD source /root/.bashrc
+
+# Install NodeJs
+RUN source $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION
+
+# add node and npm to path so the commands are available
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+# Set npm to use python 2.7
+RUN npm config set python /usr/bin/python2.7
+
+ADD . /pool/
+WORKDIR /pool/
+
+RUN npm update
+
+RUN mkdir -p /config
+
+EXPOSE 8117
+EXPOSE 3333
+EXPOSE 5555
+EXPOSE 7777
+
+VOLUME ["/config"]
+
+RUN cp ./config_examples/aeon.json /config/config.json
+
+CMD node init.js -config=/config/config.json
+```
+
+
+
+Dockerfile using node 
+
+````
+FROM node:8-slim
+
+RUN echo "deb http://archive.debian.org/debian stretch main contrib non-free" > /etc/apt/sources.list
+
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs-legacy build-essential git libssl-dev libboost-all-dev libsodium-dev \
+  && rm -rf /var/lib/apt/lists/*
+#  chmod +x /wait-for-it.sh
+
+ADD . /pool/
+WORKDIR /pool/
+
+RUN npm update
+
+RUN mkdir -p /config
+
+EXPOSE 8117
+EXPOSE 3333
+EXPOSE 5555
+EXPOSE 7777
+
+VOLUME ["/config"]
+
+RUN cp ./config_examples/aeon.json /config/config.json
+
+CMD node init.js -config=/config/config.json
+````
+
