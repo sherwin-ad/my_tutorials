@@ -335,7 +335,16 @@ Edit the following setting from the cloudflare panel. SSL/TLS > Edge Certificate
 
 https://developers.cloudflare.com/ssl/edge-certificates/additional-options/http-strict-transport-security/
 
+To enable HSTS using the dashboard:
 
+1. Log in to the [Cloudflare dashboardOpen external link](https://dash.cloudflare.com/) and select your account.
+2. Select your website.
+3. Go to **SSL/TLS** > **Edge Certificates**.
+4. For **HTTP Strict Transport Security (HSTS)**, select **Enable HSTS**.
+5. Read the dialog and select **I understand**.
+6. Select **Next**.
+7. Configure the [HSTS settings](https://developers.cloudflare.com/ssl/edge-certificates/additional-options/http-strict-transport-security/#configuration-settings).
+8. Select **Save**.
 
 ## Enable HSTS on a cPanel server
 
@@ -549,6 +558,14 @@ To configure Nginx for Forward Secrecy, you configure the server to actively cho
 Perfect Forward Secrecy (PFS) is a security measure that helps to ensure that a session key cannot be compromised if one of the long-term keys in its set is compromised at a later date.  With PFS, if a single key is compromised, only data protected by that key has the potential to be compromised as well.  This is a feature specific to SSL connections that is now a somewhat standard requirement for passing PCI scans.
 
 Apache 2.4 has this ability built-in, but Apache 2.2 supports the PFS-required ciphers as of 2.2.26.  To enable this, you’ll need to make a few adjustments to the main Apache template.  First, you need to change the *SSLCipherSuite* value. You can adjust this in **WHM** -> **Apache Configuration** -> **Global Configuration**, in the *SSL Cipher Suite* box.  Change this value to:
+
+**Default**
+
+```
+ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256
+```
+
+**Change to**
 
 ```
 SSLCipherSuite EECDH+AES:EDH+AES:-SHA1:EECDH+RC4:EDH+RC4:RC4-SHA:EECDH+AES256:EDH+AES256:AES256-SHA:!aNULL:!eNULL:!EXP:!LOW:!MD5
@@ -1650,12 +1667,14 @@ The **`Referrer-Policy`** [HTTP header](https://developer.mozilla.org/en-US/docs
 Copy and paste the Security Headers Code:
 
 ```
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 Header set X-Frame-Options SAMEORIGIN
 Header set X-XSS-Protection 1;mode=block
 Header set X-Content-Type-Options nosniff
 Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 Header always set Referrer-Policy "same-origin"
-Header always set Permissions-Policy: interest-cohort=()  
+Header always set Permissions-Policy: interest-cohort=()
+Header always set Content-Security-Policy "default-src 'self'; script-src *; style-src *; font-src *;img-src *"
 ```
 
 5. Restart Apache
@@ -2108,5 +2127,5 @@ To update the jQuery version on an AlmaLinux server, you'll need to download the
 
 This should print the version number of the currently loaded jQuery.
 
-
+# Web Cache Poisoning
 
