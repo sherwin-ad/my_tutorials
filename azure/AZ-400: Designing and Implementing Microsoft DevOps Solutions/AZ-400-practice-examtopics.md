@@ -1961,14 +1961,14 @@ https://docs.microsoft.com/en-us/azure/devops/organizations/security/access-leve
    https://docs.microsoft.com/en-us/azure/key-vault/key-vault-secure-your-key-vault
 
 10. DRAG DROP -
-   Your company has a project in Azure DevOps.
-   You plan to create a release pipeline that will deploy resources by using Azure Resource Manager templates. The templates will reference secrets stored in Azure
-   Key Vault.
-   You need to recommend a solution for accessing the secrets stored in the key vault during deployments. The solution must use the principle of least privilege.
-   What should you include in the recommendation? To answer, drag the appropriate configurations to the correct targets. Each configuration may be used once, more than once, or not at all. You may need to drag the split bar between panes or scroll to view content.
-   NOTE: Each correct selection is worth one point.
-   Select and Place:
-   ![img](images/0014100003.png)
+      Your company has a project in Azure DevOps.
+      You plan to create a release pipeline that will deploy resources by using Azure Resource Manager templates. The templates will reference secrets stored in Azure
+      Key Vault.
+      You need to recommend a solution for accessing the secrets stored in the key vault during deployments. The solution must use the principle of least privilege.
+      What should you include in the recommendation? To answer, drag the appropriate configurations to the correct targets. Each configuration may be used once, more than once, or not at all. You may need to drag the split bar between panes or scroll to view content.
+      NOTE: Each correct selection is worth one point.
+      Select and Place:
+      ![img](images/0014100003.png)
 
    *![img](images/0014200001.png)*
    Box 1: A key Vault advanced access policy

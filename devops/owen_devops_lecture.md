@@ -1193,3 +1193,22 @@ Goto to Project Settings > Pipelines > Service connections > select Kubernetes
 ![image-20240429173423699](images/image-20240429173423699.png)
 
 #### Create new pipeline
+
+
+
+## Jenkins
+
+### Install Jenkins
+
+https://www.jenkins.io/doc/book/installing/docker/
+
+1. Add Maven and Docker
+
+   Goto Manage Jenkins > Tools
+
+2. Create job
+
+   - Item Name:  jenkin-devops-microservice-pipeline
+   - Select Pipeline
+
+3. 
