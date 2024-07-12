@@ -605,42 +605,53 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 - [ ] Scheduled builds.
 - [ ] Branch filters.
 
-
+Batching CI runs -
+If you have many team members uploading changes often, you may want to reduce the number of runs you start. If you set batch to true, when a pipeline is running, the system waits until the run is completed, then starts another run with all changes that have not yet been built.
+Example:
+\# specific branch build with batching
+trigger:
+batch: true
+branches:
+include:
+\- master
+To clarify this example, let us say that a push A to master caused the above pipeline to run. While that pipeline is running, additional pushes B and C occur into the repository. These updates do not start new independent runs immediately. But after the first run is completed, all pushes until that point of time are batched together and a new run is started.
+Reference:
+https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github
 
 62. You manage a project in Azure DevOps. You need to prevent the configuration of the project from changing over time. Solution: Implement Continuous Assurance for the project. Does this meet the goal?
 
 - [x] Yes.
 - [ ] No.
 
-
+. The basic idea behind Continuous Assurance (CA) is to **setup the ability to check for "drift" from what is considered a secure snapshot of a system**. Support for Continuous Assurance lets us treat security truly as a 'state' as opposed to a 'point in time' achievement.
 
 63. You manage a project in Azure DevOps. You need to prevent the configuration of the project from changing over time. Solution: Implement Continuous Integration for the project. Does this meet the goal?
 
 - [ ] Yes.
 - [x] No.
 
-**[⬆ Back to Top](#table-of-contents)**
+Continuous integration (CI) is **a practice development teams use to automate merging and testing code**. CI helps to catch bugs early in the development cycle, making them less expensive to fix.
 
 64. You manage a project in Azure DevOps. You need to prevent the configuration of the project from changing over time. Solution: Add a code coverage step to the build pipelines. Does this meet the goal?
 
 - [ ] Yes.
 - [x] No.
 
-**[⬆ Back to Top](#table-of-contents)**
+
 
 65. You have an Azure DevOps organization named Contoso and an Azure subscription. The subscription contains an Azure virtual machine scale set named VMSS1 that is configured for autoscaling. You have a project in Azure DevOps named Project1. Project1 is used to build a web app named App1 and deploy App1 to VMSS1. You need to ensure that an email alert is generated whenever VMSS1 scales in or out. Solution: From Azure DevOps, configure the Service hooks settings for . Does this meet the goal?
 
 - [ ] Yes.
 - [x] No.
 
-**[⬆ Back to Top](#table-of-contents)**
+An action group is a collection of notification preferences defined by the owner of an Azure subscription. Azure Monitor, Service Health and Azure Advisor alerts use action groups to notify users that an alert has been triggered.
 
 66. You have an Azure DevOps organization named Contoso and an Azure subscription. The subscription contains an Azure virtual machine scale set named VMSS1 that is configured for autoscaling. You have a project in Azure DevOps named Project1. Project1 is used to build a web app named App1 and deploy App1 to VMSS1. You need to ensure that an email alert is generated whenever VMSS1 scales in or out. Solution: From Azure DevOps, configure the Notifications settings for Project1. Does this meet the goal?
 
 - [ ] Yes.
 - [x] No.
 
-**[⬆ Back to Top](#table-of-contents)**
+An action group is a collection of notification preferences defined by the owner of an Azure subscription. Azure Monitor, Service Health and Azure Advisor alerts use action groups to notify users that an alert has been triggered.
 
 67. You are using PowerShell to administer Azure Log Analytics workspaces. You need to list the available workspaces and their properties. How should you complete the command?
 
@@ -651,7 +662,7 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 - [ ] Box 1: Get-AzResource. Box 2: -ResourceId.
 - [ ] Box 1: Get-AzResourceGroup. Box 2: -Get-AzResource.
 
-**[⬆ Back to Top](#table-of-contents)**
+
 
 68. You have a project in Azure DevOps named Project1. Project1 contains a pipeline that builds a container image named Image1 and pushes Image1 to an Azure container registry named ACR1. Image1 uses a base image stored in Docker Hub. You need to ensure that Image1 is updated automatically whenever the base image is updated. What should you do?
 
@@ -660,7 +671,7 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 - [ ] Enable the Azure Event Grid resource provider and subscribe to registry events.
 - [ ] Create a service hook in Project1.
 
-**[⬆ Back to Top](#table-of-contents)**
+
 
 69. Your company has four projects. The version control requirements for each project are shown in the following table. You plan to use Azure Repos for all the projects. Which version control system should you use for each project?
 
@@ -671,7 +682,7 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 - [x] Project 1: Team Foundation Version Control. Project 2: Git. Project 3: Git. Project 4: Team Foundation Version Control.
 - [ ] Project 1: Subversion. Project 2: Perforce. Project 3: Team Foundation Version Control. Project 4: Git.
 
-**[⬆ Back to Top](#table-of-contents)**
+
 
 70. Your company is building a new solution in Java. The company currently uses a SonarQube server to analyze the code of .NET solutions. You need to analyze and monitor the code quality of the Java solution. Which task types should you add to the build pipeline?
 
@@ -691,7 +702,7 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 
 **[⬆ Back to Top](#table-of-contents)**
 
-72. Your development team is building a new web solution by using the Microsoft Visual Studio integrated development environment (IDE). You need to make a custom package available to all the developers. The package must be managed centrally, and the latest version must be available for consumption in Visual Studio automatically. Which three actions should you perform?
+72. **Your development team is building a new web solution by using the Microsoft Visual Studio integrated development environment (IDE). You need to make a custom package available to all the developers. The package must be managed centrally, and the latest version must be available for consumption in Visual Studio automatically. Which three actions should you perform?**
 
 - [x] Publish the package to a feed.
 - [x] Create a new feed in Azure Artifacts.
@@ -700,7 +711,7 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 - [x] Add the package URL to the NuGet Package Manager settings in Visual Studio.
 - [ ] Create a Git repository in Azure Repos.
 
-**[⬆ Back to Top](#table-of-contents)**
+
 
 73. You have an Azure Kubernetes Service (AKS) implementation that is RBAC-enabled. You plan to use Azure Container Instances as a hosted development environment to run containers in the AKS implementation. You need to configure Azure Container Instances as a hosted environment for running the containers in AKS. Which three actions should you perform in sequence?
 
@@ -711,35 +722,44 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 - [ ] Box 1: Run az aks install-connector. Box 2: Run kubectl apply. Box 3: Run az aks install-connector.
 - [ ] Box 1: Run helm init. Box 2: Run az role assignment create. Box 3: Run kubectl apply.
 
-**[⬆ Back to Top](#table-of-contents)**
+Step 1: Create a YAML file.
+If your AKS cluster is RBAC-enabled, you must create a service account and role binding for use with Tiller. To create a service account and role binding, create a file named rbac-virtual-kubelet.yaml
+Step 2: Run kubectl apply.
+Apply the service account and binding with kubectl apply and specify your rbac-virtual-kubelet.yaml file.
+Step 3: Run helm init.
+Configure Helm to use the tiller service account:
+helm init --service-account tiller
+You can now continue to installing the Virtual Kubelet into your AKS cluster.
+Reference:
+https://docs.microsoft.com/en-us/azure/aks/virtual-kubelet
 
 74. You integrate a cloud-hosted Jenkins server and a new Azure DevOps deployment. You need Azure DevOps to send a notification to Jenkins when a developer commits changes to a branch in Azure Repos. Solution: You create a service hook subscription that uses the build completed event. Does this meet the goal?
 
 - [ ] Yes.
 - [x] No.
 
-**[⬆ Back to Top](#table-of-contents)**
 
-75. Your company uses cloud-hosted Jenkins for builds. You need to ensure that Jenkins can retrieve source code from Azure Repos. Which three actions should you perform?
+
+75. **Your company uses cloud-hosted Jenkins for builds. You need to ensure that Jenkins can retrieve source code from Azure Repos. Which three actions should you perform?**
 
 - [x] Add the Team Foundation Server (TFS) plug-in to Jenkins.
-- [x] Create a Personal Access Token m your Azure DevOps account.
+- [x] Create a Personal Access Token in your Azure DevOps account.
 - [ ] Create a webhook in Jenkins.
 - [x] Create a service hook in Azure DevOps.
 - [ ] Add a Personal Access Token to your Jenkins account.
 
-**[⬆ Back to Top](#table-of-contents)**
 
-76. Your company builds a multi tier web application. You use Azure DevOps and host the production application on Azure virtual machines. Your team prepares an Azure Resource Manager template of the virtual machine that you mil use to test new features. You need to create a staging environment in Azure that meets the following requirements: Minimizes the cost of Azure hosting. Provisions the virtual machines automatically. Use the custom Azure Resource Manager template to provision the virtual machines. What should you do?
+
+76. **Your company builds a multi tier web application. You use Azure DevOps and host the production application on Azure virtual machines. Your team prepares an Azure Resource Manager template of the virtual machine that you mil use to test new features. You need to create a staging environment in Azure that meets the following requirements: Minimizes the cost of Azure hosting. Provisions the virtual machines automatically. Use the custom Azure Resource Manager template to provision the virtual machines. What should you do?**
 
 - [x] In Azure DevOps, configure new tasks in the release pipeline to create and delete the virtual machines m Azure DevTest Labs.
 - [ ] From Azure Cloud Shell, run Azure PowerShell commands to create and delete the new virtual machines in a staging resource group.
 - [ ] In Azure DevOps, configure new tasks in the release pipeline to deploy to Azure Cloud Services.
 - [ ] In Azure Cloud Shell, run Azure CLI commands to create and delete the new virtual machines in a staging resource group.
 
-**[⬆ Back to Top](#table-of-contents)**
 
-77. Your company uses Team Foundation Server 2013 (TFS 2013). You plan to migrate to Azure DevOps. You need to recommend a migration strategy that meets the following requirements: Preserves the dates of Team Foundation Version Control changesets. Preserves the changes dates of work items revisions. Minimizes migration effort. Migrates all TFS artifacts. What should you recommend?
+
+77. **Your company uses Team Foundation Server 2013 (TFS 2013). You plan to migrate to Azure DevOps. You need to recommend a migration strategy that meets the following requirements: Preserves the dates of Team Foundation Version Control changesets. Preserves the changes dates of work items revisions. Minimizes migration effort. Migrates all TFS artifacts. What should you recommend?**
 
 ![Question 77](images/question77.jpg)
 
@@ -748,18 +768,18 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 - [ ] On the TFS server: Upgrade to the most recent version of PowerShell Core. To perform the migration: Use the TFS Integration Platform.
 - [ ] On the TFS server: Install the TFS Java SDK. To perform the migration: Use the TFS Database Import Service.
 
-**[⬆ Back to Top](#table-of-contents)**
 
-78. Your company is currently making use of Team Foundation Server 2013 (TFS 2013), but intend to migrate to Azure DevOps. You have been tasked with supplying a migration approach that allows for the preservation of Team Foundation Version Control changesets dates, as well as the changes dates of work items revisions. The approach should also allow for the migration of all TFS artifacts, while keeping migration effort to a minimum. You have suggested upgrading TFS to the most recent RTW release. Which of the following should also be suggested?
+
+78. **Your company is currently making use of Team Foundation Server 2013 (TFS 2013), but intend to migrate to Azure DevOps. You have been tasked with supplying a migration approach that allows for the preservation of Team Foundation Version Control changesets dates, as well as the changes dates of work items revisions. The approach should also allow for the migration of all TFS artifacts, while keeping migration effort to a minimum. You have suggested upgrading TFS to the most recent RTW release. Which of the following should also be suggested?**
 
 - [ ] Installing the TFS Java SDK.
 - [x] Using the TFS Database Import Service to perform the upgrade.
 - [ ] Upgrading PowerShell Core to the latest version.
 - [ ] Using the TFS Integration Platform to perform the upgrade.
 
-**[⬆ Back to Top](#table-of-contents)**
 
-79. Litware, Inc. an independent software vendor (ISV) Litware has a main office and five branch offices. Application Architecture The company' s primary application is a single monolithic retirement fund management system based on ASP.NET web forms that use logic written in V8.NET. Some new sections of the application are written in C#. Variations of the application are created for individual customers. Currently, there are more than 80 have code branches in the application's code base. The application was developed by using Microsoft Visual Studio. Source code is stored in Team Foundation Server (TFS) in the main office. The branch offices access of the source code by using TFS proxy servers. Architectural Issues Litware focuses on writing new code for customers. No resources are provided to refactor or remove existing code. Changes to the code base take a long time, AS dependencies are not obvious to individual developers. Merge operations of the code often take months and involve many developers. Code merging frequently introduces bugs that are difficult to locate and resolve. Customers report that ownership costs of the retirement fund management system increase continually. The need to merge unrelated code makes even minor code changes expensive. Requirements Planned Changes Litware plans to develop a new suite of applications for investment planning. The investment planning Applications will require only minor integration with the easting retirement fund management system. The investment planning applications suite will include one multi-tier web application and two iOS mobile applications. One mobile application will be used by employees; the other will be used by customers. Litware plans to move to a more agile development methodology. Shared code will be extracted into a series of package. Litware has started an internal cloud transformation process and plans to use cloud based services whenever suitable. Litware wants to become proactive m detecting failures, rather than always waning for customer bug reports. Technical Requirements The company's investment planning applications suite must meet the following technical requirements: New incoming connections through the firewall must be minimized. Members of a group named Developers must be able to install packages. The principle of least privilege must be used for all permission assignments A branching strategy that supports developing new functionality in isolation must be used. Members of a group named Team leaders must be able to create new packages and edit the permissions of package feeds Visual Studio App Center must be used to centralize the reporting of mobile application crashes and device types in use. By default, all App Center must be used to centralize the reporting of mobile application crashes and device types in use. Code quality and release quality are critical. During release, deployments must not proceed between stages if any active bugs are logged against the release. The mobile applications must be able to call the share pricing service of the existing retirement fund management system. Until the system is upgraded, the service will only support basic authentication over HUPS. The required operating system configuration tor the test servers changes weekly. Azure Automation State Configuration must be used to ensure that the operating system on each test servers configured the same way when the servers are created and checked periodically. The test servers are configured correctly when first deployed, but they experience configuration drift over time. Azure Automation State Configuration fails to correct the configurations. Azure Automation State Configuration nodes are registered by using the following command. What should you use to implement the code quality restriction on the release pipeline for the investment planning applications suite?
+
+79. **Litware, Inc. an independent software vendor (ISV) Litware has a main office and five branch offices. Application Architecture The company' s primary application is a single monolithic retirement fund management system based on ASP.NET web forms that use logic written in V8.NET. Some new sections of the application are written in C#. Variations of the application are created for individual customers. Currently, there are more than 80 have code branches in the application's code base. The application was developed by using Microsoft Visual Studio. Source code is stored in Team Foundation Server (TFS) in the main office. The branch offices access of the source code by using TFS proxy servers. Architectural Issues Litware focuses on writing new code for customers. No resources are provided to refactor or remove existing code. Changes to the code base take a long time, AS dependencies are not obvious to individual developers. Merge operations of the code often take months and involve many developers. Code merging frequently introduces bugs that are difficult to locate and resolve. Customers report that ownership costs of the retirement fund management system increase continually. The need to merge unrelated code makes even minor code changes expensive. Requirements Planned Changes Litware plans to develop a new suite of applications for investment planning. The investment planning Applications will require only minor integration with the easting retirement fund management system. The investment planning applications suite will include one multi-tier web application and two iOS mobile applications. One mobile application will be used by employees; the other will be used by customers. Litware plans to move to a more agile development methodology. Shared code will be extracted into a series of package. Litware has started an internal cloud transformation process and plans to use cloud based services whenever suitable. Litware wants to become proactive m detecting failures, rather than always waning for customer bug reports. Technical Requirements The company's investment planning applications suite must meet the following technical requirements: New incoming connections through the firewall must be minimized. Members of a group named Developers must be able to install packages. The principle of least privilege must be used for all permission assignments A branching strategy that supports developing new functionality in isolation must be used. Members of a group named Team leaders must be able to create new packages and edit the permissions of package feeds Visual Studio App Center must be used to centralize the reporting of mobile application crashes and device types in use. By default, all App Center must be used to centralize the reporting of mobile application crashes and device types in use. Code quality and release quality are critical. During release, deployments must not proceed between stages if any active bugs are logged against the release. The mobile applications must be able to call the share pricing service of the existing retirement fund management system. Until the system is upgraded, the service will only support basic authentication over HUPS. The required operating system configuration tor the test servers changes weekly. Azure Automation State Configuration must be used to ensure that the operating system on each test servers configured the same way when the servers are created and checked periodically. The test servers are configured correctly when first deployed, but they experience configuration drift over time. Azure Automation State Configuration fails to correct the configurations. Azure Automation State Configuration nodes are registered by using the following command. What should you use to implement the code quality restriction on the release pipeline for the investment planning applications suite?**
 
 ![Question 79](images/question4_79_116_162_322_325.jpeg)
 
@@ -768,9 +788,9 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 - [ ] Post-deployment approval.
 - [x] Deployment gate.
 
-**[⬆ Back to Top](#table-of-contents)**
 
-80. You use Azure DevOps to manage the build and deployment of an app named App1. You have a release pipeline that deploys a virtual machine named VM1. You plan to monitor the release pipeline by using Azure Monitor. You need to create an alert to monitor the performance of VM1. The alert must be triggered when the average CPU usage exceeds 70 percent for five minutes. The alert must calculate the average once every minute. How should you configure the alert rule?
+
+80. **You use Azure DevOps to manage the build and deployment of an app named App1. You have a release pipeline that deploys a virtual machine named VM1. You plan to monitor the release pipeline by using Azure Monitor. You need to create an alert to monitor the performance of VM1. The alert must be triggered when the average CPU usage exceeds 70 percent for five minutes. The alert must calculate the average once every minute. How should you configure the alert rule?**
 
 ![Question 80](images/question80.jpg)
 
@@ -779,7 +799,7 @@ https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
 - [ ] Aggregation granularity (Period): 1 minute. Threshold value: Dynamic. Operator: Greater than.
 - [ ] Aggregation granularity (Period): 5 minutes. Threshold value: Dynamic. Operator: Less than.
 
-**[⬆ Back to Top](#table-of-contents)**
+
 
 81. You have an Azure DevOps organization named Contoso and an Azure subscription. The subscription contains an Azure virtual machine scale set named VMSS1 that is configured for autoscaling. You have a project in Azure DevOps named Project1. Project1 is used to build a web app named App1 and deploy App1 to VMSS1. You need to ensure that an email alert is generated whenever VMSS1 scales in or out. Solution: From Azure Monitor, create an action group. Does this meet the goal?
 
