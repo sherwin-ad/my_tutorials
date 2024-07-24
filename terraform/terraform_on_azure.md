@@ -1,5 +1,7 @@
 # Terraform on Azure
 
+# O1-HelloWorld
+
 ## Azure Provider
 
 **Azurerm** 
@@ -23,19 +25,19 @@ provider "azurerm" {
 }
 ```
 
-###### Rewrites all Terraform configuration files to a canonical format.
+**Rewrites all Terraform configuration files to a canonical format.**
 
 ```
 $ terraform fmt      
 ```
 
-###### Validate the configuration files in a directory
+**Validate the configuration files in a directory**
 
 ```
 $ terraform validate 
 ```
 
-### Create resource group
+## Create resource group
 
 main.tf
 
@@ -92,7 +94,7 @@ Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 
 
 
-### Variables
+## Variables
 
 **main.tf**
 
@@ -486,6 +488,8 @@ $ terraform destroy
 ```
 
 
+
+# 02-Provisioners
 
 ## Create an Azure VM with Terraform
 
