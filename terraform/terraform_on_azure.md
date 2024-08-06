@@ -1272,7 +1272,7 @@ resource "azurerm_network_security_group" "nsg" {
 
 
 
-## Using Builßt-in Functions
+## Using Built-in Functions
 
 https://developer.hashicorp.com/terraform/language/functions
 
