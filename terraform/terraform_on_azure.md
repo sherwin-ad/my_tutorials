@@ -1354,7 +1354,7 @@ fd00:fd12:3456:7890::22
 
 
 
-## Terraform state
+# 05-Terraform state
 
 main.tf
 
@@ -1458,7 +1458,7 @@ azurerm_virtual_network.example
 azurerm_windows_virtual_machine.example
 ```
 
-## Terraform drift
+# 06-Terraform drift
 
 ### terraform apply replace
 
@@ -1562,7 +1562,11 @@ $ terraform apply -refresh-only
 
 ### terraform import
 
-Create placeholder in main.tf
+-   Import existing infrastructure into your Terraform state.
+
+1. Create storage account in azure
+
+2. Create placeholder in main.tf
 
 ```
 # Deploy Azure Windows Virtual Machine
@@ -1628,7 +1632,7 @@ resource "azurerm_storage_account" "mystorage" {
 
 
 
-- Goto StorageAccount > Settings > Endpoint 
+3. Goto StorageAccount > Settings > Endpoint 
 
 - Get the Storage account resource ID
 
@@ -1638,11 +1642,11 @@ ge [Storage account resource ID]
 ```
 
 ```
-$ terraform import azurerm_storage_account.mystora
+ $ terraform import azurerm_storage_account.mystora
 ge /subscriptions/2120c628-c057-48b9-ace5-14fddbf72365/resourceGroups/example-rg/providers/Microsoft.Storage/storageAccounts/owenstorageterraform
 ```
 
-After the import modify main.,tf add the arguments needed
+After the import modify main.tf add the arguments needed
 
 ```
 # Deploy Azure Windows Virtual Machine
@@ -1992,7 +1996,7 @@ provider "azurerm" {
 
 # 10-Cloud
 
-1. Create API token in Terraform Cloud
+1. Create API token in Terraform Cloud  
 
 provider.tf
 
@@ -2033,11 +2037,16 @@ The output includes credentials that you must protect. Be sure that you do not i
   "appId": "",
   "displayName": "",
   "password": "",
-  "tenant": ""
+  "tenant": "" 
 }
 ```
 
-3. Create workspace variables
+  appId: ARM_CLIENT_ID
+  password: ARM_CLIENT_SECRET
+  tenant: ARM_TENANT_ID
+  subscription_id: ARM_SUBSCRIPTION_ID		 
+
+3. Create workspace variables 
 
 ![image-20240423111834084](images/sudo.png)
 

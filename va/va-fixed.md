@@ -386,10 +386,13 @@ read -p "Domain: " domain ; curl -sI https://${domain}/ | grep -i Strict-Transpo
 **The command above will request a domain. Here is an example:**
 
 ```
-$ read -p "Domain: " domain ; curl -sI https://${domain}/ | grep -i Strict-Transport-Security
-Domain: tpb.gov.ph     
-strict-transport-security: max-age=31536000; includeSubDomains; preload
+curl -sI https://cda.gov.ph | grep -i Strict-Transport-Security
+strict-transport-security: max-age=15552000
 ```
+
+
+
+
 
  
 
@@ -1644,6 +1647,52 @@ OR
 
 Header set X-Frame-Options: SAMEORIGIN
 ```
+
+## Steps to Configure `X-Frame-Options` Header in Cloudflare Using Transform Rules
+
+1. **Log in to Cloudflare**:
+
+   - Go to Cloudflare and log in to your account.
+
+2. **Select Your Domain**:
+
+   - In the Cloudflare dashboard, select the domain for which you want to configure the `X-Frame-Options` header.
+
+3. **Navigate to Transform Rules**:
+
+   - In the sidebar, go to **Rules** > **Transform Rules**.
+
+4. **Create a New Transform Rule**:
+
+   - Click **Create Transform Rule** and then select **HTTP Response Header Modification**.
+
+5. **Configure the Rule**:
+
+   - **Rule Name**: Give the rule a name, like "Set X-Frame-Options Header."
+
+   - **Field**: Select **X-Frame-Options** from the dropdown.
+
+   - **Value**: Enter one of the following values depending on your security needs:
+
+     - `DENY`: Prevents the page from being displayed in an iframe, regardless of the origin.
+     - `SAMEORIGIN`: Allows the page to be displayed in an iframe only if the iframe is from the same origin.
+     - `ALLOW-FROM uri`: Allows the page to be displayed in an iframe from a specified origin (this is deprecated and not supported in some browsers).
+
+     For example:
+
+     - `DENY`
+     - `SAMEORIGIN`
+     - `ALLOW-FROM https://example.com`
+
+   - **Condition (Optional)**: Set conditions for when this rule should apply (e.g., based on specific URLs or request methods).
+
+6. **Save and Deploy the Rule**:
+
+   - After configuring the rule, click **Save** to deploy the rule.
+
+
+
+
 
 ## X-Content-Type-Options
 
