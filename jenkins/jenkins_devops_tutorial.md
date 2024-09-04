@@ -1,12 +1,12 @@
-## Jenkins
+# Jenkins
 
-## Repository 
+# Repository 
 
 https://github.com/yankils
 
 
 
-## Install Jenkins
+# Install Jenkins
 
 **Install Java**
 
@@ -36,7 +36,7 @@ sudo apt-get update
 sudo apt-get install jenkins
 ```
 
-## Run First Jenkins Job
+# Run First Jenkins Job
 
 1. Goto Dashboard nd click New Item
 
@@ -67,7 +67,9 @@ sudo apt-get install jenkins
 
 
 
-## Integrate GIT with Jenkins
+# Integrate GIT with Jenkins
+
+![image-20240902163439219](images/image-20240902163439219.png)
 
 1. Install Github plugins in jenkins
 
@@ -81,7 +83,7 @@ sudo apt-get install jenkins
 
    ![image-20240829135344890](images/image-20240829135344890.png)
 
-## Run Jenkins job to Pull code from Github
+# Run Jenkins job to Pull code from Github
 
 1. Goto Dashboard nd click New Item
 
@@ -124,7 +126,7 @@ sudo apt-get install jenkins
 
 
 
-## Integrate Maven with Jenkins
+# Integrate Maven with Jenkins
 
 **Maven** 
 
@@ -191,7 +193,7 @@ sudo apt-get install jenkins
 
    ![image-20240829161152967](images/image-20240829161152967.png)
 
-## Build a Java Project using Jenkins
+# Build a Java Project using Jenkins
 
 1. Goto Dashboard nd click New Item
 
@@ -856,7 +858,7 @@ sudo apt-get install jenkins
 
 
 
-## Install Tomcat Server
+# Install Tomcat Server
 
 1. Install Java
 
@@ -933,7 +935,7 @@ sudo apt-get install jenkins
 
    Stop and Start Tomcat Server
 
-## Integrate Tomcat with Jenkins
+# Integrate Tomcat with Jenkins
 
 1. Install Deploy to Container plugin
 
@@ -971,7 +973,7 @@ sudo apt-get install jenkins
 
       ![image-20240830143554846](images/image-20240830143554846.png)
 
-## Automate build and deploy using Poll SCM
+# Automate build and deploy using Poll SCM
 
 **Configure Build Triggers** 
 
@@ -981,10 +983,704 @@ Goto Dashboard > BuildAndDeployJob > Configuration
 
 -  Update the source code and push to the repository. It will automatically build the code and deply it to Tomcat server.
 
+# Create Tomcat container
+
+**Run tomcat container**
+
+```
+docker run -d --name tomcat -p 8080:8080 tomcat
+```
+
+**Browse Tomcat**
+
+`![image-20240902093441345](images/image-20240902093441345.png)
+
+# Fixing Tomcat container issue
+
+List ocker containers
+
+ ```
+ docker ps
+ CONTAINER ID   IMAGE     COMMAND             CREATED          STATUS          PORTS                                       NAMES
+ 70ede2d07dc0   tomcat    "catalina.sh run"   35 minutes ago   Up 35 minutes   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp   tomcat
+ ```
+
+Login to tomcat container
+
+```
+docker exec -it tomcat /bin/bash
+root@70ede2d07dc0:/usr/local/tomcat# ls
+bin           conf             lib      logs            NOTICE     RELEASE-NOTES  temp     webapps.dist
+BUILDING.txt  CONTRIBUTING.md  LICENSE  native-jni-lib  README.md  RUNNING.txt    webapps  work
+
+root@70ede2d07dc0:/usr/local/tomcat# cd webapps.dist/
+
+root@70ede2d07dc0:/usr/local/tomcat/webapps.dist# ls
+docs  examples  host-manager  manager  ROOT
+
+root@70ede2d07dc0:/usr/local/tomcat/webapps.dist# cp -R * ../webapps/
+
+root@70ede2d07dc0:/usr/local/tomcat/webapps.dist# ls ../webapps
+docs  examples  host-manager  manager  ROOT
+root@70ede2d07dc0:/usr/local/tomcat/webapps.dist# 
+```
+
+**Browse Tomcat**
+
+![image-20240902101452882](images/image-20240902101452882.png)
 
 
 
+# Create your first docker file
+
+## Dockerfile Creation
+
+Docker file format
+
+```
+ # Comment
+ INSTRUCTION arguments
+```
+
+1. A Dockerfile must begin with a FROM instruction.
+2. Docker distributes official versions of the images that can be used for building Dockerfiles under docker/dockerfile repository on Docker Hub.
+
+- `FROM` - A valid Dockerfile must start with a FROM instruction.
+
+- `RUN` - The RUN instruction will execute any commands in a new layer on top of the current image and commit the results. The resulting committed image will be used for the next step in the Dockerfile.
+
+- `CMD` - The main purpose of a CMD is to provide defaults for an executing container.
+
+  `Note:` There can only be one CMD instruction in a Dockerfile. If you list more than one CMD then only the last CMD will take effect.
+
+  `Note` - Do not confuse RUN with CMD. RUN actually runs a command and commits the result; CMD does not execute anything at build time, but specifies the intended command for the image.
+
+- `LABEL` -The LABEL instruction adds metadata to an image. A LABEL is a key-value pair. T
+
+- `EXPOSE`
+
+  1. The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime.
+  2. To set up port redirection on the host system, see using the -P flag.
+  3. The docker network command supports creating networks for communication among containers without the need to expose or publish specific ports, because the containers connected to the network can communicate with each other over any port.
+
+- `ENV` - The ENV instruction sets the environment variable to the value .
+
+- `ADD` - The ADD instruction copies new files, directories or remote file URLs from and adds them to the filesystem of the image at the path .
+
+  If is a local tar archive in a recognized compression format (identity, gzip, bzip2 or xz) then it is unpacked as a directory.
+
+- `COPY` - The COPY instruction copies new files or directories from and adds them to the filesystem of the container at the path .
+
+- `ENTRYPOINT` - An ENTRYPOINT allows you to configure a container that will run as an executable.
+
+  1. ENTRYPOINT will override all elements specified using CMD
+  2. Both CMD and ENTRYPOINT instructions define what command gets executed when running a container. There are few rules that describe their co-operation.
+  3. Dockerfile should specify at least one of CMD or ENTRYPOINT commands.
+  4. ENTRYPOINT should be defined when using the container as an executable.
+  5. CMD should be used as a way of defining default arguments for an ENTRYPOINT command or for executing an ad-hoc command in a container.
+  6. CMD will be overridden when running the container with alternative arguments.
+
+- `VOLUME` - The VOLUME instruction creates a mount point with the specified name and marks it as holding externally mounted volumes from native host or other containers.
+
+- `USER` - The USER instruction sets the user name to use when running the image
+
+- `WORKDIR` - The WORKDIR instruction sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions
+
+- `ARG` - The ARG instruction defines a variable that users can pass at build-time to the builder with the docker build command using the --build-arg = flag.
+
+- `SHELL` - The SHELL instruction allows the default shell used for the shell form of commands to be overridden.
+
+# Install Tomcat on Ubuntu
+
+| Description                                 | Command   |
+| ------------------------------------------- | --------- |
+| 1. Pull centos from dockerhub               | FROM      |
+| 2. Install java                             | RUN       |
+| 3. Create /opt/tomcat directory             | RUN       |
+| 4. Change work directory to /opt/tomcat     | WORKDIR   |
+| 5. Download tomcat packages                 | ADD / RUN |
+| 6. Extract tar.gz file                      | RUN       |
+| 7. Rename to tomcat directory               | RUN       |
+| 8. Tell to docker that it runs on port 8080 | EXPOSE    |
+| 9. Tell to docker that it runs on port 8080 | CMD       |
+
+**Dockerfile**
+
+```
+FROM ubuntu
+RUN apt update && apt install fontconfig openjdk-17-jre -y
+RUN mkdir /opt/tomcat/
+WORKDIR /opt/tomcat
+ADD https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.93/bin/apache-tomcat-9.0.93.tar.gz .
+RUN tar -xvzf apache-tomcat-*.tar.gz 
+RUN mv apache-tomcat-9.0.93/* /opt/tomcat
+EXPOSE 8080
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]
+```
+
+**Build image**
+
+```
+docker build -t sherwinowen/mytomcat .
+[+] Building 9.8s (12/12) FINISHED                                                        docker:default
+ => [internal] load build definition from Dockerfile                                                0.0s
+ => => transferring dockerfile: 376B                                                                0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:latest                                    0.3s
+ => [internal] load .dockerignore                                                                   0.0s
+ => => transferring context: 2B                                                                     0.0s
+ => [1/7] FROM docker.io/library/ubuntu:latest@sha256:8a37d68f4f73ebf3d4efafbcf66379bf3728902a8038  0.0s
+ => [5/7] ADD https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.93/bin/apache-tomcat-9.0.93.tar.gz .    0.0s
+ => CACHED [2/7] RUN apt update && apt install fontconfig openjdk-17-jre -y                         0.0s
+ => CACHED [3/7] RUN mkdir /opt/tomcat/                                                             0.0s
+ => CACHED [4/7] WORKDIR /opt/tomcat                                                                0.0s
+ => CACHED [5/7] ADD https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.93/bin/apache-tomcat-9.0.93.tar  0.0s
+ => [6/7] RUN tar -xvzf apache-tomcat-*.tar.gz                                                      0.7s
+ => [7/7] RUN mv apache-tomcat-9.0.93/* /opt/tomcat                                                 2.0s 
+ => exporting to image                                                                              6.6s 
+ => => exporting layers                                                                             6.6s 
+ => => writing image sha256:f257df9c4c7a08743805947b8873a23bfb84b181f4cfd15826b1e0570e4243ee        0.0s 
+ => => naming to docker.io/sherwinowen/mytomcat                                
+```
+
+**Run container**
+
+```
+docker run -d --name mytomcat -p 8080:8080 sherwinowen/mytomcat
+e87a31742e64c7195d7816508cbd9444a636a68d3254679dd7cbbfd6220caa60
+
+$ docker ps
+CONTAINER ID   IMAGE                  COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+e87a31742e64   sherwinowen/mytomcat   "/opt/tomcat/bin/cat…"   5 seconds ago   Up 4 seconds   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp   mytomcat
+
+```
+
+
+
+# Create customized dockerfile for tomcat
+
+**Dockerfile**
+
+```
+FROM tomcat:latest
+RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+```
+
+**Build image**
+
+```
+docker build -t sherwinowen/demotomcat .
+[+] Building 1.1s (6/6) FINISHED                                                          docker:default
+ => [internal] load build definition from Dockerfile                                                0.0s
+ => => transferring dockerfile: 118B                                                                0.0s
+ => [internal] load metadata for docker.io/library/tomcat:latest                                    0.0s
+ => [internal] load .dockerignore                                                                   0.0s
+ => => transferring context: 2B                                                                     0.0s
+ => [1/2] FROM docker.io/library/tomcat:latest                                                      0.1s
+ => [2/2] RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps                      0.7s
+ => exporting to image                                                                              0.2s
+ => => exporting layers                                                                             0.1s
+ => => writing image sha256:10c27550f4fa821daf612e25100aeb6ddcf0b7bb15e96bd53fdda13606017fe4        0.0s
+ => => naming to docker.io/sherwinowen/demotomcat                                  
+```
+
+**Run container**
+
+```
+docker run -d --name demotomcat -p 8082:8080 sherwinowen/demotomcat
+228245122de728697a02a825d410203e4ae602fb7d3bd028b30abc615b6364e2
+
+docker ps
+CONTAINER ID   IMAGE                    COMMAND                  CREATED          STATUS          PORTS                                         NAMES
+228245122de7   sherwinowen/demotomcat   "catalina.sh run"        3 minutes ago    Up 3 minutes    0.0.0.0:8082->8080/tcp, [::]:8082->8080/tcp   demotomcat
+827848397e00   sherwinowen/mytomcat     "/opt/tomcat/bin/cat…"   37 minutes ago   Up 37 minutes   0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp   mytomcat
+```
+
+# Integrate Docker with Jenkins
+
+1. Create a dockeradmin user
+
+   ```
+   $ sudo adduser dockeradmin
+   info: Adding user `dockeradmin' ...
+   info: Selecting UID/GID from range 1000 to 59999 ...
+   info: Adding new group `dockeradmin' (1004) ...
+   info: Adding new user `dockeradmin' (1004) with group `dockeradmin (1004)' ...
+   info: Creating home directory `/home/dockeradmin' ...
+   info: Copying files from `/etc/skel' ...
+   New password: 
+   Retype new password: 
+   passwd: password updated successfully
+   Changing the user information for dockeradmin
+   Enter the new value, or press ENTER for the default
+   	Full Name []: 
+   	Room Number []: 
+   	Work Phone []: 
+   	Home Phone []: 
+   	Other []: 
+   Is the information correct? [Y/n] 
+   info: Adding new user `dockeradmin' to supplemental / extra groups `users' ...
+   info: Adding user `dockeradmin' to group `users' ...
+   ```
+
+   Add dockeradmin to docker group
+
+   ```
+   $ sudo usermod -aG docker dockeradmin 
+   ```
+
+2. Install "Publish Over SSH" plugin
+
+   ![image-20240902145215260](images/image-20240902145215260.png)
 
    
 
+3. Add Dockerhost to Jenkins "configure systems"
+
+   ![image-20240902162701805](images/image-20240902162701805.png)
+
+   ![image-20240902162833430](images/image-20240902162833430.png)
+
+
+
+# Jenkins job to build and copy Artifacts on to Docker host
+
+![image-20240902163042565](images/image-20240902163042565.png)
+
+1. Create new job from BuildAndDeployJob
+
+   ![image-20240902164128595](images/image-20240902164128595.png)
+
    
+
+2. Post-build Actions
+
+   ![image-20240902171114655](images/image-20240902171114655.png)
+
+# Update Tomcat Dockerfile to Automate Deployment Process
+
+1. Make docker folder in Docker VM**
+
+```   
+mkdir /opt/docker
+```
+
+2. Change owner**
+
+```
+chown -R sherwinowen:sherwinowen /opt/docker
+```
+
+3. Update Post-build Actions / Transfers > Remote directory
+
+![image-20240902191659059](images/image-20240902191659059.png)
+
+4. Build job
+
+   - webapp.war should be in /opt/docker
+
+   ```
+   ls -l /opt/docker/
+   total 8
+   -rw-rw-r-- 1 sherwinowen sherwinowen   81 Sep  2 12:21 Dockerfile
+   -rw-rw-r-- 1 sherwinowen sherwinowen 2372 Sep  2 19:10 webapp.war
+   ```
+
+   
+
+# Update Tomcat Dockerfile to Automate Deployment Process
+
+1. Update Dockerfile
+
+   ```
+   FROM tomcat
+   RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+   COPY ./*.war /usr/local/tomcat/webapps
+   ```
+
+2. Build image
+
+   ```
+   docker build -t tomcat:v1 .
+   [+] Building 0.3s (8/8) FINISHED                                                                         docker:default
+    => [internal] load build definition from Dockerfile                                                               0.0s
+    => => transferring dockerfile: 157B                                                                               0.0s
+    => [internal] load metadata for docker.io/library/tomcat:latest                                                   0.0s
+    => [internal] load .dockerignore                                                                                  0.0s
+    => => transferring context: 2B                                                                                    0.0s
+    => [1/3] FROM docker.io/library/tomcat:latest                                                                     0.0s
+    => CACHED [2/3] RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps                              0.0s
+    => [internal] load build context                                                                                  0.0s
+    => => transferring context: 2.41kB                                                                                0.0s
+    => [3/3] COPY ./*.war /usr/local/tomcat/webapps                                                                   0.1s
+    => exporting to image                                                                                             0.1s
+    => => exporting layers                                                                                            0.0s
+    => => writing image sha256:008a725dd7f015f967f078a7199b575975f8ba24c774b9a1662757536dac99bd                       0.0s
+    => => naming to docker.io/library/tomcat:v1                                     
+   ```
+
+3. List images
+
+   ```
+   docker images
+   REPOSITORY               TAG       IMAGE ID       CREATED         SIZE
+   tomcat                   v1        008a725dd7f0   7 seconds ago   512MB
+   sherwinowen/demotomcat   latest    10c27550f4fa   20 hours ago    512MB
+   sherwinowen/mytomcat     latest    f257df9c4c7a   21 hours ago    796MB
+   tomcat                   latest    c2a444ea6cd7   3 weeks ago     508MB
+   ```
+
+4. Run container
+
+   ```
+   docker run -d --name tomcatv1 -p 8081:8080 tomcat:v1
+   dd8ec5ff54efb65572554a3aab891431a1681bb3d07aabd8adc7f3c6e054b6be
+   
+   docker ps
+   CONTAINER ID   IMAGE       COMMAND             CREATED         STATUS         PORTS                                         NAMES
+   dd8ec5ff54ef   tomcat:v1   "catalina.sh run"   8 seconds ago   Up 7 seconds   0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp   tomcatv1
+   ```
+
+
+
+# Automate  build and deployment on docker container
+
+1. Update BuildAndDeployContainer job
+
+    Add Exec command in Post-build Actions
+
+   ```
+   cd /opt/docker;
+   docker build -t regapp:v1 .;
+   docker run -d --name registerapp -p 8082:8080 regapp:v1
+   ```
+
+2. Build now
+
+   ![image-20240903095844977](images/image-20240903095844977.png)
+
+3. Check docker images and containers
+
+   ```
+   docker images
+   REPOSITORY               TAG       IMAGE ID       CREATED             SIZE
+   regapp                   v1        385af2739e7d   14 seconds ago      512MB
+   
+   docker ps
+   CONTAINER ID   IMAGE       COMMAND             CREATED             STATUS             PORTS                                         NAMES
+   0e625fe72578   regapp:v1   "catalina.sh run"   20 seconds ago      Up 19 seconds      0.0.0.0:8082->8080/tcp, [::]:8082->8080/tcp   registerapp
+   ```
+
+4. Try to commit chages to the remote repository
+
+   - It wil not finish successfully. Error in docker container creation.
+
+   ```
+   docker run -d --name registerapp -p 8082:8080 regapp:v1
+   docker: Error response from daemon: Conflict. The container name "/registerapp" is already in use by container "0e625fe72578fd79884e820e30160296f968442711c38973f9703d4c6b18f030". You have to remove (or rename) that container to be able to reuse that name.
+   See 'docker run --help'.
+   ```
+
+
+
+# Jenkins Job to Automate CI CD to Deploy Application on Docker Container
+
+1. Update BuildAndDeployContainer job
+
+    Add Exec command in Post-build Actions
+
+   ```
+   cd /opt/docker;
+   docker build -t regapp:v1 .;
+   docker stop registerapp;
+   docker rm registerapp;
+   docker run -d --name registerapp -p 8082:8080 regapp:v1
+   ```
+
+2. Build now
+
+# Using Ansible to create containers
+
+![image-20240903105659875](images/image-20240903105659875.png)
+
+# Install Ansible
+
+Setup hostname
+
+**Create ansadmin user**
+
+```
+sudo adduser ansadmin
+```
+
+**Add user to sudoers file**
+
+```
+sudo usermod -aG sudo ansadmin
+```
+
+Generate ssh keys
+
+```
+ssh-keygen 
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (/home/ansadmin/.ssh/id_ed25519): 
+Created directory '/home/ansadmin/.ssh'.
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/ansadmin/.ssh/id_ed25519
+Your public key has been saved in /home/ansadmin/.ssh/id_ed25519.pub
+The key fingerprint is:
+SHA256:rA2koDswdy6MdSsShPy4wzrwz10L9BPlu/vK0sRJ4XU ansadmin@tomcat
+The key's randomart image is:
++--[ED25519 256]--+
+|                 |
+|o         . . E  |
+|.o.   .  ..o .   |
+|..o. o . oo      |
+|=.o.+ o So..     |
+|+O.+ o = .+.     |
+|*=+ o o =o.      |
+|ooo+ . o.+..     |
+|.. .o . ..=+.    |
++----[SHA256]-----+
+
+ls -l .ssh/
+total 8
+-rw------- 1 ansadmin ansadmin 411 Sep  3 16:32 id_ed25519
+-rw-r--r-- 1 ansadmin ansadmin  97 Sep  3 16:32 id_ed25519.pub
+
+```
+
+Enable password based login
+**Install ansible**
+
+```
+sudo apt install ansible
+```
+
+
+
+# Integrate Docker with Ansible
+
+## On Docker Host
+
+Create **ansadmin**
+
+```
+sudo adduser ansadmin
+```
+
+Add ansadmin to sudoers
+
+```
+sudo usermod -aG sudo ansadmin
+```
+
+
+
+## On Ansible Node
+
+**Set up the Inventory File**
+
+Add to hosts file 
+
+1. Create the **ansible** [subdirectory](https://phoenixnap.com/glossary/what-is-a-subdirectory) in the *etc* directory:
+
+```
+sudo mkdir -p /etc/ansible
+```
+
+2. Use a [text editor](https://phoenixnap.com/kb/best-linux-text-editors-for-coding) such as [Nano](https://phoenixnap.com/kb/use-nano-text-editor-commands-linux) to create a file named *hosts*:
+
+```
+sudo nano /etc/ansible/hosts
+```
+
+```
+[IP of Docker Server]
+```
+
+3. Copy ssh keys in authorized_key
+
+4. Test connection
+
+   ```
+   ansible all -m ping
+   10.128.0.33 | SUCCESS => {
+       "ansible_facts": {
+           "discovered_interpreter_python": "/usr/bin/python3"
+       },
+       "changed": false,
+       "ping": "pong"
+   }
+   ```
+
+   ```
+   ansible all -m command -a uptime
+   10.128.0.33 | CHANGED | rc=0 >>
+    18:24:17 up 10:31,  3 users,  load average: 0.09, 0.06, 0.01
+   ```
+
+
+
+# Integrate Ansible with Jenkins
+
+1. Make docker folder in Ansible VM
+
+```   
+mkdir /opt/docker
+```
+
+2. Change owner**
+
+```
+chown -R sherwinowen:sherwinowen /opt/docker
+```
+
+3. Add Ansible server in Jenins system configuration
+
+![image-20240904104544935](images/image-20240904104544935.png)
+
+2. Create new job from BuildAndDeployOnContainer
+
+   ![image-20240904113745874](images/image-20240904113745874.png)
+
+3. Setup Post-build Actions
+
+   ![image-20240904115610785](images/image-20240904115610785.png)
+
+4. Build now
+
+   - It should create webapp.war in Ansible server /opt/docker
+
+
+
+# Build an image and create container in Ansible
+
+1. Install docker
+
+   https://docs.docker.com/engine/install/ubuntu/
+
+2. Create docker image
+
+   Dockerfile
+
+   ```
+   FROM tomcat
+   RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+   COPY ./*.war /usr/local/tomcat/webapps
+   ```
+
+   ```
+   docker build -t regapp:v1 .
+   ```
+
+3. Run Docker container
+
+   ```
+   docker run -d --name regapp-server -p 8080:8080 regapp:v1
+   ```
+   
+
+
+
+# Using Ansible to create containers
+
+![image-20240904160247076](images/image-20240904160247076.png)
+
+1. Update Ansible inventory
+
+   /etc/ansible/host
+
+   ```
+   [dockerhost]
+   10.128.0.33
+   
+   [ansiblehost]
+   10.128.0.35
+   ```
+
+2. Ping servers
+
+   ```
+   ansible all -m ping
+   10.128.0.35 | SUCCESS => {
+       "ansible_facts": {
+           "discovered_interpreter_python": "/usr/bin/python3"
+       },
+       "changed": false,
+       "ping": "pong"
+   }
+   10.128.0.33 | SUCCESS => {
+       "ansible_facts": {
+           "discovered_interpreter_python": "/usr/bin/python3"
+       },
+       "changed": false,
+       "ping": "pong"
+   }
+   ```
+
+3. Create ansible playbook
+
+   regapp.yml
+
+   ```
+   ---
+   - hosts: ansiblehost
+   
+     tasks:
+     - name: create docker image
+       command: docker build -t regapp:latest .
+       args:
+         chdir: /opt/docker
+   ```
+
+4. Test ansible playbook
+
+   ```
+   ansible-playbook regapp.yml --check
+   
+   PLAY [ansiblehost] ***********************************************************************************************
+   
+   TASK [Gathering Facts] *******************************************************************************************
+   ok: [10.128.0.35]
+   
+   TASK [create docker image] ***************************************************************************************
+   skipping: [10.128.0.35]
+   
+   PLAY RECAP *******************************************************************************************************
+   10.128.0.35                : ok=1    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+   ```
+
+5. Run ansible palybook
+
+   ```
+   ansible-playbook regapp.yml 
+   
+   PLAY [ansiblehost] ***********************************************************************************************
+   
+   TASK [Gathering Facts] *******************************************************************************************
+   ok: [10.128.0.35]
+   
+   TASK [create docker image] ***************************************************************************************
+   changed: [10.128.0.35]
+   
+   PLAY RECAP *******************************************************************************************************
+   10.128.0.35                : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+   ```
+
+6. Check if docker image was created
+
+   List docker images
+
+   ```
+   docker images
+   REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+   regapp       latest    198a4531e8ce   3 hours ago   512MB
+   regapp       v1        198a4531e8ce   3 hours ago   512MB
+   ```
+
+   
+
+# Copy image to Dockerhub
+
