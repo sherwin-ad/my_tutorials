@@ -1,6 +1,8 @@
 [TOC]
 
+# How to Install Laravel PHP Framework on Ubuntu 24.04
 
+https://www.howtoforge.com/tutorial/install-laravel-on-ubuntu-for-apache/
 
 # Laravel
 

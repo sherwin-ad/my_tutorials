@@ -1680,7 +1680,137 @@ chown -R sherwinowen:sherwinowen /opt/docker
    regapp       v1        198a4531e8ce   3 hours ago   512MB
    ```
 
-   
+
 
 # Copy image to Dockerhub
+
+1. Login to Dockerhub account
+
+   ```
+   docker login -u sherwinowen
+   Password: 
+   WARNING! Your password will be stored unencrypted in /home/ansadmin/.docker/config.json.
+   Configure a credential helper to remove this warning. See
+   https://docs.docker.com/engine/reference/commandline/login/#credential-stores
+   
+   Login Succeeded-
+   ```
+
+2. Update docker image name
+
+   ```
+   $ docker images
+   REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+   regapp       latest    198a4531e8ce   23 hours ago   512MB
+   regapp       v1        198a4531e8ce   23 hours ago   512MB
+   
+   $ docker tag regapp:latest sherwinowen/regapp:latest
+   
+   $ docker images
+   REPOSITORY           TAG       IMAGE ID       CREATED        SIZE
+   regapp               latest    198a4531e8ce   23 hours ago   512MB
+   regapp               v1        198a4531e8ce   23 hours ago   512MB
+   sherwinowen/regapp   latest    198a4531e8ce   23 hours ago   512MB
+   ```
+
+3. Push image to Dcokerhub
+
+   ```
+   $ docker push sherwinowen/regapp:latest
+   The push refers to repository [docker.io/sherwinowen/regapp]
+   bce3baf22a84: Pushed 
+   77f99c646357: Pushed 
+   5f70bf18a086: Mounted from library/tomcat 
+   45fa496d4478: Mounted from library/tomcat 
+   466578cdfadb: Mounted from library/tomcat 
+   853a9ace6faa: Mounted from library/tomcat 
+   87cdfed53fa0: Mounted from library/tomcat 
+   ea1bbf734f69: Mounted from library/tomcat 
+   7b872bc9fea5: Mounted from library/tomcat 
+   f36fd4bb7334: Mounted from library/tomcat 
+   latest: digest: sha256:75c529558365adb3bf7bdb94f6790e420cf2889a36b05ddeefa5739f03b12a4f size: 2620
+   ```
+
+
+
+# Jenkins Job to Build an image onto Ansible
+
+1. Update ansible playbook
+
+   regapp.yaml
+
+   ```
+   ---
+   - hosts: ansiblehost
+   
+     tasks:
+     - name: create docker image
+       command: docker build -t regapp:latest .
+       args:
+         chdir: /opt/docker
+   
+     - name: create tag to push image nto dockerhub
+       command: docker tag regapp:latest sherwinowen/regapp:latest
+   
+     - name: push docker image
+       command: docker push sherwinowen/regapp:latest
+   ```
+
+2. Test ansible palybook
+
+   ```
+   $ ansible-playbook regapp.yml --check
+   
+   PLAY [ansiblehost] ***********************************************************************************************
+   
+   TASK [Gathering Facts] *******************************************************************************************
+   ok: [10.128.0.35]
+   
+   TASK [create docker image] ***************************************************************************************
+   skipping: [10.128.0.35]
+   
+   TASK [create tag to push image nto dockerhub] ********************************************************************
+   skipping: [10.128.0.35]
+   
+   TASK [push docker image] *****************************************************************************************
+   skipping: [10.128.0.35]
+   
+   PLAY RECAP *******************************************************************************************************
+   10.128.0.35                : ok=1    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+   ```
+
+3. Update ansible job Copy_Artifacts_onto_Ansible
+
+   - Exec command in Post-build Actions
+
+     ```
+     ansible-playbook /opt/docker/regapp.yml
+     ```
+
+     ![image-20240905175650580](images/image-20240905175650580.png)
+
+   
+
+4. Update Build Triggers
+
+   - set Poll SCM
+
+     ![image-20240905162804126](images/image-20240905162804126.png)
+
+
+
+5. Update index.jsp and push to the Github repository to trigger the build
+
+   ```
+   $ docker images
+   REPOSITORY           TAG       IMAGE ID       CREATED             SIZE
+   regapp               latest    797e0f7b41fb   55 seconds ago      512MB
+   sherwinowen/regapp   latest    797e0f7b41fb   55 seconds ago      512MB
+   ```
+
+
+
+# How to Create Container on DockerHost using Ansible Playbook
+
+
 
