@@ -1812,5 +1812,65 @@ chown -R sherwinowen:sherwinowen /opt/docker
 
 # How to Create Container on DockerHost using Ansible Playbook
 
+**Using Ansible to create containers**
 
+![image-20240913093812464](images/image-20240913093812464.png)
 
+1. Create ansible playbook
+
+   deploy_regapp.yml
+
+   ```
+   ---
+   - hosts: dockerhost
+   
+     tasks:
+     - name: create container
+       command: docker run -d --name regapp-server -p 8082:8080 sherwinowen/regapp:latest
+   ```
+
+2. Test ansible playbook
+
+   ```
+   ansible-playbook deploy_regapp.yml --check
+   
+   PLAY [dockerhost] **************************************************************
+   
+   TASK [Gathering Facts] *********************************************************
+   ok: [10.128.0.33]
+   
+   TASK [create container] ********************************************************
+   skipping: [10.128.0.33]
+   
+   PLAY RECAP *********************************************************************
+   10.128.0.33                : ok=1    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+   ```
+
+3. Run ansible playbook
+
+   ```
+   ansible-playbook deploy_regapp.yml
+   
+   PLAY [dockerhost] **************************************************************
+   
+   TASK [Gathering Facts] *********************************************************
+   ok: [10.128.0.33]
+   
+   TASK [create container] ********************************************************
+   changed: [10.128.0.33]
+   
+   PLAY RECAP *********************************************************************
+   10.128.0.33                : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+   ```
+
+4. Check in dockerhost if docker container is running
+
+   ```
+   $ docker ps
+   CONTAINER ID   IMAGE                       COMMAND             CREATED          STATUS          PORTS                                         NAMES
+   ceaa22ee65e0   sherwinowen/regapp:latest   "catalina.sh run"   18 seconds ago   Up 17 seconds   0.0.0.0:8082->8080/tcp, [::]:8082->8080/tcp   regapp-server
+   ```
+
+   ![image-20240913175551304](images/image-20240913175551304.png)
+
+   
