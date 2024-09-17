@@ -329,7 +329,7 @@ NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)  
 hello-world-rest-api   LoadBalancer   34.118.227.127   34.171.94.226   8080:31349/TCP   10m
 ```
 
-![image-20240717082557712](/Users/sherwinowen/my_doc/my_tutorials/devops/images/image-20240717082557712.png)
+![image-20240717082557712](images/image-20240717082557712.png)
 
 **List all events**
 

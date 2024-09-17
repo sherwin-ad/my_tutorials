@@ -1825,8 +1825,20 @@ chown -R sherwinowen:sherwinowen /opt/docker
    - hosts: dockerhost
    
      tasks:
+     - name: stop existing container
+       command: docker stop regapp-server
+       ignore_errors: yes  
+   
+     - name: remove the container
+       command: docker rm regapp-server
+       ignore_errors: yes
+     
+     - name: remove image
+       command: docker rmi sherwinowen/regapp:latest
+       ignore_errors: yes    
+   
      - name: create container
-       command: docker run -d --name regapp-server -p 8082:8080 sherwinowen/regapp:latest
+       command: docker run -d --name regapp-server -p 8082:8080 sherwinowen/regapp:latest  
    ```
 
 2. Test ansible playbook
@@ -1873,4 +1885,280 @@ chown -R sherwinowen:sherwinowen /opt/docker
 
    ![image-20240913175551304](images/image-20240913175551304.png)
 
+# Jenkins CI/CD to deploy on container using Ansible
+
+1. Modify Copy_Artifacts_onto_Ansible job
+
+   Goto Post-build Actions
+
+   ![image-20240916112908959](images/image-20240916112908959.png)
+
+2. Change something in the source code and push the change in the repository.
+
+# Setup GKE in Google Clouds
+
+**Creating Kubernetes Cluster in Google Kubernetes Engine (GKE)**
+
+1. Goto > GKE > Click Create Cluster (Standard)
+
+2. Goto cluster created and click connect button
+
+   ```
+   gcloud container clusters get-credentials gke-cluster --zone us-central1-c --project ccc-moodle-lms
+   ```
+
+   **List nodes**
+
+   ```
+   kubectl get nodes
+   NAME                                             STATUS   ROLES    AGE   VERSION
+   gke-busybee-cluster-default-pool-f2b430eb-8bkb   Ready    <none>   21m   v1.29.5-gke.1091002
+   gke-busybee-cluster-default-pool-f2b430eb-kffx   Ready    <none>   21m   v1.29.5-gke.1091002
+   gke-busybee-cluster-default-pool-f2b430eb-pw1r   Ready    <none>   21m   v1.29.5-gke.1091002
+   ```
+
+3. Create pod
+
+   ```
+   $ kubectl run webapp --image=httpd
+   pod/webapp created
+   ```
+
+   **List pod** 
+
+   ```
+   $ kubectl get pods
+   NAME     READY   STATUS    RESTARTS   AGE
+   webapp   1/1     Running   0          2m1
+   ```
+
+   **List all**
+
+   ```
+   $ kubectl get all
+   NAME         READY   STATUS    RESTARTS   AGE
+   pod/webapp   1/1     Running   0          67s
    
+   NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+   service/kubernetes   ClusterIP   34.118.224.1   <none>        443/TCP   9m42s
+   ```
+
+
+
+# Run Kubernetes Basic Commands
+
+**Create a Pod**
+
+![image-20240916161528036](images/image-20240916161528036.png)
+
+**Deploying Nginx pods on Kubernetes**
+
+```
+kubectl create deployment demo-nginx --image=nginx --port=80 --replicas=2
+deployment.apps/demo-nginx created
+
+kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/demo-nginx-57d74cc7bf-959lw   1/1     Running   0          18s
+pod/demo-nginx-57d74cc7bf-qmdz5   1/1     Running   0          18s
+
+kubectl get deployments
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+demo-nginx   2/2     2            2           95s
+
+kubectl get replicasets
+NAME                    DESIRED   CURRENT   READY   AGE
+demo-nginx-57d74cc7bf   2         2         2       2m46s
+
+kubectl get all
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/demo-nginx-57d74cc7bf-959lw   1/1     Running   0          3m5s
+pod/demo-nginx-57d74cc7bf-qmdz5   1/1     Running   0          3m5s
+
+NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   34.118.224.1   <none>        443/TCP   50m
+
+NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/demo-nginx   2/2     2            2           3m6s
+
+NAME                                    DESIRED   CURRENT   READY   AGE
+replicaset.apps/demo-nginx-57d74cc7bf   2         2         2       3m6s
+
+```
+
+**Expose the deployment as service. This will create an ELB in front of those 2 containers and allow us to publicly access them.**
+
+```
+kubectl expose deployment demo-nginx --port=80 --type=LoadBalancer
+service/demo-nginx exposed
+
+kubectl get all
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/demo-nginx-57d74cc7bf-959lw   1/1     Running   0          7m59s
+pod/demo-nginx-57d74cc7bf-qmdz5   1/1     Running   0          7m59s
+pod/webapp                        1/1     Running   0          46m
+
+NAME                 TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)        AGE
+service/demo-nginx   LoadBalancer   34.118.235.156   35.225.60.174   80:30339/TCP   37s
+service/kubernetes   ClusterIP      34.118.224.1     <none>          443/TCP        55m
+
+NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/demo-nginx   2/2     2            2           8m
+
+NAME                                    DESIRED   CURRENT   READY   AGE
+replicaset.apps/demo-nginx-57d74cc7bf   2         2         2       8m
+```
+
+![image-20240916163006165](images/image-20240916163006165.png)
+
+# Create Manifest file
+
+**Pod manifest file**
+
+firstpod.yml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-pod
+  labels:
+    app: demo-app	
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx
+    ports:
+    - name: nginx-container
+      containerPort: 80
+```
+
+**Service manifest file**
+
+firstservice.yml
+
+```
+apiVersion: v1 
+kind: Service
+metadata:
+  name: demo-service
+
+spec:
+  ports: 
+  - name: demo-service 
+    port: 80
+    targetPort: 80
+  
+  selector: 
+    app: demo-app  
+
+  type: LoadBalancer 
+```
+
+**Create pod**
+
+```
+kubectl apply -f firstpod.yml 
+pod/demo-pod created
+
+ kubectl get pods
+NAME       READY   STATUS    RESTARTS   AGE
+demo-pod   1/1     Running   0          22s
+```
+
+**Create service**
+
+```
+kubectl apply -f firstservice.yml 
+service/demo-service created
+
+kubectl get service
+NAME           TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)        AGE
+demo-service   LoadBalancer   34.118.227.185   34.27.53.216   80:30514/TCP   57s
+kubernetes     ClusterIP      34.118.224.1     <none>         443/TCP        140m
+
+kubectl describe services demo-service
+Name:                     demo-service
+Namespace:                default
+Labels:                   <none>
+Annotations:              cloud.google.com/neg: {"ingress":true}
+Selector:                 app=demo-app
+Type:                     LoadBalancer
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       34.118.227.185
+IPs:                      34.118.227.185
+LoadBalancer Ingress:     34.27.53.216
+Port:                     demo-service  80/TCP
+TargetPort:               80/TCP
+NodePort:                 demo-service  30514/TCP
+Endpoints:                10.100.0.6:80
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:
+  Type    Reason                Age                  From                Message
+  ----    ------                ----                 ----                -------
+  Normal  EnsuringLoadBalancer  66s (x2 over 8m54s)  service-controller  Ensuring load balancer
+  Normal  EnsuredLoadBalancer   62s (x2 over 8m23s)  service-controller  Ensured load balancer
+```
+
+**Deployment manifest file**
+
+regapp-deploy.yml
+
+```
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: valaxy-regapp
+  labels: 
+     app: regapp
+
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: regapp
+
+  template:
+    metadata:
+      labels:
+        app: regapp
+    spec:
+      containers:
+      - name: regapp
+        image: valaxy/regapp
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+```
+
+regapp-service.yml
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: valaxy-service
+  labels:
+    app: regapp 
+spec:
+  selector:
+    app: regapp 
+
+  ports:
+    - port: 8080
+      targetPort: 8080
+
+  type: LoadBalancer
+```
+
+
+
+
+
