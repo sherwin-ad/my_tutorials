@@ -1749,7 +1749,7 @@ chown -R sherwinowen:sherwinowen /opt/docker
        args:
          chdir: /opt/docker
    
-     - name: create tag to push image nto dockerhub
+     - name: create tag to push image to dockerhub
        command: docker tag regapp:latest sherwinowen/regapp:latest
    
      - name: push docker image
@@ -2110,7 +2110,7 @@ regapp-deploy.yml
 apiVersion: apps/v1 
 kind: Deployment
 metadata:
-  name: valaxy-regapp
+  name: owen-regapp
   labels: 
      app: regapp
 
@@ -2127,7 +2127,7 @@ spec:
     spec:
       containers:
       - name: regapp
-        image: valaxy/regapp
+        image: sherwinowen/regapp
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -2144,7 +2144,7 @@ regapp-service.yml
 apiVersion: v1
 kind: Service
 metadata:
-  name: valaxy-service
+  name: owen-service
   labels:
     app: regapp 
 spec:
@@ -2158,7 +2158,184 @@ spec:
   type: LoadBalancer
 ```
 
+```
+kubectl get all
+NAME                               READY   STATUS    RESTARTS   AGE
+pod/owen-regapp-57b66b49d6-52m9x   1/1     Running   0          14m
+pod/owen-regapp-57b66b49d6-6vvlg   1/1     Running   0          14m
+pod/owen-regapp-57b66b49d6-sfdhn   1/1     Running   0          14m
+
+NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)          AGE
+service/kubernetes     ClusterIP      34.118.224.1    <none>          443/TCP          94m
+service/owen-service   LoadBalancer   34.118.236.53   34.122.155.58   8080:32651/TCP   2m51s
+
+NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/owen-regapp   3/3     3            3           14m
+
+NAME                                     DESIRED   CURRENT   READY   AGE
+replicaset.apps/owen-regapp-57b66b49d6   3         3         3       14m
+```
 
 
 
+# Integrate GKE with Ansible
 
+**On Bootstrap server** 
+
+- Create ansadmin
+- Add ansadmin to sudoers group
+- 
+
+**On Ansible Node**
+
+- Add boosstrap server to ansible hosts file
+- Copy ssh keys
+- Test the connection
+
+## Create service account for GKE cluster in GCP
+
+**Create the Service Account:**
+
+```
+$ gcloud iam service-accounts create owen-gke-sa --project ccc-moodle-lms
+Created service account [owen-gke-sa].
+```
+
+**Create a service account key**
+
+```
+$ gcloud iam service-accounts keys create ~/owen-gke-sa-key.json \
+--iam-account=owen-gke-sa@ccc-moodle-lms.iam.gserviceaccount.com
+created key [545b628b7770e4a0a4f573abdebfc2f8c7de5b99] of type [json] as [/home/ansadmin/owen-gke-sa-key.json] for [owen-gke-sa@ccc-moodle-lms.iam.gserviceaccount.com]
+```
+
+**Assign Roles to the Service Account:**
+
+```
+gcloud projects add-iam-policy-binding ccc-moodle-lms \
+  --member="serviceAccount:owen-gke-sa@ccc-moodle-lms.iam.gserviceaccount.com" \
+  --role="roles/container.admin"
+```
+
+**Create the GKE Cluster and Associate it with the Service Account**
+
+```
+gcloud container clusters create busybee-cluster \
+--project=ccc-moodle-lms \
+--zone=us-central1-c \
+--service-account=owen-gke-sa@ccc-moodle-lms.iam.gserviceaccount.com \
+--num-nodes=2 \
+--machine-type=n1-standard-1
+```
+
+**Activate service account**
+
+```
+gcloud auth activate-service-account owen-gke-sa@ccc-moodle-lms.iam.gserviceaccount.com --key-file=./owen-gke-sa-key.json
+Activated service account credentials for: [owen-gke-sa@ccc-moodle-lms.iam.gserviceaccount.com]
+```
+
+**Use the service account to authenticate with the cluster:**
+
+```
+$ gcloud container clusters get-credentials busybee-cluster --account owen-gke-sa@ccc-moodle-lms.iam.gserviceaccount.com --location=us-central1-c
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for busybee-cluster.
+```
+
+# Create Kubernetes Ansible playbooks for deployment and service
+
+**kube_deploy.yml**
+
+````
+- hosts: dockerhost
+
+  tasks:
+    - name: deploy regapp on kubernetes
+      command: kubectl apply -f /opt/kubernetes/regapp-deployment.yml
+
+````
+
+**kube_service.yml**
+
+```
+- hosts: dockerhost
+
+  tasks:
+    - name: deploy regapp service on kubernetes
+      command: kubectl apply -f /opt/kubernetes/regapp-service.yml
+```
+
+**Run ansible playbooks**
+
+```
+$ ansible-playbook kube_deploy.yml
+
+PLAY [dockerhost] ******************************************************************************************************
+
+TASK [Gathering Facts] *************************************************************************************************
+ok: [10.128.0.33]
+
+TASK [deploy regapp on kubernetes] *************************************************************************************
+changed: [10.128.0.33]
+
+PLAY RECAP *************************************************************************************************************
+10.128.0.33                : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+
+```
+$ ansible-playbook kube_service.yml 
+
+PLAY [dockerhost] ******************************************************************************************************
+
+TASK [Gathering Facts] *************************************************************************************************
+ok: [10.128.0.33]
+
+TASK [deploy regapp service on kubernetes] *****************************************************************************
+changed: [10.128.0.33]
+
+PLAY RECAP *************************************************************************************************************
+10.128.0.33                : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+
+# Create jenkins deployment job for kubernetes
+
+kube_deploy.yml
+
+```
+ hosts: dockerhost
+
+  tasks:
+    - name: deploy regapp deployment on kubernetes
+      command: kubectl apply -f /opt/kubernetes/regapp-deployment.yml
+
+    - name: deploy regapp service on kubernetes
+      command: kubectl apply -f /opt/kubernetes/regapp-service.yml
+```
+
+
+
+1. Create new job
+
+   Click New Item > Select Freestyle project
+
+   ![image-20240918162133983](images/image-20240918162133983.png)
+
+2. Setup Post-build actions > Select **Send build artifacts over SSH**
+
+   ![image-20240918164837247](images/image-20240918164837247.png)
+
+   3. Build now
+
+   
+   
+   
+   
+   
+   
+
+
+
+   
+
+   
