@@ -36,6 +36,52 @@ sudo apt-get update
 sudo apt-get install jenkins
 ```
 
+
+
+# Backup Jenkins
+
+
+
+1. Stop Jenkins.
+
+2. Check the Jenkins Home directory in Jenkins Dashboard > Manage Jenkins > System
+
+3. Navigate to your `$JENKINS_HOME` configuration from the command line:
+
+   ```
+   cd $JENKINS_HOME
+   ```
+
+4. Backup Jenkins Home directory
+
+   Create a compressed file:
+
+   ```
+   tar -czvf production-backup-2021-10-26.tar.gz .
+   ```
+
+5. Start Jenkins
+
+# Restore Jenkins
+
+1. Stop Jenkins.
+
+2. Navigate to your `$JENKINS_HOME` configuration from the command line:
+
+   ```
+   cd $JENKINS_HOME
+   ```
+
+3. Move all the contents of the existing `$JENKINS_HOME` to a different location.
+
+   ```
+   tar -xvfz production-backup-2021-10-26.tar.gz 
+   ```
+
+4. Start Jenkins.
+
+
+
 # Run First Jenkins Job
 
 1. Goto Dashboard nd click New Item
