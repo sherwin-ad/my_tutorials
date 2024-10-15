@@ -1,4 +1,6 @@
-# I Developing a Google SRE Culture
+# Professional Cloud DevOps Engineer Certification Learning Path
+
+# I. Developing a Google SRE Culture
 
 ## Module 1 Welcome to Developing a Google SRE Culture 
 
@@ -709,4 +711,99 @@ Correct! Keeping toil limited to a bounded part of the SRE role prevents SREs fr
 
 
 
-# II Reliable Google Cloud Infrastructure: Design and Process
+# II. Reliable Google Cloud Infrastructure: Design and Process
+
+
+
+## Defining Services
+
+### Module Quiz
+
+1. Which most accurately describes a user story?
+
+- **It is a short description of a feature written from the user's point of view.**
+- It is a narrative that describes the sequence of steps a typical user would perform to accomplish some task or goal when using the system.
+- It is a requirement of the system you are developing.
+- It is a short description of a typical person using the system.
+
+Correct, because it describes a feature from the user's point of view
+
+2. Using SMART criteria, which below would be the least effective KPI?
+
+- Clicks per session
+- User sign ups per month
+- Page views per hour
+- **User experience design**
+
+Correct, user experience design is not measurable or time bound and so would not make a relevant KPI.
+
+3. Which best describes an SLO?
+
+- It is a measurable, time bound key performance indicator for your application.
+- It is a short, measurable description of an application feature.
+- **It is a target measure you want your service to achieve.**
+- It is a contract with end users that guarantees service quality
+
+Correct, an SLO is the agreed-upon target for a measurement or range of values for a service. Reliability could be one of these.
+
+
+
+## Microservice Design and Architecture
+
+
+
+### Module Quiz
+
+
+
+1. Which below would violate 12-factor app best practices?
+
+- Treat logs as event streams and aggregate logs into a single source.
+
+- **Store configuration information in your source repository for easy versioning.**
+
+- Explicitly declare and isolate dependencies.
+
+- Keep development, testing, and production as similar as possible.
+
+Correct. Code and config should be separated, because config varies across deployments but code does not. The true test is whether the repository could be open-sourced without compromising any credentials.
+
+2. You’re writing a service, and you need to handle a client sending you invalid data in the request. What should you return from the service?
+
+- A 200 error code
+
+- An XML exception
+
+- A 500 error code
+
+- **A 400 error code**
+
+Correct. 400 is a HTTP status code indicating that a request could not be processed due to an apparent client error.
+
+3. You’re building a RESTful microservice. Which would be a valid data format for returning data to the client?
+
+- XML
+
+- JSON
+
+- HTML
+
+- **All options are correct.**
+
+Correct. They have a standard Content-Type that can be set on the response header and are text-based. It is usual to use JSON, but both XML and JSON are valid.
+
+4. You’ve re-architected a monolithic web application so state is not stored in memory on the web servers, but in a database instead. This has caused slow performance when retrieving user sessions though. What might be the best way to fix this?
+
+- Increase the number of CPUs in the database server.
+
+- Make sure all web servers are in the same zone as the database.
+
+- **Use a caching service like Memorystore for Redis.**
+
+- Move session state back onto the web servers and use sticky sessions in the load balancer.
+
+Correct. Services should be stateless, and a service like Memorystore for Redis provides a fast caching service to store state. They enable services to be stateless and support scale and high availability.
+
+
+
+## DevOps Automation
