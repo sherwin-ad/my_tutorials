@@ -1513,3 +1513,7 @@ When the build is finished, reload the application in your browser. You should n
 ## Congratulations!
 
 Now you can use Cloud Build to create and rollback continuous integration pipelines with GKE on Google Cloud!
+
+
+
+# Continuous Delivery with Google Cloud Deploy
