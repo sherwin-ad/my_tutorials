@@ -58,9 +58,7 @@ To complete this lab, you need:
    "Username"
    ```
 
-   Copied!
-
-   content_copy
+   
 
    You can also find the **Username** in the **Lab Details** panel.
 
@@ -72,9 +70,7 @@ To complete this lab, you need:
    "Password"
    ```
 
-   Copied!
-
-   content_copy
+   
 
    You can also find the **Password** in the **Lab Details** panel.
 
@@ -114,10 +110,6 @@ Your Cloud Platform project in this session is set to "PROJECT_ID"
 gcloud auth list
 ```
 
-Copied!
-
-content_copy
-
 1. Click **Authorize**.
 
 **Output:**
@@ -136,9 +128,7 @@ To set the active account, run:
 gcloud config list project
 ```
 
-Copied!
 
-content_copy
 
 **Output:**
 
@@ -164,9 +154,7 @@ export REGION="REGION"
 gcloud config set compute/region $REGION
 ```
 
-Copied!
 
-content_copy
 
 ### Enable Google services
 
@@ -181,10 +169,6 @@ gcloud services enable \
   containerscanning.googleapis.com
 ```
 
-Copied!
-
-content_copy
-
 ### Get the source code
 
 The source code for this lab is located in the GoogleCloudPlatform org on GitHub.
@@ -196,9 +180,7 @@ git clone https://github.com/GoogleCloudPlatform/cloud-code-samples/
 cd ~/cloud-code-samples
 ```
 
-Copied!
 
-content_copy
 
 ### Provision the infrastructure used in this lab
 
@@ -210,9 +192,7 @@ In this lab you will deploy code to Kubernetes Engine (GKE).
 gcloud container clusters create container-dev-cluster --zone="ZONE"
 ```
 
-Copied!
 
-content_copy
 
 Click **Check my progress** to verify the objective.
 
@@ -238,9 +218,7 @@ gcloud artifacts repositories create container-dev-repo --repository-format=dock
   --description="Docker repository for Container Dev Workshop"
 ```
 
-Copied!
 
-content_copy
 
 Click **Authorize** if the Cloud Shell authorization prompt appears.
 
@@ -264,9 +242,7 @@ When connecting to Artifact Registry credentials are required in order to provid
 gcloud auth configure-docker "Filled in at lab start"-docker.pkg.dev
 ```
 
-Copied!
 
-content_copy
 
 1. The command will prompt for a confirmation to change the Cloud Shell docker configuration, click **ENTER**.
 
@@ -280,9 +256,7 @@ A sample application is provided in the git repository you cloned.
 cd ~/cloud-code-samples/java/java-hello-world
 ```
 
-Copied!
 
-content_copy
 
 The folder contains an example Java application that renders a simple web page: in addition to various files not relevant for this specific lab, it contains the source code, under the `src` folder, and a Dockerfile you will use to build a container image locally.
 
@@ -296,10 +270,6 @@ Before you can store container images in Artifact Registry you need to create on
 docker build -t "REGION"-docker.pkg.dev/"PROJECT_ID"/container-dev-repo/java-hello-world:tag1 .
 ```
 
-Copied!
-
-content_copy
-
 ### Push the Container Image to Artifact Registry
 
 - Run the following command to push the container image to the repository you created:
@@ -308,9 +278,7 @@ content_copy
 docker push "REGION"-docker.pkg.dev/"PROJECT_ID"/container-dev-repo/java-hello-world:tag1
 ```
 
-Copied!
 
-content_copy
 
 ### Review the image in Artifact Registry
 
@@ -336,9 +304,7 @@ cd ~/cloud-code-samples/
 cloudshell workspace .
 ```
 
-Copied!
 
-content_copy
 
 The Cloud Shell editor will open with the explorer in the application folder.
 
@@ -370,9 +336,7 @@ Click **Navigation menu** under the Cloud Shell Editor![navigation menu icon](ht
 "REGION"-docker.pkg.dev/"PROJECT_ID"/container-dev-repo
 ```
 
-Copied!
 
-content_copy
 
 1. When you execute **Run on Kubernetes** for the first time Cloud Code prompts you for the target image repository location. Once provided, the repository url is stored in the file `.vscode/launch.json` which is created in the application folder.
 
@@ -425,9 +389,7 @@ gcloud artifacts repositories create container-dev-java-repo \
     --description="Java package repository for Container Dev Workshop"
 ```
 
-Copied!
 
-content_copy
 
 1. Click Authorize if the Cloud Shell authorization prompt appears
 2. In the Cloud console go to **Artifact Registry > Repositories** and notice your newly created Maven repository named `container-dev-java-repo`, if you click on it you can see that it's empty at the moment.
@@ -469,9 +431,7 @@ gcloud artifacts print-settings mvn \
     --location="REGION"
 ```
 
-Copied!
 
-content_copy
 
 1. Open the `pom.xml` in Cloud Shell Editor and add the returned settings to the appropriate sections in the file:
 
@@ -490,9 +450,7 @@ content_copy
   </distributionManagement>
 ```
 
-Copied!
 
-content_copy
 
 - Add the **repositories** section.
 
@@ -511,9 +469,7 @@ content_copy
  </repositories>
 ```
 
-Copied!
 
-content_copy
 
 - Update the **extensions in the Builds** section.
 
@@ -527,9 +483,7 @@ content_copy
    </extensions>
 ```
 
-Copied!
 
-content_copy
 
 Here's an example of the complete file for your reference.
 
@@ -656,9 +610,7 @@ Here's an example of the complete file for your reference.
 </project>
 ```
 
-Copied!
 
-content_copy
 
 ### Upload your Java package to Artifact Registry
 
@@ -670,9 +622,7 @@ With Artifact Registry configured in Maven, you can now use Artifact Registry to
 cd ~/cloud-code-samples/java/java-hello-world
 ```
 
-Copied!
 
-content_copy
 
 - Run the following command to upload your Java package to Artifact Registry:
 
@@ -680,9 +630,7 @@ content_copy
 mvn deploy
 ```
 
-Copied!
 
-content_copy
 
 ### Check the Java package in Artifact Registry
 
@@ -772,9 +720,7 @@ To complete this lab, you need:
    "Username"
    ```
 
-   Copied!
-
-   content_copy
+   
 
    You can also find the **Username** in the **Lab Details** panel.
 
@@ -786,9 +732,7 @@ To complete this lab, you need:
    "Password"
    ```
 
-   Copied!
-
-   content_copy
+   
 
    You can also find the **Password** in the **Lab Details** panel.
 
@@ -828,10 +772,6 @@ Your Cloud Platform project in this session is set to "PROJECT_ID"
 gcloud auth list
 ```
 
-Copied!
-
-content_copy
-
 1. Click **Authorize**.
 
 **Output:**
@@ -850,9 +790,7 @@ To set the active account, run:
 gcloud config list project
 ```
 
-Copied!
 
-content_copy
 
 **Output:**
 
@@ -874,9 +812,7 @@ export REGION=
 gcloud config set compute/region $REGION
 ```
 
-Copied!
 
-content_copy
 
 In the next task you will prepare your Google Cloud Project for use by enabling the required APIs, initializing the git configuration in Cloud Shell, and downloading the sample code used later in the lab.
 
@@ -889,9 +825,7 @@ gcloud services enable container.googleapis.com \
     containeranalysis.googleapis.com
 ```
 
-Copied!
 
-content_copy
 
 1. Create an Artifact Registry Docker repository named my-repository in the `<filled in at lab start>` region to store your container images:
 
@@ -901,9 +835,7 @@ gcloud artifacts repositories create my-repository \
   --location=$REGION
 ```
 
-Copied!
 
-content_copy
 
 1. Create a GKE cluster to deploy the sample application of this lab:
 
@@ -911,9 +843,7 @@ content_copy
   gcloud container clusters create hello-cloudbuild --num-nodes 1 --region $REGION
 ```
 
-Copied!
 
-content_copy
 
 1. If you have never used Git in Cloud Shell, configure it with your name and email address. Git will use those to identify you as the author of the commits you will create in Cloud Shell (if you don't have a github account, you can just fill in this with your current information. No account is necessary for this lab):
 
@@ -921,17 +851,13 @@ content_copy
 git config --global user.email "you@example.com"  
 ```
 
-Copied!
 
-content_copy
 
 ```
 git config --global user.name "Your Name"
 ```
 
-Copied!
 
-content_copy
 
 Click **Check my progress** to verify the objective.
 
@@ -951,17 +877,13 @@ In this task, you create the two Git repositories (**hello-cloudbuild-app** and 
 gcloud source repos create hello-cloudbuild-app
 ```
 
-Copied!
 
-content_copy
 
 ```
 gcloud source repos create hello-cloudbuild-env
 ```
 
-Copied!
 
-content_copy
 
 1. Download the sample code from Cloud Storage:
 
@@ -970,17 +892,13 @@ cd ~
 mkdir hello-cloudbuild-app
 ```
 
-Copied!
 
-content_copy
 
 ```
 gcloud storage cp -r gs://spls/gsp1077/gke-gitops-tutorial-cloudbuild/* hello-cloudbuild-app
 ```
 
-Copied!
 
-content_copy
 
 1. Configure Cloud Source Repositories as a remote:
 
@@ -988,9 +906,7 @@ content_copy
 cd ~/hello-cloudbuild-app
 ```
 
-Copied!
 
-content_copy
 
 ```
 export REGION="REGION"
@@ -1008,9 +924,7 @@ content_copy
 PROJECT_ID=$(gcloud config get-value project)
 ```
 
-Copied!
 
-content_copy
 
 ```
 git init
@@ -1019,9 +933,7 @@ git remote add google "https://source.developers.google.com/p/${PROJECT_ID}/r/he
 git commit -m "Initial commit"
 ```
 
-Copied!
 
-content_copy
 
 The code you just cloned contains a simple "Hello World" application.
 
@@ -1064,25 +976,19 @@ With this Dockerfile, you can create a container image with Cloud Build and stor
 cd ~/hello-cloudbuild-app
 ```
 
-Copied!
 
-content_copy
 
 ```
 COMMIT_ID="$(git rev-parse --short=7 HEAD)"
 ```
 
-Copied!
 
-content_copy
 
 ```
 gcloud builds submit --tag="${REGION}-docker.pkg.dev/${PROJECT_ID}/my-repository/hello-cloudbuild:${COMMIT_ID}" .
 ```
 
-Copied!
 
-content_copy
 
 Cloud Build streams the logs generated by the creation of the container image to your terminal when you execute this command.
 
@@ -1124,33 +1030,25 @@ When the trigger is created, return to the Cloud Shell. You now need to push the
 cd ~/hello-cloudbuild-app
 ```
 
-Copied!
 
-content_copy
 
 ```
 git add .
 ```
 
-Copied!
 
-content_copy
 
 ```
 git commit -m "Type Any Commit Message here"
 ```
 
-Copied!
 
-content_copy
 
 ```
 git push google master
 ```
 
-Copied!
 
-content_copy
 
 1. In the Cloud console, go to **Cloud Build > Dashboard**.
 2. You should see a build running or having recently finished. You can click on the build to follow its execution and examine its logs.
@@ -1186,9 +1084,7 @@ To deploy the application in your Kubernetes cluster, Cloud Build needs the Kube
 PROJECT_NUMBER="$(gcloud projects describe ${PROJECT_ID} --format='get(projectNumber)')"
 ```
 
-Copied!
 
-content_copy
 
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_NUMBER} \
@@ -1196,9 +1092,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_NUMBER} \
 --role=roles/container.developer
 ```
 
-Copied!
 
-content_copy
 
 You need to initialize the **hello-cloudbuild-env** repository with two branches (production and candidate) and a Cloud Build configuration file describing the deployment process.
 
@@ -1210,9 +1104,7 @@ The first step is to clone the **hello-cloudbuild-env** repository and create th
 cd ~
 ```
 
-Copied!
 
-content_copy
 
 ```
 gcloud source repos clone hello-cloudbuild-env
@@ -1226,17 +1118,13 @@ content_copy
 cd ~/hello-cloudbuild-env
 ```
 
-Copied!
 
-content_copy
 
 ```
 git checkout -b production
 ```
 
-Copied!
 
-content_copy
 
 1. Next you need to copy the **cloudbuild-delivery.yaml** file available in the **hello-cloudbuild-app** repository and commit the change:
 
@@ -1244,33 +1132,25 @@ content_copy
 cd ~/hello-cloudbuild-env
 ```
 
-Copied!
 
-content_copy
 
 ```
 cp ~/hello-cloudbuild-app/cloudbuild-delivery.yaml ~/hello-cloudbuild-env/cloudbuild.yaml
 ```
 
-Copied!
 
-content_copy
 
 ```
 git add .
 ```
 
-Copied!
 
-content_copy
 
 ```
 git commit -m "Create cloudbuild.yaml for deployment"
 ```
 
-Copied!
 
-content_copy
 
 The `cloudbuild-delivery.yaml` file describes the deployment process to be run in Cloud Build. It has two steps:
 
@@ -1283,25 +1163,19 @@ The `cloudbuild-delivery.yaml` file describes the deployment process to be run i
 git checkout -b candidate
 ```
 
-Copied!
 
-content_copy
 
 ```
 git push origin production
 ```
 
-Copied!
 
-content_copy
 
 ```
 git push origin candidate
 ```
 
-Copied!
 
-content_copy
 
 1. Grant the Source Repository Writer IAM role to the Cloud Build service account for the **hello-cloudbuild-env** repository:
 
@@ -1316,18 +1190,14 @@ bindings:
 EOF
 ```
 
-Copied!
 
-content_copy
 
 ```
 gcloud source repos set-iam-policy \
 hello-cloudbuild-env /tmp/hello-cloudbuild-env-policy.yaml
 ```
 
-Copied!
 
-content_copy
 
 ### Create the trigger for the continuous delivery pipeline
 
@@ -1353,17 +1223,13 @@ Next, add some steps to the continuous integration pipeline that will generate a
 cd ~/hello-cloudbuild-app
 ```
 
-Copied!
 
-content_copy
 
 ```
 cp cloudbuild-trigger-cd.yaml cloudbuild.yaml
 ```
 
-Copied!
 
-content_copy
 
 The **cloudbuild-trigger-cd.yaml** is an extended version of the **cloudbuild.yaml** file. It adds the steps below: they generate the new Kubernetes manifest and trigger the continuous delivery pipeline.
 
@@ -1375,33 +1241,25 @@ This pipeline uses a simple `sed` to render the manifest template. In reality, y
 cd ~/hello-cloudbuild-app
 ```
 
-Copied!
 
-content_copy
 
 ```
 git add cloudbuild.yaml
 ```
 
-Copied!
 
-content_copy
 
 ```
 git commit -m "Trigger CD pipeline"
 ```
 
-Copied!
 
-content_copy
 
 ```
 git push google master
 ```
 
-Copied!
 
-content_copy
 
 This triggers the continuous integration pipeline in Cloud Build.
 
@@ -1443,25 +1301,19 @@ There should be a single service called **hello-cloudbuild** in the list. It has
 cd ~/hello-cloudbuild-app
 ```
 
-Copied!
 
-content_copy
 
 ```
 sed -i 's/Hello World/Hello Cloud Build/g' app.py
 ```
 
-Copied!
 
-content_copy
 
 ```
 sed -i 's/Hello World/Hello Cloud Build/g' test_app.py
 ```
 
-Copied!
 
-content_copy
 
 1. Commit and push the change to Cloud Source Repositories:
 
@@ -1469,25 +1321,19 @@ content_copy
 git add app.py test_app.py
 ```
 
-Copied!
 
-content_copy
 
 ```
 git commit -m "Hello Cloud Build"
 ```
 
-Copied!
 
-content_copy
 
 ```
 git push google master
 ```
 
-Copied!
 
-content_copy
 
 1. This triggers the full CI/CD pipeline.
 
@@ -1517,3 +1363,1159 @@ Now you can use Cloud Build to create and rollback continuous integration pipeli
 
 
 # Continuous Delivery with Google Cloud Deploy
+
+## Overview
+
+Google Cloud Deploy is a managed service that automates delivery of your applications to a series of target environments in a defined promotion sequence. When you want to deploy your updated application, you create a release, whose lifecycle is managed by a delivery pipeline.
+
+In this lab, you will create a delivery pipeline using Google Cloud Deploy. You will then create a release for a basic application and promote the application through a series of Google Kubernetes Engine (GKE) targets.
+
+The sample application is a simple web app that listens to a port, provides an HTTP response code and adds a log entry. This lab is derived from a tutorial published by Google: https://cloud.google.com/deploy/docs/tutorials.
+
+## Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Deploy a container image to Google Cloud Artifact Registry using Skaffold
+- Create a Google Cloud Deploy delivery pipeline
+- Create a release for the delivery pipeline
+- Promote the application through the targets in the delivery pipeline
+
+## Setup
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is the **Lab Details** panel with the following:
+
+   - The **Open Google Cloud console** button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-b57d53811715@qwiklabs.net
+   ```
+
+   
+
+   You can also find the **Username** in the **Lab Details** panel.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   pU24wjqV4D5j
+   ```
+
+   
+
+   You can also find the **Password** in the **Lab Details** panel.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To view a menu with a list of Google Cloud products and services, click the **Navigation menu** at the top-left. ![Navigation menu icon](images/nUxFb6oRFr435O3t6V7WYJAjeDFcrFb16G9wHWp5BzU%3D.png)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-03-a29be26e48aa`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-03-a29be26e48aa
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-b57d53811715@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-03-a29be26e48aa
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Task 1. Set variables
+
+- Declare the environment variables that will be used by various commands:
+
+```
+export PROJECT_ID=$(gcloud config get-value project)
+export REGION=us-central1
+gcloud config set compute/region $REGION
+```
+
+Copied!
+
+content_copy
+
+## Task 2. Create three GKE clusters
+
+In this task you will create the three GKE clusters that will be targets for the delivery pipeline.
+
+Three GKE clusters will be created, denoting the three targets for the delivery pipeline:
+
+- **test**
+- **staging**
+- **prod**
+
+1. Enable the Google Kubernetes Engine API:
+
+```
+gcloud services enable \
+container.googleapis.com \
+clouddeploy.googleapis.com
+```
+
+
+
+1. Create the three GKE clusters:
+
+```
+gcloud container clusters create test --node-locations=us-central1-c --num-nodes=1  --async
+gcloud container clusters create staging --node-locations=us-central1-c --num-nodes=1  --async
+gcloud container clusters create prod --node-locations=us-central1-c --num-nodes=1  --async
+```
+
+
+
+1. Check the status of the three clusters:
+
+```
+gcloud container clusters list --format="csv(name,status)"
+```
+
+
+
+**Output**
+
+```
+name,status
+prod,PROVISIONING
+staging,PROVISIONING
+test,RUNNING
+```
+
+Creating the clusters can take a few minutes. You don't need to wait for the clusters to be ready. Continue the lab.
+
+Click **Check my progress** to verify the objective.
+
+Create three GKE clusters
+
+Check my progress
+
+
+
+## Task 3. Prepare the web application container image
+
+In this task you'll create a repository in Artifact Registry to hold the web application's container images.
+
+1. Enable the Artifact Registry API:
+
+```
+gcloud services enable artifactregistry.googleapis.com
+```
+
+
+
+1. Create the web-app repository for holding container images:
+
+```
+gcloud artifacts repositories create web-app \
+--description="Image registry for tutorial web app" \
+--repository-format=docker \
+--location=$REGION
+```
+
+
+
+Click **Check my progress** to verify the objective.
+
+Create the web-app repository
+
+Check my progress
+
+
+
+## Task 4. Build and deploy the container images to the Artifact Registry
+
+In this task you will clone the git repository containing the web application and deploy the application's container images to Artifact Registry.
+
+### Prepare the application configuration
+
+1. Clone the repository for the lab into your home directory:
+
+```
+cd ~/
+git clone https://github.com/GoogleCloudPlatform/cloud-deploy-tutorials.git
+cd cloud-deploy-tutorials
+git checkout c3cae80 --quiet
+cd tutorials/base
+```
+
+
+
+1. Create the `skaffold.yaml` configuration:
+
+```
+envsubst < clouddeploy-config/skaffold.yaml.template > web/skaffold.yaml
+cat web/skaffold.yaml
+```
+
+
+
+The web directory now contains the `skaffold.yaml` configuration file, which provides instructions for Skaffold to build a container image for your application. This configuration describes the following items.
+
+The build section configures:
+
+- The two container images that will be built (artifacts)
+- The Google Cloud Build project used to build the images
+
+The `deploy` section configures the Kubernetes manifests needed in deploying the workload to a cluster.
+
+The `portForward` configuration is used to define the Kubernetes service for the deployment.
+
+**Output**
+
+```
+apiVersion: skaffold/v2beta7
+kind: Config
+build:
+  artifacts:
+    - image: leeroy-web
+      context: leeroy-web
+    - image: leeroy-app
+      context: leeroy-app
+  googleCloudBuild:
+    projectId: {{project-id}}
+deploy:
+  kubectl:
+    manifests:
+      - leeroy-web/kubernetes/*
+      - leeroy-app/kubernetes/*
+portForward:
+  - resourceType: deployment
+    resourceName: leeroy-web
+    port: 8080
+    localPort: 9000
+```
+
+**Note:** To view the files, use vi, emacs, nano or the Cloud Shell Code Editor by clicking on the **Open Editor** icon in Cloud Shell.
+
+### Build the web application
+
+The skaffold tool will handle submission of the codebase to Cloud Build.
+
+1. Enable the Cloud Build API:
+
+```
+gcloud services enable cloudbuild.googleapis.com
+```
+
+1. Run the skaffold command to build the application and deploy the container image to the Artifact Registry repository previously created:
+
+```
+cd web
+skaffold build --interactive=false \
+--default-repo $REGION-docker.pkg.dev/$PROJECT_ID/web-app \
+--file-output artifacts.json
+cd ..
+```
+
+1. Once the skaffold build has completed, check for the container images in Artifact Registry:
+
+```
+gcloud artifacts docker images list \
+$REGION-docker.pkg.dev/$PROJECT_ID/web-app \
+--include-tags \
+--format yaml
+```
+
+The `--format` yaml parameter returns the output as YAML for readability. The output should look like this:
+
+**Output**
+
+```
+---
+createTime: '2022-01-14T02:07:54.995807Z'
+package: us-central1-docker.pkg.dev/{{project-id}}/web-app/leeroy-app
+tags: '9181623'
+updateTime: '2022-01-14T02:07:54.995807Z'
+version: sha256:6af6a0a72d13dd6597c0fc0191f697e2da2c3892d1bf8e87a3df8d96612e1495
+---
+createTime: '2022-01-14T02:07:53.629263Z'
+package: us-central1-docker.pkg.dev/{{project-id}}/web-app/leeroy-web
+tags: '9181623'
+updateTime: '2022-01-14T02:07:53.629263Z'
+version: sha256:a0179673d1876f205875b223557c83162e56e91c5e3313f5e99465a224adb6c9
+```
+
+By default, Skaffold sets the tag for an image to its related git tag if one is available. Similar information can be found in the `artifacts.json` file that was created by the skaffold command.
+
+Skaffold generates the `web/artifacts.json` file with details of the deployed images:
+
+```
+cat web/artifacts.json | jq
+```
+
+**Output**
+
+```
+{
+    "builds": [
+        {
+            "imageName": "leeroy-web",
+            "tag": "us-central1-docker.pkg.dev/{{project-id}}/web-app/leeroy-web:9181623@sha256:a0179673d1876f205875b223557c83162e56e91c5e3313f5e99465a224adb6c9"
+        },
+        {
+            "imageName": "leeroy-app",
+            "tag": "us-central1-docker.pkg.dev/{{project-id}}/web-app/leeroy-app:9181623@sha256:6af6a0a72d13dd6597c0fc0191f697e2da2c3892d1bf8e87a3df8d96612e1495"
+        }
+    ]
+```
+
+Click **Check my progress** to verify the objective.
+
+Build and deploy the container images to the Artifact Registry
+
+Check my progress
+
+
+
+## Task 5. Create the delivery pipeline
+
+In this task you will set up the delivery pipeline.
+
+1. Enable the Google Cloud Deploy API:
+
+```
+gcloud services enable clouddeploy.googleapis.com
+```
+
+1. Create the delivery-pipeline resource using the `delivery-pipeline.yaml` file:
+
+```
+gcloud config set deploy/region $REGION
+cp clouddeploy-config/delivery-pipeline.yaml.template clouddeploy-config/delivery-pipeline.yaml
+gcloud beta deploy apply --file=clouddeploy-config/delivery-pipeline.yaml
+```
+
+
+
+1. Verify the delivery pipeline was created:
+
+```
+gcloud beta deploy delivery-pipelines describe web-app
+```
+
+The delivery pipeline will appear similar to the following output:
+
+**Output**
+
+```
+Unable to get target test
+Unable to get target staging
+Unable to get target prod
+Delivery Pipeline:
+  createTime: '2021-08-16T14:03:18.294884547Z'
+  description: web-app delivery pipeline
+  etag: 2539eacd7f5c256d
+  name: projects/{{project-id}}/locations/us-central1/deliveryPipelines/web-app
+  serialPipeline:
+    stages:
+    - targetId: test
+    - targetId: staging
+    - targetId: prod
+  uid: eb0601aa03ac4b088d74c6a5f13f36ae
+  updateTime: '2021-08-16T14:03:18.680753520Z'
+Targets: []
+```
+
+Notice the first three lines of the output. The delivery pipeline currently references three target environments that haven't been created yet. In the next task you will create those targets.
+
+Click **Check my progress** to verify the objective.
+
+Create the delivery pipeline
+
+Check my progress
+
+
+
+## Task 6. Configure the deployment targets
+
+Three delivery pipeline targets will be created - one for each of the GKE clusters.
+
+### Ensure that the clusters are ready
+
+The three GKE clusters should now be running, but it's useful to verify this.
+
+- Run the following to get the status of the clusters:
+
+```
+gcloud container clusters list --format="csv(name,status)"
+```
+
+
+
+All three clusters should be in the RUNNING state, as indicated in the output below. If they are not yet marked as RUNNING, retry the command above until their status has changed to RUNNING.
+
+**Output**
+
+```
+name,status
+prod,RUNNING
+staging,RUNNING
+test,RUNNING
+```
+
+Once all the clusters have the "RUNNING" status continue the lab.
+
+### Create a context for each cluster
+
+Use the commands below to get the credentials for each cluster and create an easy-to-use `kubectl` context for referencing the clusters later:
+
+```
+CONTEXTS=("test" "staging" "prod")
+for CONTEXT in ${CONTEXTS[@]}
+do
+    gcloud container clusters get-credentials ${CONTEXT} --region ${REGION}
+    kubectl config rename-context gke_${PROJECT_ID}_${REGION}_${CONTEXT} ${CONTEXT}
+done
+```
+
+
+
+### Create a namespace in each cluster
+
+Use the commands below to create a Kubernetes namespace (web-app) in each of the three clusters:
+
+```
+for CONTEXT in ${CONTEXTS[@]}
+do
+    kubectl --context ${CONTEXT} apply -f kubernetes-config/web-app-namespace.yaml
+done
+```
+
+
+
+The application will be deployed to the (web-app) namespace.
+
+### Create the delivery pipeline targets
+
+1. Submit a target definition for each of the targets:
+
+```
+for CONTEXT in ${CONTEXTS[@]}
+do
+    envsubst < clouddeploy-config/target-$CONTEXT.yaml.template > clouddeploy-config/target-$CONTEXT.yaml
+    gcloud beta deploy apply --file clouddeploy-config/target-$CONTEXT.yaml
+done
+```
+
+The targets are described in a yaml file. Each target configures the relevant cluster information for the target. The test and staging target configurations are mostly the same.
+
+1. Display the details for the test Target:
+
+```
+cat clouddeploy-config/target-test.yaml
+```
+
+**Output**
+
+```
+apiVersion: deploy.cloud.google.com/v1beta1
+kind: Target
+metadata:
+  name: test
+description: test cluster
+gke:
+  cluster: projects/{{project-id}}/locations/us-central1/clusters/test
+```
+
+The prod target is slightly different as it requires approval (see the `requireApproval` setting in the output) before a release can be promoted to the cluster.
+
+1. Display the details for the prod Target:
+
+```
+cat clouddeploy-config/target-prod.yaml
+```
+
+**Output**
+
+```
+apiVersion: deploy.cloud.google.com/v1beta1
+kind: Target
+metadata:
+  name: prod
+description: prod cluster
+requireApproval: true
+gke:
+  cluster: projects/{{project-id}}/locations/us-central1/clusters/prod
+```
+
+1. Verify the three targets (test, staging, prod) have been created:
+
+```
+gcloud beta deploy targets list
+```
+
+All Google Cloud Deploy targets for the delivery pipeline have now been created.
+
+Click **Check my progress** to verify the objective.
+
+Configure the deployment targets
+
+Check my progress
+
+
+
+## Task 7. Create a release
+
+In this task you create a release of the application.
+
+A Google Cloud Deploy release is a specific version of one or more container images associated with a specific delivery pipeline. Once a release is created, it can be promoted through multiple targets (the promotion sequence). Additionally, creating a release renders your application using skaffold and saves the output as a point-in-time reference that's used for the duration of that release.
+
+Since this is the first release of your application, you'll name it `web-app-001`.
+
+1. Run the following command to create the release:
+
+```
+gcloud beta deploy releases create web-app-001 \
+--delivery-pipeline web-app \
+--build-artifacts web/artifacts.json \
+--source web/
+```
+
+The `--build-artifacts` parameter references the `artifacts.json` file created by skaffold earlier. The `--source parameter` references the application source directory where skaffold.yaml can be found.
+
+When a release is created, it will also be automatically rolled out to the first target in the pipeline (unless approval is required, which will be covered in a later step of this lab).
+
+1. To confirm the test target has your application deployed, run the following command:
+
+```
+gcloud beta deploy rollouts list \
+--delivery-pipeline web-app \
+--release web-app-001
+```
+
+**Output**
+
+```
+---
+approvalState: DOES_NOT_NEED_APPROVAL
+createTime: '2021-08-16T14:05:21.961604Z'
+deployEndTime: '2021-08-16T14:06:35.278604Z'
+deployStartTime: '2021-08-16T14:06:22.420091744Z'
+deployingBuild: projects/{{project-id}}/locations/us-central1/builds/4815b788-ec5e-4185-9141-a5b57c71b001
+enqueueTime: '2021-08-16T14:06:21.760830Z'
+etag: 5cb7b6c342b5f29b
+name: projects/{{project-id}}/locations/us-central1/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-test-0001
+state: SUCCESS
+targetId: test
+uid: cccd9525d3a0414fa60b2771036841d9
+```
+
+The first rollout of a release will take several minutes because Google Cloud Deploy renders the manifests for all targets when the release is created. The GKE cluster may also take a few minutes to provide the resources required by the deployment.
+
+If you do not see `state: SUCCESS` in the output from the previous command, please wait and periodically re-run the command until the rollout completes.
+
+1. Confirm your application was deployed to the test GKE cluster by running the following commands:
+
+```
+kubectx test
+kubectl get all -n web-app
+```
+
+**Output**
+
+```
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/leeroy-app-5547cf9d9b-rgc2l   1/1     Running   0          3m27s
+pod/leeroy-web-6768b49c46-w7vt9   1/1     Running   0          3m27s
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)     AGE
+service/leeroy-app   ClusterIP   None         <none>        50051/TCP   3m28s
+NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/leeroy-app   1/1     1            1           3m28s
+deployment.apps/leeroy-web   1/1     1            1           3m28s
+NAME                                    DESIRED   CURRENT   READY   AGE
+replicaset.apps/leeroy-app-5547cf9d9b   1         1         1       3m28s
+replicaset.apps/leeroy-web-6768b49c46   1         1         1       3m28s
+```
+
+Click **Check my progress** to verify the objective.
+
+Create a release
+
+Check my progress
+
+
+
+## Task 8. Promote the application to staging
+
+In this task you will promote the application from test and into the staging target.
+
+1. Promote the application to the staging target:
+
+```
+gcloud beta deploy releases promote \
+--delivery-pipeline web-app \
+--release web-app-001
+```
+
+
+
+You will be prompted to continue before the promotion commences.
+
+- Press ENTER to accept the default (Y = yes).
+
+1. To confirm the staging Target has your application deployed, run the following command:
+
+```
+gcloud beta deploy rollouts list \
+--delivery-pipeline web-app \
+--release web-app-001
+```
+
+### Review the output
+
+Look for the section marked `targetId: staging`. As before, if you do not see `state: SUCCEEDED` in the output from the previous command, wait and periodically re-run the command until the rollout completes.
+
+**Output**
+
+```
+---
+approvalState: DOES_NOT_NEED_APPROVAL
+createTime: '2022-01-05T02:19:32.539468Z'
+deployEndTime: '2022-01-05T02:19:45.970949Z'
+deployStartTime: '2022-01-05T02:19:33.111948770Z'
+deployingBuild: projects/743805075658/locations/us-central1/builds/2316517c-3a2f-4cd3-80ad-6d133b653746
+etag: 1109b802ff586df5
+name: projects/{{project-id}}/locations/us-central1/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-staging-0001
+state: SUCCEEDED
+targetId: staging
+uid: 80a35a5f044844708d2050f8c556e07e
+```
+
+Click **Check my progress** to verify the objective.
+
+Promote the application to staging
+
+Check my progress
+
+
+
+## Task 9. Promote the application to prod
+
+In this task you will again promote the application but will also provide approval.
+
+1. Promote the application to the prod target:
+
+```
+gcloud beta deploy releases promote \
+--delivery-pipeline web-app \
+--release web-app-001
+```
+
+You will be prompted to continue before the promotion commences.
+
+- Press ENTER to accept the default (Y = yes).
+
+1. To review the status of the prod target, run the following command:
+
+```
+gcloud beta deploy rollouts list \
+--delivery-pipeline web-app \
+--release web-app-001
+```
+
+In the output, note that the `approvalState` is `NEEDS_APPROVAL` and the state is `PENDING_APPROVAL`.
+
+**Output**
+
+```
+---
+approvalState: NEEDS_APPROVAL
+createTime: '2021-08-16T14:12:07.466989Z'
+etag: 6e9303e5a1b04084
+name: projects/{{project-id}}/locations/us-central1/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-prod-0001
+state: PENDING_APPROVAL
+targetId: prod
+uid: a5c7d6007fee4d80904d49142581aaa7
+```
+
+1. Approve the rollout with the following:
+
+```
+gcloud beta deploy rollouts approve web-app-001-to-prod-0001 \
+--delivery-pipeline web-app \
+--release web-app-001
+```
+
+You will be prompted to approve the rollout before the promotion commences.
+
+- Press ENTER to accept the default (Y = yes).
+
+1. To confirm the prod target has your application deployed, run the following command:
+
+```
+gcloud beta deploy rollouts list \
+--delivery-pipeline web-app \
+--release web-app-001
+```
+
+
+
+As for previous rollouts, locate the entry for the target (`targetId: prod`) and check that the rollout has completed (`state: SUCCEEDED`). Periodically re-run the command until the rollout completes.
+
+1. Use `kubectl` to check on the status of the deployed application:
+
+```
+kubectx prod
+kubectl get all -n web-app
+```
+
+Click **Check my progress** to verify the objective.
+
+Promote the application to prod
+
+Check my progress
+
+
+
+## Congratulations!
+
+Congratulations! In this lab, you learned how to create a delivery pipeline using Google Cloud Deploy. You created a release for a basic application and promoted the application through a series of Google Kubernetes Engine (GKE) targets. You first deployed the application to the test target, then promoted it to the staging target, and finally to the prod target. Now you can use Cloud Deploy to create continuous delivery pipelines!
+
+
+
+# Implement CI/CD Pipelines on Google Cloud: Challenge Lab
+
+## Overview
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students enrolled in the [Implement CI/CD Pipelines on Google Cloud](https://www.cloudskillsboost.google/course_templates/691) course. Are you ready for the challenge?
+
+### Topics tested
+
+- Using Cloud Build and Artifact Registry for containers.
+- Setting up Cloud Deploy pipelines using Skaffold.
+- Deploying to multiple environments with promotion approvals.
+- Rolling back deployments.
+
+## Setup
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+You must wait for the lab to provision before making any changes to the environment! The pre-configured parts of the environment that you need to work with will be available to you as soon as the lab indicates it is ready.
+
+## Challenge Scenario
+
+You have started a new role as a Cloud Engineer for Jooli Inc. New management has decided to modernize and believe it's best to completely replace their legacy systems with managed infrastructure and automated integration and delivery pipelines. They have tasked you with finding and testing the best tools and services to achieve this.
+
+By the end of the day, management would like to see a proof of concept that can address all of the following:
+
+- Container images stored in a secure and reliable registry.
+- Automatic container image scanning with detailed reports on security vulnerabilities.
+- A test web application running on managed infrastructure.
+- A CI/CD pipeline defined as code in order to eliminate manual errors.
+- A reliable, easy, and quick way to deploy code and promote to a production-like environment or rollback if necessary.
+
+You're expected to help manage the Cloud infrastructure and deployment tools at Jooli. Common tasks include provisioning resources for projects and implementing new products and services to ensure Jooli Inc. is modernizing effectively and following best practices.
+
+You are expected to have the skills and knowledge for these tasks, so step-by-step guides won't be provided.
+
+Some Jooli Inc. standards you should follow:
+
+- Create all resources in the `<filled in at lab start>` region, unless otherwise directed.
+- Use the project default VPC.
+- Allocate cost effective resource sizes. Projects are monitored and excessive resource use will result in the containing project's termination (and possibly yours), so beware. This is the guidance the monitoring team is willing to share; unless directed, use the default machine types.
+
+### Your challenge
+
+As soon as you sit down at your desk and open your new laptop, you receive the following request to complete a set of tasks. Good luck!
+
+1. PRE-WORK - Enable APIs, Create GKE clusters and create an docker repository in Artifact Registry.
+2. Clone source code, build image, and push to artifact registry.
+3. Create delivery pipeline, targets, and release.
+4. Rebuild and push image, tag with latest.
+5. Create new release with latest version.
+6. Promote the latest release to second cluster.
+7. Rollback changes to second cluster, modify, and re-release.
+
+## Task 1. Prework - Set up environment, enable APIs and create clusters
+
+1. Set up environment variables for your Project ID (this is important as it is used in several of the configuration files below). You can use the commands below:
+
+```
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+export REGION=
+gcloud config set compute/region $REGION
+```
+
+
+
+1. Enable the following services in your Google Cloud project using the following commands:
+
+- container.googleapis.com
+- clouddeploy.googleapis.com
+- artifactregistry.googleapis.com
+- cloudbuild.googleapis.com
+
+```
+gcloud services enable \
+container.googleapis.com \
+clouddeploy.googleapis.com \
+artifactregistry.googleapis.com \
+cloudbuild.googleapis.com
+```
+
+
+
+1. Enable permissions for both Kubernetes and Cloud Deploy using the following commands:
+
+```
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+--member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
+--format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+--role="roles/clouddeploy.jobRunner"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+--member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
+--format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+--role="roles/container.developer"
+```
+
+
+
+1. Create an Artifact Repository
+
+Create a repository for storing your Docker containers.
+
+Name the repository: `cicd-challenge`
+
+```
+gcloud artifacts repositories create cicd-challenge \
+--description="Image registry for tutorial web app" \
+--repository-format=docker \
+--location=$REGION
+```
+
+
+
+1. Create the Google Kubernetes Engine clusters
+
+Create two GKE clusters for Staging and Production named `cd-staging` and `cd-production`. Clusters should be single zone and single node.
+
+```
+gcloud container clusters create cd-staging --node-locations= --num-nodes=1 --async
+gcloud container clusters create cd-production --node-locations= --num-nodes=1 --async
+```
+
+
+
+## Task 2. Build the images and upload to the repository
+
+1. Clone the repository for the lab into your home directory using the commands below:
+
+```
+cd ~/
+git clone https://github.com/GoogleCloudPlatform/cloud-deploy-tutorials.git
+cd cloud-deploy-tutorials
+git checkout c3cae80 --quiet
+cd tutorials/base
+```
+
+
+
+1. Create the skaffold.yaml configuration using the command below:
+
+```
+envsubst < clouddeploy-config/skaffold.yaml.template > web/skaffold.yaml
+cat web/skaffold.yaml
+```
+
+
+
+The web directory now contains the skaffold.yaml configuration file, which provides instructions for Skaffold to build a container image for your application.
+
+1. Run the skaffold command to build the application and deploy the container image to the Artifact Registry repository previously created:
+
+**HINT: use the full path to the repository you created earlier**
+
+```
+cd web
+skaffold build --interactive=false \
+--default-repo <INSERT YOUR ARTIFACT REPOSITORY HERE> \
+--file-output artifacts.json
+cd ..
+```
+
+Validate that the container was created and added to the repository
+
+Check my progress
+
+
+
+## Task 3. Create the Delivery Pipeline
+
+Run the following commands to copy the pipeline template file:
+
+1. Create the delivery-pipeline resource using the delivery-pipeline.yaml file:
+
+```
+cp clouddeploy-config/delivery-pipeline.yaml.template clouddeploy-config/delivery-pipeline.yaml
+sed -i "s/targetId: staging/targetId: cd-staging/" clouddeploy-config/delivery-pipeline.yaml
+sed -i "s/targetId: prod/targetId: cd-production/" clouddeploy-config/delivery-pipeline.yaml
+sed -i "/targetId: test/d" clouddeploy-config/delivery-pipeline.yaml
+```
+
+
+
+1. **Set the deployment region using the `deploy/region` configuration parameter.**
+2. **Apply the pipeline configuration you created above using thef `gcloud beta deploy` command**
+3. Verify the delivery pipeline was created using the command below:
+
+```
+gcloud beta deploy delivery-pipelines describe web-app
+```
+
+
+
+### Configure the deployment targets
+
+Two delivery pipeline targets will be created - one for each of the GKE clusters.
+
+#### Ensure that the clusters are ready
+
+The two GKE clusters should now be running but it's useful to verify this.
+
+- Get the status of the clusters:
+
+```
+gcloud container clusters list --format="csv(name,status)"
+```
+
+
+
+All clusters should be in the RUNNING state, as indicated in the output below. If they are not yet marked as RUNNING, retry the command above until their status has changed to RUNNING.
+
+#### Create a context for each cluster
+
+- Use the commands below to get the credentials for each cluster and create an easy-to-use kubectl context for referencing the clusters later:
+
+```
+CONTEXTS=({INSERT YOUR TARGETS HERE})
+for CONTEXT in ${CONTEXTS[@]}
+do
+    gcloud container clusters get-credentials ${CONTEXT} --region ${REGION}
+    kubectl config rename-context gke_${PROJECT_ID}_${REGION}_${CONTEXT} ${CONTEXT}
+done
+```
+
+
+
+#### Create a namespace in each cluster
+
+- Use the commands below to create a Kubernetes namespace (web-app) in each of the clusters:
+
+```
+for CONTEXT in ${CONTEXTS[@]}
+do
+    kubectl --context ${CONTEXT} apply -f kubernetes-config/web-app-namespace.yaml
+done
+```
+
+
+
+#### Create the delivery pipeline targets
+
+1. Create a target definition file for each of the targets using the commands below (no changes needed):
+
+```
+envsubst < clouddeploy-config/target-staging.yaml.template > clouddeploy-config/target-cd-staging.yaml
+envsubst < clouddeploy-config/target-prod.yaml.template > clouddeploy-config/target-cd-production.yaml
+
+sed -i "s/staging/cd-staging/" clouddeploy-config/target-cd-staging.yaml
+sed -i "s/prod/cd-production/" clouddeploy-config/target-cd-production.yaml
+```
+
+
+
+1. **Apply the target files to Cloud Deploy.**
+
+The targets are described in a yaml file. Each target configures the relevant cluster information for the target.
+
+Display the details for the staging target:
+
+```
+cat clouddeploy-config/target-cd-staging.yaml
+```
+
+
+
+Verify that the Cloud Deploy targets have been created.
+
+Check my progress
+
+
+
+## Task 4. Create a Release
+
+1. Create a release using the `gcloud beta deploy releases` command and the skaffold and artifacts.json files you created earlier.
+
+- Name the release `web-app-001` and use the delivery-pipeline `web-app`.
+
+**HINT: your source directory should be web/**
+
+- Verify that your application has been deployed to the staging environment (**cd-staging**) via the command below or in the console.
+
+```
+gcloud beta deploy rollouts list \
+--delivery-pipeline web-app \
+--release web-app-001
+```
+
+
+
+![Cloud Deploy Pipeline](images/l2rNrItVWW%2BqkhbTZBzgjiHRK1qDE0kqDEKboIpMM7k%3D.png)
+
+Verify the release to the Staging environment
+
+Check my progress
+
+
+
+## Task 5. Promote your application to production
+
+- Promote your application from the Staging (**cd-staging**) environment to the Production (**cd-production**) environment.
+
+**HINT: Don't forget to approve the deployment!**
+
+Verify the release to the Production environment
+
+Check my progress
+
+
+
+## Task 6. Make a change to the application and redeploy it
+
+1. Using the editor, open the `cloud-deploy-tutorials/tutorials/base/web/leeroy-app/` directory and modify the `app.go` file. Change line 24 to say: `fmt.Fprintf(w, "leeroooooy app v2!!\n")`
+2. **Build the application and push to the Artifact Registry.**
+3. **Create a new release on your pipeline you created earlier. Name the release `web-app-002`**
+4. Verify the new version has been deployed to the staging environment.
+
+```
+gcloud beta deploy rollouts list \
+--delivery-pipeline web-app \
+--release web-app-002
+```
+
+
+
+## Task 7. Rollback The Change
+
+Oh No! Your QA Engineers have found a bug in your release to staging so you will need to rollback to the previous version.
+
+1. **Use Cloud Deploy to rollback to the original version of the application - `web-app-001`**
+2. Verify that the original version is running.
+
+Verify the rollback ran successfully
+
+Check my progress
+
+
+
+## Congratulations!
+
+In this lab, you have successfully set up a CI/CD pipeline using Google Cloud Deploy and Artifact Registry. You've created a proof of concept that addressed all of management's requirements. Jooli Inc. is now well on their way towards achieving higher ROI with the [benefits of application modernization](https://cloud.google.com/solutions/application-modernization)!
+
