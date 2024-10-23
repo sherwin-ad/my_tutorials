@@ -2324,6 +2324,86 @@ envsubst < clouddeploy-config/skaffold.yaml.template > web/skaffold.yaml
 cat web/skaffold.yaml
 ```
 
+skaffold.yaml.template
+
+```
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: skaffold/v2beta7
+kind: Config
+build:
+  artifacts:
+    - image: leeroy-web
+      context: leeroy-web
+    - image: leeroy-app
+      context: leeroy-app
+  googleCloudBuild:
+    projectId: ${PROJECT_ID}
+deploy:
+  kubectl:
+    manifests:
+      - leeroy-web/kubernetes/*
+      - leeroy-app/kubernetes/*
+portForward:
+  - resourceType: deployment
+    resourceName: leeroy-web
+    port: 8080
+    localPort: 9000
+```
+
+
+
+skaffold.yaml
+
+```
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: skaffold/v2beta7
+kind: Config
+build:
+  artifacts:
+    - image: leeroy-web
+      context: leeroy-web
+    - image: leeroy-app
+      context: leeroy-app
+  googleCloudBuild:
+    projectId: qwiklabs-gcp-01-cde765505302
+deploy:
+  kubectl:
+    manifests:
+      - leeroy-web/kubernetes/*
+      - leeroy-app/kubernetes/*
+portForward:
+  - resourceType: deployment
+    resourceName: leeroy-web
+    port: 8080
+    localPort: 9000
+```
+
 
 
 The web directory now contains the skaffold.yaml configuration file, which provides instructions for Skaffold to build a container image for your application.
@@ -2334,11 +2414,25 @@ The web directory now contains the skaffold.yaml configuration file, which provi
 
 ```
 cd web
+---
 skaffold build --interactive=false \
 --default-repo <INSERT YOUR ARTIFACT REPOSITORY HERE> \
 --file-output artifacts.json
+---
 cd ..
 ```
+
+```
+cd web
+---
+skaffold build --interactive=false \
+--default-repo us-west1-docker.pkg.dev/qwiklabs-gcp-02-a3eac393e591/cicd-challenge \
+--file-output artifacts.json
+---
+cd ..
+```
+
+
 
 Validate that the container was created and added to the repository
 
@@ -2349,6 +2443,12 @@ Check my progress
 ## Task 3. Create the Delivery Pipeline
 
 Run the following commands to copy the pipeline template file:
+
+```
+cd ~/cloud-deploy-tutorials/tutorials/base
+```
+
+
 
 1. Create the delivery-pipeline resource using the delivery-pipeline.yaml file:
 
@@ -2362,14 +2462,52 @@ sed -i "/targetId: test/d" clouddeploy-config/delivery-pipeline.yaml
 
 
 1. **Set the deployment region using the `deploy/region` configuration parameter.**
-2. **Apply the pipeline configuration you created above using thef `gcloud beta deploy` command**
+
+   ```
+   gcloud config set deploy/region $REGION
+   ```
+
+2. **Apply the pipeline configuration you created above using the `gcloud beta deploy` command**
+
+   ```
+   gcloud beta deploy apply --file=clouddeploy-config/delivery-pipeline.yaml
+   ---
+   Waiting for the operation on resource projects/qwiklabs-gcp-03-7a62738fe279/locations/us-east4/deliveryPipelines/web-app...done.                                                                          
+   Created Cloud Deploy resource: projects/qwiklabs-gcp-03-7a62738fe279/locations/us-east4/deliveryPipelines/web-app.
+   ```
+
+   
+
 3. Verify the delivery pipeline was created using the command below:
 
-```
-gcloud beta deploy delivery-pipelines describe web-app
-```
+   ```
+   gcloud beta deploy delivery-pipelines describe web-app
+   ---
+   Unable to get target cd-staging
+   Unable to get target cd-production
+   Delivery Pipeline:
+     condition:
+       pipelineReadyCondition: {}
+       targetsPresentCondition:
+         missingTargets:
+         - projects/633900038112/locations/us-east4/targets/cd-staging
+         - projects/633900038112/locations/us-east4/targets/cd-production
+       targetsTypeCondition:
+         status: true
+     createTime: '2024-10-23T01:43:18.726516250Z'
+     description: web-app delivery pipeline
+     etag: a50ac81eaeb9dc00
+     name: projects/qwiklabs-gcp-03-7a62738fe279/locations/us-east4/deliveryPipelines/web-app
+     serialPipeline:
+       stages:
+       - targetId: cd-staging
+       - targetId: cd-production
+     uid: e328d1740dd94d6e9cd25d447b94dcba
+     updateTime: '2024-10-23T01:43:19.327172018Z'
+   Targets: []
+   ```
 
-
+   
 
 ### Configure the deployment targets
 
@@ -2383,6 +2521,10 @@ The two GKE clusters should now be running but it's useful to verify this.
 
 ```
 gcloud container clusters list --format="csv(name,status)"
+---
+name,status
+cd-production,RUNNING
+cd-staging,RUNNING
 ```
 
 
@@ -2402,6 +2544,22 @@ do
 done
 ```
 
+```
+CONTEXTS=("cd-staging" "cd-production")
+for CONTEXT in ${CONTEXTS[@]}
+do
+    gcloud container clusters get-credentials ${CONTEXT} --region ${REGION}
+    kubectl config rename-context gke_${PROJECT_ID}_${REGION}_${CONTEXT} ${CONTEXT}
+done
+---
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for cd-staging.
+Context "gke_qwiklabs-gcp-03-7a62738fe279_us-east4_cd-staging" renamed to "cd-staging".
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for cd-production.
+Context "gke_qwiklabs-gcp-03-7a62738fe279_us-east4_cd-production" renamed to "cd-production".
+```
+
 
 
 #### Create a namespace in each cluster
@@ -2413,6 +2571,9 @@ for CONTEXT in ${CONTEXTS[@]}
 do
     kubectl --context ${CONTEXT} apply -f kubernetes-config/web-app-namespace.yaml
 done
+---
+namespace/web-app created
+namespace/web-app created
 ```
 
 
@@ -2435,15 +2596,141 @@ sed -i "s/prod/cd-production/" clouddeploy-config/target-cd-production.yaml
 
 The targets are described in a yaml file. Each target configures the relevant cluster information for the target.
 
+```
+gcloud beta deploy apply --file=clouddeploy-config/target-cd-staging.yaml
+---
+Waiting for the operation on resource projects/qwiklabs-gcp-03-7a62738fe279/locations/us-east4/targets/cd-staging...done.                                                                                 
+Created Cloud Deploy resource: projects/qwiklabs-gcp-03-7a62738fe279/locations/us-east4/targets/cd-staging.
+```
+
+```
+gcloud beta deploy apply --file=clouddeploy-config/target-cd-production.yaml
+---
+Waiting for the operation on resource projects/qwiklabs-gcp-03-7a62738fe279/locations/us-east4/targets/cd-production...done.                                                                              
+Created Cloud Deploy resource: projects/qwiklabs-gcp-03-7a62738fe279/locations/us-east4/targets/cd-production.
+```
+
+
+
 Display the details for the staging target:
 
 ```
 cat clouddeploy-config/target-cd-staging.yaml
 ```
 
+target-cd-staging.yaml
+
+```
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: deploy.cloud.google.com/v1beta1
+kind: Target
+metadata:
+  name: cd-staging
+description: cd-staging cluster
+gke:
+  cluster: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/clusters/cd-staging
+```
+
+```
+cat clouddeploy-config/target-cd-production.yaml
+```
+
+target-cd-production.yaml
+
+```
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: deploy.cloud.google.com/v1beta1
+kind: Target
+metadata:
+  name: cd-production
+description: cd-production cluster
+requireApproval: true
+gke:
+  cluster: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/clusters/cd-production
+```
+
 
 
 Verify that the Cloud Deploy targets have been created.
+
+```
+gcloud beta deploy targets list
+---
+targets:
+- createTime: '2024-10-22T08:17:01.678647890Z'
+  description: cd-production cluster
+  etag: a332486c340629a2
+  executionConfigs:
+  - artifactStorage: gs://us-east4.deploy-artifacts.qwiklabs-gcp-01-cde765505302.appspot.com
+    defaultPool:
+      artifactStorage: gs://us-east4.deploy-artifacts.qwiklabs-gcp-01-cde765505302.appspot.com
+      serviceAccount: 105417119561-compute@developer.gserviceaccount.com
+    executionTimeout: 3600s
+    serviceAccount: 105417119561-compute@developer.gserviceaccount.com
+    usages:
+    - RENDER
+    - DEPLOY
+    - VERIFY
+    - PREDEPLOY
+    - POSTDEPLOY
+  gke:
+    cluster: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/clusters/cd-production
+  name: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/targets/cd-production
+  requireApproval: true
+  targetId: cd-production
+  uid: c940ea709731443eb0b9dc1cd1338a63
+  updateTime: '2024-10-22T08:19:31.959685194Z'
+- createTime: '2024-10-22T08:11:49.153632083Z'
+  description: cd-staging cluster
+  etag: c956abaaf732215e
+  executionConfigs:
+  - artifactStorage: gs://us-east4.deploy-artifacts.qwiklabs-gcp-01-cde765505302.appspot.com
+    defaultPool:
+      artifactStorage: gs://us-east4.deploy-artifacts.qwiklabs-gcp-01-cde765505302.appspot.com
+      serviceAccount: 105417119561-compute@developer.gserviceaccount.com
+    executionTimeout: 3600s
+    serviceAccount: 105417119561-compute@developer.gserviceaccount.com
+    usages:
+    - RENDER
+    - DEPLOY
+    - VERIFY
+    - PREDEPLOY
+    - POSTDEPLOY
+  gke:
+    cluster: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/clusters/cd-staging
+  name: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/targets/cd-staging
+  targetId: cd-staging
+  uid: da8f429a0220489d8e17bb349aea0ffc
+  updateTime: '2024-10-22T08:11:49.936872289Z'
+```
+
+
 
 Check my progress
 
@@ -2455,6 +2742,20 @@ Check my progress
 
 - Name the release `web-app-001` and use the delivery-pipeline `web-app`.
 
+```
+gcloud beta deploy releases create web-app-001 \
+--delivery-pipeline web-app \
+--build-artifacts web/artifacts.json \
+--source web/
+---
+Creating temporary archive of 9 file(s) totalling 9.2 KiB before compression.
+Uploading tarball of [web/] to [gs://e328d1740dd94d6e9cd25d447b94dcba_clouddeploy/source/1729649919.98363-ca9fbd9a055f409d87f7db6380894a40.tgz]
+Waiting for operation [operation-1729649923668-6251b81493b13-4eec6d17-645a4073]...done.                                                                                                                   
+Created Cloud Deploy release web-app-001.
+Creating rollout projects/qwiklabs-gcp-03-7a62738fe279/locations/us-east4/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-staging-0001 in target cd-staging
+Waiting for rollout creation operation to complete...done.                       
+```
+
 **HINT: your source directory should be web/**
 
 - Verify that your application has been deployed to the staging environment (**cd-staging**) via the command below or in the console.
@@ -2463,6 +2764,31 @@ Check my progress
 gcloud beta deploy rollouts list \
 --delivery-pipeline web-app \
 --release web-app-001
+---
+approvalState: DOES_NOT_NEED_APPROVAL
+createTime: '2024-10-22T08:27:27.413693Z'
+deployEndTime: '2024-10-22T08:27:54.549886Z'
+deployStartTime: '2024-10-22T08:27:32.641556788Z'
+deployingBuild: projects/105417119561/locations/us-east4/builds/ef32fae1-2ccf-492e-814e-fd51a9048bd8
+enqueueTime: '2024-10-22T08:27:31.568098Z'
+etag: '2368254907785534'
+name: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-staging-0001
+phases:
+- deploymentJobs:
+    deployJob:
+      deployJob: {}
+      id: deploy
+      jobRun: projects/105417119561/locations/us-east4/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-staging-0001/jobRuns/dff8eb53-6b2a-4496-b39a-1ea632969452
+      state: SUCCEEDED
+    verifyJob:
+      id: verify
+      state: DISABLED
+      verifyJob: {}
+  id: stable
+  state: SUCCEEDED
+state: SUCCEEDED
+targetId: cd-staging
+uid: 10eede7ab2a34427981a806b3c257a62
 ```
 
 
@@ -2481,6 +2807,125 @@ Check my progress
 
 **HINT: Don't forget to approve the deployment!**
 
+```
+gcloud beta deploy releases promote \
+--delivery-pipeline web-app \
+--release web-app-001
+---
+Promoting release web-app-001 to target cd-production.
+
+Do you want to continue (Y/n)?  Y
+
+Creating rollout projects/qwiklabs-gcp-03-7a62738fe279/locations/us-east4/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-production-0001 in target cd-production
+Waiting for rollout creation operation to complete...done.                                                                                                                                                
+The rollout is pending approval.
+```
+
+1. To confirm the staging Target has your application deployed, run the following command:
+
+```
+gcloud beta deploy rollouts list \
+--delivery-pipeline web-app \
+--release web-app-001
+---
+approvalState: NEEDS_APPROVAL
+createTime: '2024-10-22T08:32:07.986281Z'
+etag: b394945053f81d9a
+name: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-production-0001
+phases:
+- deploymentJobs:
+    deployJob:
+      deployJob: {}
+      id: deploy
+      state: PENDING
+    verifyJob:
+      id: verify
+      state: DISABLED
+      verifyJob: {}
+  id: stable
+  state: PENDING
+state: PENDING_APPROVAL
+targetId: cd-production
+uid: e2685df5a0254304b3ace6574b2f083a
+```
+
+
+
+Approve the rollout with the following:
+
+```
+gcloud beta deploy rollouts approve web-app-001-to-cd-production-0001 \
+--delivery-pipeline web-app \
+--release web-app-001
+---
+Approving rollout web-app-001-to-cd-production-0001 from web-app-001 to target cd-production.
+
+Do you want to continue (Y/n)?  Y
+```
+
+You will be prompted to approve the rollout before the promotion commences.
+
+- Press ENTER to accept the default (Y = yes).
+
+1. To confirm the prod target has your application deployed, run the following command:
+
+```
+gcloud beta deploy rollouts list \
+--delivery-pipeline web-app \
+--release web-app-001
+---
+approvalState: APPROVED
+approveTime: '2024-10-22T08:42:53.240518Z'
+createTime: '2024-10-22T08:32:07.986281Z'
+deployEndTime: '2024-10-22T08:43:13.099800Z'
+deployStartTime: '2024-10-22T08:42:53.806910909Z'
+deployingBuild: projects/105417119561/locations/us-east4/builds/30948baa-d97b-460c-9bce-dbeaa1f7569a
+enqueueTime: '2024-10-22T08:42:53.240518Z'
+etag: 4eefd744c9815a18
+name: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-production-0001
+phases:
+- deploymentJobs:
+    deployJob:
+      deployJob: {}
+      id: deploy
+      jobRun: projects/105417119561/locations/us-east4/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-production-0001/jobRuns/aed5279e-c522-4fa3-bc9a-a33a3d7bbb80
+      state: SUCCEEDED
+    verifyJob:
+      id: verify
+      state: DISABLED
+      verifyJob: {}
+  id: stable
+  state: SUCCEEDED
+state: SUCCEEDED
+targetId: cd-production
+uid: e2685df5a0254304b3ace6574b2f083a
+---
+approvalState: DOES_NOT_NEED_APPROVAL
+createTime: '2024-10-22T08:27:27.413693Z'
+deployEndTime: '2024-10-22T08:27:54.549886Z'
+deployStartTime: '2024-10-22T08:27:32.641556788Z'
+deployingBuild: projects/105417119561/locations/us-east4/builds/ef32fae1-2ccf-492e-814e-fd51a9048bd8
+enqueueTime: '2024-10-22T08:27:31.568098Z'
+etag: '2368254907785534'
+name: projects/qwiklabs-gcp-01-cde765505302/locations/us-east4/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-staging-0001
+phases:
+- deploymentJobs:
+    deployJob:
+      deployJob: {}
+      id: deploy
+      jobRun: projects/105417119561/locations/us-east4/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-staging-0001/jobRuns/dff8eb53-6b2a-4496-b39a-1ea632969452
+      state: SUCCEEDED
+    verifyJob:
+      id: verify
+      state: DISABLED
+      verifyJob: {}
+  id: stable
+  state: SUCCEEDED
+state: SUCCEEDED
+targetId: cd-staging
+uid: 10eede7ab2a34427981a806b3c257a62
+```
+
 Verify the release to the Production environment
 
 Check my progress
@@ -2490,15 +2935,71 @@ Check my progress
 ## Task 6. Make a change to the application and redeploy it
 
 1. Using the editor, open the `cloud-deploy-tutorials/tutorials/base/web/leeroy-app/` directory and modify the `app.go` file. Change line 24 to say: `fmt.Fprintf(w, "leeroooooy app v2!!\n")`
-2. **Build the application and push to the Artifact Registry.**
-3. **Create a new release on your pipeline you created earlier. Name the release `web-app-002`**
-4. Verify the new version has been deployed to the staging environment.
 
-```
-gcloud beta deploy rollouts list \
---delivery-pipeline web-app \
---release web-app-002
-```
+2. **Build the application and push to the Artifact Registry.**
+
+   ```
+   cd wed
+   skaffold build --interactive=false \
+   --default-repo us-west1-docker.pkg.dev/qwiklabs-gcp-02-a3eac393e591/cicd-challenge \
+   --file-output artifacts.json
+   cd ..
+   ```
+
+   
+
+3. **Create a new release on your pipeline you created earlier. Name the release `web-app-002`**
+
+   ```
+   gcloud beta deploy releases create web-app-002 \
+   --delivery-pipeline web-app \
+   --build-artifacts web/artifacts.json \
+   --source web/
+   ---
+   Creating temporary archive of 9 file(s) totalling 9.2 KiB before compression.
+   Uploading tarball of [web/] to [gs://f7d0fa1fb13844ecb498a38ac90b271c_clouddeploy/source/1729654970.469481-252e0b9fdcdf47edbd4666b1fe985775.tgz]
+   Waiting for operation [operation-1729654973781-6251cae4bd7a5-d26022db-b8ef6855]...done.                                                                                                                   
+   Created Cloud Deploy release web-app-002.
+   Creating rollout projects/qwiklabs-gcp-02-a3eac393e591/locations/us-west1/deliveryPipelines/web-app/releases/web-app-002/rollouts/web-app-002-to-cd-staging-0001 in target cd-staging
+   Waiting for rollout creation operation to complete...done.                   
+   ```
+
+   
+
+4. **Verify the new version has been deployed to the staging environment.**
+
+   ```
+   gcloud beta deploy rollouts list \
+   --delivery-pipeline web-app \
+   --release web-app-002
+   ---
+   approvalState: DOES_NOT_NEED_APPROVAL
+   createTime: '2024-10-23T03:43:00.452287Z'
+   deployEndTime: '2024-10-23T03:43:25.673209Z'
+   deployStartTime: '2024-10-23T03:43:08.118431683Z'
+   deployingBuild: projects/358382463111/locations/us-west1/builds/c711bbcd-0078-4801-8da6-630d0b7ef6aa
+   enqueueTime: '2024-10-23T03:43:07.513947Z'
+   etag: 11c7a21638a14c10
+   name: projects/qwiklabs-gcp-02-a3eac393e591/locations/us-west1/deliveryPipelines/web-app/releases/web-app-002/rollouts/web-app-002-to-cd-staging-0001
+   phases:
+   - deploymentJobs:
+       deployJob:
+         deployJob: {}
+         id: deploy
+         jobRun: projects/358382463111/locations/us-west1/deliveryPipelines/web-app/releases/web-app-002/rollouts/web-app-002-to-cd-staging-0001/jobRuns/c70dc531-95a1-46b3-921d-f1f49d238ac0
+         state: SUCCEEDED
+       verifyJob:
+         id: verify
+         state: DISABLED
+         verifyJob: {}
+     id: stable
+     state: SUCCEEDED
+   state: SUCCEEDED
+   targetId: cd-staging
+   uid: 2d47fad76aca4ca19a6d7b5ee53a0d3f
+   ```
+
+   
 
 
 
@@ -2507,6 +3008,27 @@ gcloud beta deploy rollouts list \
 Oh No! Your QA Engineers have found a bug in your release to staging so you will need to rollback to the previous version.
 
 1. **Use Cloud Deploy to rollback to the original version of the application - `web-app-001`**
+
+   gcloud cli
+
+   ```
+   gcloud deploy targets rollback cd-staging \
+      --delivery-pipeline=web-app \
+      --release=web-app-001
+   ---
+   Rolling back target cd-staging to release web-app-001.
+   
+   
+   Do you want to continue (Y/n)?  Y
+   
+   Creating rollout projects/qwiklabs-gcp-02-a3eac393e591/locations/us-west1/deliveryPipelines/web-app/releases/web-app-001/rollouts/web-app-001-to-cd-staging-0002 in target cd-staging
+   Waiting for rollout creation operation to complete...done.                   
+   ```
+
+   console
+
+   https://cloud.google.com/deploy/docs/roll-back#console
+
 2. Verify that the original version is running.
 
 Verify the rollback ran successfully

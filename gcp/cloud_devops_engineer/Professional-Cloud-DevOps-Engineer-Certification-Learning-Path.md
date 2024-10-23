@@ -1,4 +1,4 @@
-## Professional Cloud DevOps Engineer Certification Learning Path
+# Professional Cloud DevOps Engineer Certification Learning Path
 
 # I. Developing a Google SRE Culture
 
@@ -2496,7 +2496,7 @@ In this lab, you deployed an application to Google Cloud and then used the tools
 
 
 
-# Module Quiz
+### Module Quiz
 
 1. You're deploying test environments using Compute Engine VMs. Some downtime is acceptable, and it is very important to deploy them as inexpensively as possible. What single thing below could save you the most money?
 
@@ -2545,6 +2545,10 @@ This answer is correct. A rolling update will update instances incrementally unt
 - **Uptime check**
 
 This answer is correct. Availability is the percentage of time a system is running and able to process requests. Monitoring this metric will enable the derivation of the SLO metric.
+
+
+
+# III. Logging, Monitoring and Observability in Google Cloud
 
 
 
