@@ -862,7 +862,7 @@ First, you will create a Git repository using the Cloud Source Repositories serv
 mkdir gcp-course
 ```
 
-Copied!
+
 
 content_copy
 
@@ -872,7 +872,7 @@ content_copy
 cd gcp-course
 ```
 
-Copied!
+
 
 content_copy
 
@@ -882,7 +882,7 @@ content_copy
 gcloud source repos clone devops-repo
 ```
 
-Copied!
+
 
 content_copy
 
@@ -894,7 +894,7 @@ content_copy
 cd devops-repo
 ```
 
-Copied!
+
 
 content_copy
 
@@ -935,7 +935,7 @@ if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080, debug=True, threaded=True)
 ```
 
-Copied!
+
 
 content_copy
 
@@ -966,7 +966,7 @@ content_copy
 </html>
 ```
 
-Copied!
+
 
 content_copy
 
@@ -984,7 +984,7 @@ content_copy
 {% endblock %}
 ```
 
-Copied!
+
 
 content_copy
 
@@ -995,7 +995,7 @@ content_copy
 Flask>=2.0.3
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1006,7 +1006,7 @@ cd ~/gcp-course/devops-repo
 git add --all
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1017,7 +1017,7 @@ git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1027,7 +1027,7 @@ content_copy
 git commit -a -m "Initial Commit"
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1037,7 +1037,7 @@ content_copy
 git push origin master
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1057,7 +1057,7 @@ The file *Dockerfile* is used to define how the container is built.
 FROM python:3.9
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1070,7 +1070,7 @@ WORKDIR /app
 COPY . .
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1083,7 +1083,7 @@ RUN pip install gunicorn
 RUN pip install -r requirements.txt
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1096,7 +1096,7 @@ ENV PORT=80
 CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 main:app
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1114,7 +1114,7 @@ ENV PORT=80
 CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 main:app
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1128,7 +1128,7 @@ The Docker image has to be built and then stored somewhere. You will use **Cloud
 cd ~/gcp-course/devops-repo
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1138,7 +1138,7 @@ content_copy
 echo $DEVSHELL_PROJECT_ID
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1150,7 +1150,7 @@ gcloud artifacts repositories create devops-repo \
     --location=us-east4
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1160,7 +1160,7 @@ content_copy
 gcloud auth configure-docker us-east4-docker.pkg.dev
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1170,7 +1170,7 @@ content_copy
 gcloud builds submit --tag us-east4-docker.pkg.dev/$DEVSHELL_PROJECT_ID/devops-repo/devops-image:v0.1 .
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1205,7 +1205,7 @@ cd ~/gcp-course/devops-repo
 git add --all
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1215,7 +1215,7 @@ content_copy
 git commit -am "Added Docker Support"
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1225,7 +1225,7 @@ content_copy
 git push origin master
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1266,7 +1266,7 @@ options:
   logging: CLOUD_LOGGING_ONLY
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1292,7 +1292,7 @@ cd ~/gcp-course/devops-repo
 git commit -a -m "Testing Build Trigger"
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1302,7 +1302,7 @@ content_copy
 git push origin master
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1532,7 +1532,7 @@ Download a sample application from GitHub and preview it in Cloud Shell.
 mkdir gcp-course
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1542,7 +1542,7 @@ content_copy
 cd gcp-course
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1552,7 +1552,7 @@ content_copy
 git clone https://GitHub.com/GoogleCloudPlatform/training-data-analyst.git
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1562,7 +1562,7 @@ content_copy
 cd training-data-analyst/courses/design-process/deploying-apps-to-gcp
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1572,7 +1572,7 @@ content_copy
 docker build -t test-python .
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1582,7 +1582,7 @@ content_copy
 docker run --rm -p 8080:8080 test-python
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1605,7 +1605,7 @@ App Engine is a completely automated deployment platform. It supports many langu
 runtime: python39
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1619,7 +1619,7 @@ content_copy
 gcloud app create --region=us-central
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1629,7 +1629,7 @@ content_copy
 gcloud app deploy --version=one --quiet
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1661,7 +1661,7 @@ def main():
 gcloud app deploy --version=two --no-promote --quiet
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1702,7 +1702,7 @@ To deploy an application to Kubernetes, you first need to create the cluster. Th
 kubectl get nodes
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1768,7 +1768,7 @@ spec:
     tier: frontend
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1787,7 +1787,7 @@ gcloud artifacts repositories create devops-demo \
     --location=us-central1
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1797,7 +1797,7 @@ content_copy
 gcloud auth configure-docker us-central1-docker.pkg.dev
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1808,7 +1808,7 @@ cd ~/gcp-course/training-data-analyst/courses/design-process/deploying-apps-to-g
 gcloud builds submit --tag us-central1-docker.pkg.dev/$DEVSHELL_PROJECT_ID/devops-demo/devops-image:v0.2 .
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1831,7 +1831,7 @@ spec:
 kubectl apply -f kubernetes-config.yaml
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1841,7 +1841,7 @@ content_copy
 kubectl get pods
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1853,7 +1853,7 @@ Make sure all the pods are ready. If they aren't, wait a few seconds and try aga
 kubectl get services
 ```
 
-Copied!
+
 
 content_copy
 
@@ -1897,7 +1897,7 @@ cd ~/gcp-course/training-data-analyst/courses/design-process/deploying-apps-to-g
 gcloud builds submit --tag us-central1-docker.pkg.dev/$DEVSHELL_PROJECT_ID/devops-demo/cloud-run-image:v0.1 .
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2104,7 +2104,7 @@ Download a sample application from GitHub and preview it in Cloud Shell.
 gcloud auth list
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2127,7 +2127,7 @@ To set the active account, run:
 gcloud config list project
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2144,7 +2144,7 @@ project = [PROJECT_ID]
 gcloud config set project [PROJECT_ID]
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2160,7 +2160,7 @@ Updated property [core/project].
 mkdir gcp-logging
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2170,7 +2170,7 @@ content_copy
 cd gcp-logging
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2180,7 +2180,7 @@ content_copy
 git clone https://GitHub.com/GoogleCloudPlatform/training-data-analyst.git
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2190,7 +2190,7 @@ content_copy
 cd training-data-analyst/courses/design-process/deploying-apps-to-gcp
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2202,7 +2202,7 @@ content_copy
 import googlecloudprofiler
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2217,7 +2217,7 @@ except (ValueError, NotImplementedError) as exc:
     print(exc)
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2234,7 +2234,7 @@ google-cloud-profiler==3.0.6
 protobuf==3.20.1
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2248,7 +2248,7 @@ The file should look like this:
 gcloud services enable cloudprofiler.googleapis.com
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2258,7 +2258,7 @@ content_copy
 docker build -t test-python .
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2268,7 +2268,7 @@ content_copy
 docker run --rm -p 8080:8080 test-python
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2298,7 +2298,7 @@ Now you will deploy the program to App Engine and use Google Cloud tools to moni
 runtime: python39
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2310,7 +2310,7 @@ content_copy
    gcloud app create --region=us-east1
    ```
 
-   Copied!
+   
 
    content_copy
 
@@ -2320,7 +2320,7 @@ content_copy
 gcloud app deploy --version=one --quiet
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2378,7 +2378,7 @@ sudo apt update
 sudo apt install apache2-utils -y
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2388,7 +2388,7 @@ content_copy
 ab -n 1000 -c 10 https://<your-project-id>.appspot.com/
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2417,7 +2417,7 @@ This shows a history of requests and their latency. Again, it's not very excitin
 ab -n 1000 -c 10 https://<your-project-id>.appspot.com/
 ```
 
-Copied!
+
 
 content_copy
 
@@ -2661,7 +2661,7 @@ It takes a few moments to provision and connect to the environment. When you are
 gcloud auth list
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -2683,7 +2683,7 @@ Credentialed accounts:
 gcloud config list project
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -2765,7 +2765,7 @@ Now you install an NGINX web server, one of the most popular web servers in the 
    sudo apt-get update
    ```
 
-   Copied!
+   
 
    **Expected output:**
 
@@ -2782,7 +2782,7 @@ Now you install an NGINX web server, one of the most popular web servers in the 
    sudo apt-get install -y nginx
    ```
 
-   Copied!
+   
 
    **Expected output:**
 
@@ -2800,7 +2800,7 @@ Now you install an NGINX web server, one of the most popular web servers in the 
    ps auwx | grep nginx
    ```
 
-   Copied!
+   
 
    **Expected output:**
 
@@ -3116,7 +3116,7 @@ sudo apt-get update
 sudo apt-get install apache2-utils
 ```
 
-Copied!
+
 
 Enter `Y` if asked "Do you want to continue? [Y/n]"
 
@@ -3126,7 +3126,7 @@ Enter `Y` if asked "Do you want to continue? [Y/n]"
 URL=http://[worker-1-server ip]
 ```
 
-Copied!
+
 
 1. Throw some load at your server. The following command executes 100 requests at a time and continues to do so up to a total of 100,000 requests. Don't miss the trailing "/" after the URL:
 
@@ -3134,7 +3134,7 @@ Copied!
 ab -s 120 -n 100000 -c 100 $URL/
 ```
 
-Copied!
+
 
 1. Once Bench finishes its run, wait a minute or so and then execute:
 
@@ -3142,7 +3142,7 @@ Copied!
 ab -s 120 -n 500000 -c 500 $URL/
 ```
 
-Copied!
+
 
 1. While the second series of traffic is generated, switch back to your dashboard. After a little time, you see the two distinct spikes in CPU load.
 
@@ -3261,7 +3261,7 @@ It takes a few moments to provision and connect to the environment. When you are
 gcloud auth list
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -3283,7 +3283,7 @@ Credentialed accounts:
 gcloud config list project
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -3309,7 +3309,7 @@ Run the following commands to update the python environment
  source myenv/bin/activate 
 ```
 
-Copied!
+
 
 #### Task 1. Download and test a sample app from GitHub
 
@@ -3319,7 +3319,7 @@ Copied!
    git clone --depth 1 https://github.com/GoogleCloudPlatform/training-data-analyst.git
    ```
 
-   Copied!
+   
 
 2. Once the cloning completes, change to the `deploying-apps-to-gcp` folder in the repository that contains our sample app:
 
@@ -3327,7 +3327,7 @@ Copied!
    cd ~/training-data-analyst/courses/design-process/deploying-apps-to-gcp
    ```
 
-   Copied!
+   
 
 3. Open the `main.py` file in the Cloud Shell editor. If prompted click **Open in a new window**. Take a moment to explore the basic "Hello GCP" Python Flask application.
 
@@ -3335,7 +3335,7 @@ Copied!
    edit main.py
    ```
 
-   Copied!
+   
 
 4. Close the editor and switch back to the Cloud Shell terminal. Click **Open terminal** at the top right to open the Terminal window. To test the program, load all of the Python application dependencies and then start the app.
 
@@ -3344,7 +3344,7 @@ Copied!
     python3 main.py
    ```
 
-   Copied!
+   
 
 5. To see the program running, click the **Web Preview** button in the toolbar of Cloud Shell, and then select **Preview on port 8080**.
 
@@ -3368,7 +3368,7 @@ Now that we know the application works, let's deploy it to the App Engine.
    runtime: python312
    ```
 
-   Copied!
+   
 
 4. To make sure the file is saved, select **File > Save**.
 
@@ -3380,7 +3380,7 @@ Every project needs to first create an App Engine application before it can be u
    gcloud app create --region=us-east4
    ```
 
-   Copied!
+   
 
 2. Deploy the basic application to App Engine. The following command looks in the current directory for the application. It sees the app.yaml file declaring it a Python application and it assumes the rest of the folder contains the application itself, with a starting point in main.py. It loads the dependencies, packages the application, and deploys into the App Engine as a Service.
 
@@ -3388,7 +3388,7 @@ Every project needs to first create an App Engine application before it can be u
    gcloud app deploy --version=one --quiet
    ```
 
-   Copied!
+   
 
 3. Wait for the application to finish deploying, then in the Google Cloud console window, use the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) click on **VIEW ALL PRODUCTS** to navigate to **Serverless > App Engine > Dashboard**.
 
@@ -3469,7 +3469,7 @@ You'll notice the new `Configuration` section that's been added to the standard 
    import json
    ```
 
-   Copied!
+   
 
 9. Replace the current `main()` function with the one below. This new version adds a sleep command which pauses the code for 10s in the middle of each request. This will be well over the threshold.
 
@@ -3481,7 +3481,7 @@ You'll notice the new `Configuration` section that's been added to the standard 
        return render_template('index.html', model=model)
    ```
 
-   Copied!
+   
 
 10. Now re-deploy your application by rerunning:
 
@@ -3489,7 +3489,7 @@ You'll notice the new `Configuration` section that's been added to the standard 
     gcloud app deploy --version=two --quiet
     ```
 
-    Copied!
+    
 
 11. Wait for the command to finish the re-deployment.
 
@@ -3501,7 +3501,7 @@ You'll notice the new `Configuration` section that's been added to the standard 
     while true; do curl -s https://$DEVSHELL_PROJECT_ID.appspot.com/ | grep -e "<title>" -e "error";sleep .$[( $RANDOM % 10 )]s;done
     ```
 
-    Copied!
+    
 
 **Note:** This command makes requests to the App Engine app continuously in a loop. The grep command will display the title of the page when the request works. It also displays the error, if it doesn’t work. Every iteration, the thread sleeps a random amount of time less than a second, but with the 10s response time delay it will seem much longer.
 
@@ -3578,7 +3578,7 @@ The Alerting CLI (and API) can be very effective when applying alerting policies
 }
 ```
 
-Copied!
+
 
 1. Save your file. Make sure you are in the correct folder and that your alerting policy was saved there.
 
@@ -3587,7 +3587,7 @@ Copied!
    ls
    ```
 
-   Copied!
+   
 
 2. Deploy the alerting policy with the following command:
 
@@ -3595,7 +3595,7 @@ Copied!
    gcloud alpha monitoring policies create --policy-from-file="app-engine-error-percent-policy.json"
    ```
 
-   Copied!
+   
 
 3. Back in the Google Cloud console, return to the **Observability > Monitoring > Alerting** page. In the **Policies** section, you should see the alerting policy you just deployed.
 
@@ -3618,7 +3618,7 @@ def main():
         return render_template('index.html', model=model)
 ```
 
-Copied!
+
 
 1. Redeploy your application with the following command:
 
@@ -3626,7 +3626,7 @@ Copied!
    gcloud app deploy --version=two --quiet
    ```
 
-   Copied!
+   
 
 2. Wait for the command to finish the redeployment.
 
@@ -3638,7 +3638,7 @@ Copied!
    while true; do curl -s https://$DEVSHELL_PROJECT_ID.appspot.com/ | grep -e "<title>" -e "error";sleep .$[( $RANDOM % 10 )]s;done
    ```
 
-   Copied!
+   
 
 In Cloud Shell, you should see an error appear randomly about 2% of the time. Leave the command running.
 
@@ -3712,7 +3712,7 @@ It takes a few moments to provision and connect to the environment. When you are
 gcloud auth list
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -3734,7 +3734,7 @@ Credentialed accounts:
 gcloud config list project
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -3766,7 +3766,7 @@ To have something for Service Monitoring to connect to, deploy a basic Node.js a
 git clone https://github.com/haggman/HelloLoggingNodeJS.git
 ```
 
-Copied!
+
 
 This repository contains a basic Node.js web application used for testing. This is the same application you saw pieces of in the lecture module.
 
@@ -3777,7 +3777,7 @@ cd HelloLoggingNodeJS
 edit index.js
 ```
 
-Copied!
+
 
 **Note:** If an error indicates that the code editor could not be loaded because third-party cookies are disabled, click **Open in New Window** and switch to the new tab.
 
@@ -3788,7 +3788,7 @@ Copied!
 runtime: nodejs20
 ```
 
-Copied!
+
 
 App Engine standard uses this file to define the runtime required by the application.
 
@@ -3803,7 +3803,7 @@ Not only does this define the Node.js application dependencies, but it also defi
 gcloud app create --region=us-east1
 ```
 
-Copied!
+
 
 This must be done once in each new project that is running App Engine applications. App Engine is a regional technology, thus the *region* switch.
 
@@ -3813,7 +3813,7 @@ This must be done once in each new project that is running App Engine applicatio
 gcloud app deploy
 ```
 
-Copied!
+
 
 Wait until the deploy completes before moving on.
 
@@ -3850,7 +3850,7 @@ do curl -s https://$DEVSHELL_PROJECT_ID.appspot.com/random-error \
 -w '\n' ;sleep .1s;done
 ```
 
-Copied!
+
 
 The loop generates ten requests per second. The URL is to the /random-error route, which generates an error about every 1000 requests, so you should see approximately 1 error every 100s.
 
@@ -3936,7 +3936,7 @@ You have two tabs, one that's running the test loop and one that's standard.
 gcloud app deploy
 ```
 
-Copied!
+
 
 1. When prompted, type **y** and press **Enter**.
 2. Once the redeploy completes, switch to the tab running the test loop and verify the uptick in errors.
@@ -4004,3 +4004,6019 @@ Congratulations! You used Service Monitoring to create an availability related S
 
 
 ## Advanced Logging and Analysis
+
+### Lab - Log Analytics on Google Cloud
+
+#### Overview
+
+In this lab you will learn about the features and tools provided by Cloud Logging to gain insight of your applications.
+
+#### What you'll learn
+
+- How to use Cloud Logging effectively and get insight about applications running on GKE
+- How to effectively build and run queries using log analytics
+
+#### The demo application used in the lab
+
+To use a concrete example, you will work through a scenario based on this [microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo) sample app deployed to a GKE cluster. In this demo app, there are many microservices and dependencies among them.
+
+![chart demonstrating many microservices and their dependencies](images/dgo2Yut%2FH5g9gXqK6M0OAwtFK4Ji82rTqV%2FtSIwkGos%3D.png)
+
+#### Setup and Requirements
+
+#### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+#### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is the **Lab Details** panel with the following:
+
+   - The **Open Google Cloud console** button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   "Username"
+   ```
+
+   
+
+   You can also find the **Username** in the **Lab Details** panel.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   "Password"
+   ```
+
+   
+
+   You can also find the **Password** in the **Lab Details** panel.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To view a menu with a list of Google Cloud products and services, click the **Navigation menu** at the top-left. ![Navigation menu icon](images/nUxFb6oRFr435O3t6V7WYJAjeDFcrFb16G9wHWp5BzU%3D-0095752.png)
+
+#### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `PROJECT_ID`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to "PROJECT_ID"
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: "ACCOUNT"
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+
+
+**Output:**
+
+```
+[core]
+project = "PROJECT_ID"
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+#### Task 1. Infrastructure setup
+
+#### Verify the GKE cluster
+
+Connect to a Google Kubernetes Engine cluster and validate that it's been created correctly.
+
+1.In Cloud Shell, set the zone in `gcloud`:
+
+```
+gcloud config set compute/zone placeholder
+```
+
+
+
+1. Use the following command to see the cluster's status:
+
+```
+gcloud container clusters list
+```
+
+
+
+You should see a similar status:
+
+```
+NAME: day2-ops
+LOCATION: placeholder
+MASTER_VERSION: 1.24.3-gke.2100
+MASTER_IP: 34.68.183.6
+MACHINE_TYPE: e2-standard-2
+NODE_VERSION: 1.24.3-gke.2100
+NUM_NODES: 4
+STATUS: RUNNING
+```
+
+The cluster status will say RUNNING. If it's still PROVISIONING, wait a moment and run the command above again. Repeat until the status is RUNNING.
+
+You can also check the progress in the Cloud Console - **Navigation menu** > **Kubernetes Engine** > **Clusters**.
+
+1. Once your cluster has RUNNING status, get the cluster credentials:
+
+```
+gcloud container clusters get-credentials day2-ops --region placeholder
+```
+
+
+
+(Output)
+
+```
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for day2-ops.
+```
+
+1. Verify that the nodes have been created:
+
+```
+kubectl get nodes
+```
+
+
+
+Your output should look like this:
+
+```
+NAME                                      STATUS   ROLES    AGE     VERSION
+gke-day2-ops-default-pool-b3081059-bskv   Ready    <none>   3m32s   v1.24.3-gke.2100
+gke-day2-ops-default-pool-b3081059-dt73   Ready    <none>   3m30s   v1.24.3-gke.2100
+gke-day2-ops-default-pool-b3081059-g1m3   Ready    <none>   3m31s   v1.24.3-gke.2100
+gke-day2-ops-default-pool-b3081059-wq4b   Ready    <none>   3m31s   v1.24.3-gke.2100
+```
+
+#### Task 2. Deploy application
+
+Next, you will deploy a microservices application called Online Boutique to your cluster to create an actual workload you can monitor.
+
+1. Run the following to clone the repo:
+
+```
+git clone https://github.com/GoogleCloudPlatform/microservices-demo.git
+```
+
+
+
+1. Change to the `microservices-demo` directory:
+
+```
+cd microservices-demo
+```
+
+
+
+1. Install the app using `kubectl`:
+
+```
+kubectl apply -f release/kubernetes-manifests.yaml
+```
+
+
+
+1. Confirm everything is running correctly:
+
+```
+kubectl get pods
+```
+
+
+
+The output should look similar to the output below. Re-run the command until all pods are reporting a Running status before moving to the next step.
+
+```
+NAME                                     READY     STATUS    RESTARTS   AGE
+adservice-55f94cfd9c-4lvml               1/1       Running   0          20m
+cartservice-6f4946f9b8-6wtff             1/1       Running   2          20m
+checkoutservice-5688779d8c-l6crl         1/1       Running   0          20m
+currencyservice-665d6f4569-b4sbm         1/1       Running   0          20m
+emailservice-684c89bcb8-h48sq            1/1       Running   0          20m
+frontend-67c8475b7d-vktsn                1/1       Running   0          20m
+loadgenerator-6d646566db-p422w           1/1       Running   0          20m
+paymentservice-858d89d64c-hmpkg          1/1       Running   0          20m
+productcatalogservice-bcd85cb5-d6xp4     1/1       Running   0          20m
+recommendationservice-685d7d6cd9-pxd9g   1/1       Running   0          20m
+redis-cart-9b864d47f-c9xc6               1/1       Running   0          20m
+shippingservice-5948f9fb5c-vndcp         1/1       Running   0          20m
+```
+
+1. Run the following to get the **external** IP of the application. An IP address is only returned once the service has been deployed. So, you may need to repeat the commands until there's an external IP address assigned:
+
+```
+export EXTERNAL_IP=$(kubectl get service frontend-external -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
+echo $EXTERNAL_IP
+```
+
+
+
+(Example output)
+
+```
+35.222.235.86
+```
+
+
+
+1. Finally, confirm that the app is up and running:
+
+```
+curl -o /dev/null -s -w "%{http_code}\n"  http://${EXTERNAL_IP}
+```
+
+
+
+Your confirmation will look like this:
+
+```
+200
+```
+
+After the application is deployed, you can also go to the Cloud Console and view the status.
+
+1. In the **Kubernetes Engine** > **Workloads** page you'll see that all the pods are OK.
+
+![workloads page with pods in OK status](images/xiB9uesxmJg31lu%2FZsh5ZzP23oDzc3RtqbzGge6KoVs%3D.png)
+
+1. Now click **Gateways, Services & Ingress**, verify that all services are OK.
+
+#### Open the application
+
+Under **Gateways, Services & Ingress**, click the **Endpoint** IP of the service **frontend-external:**
+
+![highlight of the frontend-external service's external IP address](images/VBfOAIJnZIbR4EBY1hFpP1OcKKVKlij3zRYfggdbspc%3D.png)
+
+It should open the application and you will have a page like the following:
+
+![demo application web page](images/vqr0npRJcTFimM37tOokhA1HiGtdqQsTluZcBOu7I7M%3D.png)
+
+Click **Check my progress** to verify the objective.
+
+Deploy application
+
+
+
+Check my progress
+
+
+
+#### Task 3. Manage log buckets
+
+There are two ways you can enable Log Analytics. One way is to upgrade an existing bucket. The other is to create a new log bucket with Log Analytics enabled.
+
+#### Upgrade an existing bucket
+
+You can use the following steps to upgrade an existing log bucket.
+
+1. On the Navigation menu, click **Logging**, then click **Logs Storage**.
+2. Click **UPGRADE** for an existing bucket, for example, the `_Default` bucket.
+
+<img src="images/au5qJlHbvP3WVa83SXQc3nXzteNYy7BPtHtZaPFYXAo%3D.png" alt="bucket details panel with 2 checkboxes marked" style="zoom:80%;" />
+
+1. Click **UPGRADE** in the popup window.
+2. Wait for the upgrade to complete. Initially the status changes to **Not eligible for upgrade** before you see the **Upgraded** status.
+3. Click the **OPEN** dropdown button.
+4. Select the view `_AllLogs`, the Log Analytics page will open for you.
+
+#### Create a new Log bucket
+
+Alternatively, you can configure Cloud Logging to create a new log bucket with Log Analytics enabled.
+
+1. On the left-hand menu open **Logging,** then click **Logs Storage.**
+2. Click **CREATE LOG BUCKET** at top.
+3. Provide a name such as **day2ops-log** to the bucket.
+4. Check both **Upgrade to use Log Analytics** and **Create a new BigQuery dataset that links to this bucket**.
+5. Type in a dataset name such as: **day2ops_log**
+
+![bucket details panel with 2 checkboxes marked](images/XOvhjT9y0%2B5ggf12ojlNjPF4wNxRNzTWpf5w4O49o7w%3D.png)
+
+Selecting *Create a linked dataset in BigQuery* will create a dataset for you in BigQuery if it does not exist. This way you can run queries in BigQuery if you want to.
+
+1. Finally, click **Create bucket** to create the log bucket.
+
+Click **Check my progress** to verify the objective.
+
+Create a Log bucket
+
+
+
+Check my progress
+
+
+
+#### **Write to the new Log bucket**
+
+You can create a log sink to use the new log bucket. You can do it from the **Logs Router** directly. Another easy way to do this is from **Logs Explorer**. You can run log queries to select and filter the logs you are interested in and create a sink. Once nice thing from that approach is the log query will be automatically copied to the sing configuration as the filter.
+
+1. On the **Navigation menu**, click **Logging**, then click **Logs Explorer**.
+2. In the top-right of **Logs Explorer**, enable **Show query** and run the following query in the query field:
+
+```
+resource.type="k8s_container"
+```
+
+
+
+1. Click on **More actions** then click **Create sink**.
+
+![Logs Explorer page with Create sink button highlighted](images/YRd6XCTCjHVdWyEUdyFQSZTpbil9Bu9zoeYMBYPWawo%3D.png)
+
+1. Provide a name such as **day2ops-sink** as the sink name.
+2. Click **NEXT**.
+3. Select **Logging bucket** in the sink service dropdown list.
+4. Select the new log bucket you just created.
+5. Click **NEXT**.
+
+You should see the resource type query already in the filter.
+
+![sink details with resouce type displayed](images/AopQuXp0Ix1e%2BreKkvI%2BJIGsCQzEImhmtImqvvoLFk8%3D.png)
+
+1. Click **CREATE SINK**.
+
+Wait a little bit and your sink should be created.
+
+Click **Check my progress** to verify the objective.
+
+create the log sink
+
+
+
+Check my progress
+
+
+
+#### **Read from the new Log bucket**
+
+Go back to the Logs Explorer. Notice that there are many different resource types for the logs as highlighted in the screenshot below.
+
+![resouce types and refine scopes button highlighted](images/uAHIdq8nf1IdlLnTuk6fSlcaALXqPOjdbg0i0L2Ze54%3D.png)
+
+1. To view the logs in the new log bucket, click **REFINE SCOPE** at the top of the page.
+2. Select **Log view** and the new log bucket you just created.
+3. Click **APPLY**.
+
+You will see Kubernetes Containers is now the only resource type and there are much less log entries now. That's because only filtered logs will be sent to the bucket.
+
+#### Task 4. Log analysis
+
+- On the left side, under **Logging**, click **Log Analytics** to access the feature. You should see something like the following:
+
+![a7afa6a91515d206.png](images/Y1CWp0xRLshWSrYUyGqM40wsXJr6pBF5O5%2BHs7LjNwg%3D.png)
+
+If your query field is empty or you forget which table you want to use, you can click the **Query** button to get the sample query back.
+
+Now you can run your own queries in the query field. The following are some examples.
+
+**Important:** The log view name in the `FROM` clause is different for the log buckets. You need to make sure you use the correct view name. You can use the previous step to verify.
+
+#### **To find the most recent errors:**
+
+You want to find the most recent errors for from the containers:
+
+```
+SELECT
+ TIMESTAMP,
+ JSON_VALUE(resource.labels.container_name) AS container,
+ json_payload
+FROM
+ `"PROJECT_ID".global.day2ops-log._AllLogs`
+WHERE
+ severity="ERROR"
+ AND json_payload IS NOT NULL
+ORDER BY
+ 1 DESC
+LIMIT
+ 50
+```
+
+
+
+After run the query, you should see the output like the following:
+
+![query results to find recent errors](images/Qm%2FDh%2BPyushfZSDu1%2B3GgXh6Msp8zpvaQjcaq6KNxNY%3D.png)
+
+#### **To find the min, max, and average latency:**
+
+You can view the min, max, and average latencies in a timeframe for the frontend service:
+
+```
+SELECT
+hour,
+MIN(took_ms) AS min,
+MAX(took_ms) AS max,
+AVG(took_ms) AS avg
+FROM (
+SELECT
+  FORMAT_TIMESTAMP("%H", timestamp) AS hour,
+  CAST( JSON_VALUE(json_payload,
+      '$."http.resp.took_ms"') AS INT64 ) AS took_ms
+FROM
+  `"PROJECT_ID".global.day2ops-log._AllLogs`
+WHERE
+  timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
+  AND json_payload IS NOT NULL
+  AND SEARCH(labels,
+    "frontend")
+  AND JSON_VALUE(json_payload.message) = "request complete"
+ORDER BY
+  took_ms DESC,
+  timestamp ASC )
+GROUP BY
+1
+ORDER BY
+1
+```
+
+
+
+After run the query, you should see the output like the following:
+
+![query results to find min, max, and average latency](images/Ut%2FAW7nRaCvVmuMvCs01pCK8kUH%2BMf%2Bw9fic9CP5WOw%3D.png)
+
+#### **Product page visit number**
+
+You want to know how many times users visit a certain product page in the past hour:
+
+```
+SELECT
+count(*)
+FROM
+`"PROJECT_ID".global.day2ops-log._AllLogs`
+WHERE
+text_payload like "GET %/product/L9ECAV7KIM %"
+AND
+timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)
+```
+
+
+
+After run the query, you should see the output like the following:
+
+![query results for product page visits](https://cdn.qwiklabs.com/HCmbdCO4mIbL9zTh3mkI%2FiQqD3ArcsQsBfahDo3Ykck%3D)
+
+#### **Sessions with shopping cart checkout**
+
+You can run the following query to view how many sessions end up with checkout (POST call to the /cart/checkout service):
+
+```
+SELECT
+ JSON_VALUE(json_payload.session),
+ COUNT(*)
+FROM
+ `"PROJECT_ID".global.day2ops-log._AllLogs`
+WHERE
+ JSON_VALUE(json_payload['http.req.method']) = "POST"
+ AND JSON_VALUE(json_payload['http.req.path']) = "/cart/checkout"
+ AND timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)
+GROUP BY
+ JSON_VALUE(json_payload.session)
+```
+
+
+
+After run the query, you should see the output like the following:
+
+![query result for shopping cart checkout](\images/2pIvbMIOVQ6WmTsDWDs9ASaZNGwGqX8D73Q5L1PVlmg%3D.png)
+
+#### Congratulations!
+
+You now have experience using Cloud Logging to get insight about applications running on GKE, and you built and ran queries using log analytics.
+
+### Quiz - Advanced Logging and Analysis
+
+1. You want to compare resource utilization for VMs used for production, development, and testing. What should you do?
+
+- **Add a label called “state” to your VMs with the values “dev”, “test”, and “prod” and group by that label in your monitoring chart.**
+
+- Name the VMs with a prefix like “dev-”, “test-”, and “prod-” and filter on the name property when reporting.
+
+- Put those resources in different projects and use dataflow to create an aggregation of log values for each.
+
+- Export all machine logs to Cloud Storage and use Cloud Functions to build reports based on the VM tags.
+
+2. Your manager wants a daily report of resource utilization by application. Where would the best export sink be?
+
+- **Cloud Storage**
+
+- BigQuery
+
+- Spanner
+
+- Pub/Sub
+
+
+
+## Working with Audit Logs
+
+### Lab - Cloud Audit Logs
+
+### Overview
+
+In this lab, you investigate Google Cloud Audit Logs. Cloud Audit Logging maintains multiple audit logs for each project, folder, and organization, all of which help answer the question, "Who did what, when, and where?"
+
+### Objectives
+
+In this lab, you learn how to:
+
+- Enable data access logs on Cloud Storage.
+- Generate admin and data access activity.
+- View Audit logs.
+
+### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+After you complete the initial sign-in steps, the project dashboard appears.
+
+![The Project Dashboard which inlcudes tiles for Project info, Resources, APIs, Billing, and Error Reporting.](images/dxfeoOcn1ObyC0BYyoqqqSi4rO%2FeMdbWPFjoK6C0YYk%3D-0111985.png)
+
+### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D-0112011.png)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D-0112020.png)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+
+
+**Output:**
+
+```
+Credentialed accounts:
+ - @.com (active)
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+
+
+**Output:**
+
+```
+[core]
+project = 
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+### Task 1. Enable data access logs on Cloud Storage
+
+Data Access audit logs (except for BigQuery) are disabled by default. Let's start by enabling data access logs on Cloud Storage.
+
+1. In the Google Cloud Console window, use the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) to navigate to **IAM & Admin > Audit Logs**.
+2. Scroll or use `Filter` to locate `Google Cloud Storage`, then check the box next to it. This should display the `Info Panel` with options on `LOG TYPES`.
+
+Data Access audit logs are divided into different categories:
+
+- Admin Read: Records operations that read metadata or configuration information. Admin Activity audit logs record writes of metadata and configuration information. They can't be disabled.
+- Data Read: Records operations that read user-provided data.
+- Data Write: Records operations that write user-provided data.
+
+1. Select **Admin Read**, **Data Read** and **Data Write**, and then click **SAVE**.
+
+Click *Check my progress* to verify the objective.
+
+Enable data access logs on Cloud Storage
+
+
+
+Check my progress
+
+
+
+### Task 2. Generate some admin and data access activity
+
+The data access logs are now enabled for Cloud Storage. Use Cloud Shell to upload a file to a new storage bucket, create a network, create a VM, and then examine the Cloud Audit Logs.
+
+1. Open or switch to your Cloud Shell terminal.
+2. Use `gsutil` to create a Cloud Storage bucket with the same name as your project:
+
+```
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+1. Make sure the bucket successfully created:
+
+```
+gsutil ls
+```
+
+
+
+1. Create a simple "Hello World" type of text file and upload it to your bucket:
+
+```
+echo "Hello World!" > sample.txt
+gsutil cp sample.txt gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+1. Verify the file is in the bucket:
+
+```
+gsutil ls gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+1. Create a new auto mode network named **mynetwork**, then create a new virtual machine and place it on the new network:
+
+```
+gcloud compute networks create mynetwork --subnet-mode=auto
+```
+
+
+
+```
+gcloud compute instances create default-us-vm \
+--zone=Zone --network=mynetwork \
+--machine-type=e2-medium
+```
+
+
+
+Click *Check my progress* to verify the objective.
+
+Check the creation of bucket, network and virtual machine instance
+
+
+
+Check my progress
+
+
+
+1. Delete the storage bucket:
+
+```
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+### Task 3. Viewing audit logs
+
+Admin Activity logs contain log entries for API calls or other administrative actions that modify the configuration or metadata of resources. For example, the logs record when VM instances and App Engine applications are created, or when permissions are changed. To view the logs, you must have the Cloud Identity and Access Management roles Logging/Logs Viewer or Project/Viewer.
+
+Admin Activity logs are always enabled so there is no need to enable them. There is no charge for your Admin Activity audit logs.
+
+1. Use the **Navigation menu** to navigate to **Logging > Logs Explorer**.
+
+2. Enable **Show query** and delete the contents of **Query** box.
+
+3. Click the **Log name** dropdown and use the filter to locate the **activity** log under **CLOUD AUDIT** section and **Apply** it to the query.
+
+4. Press the **Run query** button, and then use the `Log fields` explorer to filter to **GCS Bucket** entries.
+
+5. Locate the log entry for when the Cloud Storage was deleted.
+
+6. Expand the delete entry, then drill into **protoPayload** > **authenticationInfo** field and notice you can see the email address of the user that performed this action.
+
+   Feel free to explore other fields in the entry. Also, notice how many of the values can be clicked to add inclusions/exclusions to the query.
+
+7. Delete the existing query and use **Log Name** to view the **data_access** logs.
+
+What operations can you see now?
+
+Click *Check my progress* to verify the objective.
+
+Viewing audit logs
+
+
+
+Check my progress
+
+
+
+### Using the Cloud SDK
+
+Log entries can also be read using the Cloud SDK command:
+
+Example:
+
+```
+gcloud logging read [FILTER]
+```
+
+
+
+1. Switch to or reopen a Cloud Shell terminal.
+2. If we wanted to see those same data access logs using the command line, we could run the following:
+
+```
+gcloud logging read \
+"logName=projects/$DEVSHELL_PROJECT_ID/logs/cloudaudit.googleapis.com%2Fdata_access"
+```
+
+
+
+### Congratulations!
+
+In this exercise, you examined and worked with Google Cloud's Audit Logs. Now you can do a better job figuring out exactly who, did what, when. Nice job.
+
+
+
+### Quiz - Working with Audit Logs
+
+1. If you want to provide an external auditor access to your logs, what IAM role would be best?
+
+- Project Viewer
+
+- Logging Admin
+
+- Project Editor
+
+- **Logging Viewer**
+
+
+
+2. Why are the Data Access audit logs off by default? Select three.
+
+- They can be small
+
+- They are formatted incorrectly
+
+- **They can be large**
+
+- **May contain sensitive information**
+
+- **They can be expensive to store**
+
+- They cannot be filtered
+
+
+
+# IV. Getting Started with Terraform for Google Cloud
+
+## Introduction to Terraform for Google Cloud
+
+### Quiz : Introduction to Terraform for Google Cloud
+
+1. Which one of the following statements is true regarding Terraform?
+
+- **Terraform can be used for multi-cloud deployments.**
+
+- Terraform uses the imperative approach to define infrastructure components.
+
+- Terraform can only be used for on-premises deployments.
+
+- Terraform is used to configure applications on Google Cloud.
+
+  
+
+2. What is infrastructure as code (IaC)?
+
+- IaC is a cloud computing model that offers resources on demand to businesses and individuals by using the cloud.
+
+- **IaC is a process to define, provision, and manage cloud infrastructure by writing code in files.**
+
+- IaC is a tool to maintain consistency in an application deployment environment.
+
+- IaC is a data warehouse running on serverless infrastructure.
+
+
+
+3. Select the two use cases for Terraform.
+
+*info*Note: To get credit for a multiple-select question, you must select all of the correct options and none of the incorrect ones.
+
+- **Standardize configurations**
+
+- Provision an application
+
+- Run OS level customization
+
+- Provide financial analytics
+
+- **Automate changes**
+
+
+
+4. Select the three Terraform editions available in production.
+
+
+- **Terraform Community Edition**
+
+- Terraform Cyber
+
+- **Terraform Cloud**
+
+- Terraform Analytics
+
+- **Terraform Enterprise**
+
+
+
+## Terms and Concepts
+
+### Lab - Infrastructure as Code with Terraform
+
+#### Overview
+
+In this lab, you will use Terraform to create, update, and destroy Google Cloud resources. You will start by defining Google Cloud as the provider.
+
+You will then create a VM instance without mentioning the network to see how terraform parses the configuration code. You will then edit the code to add network and create a VM instance on Google Cloud.
+
+You will explore how to update the VM instance. You will edit the existing configuration to add tags and then edit the machine type. You will then execute terraform commands to destroy the resources created.
+
+#### Objectives
+
+In this lab you will learn how to perform the following tasks:
+
+- Verify Terraform installation
+- Define Google Cloud as the provider
+- Create, change, and destroy Google Cloud resources by using Terraform
+
+#### Task 1. Sign in to the Cloud Console
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 2. Check Terraform Installation
+
+1. On the **Google Cloud** menu, click **Activate Cloud Shell** (![Activate Cloud Shell](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)). If a dialog box appears, click **Continue**.
+2. If prompted, click Continue.
+3. Confirm that Terraform is installed by running the following command:
+
+**Note:** Don't worry if you get a warning that the version of Terraform is out of date, as the lab instructions will work with Terraform v1.0.5 and later.
+
+```
+terraform --version
+```
+
+
+
+**Note:** The available downloads for the latest version of Terraform can be found on the Terraform website. Terraform is distributed as a binary package for all supported platforms and architectures and Cloud Shell uses Linux 64-bit.
+
+The output should look like this **(do not copy; this is example output)**:
+
+```
+Terraform v1.2.2
+```
+
+Terraform comes pre-installed in Cloud Shell. With Terraform already installed, you can directly create some infrastructure.
+
+#### Task 3. Add Google Cloud provider
+
+1. Create the `main.tf` file:
+
+```
+touch main.tf
+```
+
+
+
+1. Click **Open Editor** on the toolbar of Cloud Shell. Click **Open in a new window** to leave the Editor open in a separate tab.
+2. Copy the following code in the `main.tf` file.
+
+```
+terraform {
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+    }
+  }
+}
+
+provider "google" {
+
+  project = "Project ID"
+  region  = "Region"
+  zone    = "Zone"
+}
+```
+
+
+
+1. Click **File** > **Save**.
+2. Switch to the Cloud Shell and run the `terraform init` command.
+
+```
+terraform init
+```
+
+
+
+The output should look like this (**do not copy; this is example output**):
+
+```
+Initializing the backend...
+
+Initializing provider plugins...
+- Finding hashicorp/google versions matching "4.15.0"...
+- Installing hashicorp/google v4.15.0...
+- Installed hashicorp/google v4.15.0 (signed by HashiCorp)
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+```
+
+#### Task 4. Build the infrastructure
+
+Let us try creating a compute instance without specifying the network parameter and see how terraform processes such configuration.
+
+1. Switch to the editor window. Within the `main.tf` file, enter the following code block.
+
+```
+resource "google_compute_instance" "terraform" {
+  name         = "terraform"
+  machine_type = "e2-micro"
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
+}
+```
+
+
+
+1. Save the main.tf file by clicking **File** > **Save**.
+2. Now run the following command to preview if the compute engine will be created.
+
+```
+terraform plan
+```
+
+
+
+1. The configuration fails with the following error. This is because you cannot configure a compute engine without a network.
+
+```
+│ Error: Insufficient network_interface blocks
+│
+│ on main.tf line 15, in resource "google_compute_instance" "terraform":
+│ 15: resource "google_compute_instance" "terraform" {
+│
+│ At least 1 "network_interface" blocks are required.
+```
+
+1. Now add the network by including the following code segment to the `google_compute_instance` block.
+
+```
+network_interface {
+    network = "default"
+    access_config {
+    }
+}
+```
+
+
+
+The final code in **main.tf** file will look like this:
+
+```
+terraform {
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+    }
+  }
+}
+
+provider "google" {
+
+  project = "Project ID"
+  region  = "Region"
+  zone    = "Zone"
+}
+
+resource "google_compute_instance" "terraform" {
+  name         = "terraform"
+  machine_type = "e2-micro"
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
+  network_interface {
+    network = "default"
+    access_config {
+    }
+  }
+}
+```
+
+
+
+1. Save the main.tf file by clicking **File** > **Save**.
+2. Now run the `terraform plan` command to preview if the compute engine will be created.
+
+```
+terraform plan
+```
+
+
+
+Click **Authorize** when prompted.
+
+The output should look like this (**do not copy; this is example output**):
+
+```
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # google_compute_instance.terraform will be created
+  + resource "google_compute_instance" "terraform" {
+      + can_ip_forward       = false
+      + cpu_platform         = (known after apply)
+      + current_status       = (known after apply)
+      + deletion_protection  = false
+      ...
+Plan: 1 to add, 0 to change, 0 to destroy.
+```
+
+1. Apply the desired changes by running the following command.
+
+```
+terraform apply
+```
+
+
+
+1. Confirm the planned actions by typing `yes`.
+
+The output should look like this (**do not copy; this is example output**):
+
+```
+...
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+```
+
+**Note:** If you get an error, revisit the previous steps to ensure that you have the correct code entered in the main.tf file.
+
+Click **Check my progress** to verify the compute engine created.
+
+Build the infrastructure
+
+
+
+Check my progress
+
+
+
+#### Verify on Cloud Console
+
+In the Cloud Console, verify that the resources were created.
+
+1. In the Cloud Console, on the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** > **VM instances**.
+2. View the **terraform** instance created. ![terraform_instance](images/sAwVjWp2vHfPWbr%2F7JCmwpdjfMcL4l9vWjGAloPuk98%3D.png)
+
+#### Task 5. Change the infrastructure
+
+In this task, we will be performing 2 types of changes to the infrastructure:
+
+- Adding network tags
+- Editing the machine-type
+
+#### Adding tags to the compute resource
+
+In addition to creating resources, Terraform can also make changes to those resources.
+
+1. Add a `tags` argument to the instance we just created so that it looks like this:
+
+```
+resource "google_compute_instance" "terraform" {
+  name         = "terraform"
+  machine_type = "e2-micro"
+  tags         = ["web", "dev"]
+  # ...
+}
+```
+
+
+
+1. Run `terraform plan`
+
+```
+terraform plan
+```
+
+
+
+1. Run `terraform apply` to update the instance.
+
+```
+terraform apply
+```
+
+
+
+The output should look like this (**do not copy; this is example output**):
+
+```
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  ~ update in-place
+
+Terraform will perform the following actions:
+
+  # google_compute_instance.terraform will be updated in-place
+  ~ resource "google_compute_instance" "terraform" {
+        id                   = "projects/qwiklabs-gcp-00-da04aeabe9ab/zones/us-central1-c/instances/terraform"
+        name                 = "terraform"
+      ~ tags                 = [
+          + "dev",
+          + "web",
+        ]
+        # (17 unchanged attributes hidden)
+
+
+
+
+        # (4 unchanged blocks hidden)
+    }
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+```
+
+The prefix `~` means that Terraform will update the resource in-place.
+
+1. Respond `yes` when promoted, and Terraform will add the tags to your instance.
+
+Click *Check my progress* to verify the tags were added.
+
+Adding tags to the compute resource
+
+
+
+Check my progress
+
+
+
+#### Editing the machine type without stopping the VM
+
+Machine type of a VM cannot be changed on a running VM. Let us see how terraform processes the change in machine type for a running VM.
+
+1. Navigate to **main.tf** and edit the machine_type argument of terraform instance from `e2-micro` to `e2-medium` so that it looks like this:
+
+```
+resource "google_compute_instance" "terraform" {
+  name         = "terraform"
+  machine_type = "e2-medium"
+  tags         = ["web", "dev"]
+  # ...
+}
+```
+
+
+
+1. Run `terraform plan`
+
+```
+terraform plan
+```
+
+
+
+1. Run `terraform apply` again to update the instance.
+
+```
+terraform apply
+```
+
+
+
+The terraform apply fails with a warning as shown below. (**do not copy; this is example output**)
+
+```
+╷
+│ Error: Changing the machine_type, min_cpu_platform, service_account, enable_display, shielded_instance_config, scheduling.node_affinities or network_interface.[#d].(network/subnetwork/subnetwork_project) or advanced_machine_features on a started instance requires stopping it. To acknowledge this, please set allow_stopping_for_update = true in your config. You can also stop it by setting desired_status = "TERMINATED", but the instance will not be restarted after the update.
+│
+│   with google_compute_instance.terraform,
+│   on main.tf line 31, in resource "google_compute_instance" "terraform":
+│   31: resource "google_compute_instance" "terraform" {
+```
+
+1. The machine-type cannot be changed on a running VM. To ensure the VM stops before updating the `machine_type`, set `allow_stopping_for_update argument` to `true` so that the code looks like this:
+
+```
+resource "google_compute_instance" "terraform" {
+  name         = "terraform"
+  machine_type = "e2-medium"
+
+  tags         = ["web", "dev"]
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+    }
+  }
+  allow_stopping_for_update = true
+}
+```
+
+
+
+1. Run `terraform plan`
+
+```
+terraform plan
+```
+
+
+
+1. Run `terraform apply` again to update the instance.
+
+```
+terraform apply
+```
+
+
+
+1. Respond `yes` when promoted.
+2. Verify the change in machine-type and the tags added by navigating to the **VM Instances** on the Cloud Console and clicking the **terraform** instance created. ![machine_type](images/kCTo8hsV9no%2FJJ8NCYpLQsYsHGcwqCkeggDR73XNhRc%3D.png) ![network_tags](images/XemwOpNmi%2Foq0z5wrQmiJewiLVZBfB1seoNrDBZjS6s%3D.png)
+
+Click **Check my progress** to verify the compute engine terraform machine type is e2-medium.
+
+Change the infrastructure for machine-type
+
+
+
+Check my progress
+
+
+
+#### Task 6. Destroy the infrastructure
+
+You have now seen how to build and change infrastructure. Before moving on to creating multiple resources and showing resource dependencies, you will see how to completely destroy your Terraform-managed infrastructure.
+
+1. Execute the following command. Answer `yes` to execute this plan and destroy the infrastructure:
+
+```
+terraform destroy
+```
+
+
+
+The `-` prefix indicates that the instance and the network will be destroyed.
+
+1. Verify that the instance terraform no longer exists by navigating to the **VM Instances** on the Cloud Console.
+
+Click *Check my progress* to verify the infrastructure was destroyed.
+
+Destroy the Infrastructure
+
+
+
+Check my progress
+
+
+
+#### Congratulations!
+
+In this lab, you learned how to:
+
+- Verify Terraform installation
+- Define Google Cloud as the provider
+- Create, change, and destroy Google Cloud resources by using Terraform
+
+### Quiz: Terms and Concepts
+
+
+
+1. In which phase of the Terraform workflow do you write configuration files based on the scope defined by your organization?
+
+- Apply
+
+- Scope
+
+- **Author**
+
+- Plan
+
+- Initialize
+
+
+
+2. In which phase of the Terraform workflow can you run pre-deployment checks against the policy library?
+
+- **Validate**
+
+- Scope
+
+- Plan
+
+- Initialize
+
+
+
+3. Which command creates infrastructure resources?
+
+- terraform fmt
+
+- **terraform apply**
+
+- terraform init
+
+- terraform plan
+
+
+
+## Writing Infrastructure Code for Google Cloud
+
+### Lab - Creating Resource Dependencies with Terraform
+
+#### Overview
+
+In this lab, you will create two VMs in the default network. We will use variables to define the VM's attributes at runtime and use output values to print a few resource attributes.
+
+We will then add a static IP address to the first VM to examine how terraform handles implicit dependencies. We will then create a GCS bucket by mentioning explicit dependency to the VM to examine how terraform handles explicit dependency.
+
+#### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Use variables and output values
+- Observe implicit dependency
+- Create explicit resource dependency
+
+#### Task 1. Sign in to the Cloud Console
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 2. Initialize Terraform
+
+Let us initialize Terraform by setting Google as the provider.
+
+1. Open Cloud Shell (![Activate Cloud Shell](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)) and execute the following command to verify that terraform is installed.
+
+```
+terraform -version
+```
+
+
+
+The output should look like this **(do not copy; this is example output)**:
+
+```
+Terraform v1.5.7
+```
+
+Terraform comes pre-installed in Cloud Shell. With Terraform already installed, you can directly create infrastructure resources.
+
+1. Create a directory for your Terraform configuration and navigate to it by running the following command:
+
+```
+mkdir tfinfra && cd $_
+```
+
+
+
+1. In Cloud Shell, click **Open Editor** to open Cloud Shell Editor.
+2. Click **Open in a new window** button to leave the Editor open in a separate tab..
+3. To create a new file in the `tfinfra` folder, right-click on `tfinfra` folder and click **New File**.
+4. Name the new file **provider.tf**, and then click **OK**.
+5. Add the following code into `provider.tf`:
+
+```
+  provider "google" {
+  project = "Project ID"
+  region  = ""REGION""
+  zone    = ""ZONE""
+}
+```
+
+
+
+1. To save `provider.tf`, click **File** > **Save**.
+2. Initialize Terraform by running the following commands:
+
+```
+terraform init
+```
+
+
+
+The output should look like this (**do not copy; this is example output**):
+
+```
+Initializing the backend...
+
+Initializing provider plugins...
+- Finding hashicorp/google versions matching "4.15.0"...
+- Installing hashicorp/google v4.15.0...
+- Installed hashicorp/google v4.15.0 (signed by HashiCorp)
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+```
+
+Terraform has now installed the necessary plug-ins to interact with the Google Cloud API. Authentication is not required for API. The Cloud Shell credentials give access to the project and APIs.
+
+**Question:**
+
+Which command installs the necessary plug-ins to interact with the Google Cloud API?
+
+- terraform plan
+
+- **terraform init**
+
+- terraform apply
+
+
+
+
+
+In the remaining part of the lab, we will cover the two types of dependencies that Terraform can handle:
+
+1. Implicit dependencies: Dependencies known to Terraform
+2. Explicit dependencies: Dependencies unknown to Terraform
+
+#### Task 3. View Implicit Resource Dependency
+
+To demonstrate how Terraform infers an implicit dependency, we assign a static IP address to the VM instance.
+
+#### Create a VM instance
+
+Let us create a VM instance and parameterize its configuration by defining variables:
+
+1. To create a new file, right-click on `tfinfra` folder and click **New File**.
+2. Name the new file **instance.tf**, and then open it.
+3. Copy the following code into `instance.tf`:
+
+```
+resource google_compute_instance "vm_instance" {
+name         = "${var.instance_name}"
+zone         = "${var.instance_zone}"
+machine_type = "${var.instance_type}"
+boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+      }
+  }
+ network_interface {
+    network = "default"
+    access_config {
+      # Allocate a one-to-one NAT IP to the instance
+    }
+  }
+}
+```
+
+
+
+1. To save `instance.tf`, click **File > Save**.
+
+#### Create variables
+
+1. Right-click on `tfinfra` folder and click **New File** to create a new file for variables.
+2. Name the new file `variables.tf`, and then click **OK**.
+3. Add the following properties to `variables.tf`:
+
+```
+variable "instance_name" {
+  type        = string
+  description = "Name for the Google Compute instance"
+}
+variable "instance_zone" {
+  type        = string
+  description = "Zone for the Google Compute instance"
+}
+variable "instance_type" {
+  type        = string
+  description = "Disk type of the Google Compute instance"
+  default     = "e2-medium"
+  }
+```
+
+
+
+By giving **instance_type** a default value, you make the variable optional. The **instance_name**, and **instance_zone** are required, and you will define them at run time.
+
+1. To save `variable.tf`, click **File > Save**.
+
+#### Create output values
+
+1. Right-click on `tfinfra` folder and click **New File** to create a new file for outputs.
+2. Name the new file `outputs.tf`, and then click **OK**.
+3. Add the following properties to `outputs.tf`:
+
+```
+output "network_IP" {
+  value = google_compute_instance.vm_instance.instance_id
+  description = "The internal ip address of the instance"
+}
+output "instance_link" {
+  value = google_compute_instance.vm_instance.self_link
+  description = "The URI of the created resource."
+}
+```
+
+
+
+1. To save `outputs.tf`, click **File > Save**.
+
+#### Assign a static IP
+
+1. Now add to your configuration by assigning a static IP to the VM instance in `instance.tf`
+
+```
+resource "google_compute_address" "vm_static_ip" {
+  name = "terraform-static-ip"
+}
+```
+
+
+
+This should look familiar from the earlier example of adding a VM instance resource, except this time you're creating a `google_compute_address` resource type. This resource type allocates a reserved IP address to your project.
+
+1. Update the network_interface configuration for your instance like so:
+
+```
+ network_interface {
+    network = "default"
+    access_config {
+      # Allocate a one-to-one NAT IP to the instance
+      nat_ip = google_compute_address.vm_static_ip.address
+    }
+  }
+```
+
+
+
+The final code is as shown below.
+
+```
+ resource "google_compute_address" "vm_static_ip" {
+  name = "terraform-static-ip"
+}
+ resource google_compute_instance "vm_instance" {
+name         = "${var.instance_name}"
+zone         = "${var.instance_zone}"
+machine_type = "${var.instance_type}"
+boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+      }
+  }
+ network_interface {
+    network = "default"
+    access_config {
+      # Allocate a one-to-one NAT IP to the instance
+      nat_ip = google_compute_address.vm_static_ip.address
+    }
+  }
+}
+```
+
+
+
+1. Initialize terraform by running the following command.
+
+```
+terraform init
+```
+
+
+
+1. Run the following command to preview the resources created.
+
+```
+terraform plan
+```
+
+
+
+1. If prompted, enter the details for the instance creation as shown below:
+
+- var.instance_name: `myinstance`
+- var.instance_zone: `ZONE`
+
+1. Run the following command to view the order of resource creation.
+
+```
+terraform apply
+```
+
+
+
+1. If prompted, enter the details for the instance creation as shown below:
+
+- var.instance_name: `myinstance`
+- var.instance_zone: `ZONE`
+
+1. Confirm the planned actions by typing `yes`.
+
+**Note:** Observe that Terraform handles implicit dependency automatically by creating a static IP address before the instance.
+
+```
+google_compute_address.vm_static_ip: Creating...
+google_compute_address.vm_static_ip: Creation complete after 2s [id=projects/qwiklabs-gcp-03-4662a5b49176/regions/"REGION"/addresses/terraform-static-ip]
+google_compute_instance.vm_instance: Creating...
+google_compute_instance.vm_instance: Still creating... [10s elapsed]
+google_compute_instance.vm_instance: Creation complete after 15s [id=projects/qwiklabs-gcp-03-4662a5b49176/zones/"ZONE"/instances/myinstance]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+```
+
+#### Verify on Cloud Console
+
+In the Cloud Console, verify that the resources were created.
+
+1. In the Cloud Console, on the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** > **VM instances**.
+2. View that an instance named **myinstance** is created. ![terraform_instance](images/%2F93fEUBCf4cpJ3QVYZak3mZht8UJuGa0909iNp4sH8c%3D.png)
+3. Verify the static IP address. On the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **VPC networks** > **IP addresses** > **External IP addresses**. ![terraform_instance](https://cdn.qwiklabs.com/76EQabZE7okiwZiArXsuv30C2CjR2I62Wu17bIImrIY%3D)
+
+Click **Check my progress** to verify static IP address created
+
+Create static IP using implicit dependency
+
+
+
+Check my progress
+
+
+
+Click **Check my progress** to verify VM is created
+
+Create VM instance using implicit dependency
+
+
+
+Check my progress
+
+
+
+#### Task 4. Create Explicit Dependency
+
+Explicit dependencies are used to inform dependencies between resources that are not visible to Terraform. In this example, consider that you will run on your instance that expects to use a specific Cloud Storage bucket, but that dependency is configured inside the application code and thus not visible to Terraform. In that case, you can use `depends_on` to explicitly declare the dependency.
+
+1. To create a new file, right-click on `tfinfra` folder and click **New File**.
+2. Name the new file **exp.tf**, and then click **OK**.
+3. Add a Cloud Storage bucket and an instance with an explicit dependency on the bucket by adding the following base code into `exp.tf`:
+
+```
+# Create a new instance that uses the bucket
+resource "google_compute_instance" "another_instance" {
+
+  name         = "terraform-instance-2"
+  machine_type = "e2-micro"
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
+  network_interface {
+    network = "default"
+    access_config {
+    }
+  }
+  # Tells Terraform that this VM instance must be created only after the
+  # storage bucket has been created.
+  depends_on = [google_storage_bucket.example_bucket]
+}
+```
+
+
+
+1. Add the following code to create a bucket.
+
+```
+# New resource for the storage bucket our application will use.
+resource "google_storage_bucket" "example_bucket" {
+  name     = "<UNIQUE-BUCKET-NAME>"
+  location = "US"
+  website {
+    main_page_suffix = "index.html"
+    not_found_page   = "404.html"
+  }
+}
+```
+
+
+
+**Note:** Storage buckets must be globally unique. Because of this, you will need to replace `UNIQUE-BUCKET-NAME` with a unique, valid name for a bucket. Using the project name and the date is usually a good way to create a unique bucket name.
+
+Notice that in our code the VM instance configuration is added before the GCS bucket. When executing `Terraform apply` you will notice that the order that resources are defined in a terraform configuration file has no effect on how Terraform applies your changes.
+
+The final code is as show below:
+
+```
+resource "google_compute_instance" "another_instance" {
+
+  name         = "terraform-instance-2"
+  machine_type = "e2-micro"
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
+  network_interface {
+    network = "default"
+    access_config {
+    }
+  }
+  # Tells Terraform that this VM instance must be created only after the
+  # storage bucket has been created.
+  depends_on = [google_storage_bucket.example_bucket]
+}
+resource "google_storage_bucket" "example_bucket" {
+  name     = "<UNIQUE-BUCKET-NAME>"
+  location = "US"
+  website {
+    main_page_suffix = "index.html"
+    not_found_page   = "404.html"
+  }
+}
+```
+
+
+
+1. To save `exp.tf`, click **File > Save**.
+2. Run the following command to preview the resources created.
+
+```
+terraform plan
+```
+
+
+
+If prompted, enter the details for the instance creation as shown below:
+
+- var.instance_name: `myinstance`
+- var.instance_zone: `ZONE`
+
+1. Run the following command to view the order of resource creation.
+
+```
+terraform apply
+```
+
+
+
+If prompted, enter the details for the instance creation as shown below:
+
+- var.instance_name: `myinstance`
+- var.instance_zone: `ZONE`
+
+1. Confirm the planned actions by typing `yes`.
+2. Observe that due explicit dependency, the compute instance is created after the creation of the Cloud Storage Bucket.
+
+```
+Enter a value: yes
+
+google_storage_bucket.example_bucket: Creating...
+google_storage_bucket.example_bucket: Creation complete after 1s [id=qwiklabs-gcp-03-4662a5b49176-abc]
+google_compute_instance.another_instance: Creating...
+google_compute_instance.another_instance: Still creating... [10s elapsed]
+google_compute_instance.another_instance: Creation complete after 14s [id=projects/qwiklabs-gcp-03-4662a5b49176/zones/"ZONE"/instances/terraform-instance-2]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+```
+
+#### Verify on Cloud Console
+
+In the Cloud Console, verify that the resources were created.
+
+1. In the Cloud Console, on the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** > **VM instances**.
+2. View the **terraform-instance-2** instance created.
+3. Verify the Cloud Storage bucket created. On the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Cloud Storage**.
+
+Click **Check my progress** to verify that the bucket is created
+
+Create cloud storage bucket using explicit dependency
+
+
+
+Check my progress
+
+
+
+Click **Check my progress** to verify that the VM is created
+
+Create VM instance resource using explicit dependency
+
+
+
+Check my progress
+
+
+
+**Note:** If you get an error, revisit the previous steps to ensure that your configuration matches the lab instructions. If you cannot troubleshoot the issue of your configuration, download and then look at these finished configurations:[exp.tf](https://storage.googleapis.com/cloud-training/T-TFGC-B/EN/1.0/student/Lab files/Creating resource dependencies/tfinfra/exp.tf)[instance.tf](https://storage.googleapis.com/cloud-training/T-TFGC-B/EN/1.0/student/Lab files/Creating resource dependencies/tfinfra/instance.tf)[outputs.tf](https://storage.googleapis.com/cloud-training/T-TFGC-B/EN/1.0/student/Lab files/Creating resource dependencies/tfinfra/outputs.tf)[provider.tf](https://storage.googleapis.com/cloud-training/T-TFGC-B/EN/1.0/student/Lab files/Creating resource dependencies/tfinfra/provider.tf)[variable.tf](https://storage.googleapis.com/cloud-training/T-TFGC-B/EN/1.0/student/Lab files/Creating resource dependencies/tfinfra/variable.tf)
+
+#### Task 5. View Dependency Graph
+
+1. To view resource dependency graph of the resource created, execute the following command
+
+```
+terraform graph | dot -Tpng > graph.png
+```
+
+
+
+1. Switch to the editor and notice a file called **graph.png** created. Click the file to view the dependency graph.
+
+To understand how to read this graph, please visit this [page](https://developer.hashicorp.com/terraform/internals/graph)
+
+#### Review
+
+In this lab, you have a VM instance with a static IP address to view how implicit resource dependencies are handled with Terraform. You then created an explicit dependency by adding the `depend_on` argument so that you can create a GCS bucket before creating a VM instance. You also viewed the dependency graph that terraform uses to trace the order of resource creation.
+
+### Quiz: Writing Infrastructure Code for Google Cloud
+
+1. Can a variable be assigned values in multiple ways?
+
+- No
+
+- **Yes**
+
+  
+
+2.What is the most common use case for output values in Terraform?
+
+- Declare a resource within a Terraform configuration.
+
+- Parameterize a resource configuration.
+
+- **Print resource attributes of a root module CLI after its deployment.**
+
+
+
+3. How many resource types can be represented in a single resource block?
+
+- Two
+
+- **One**
+
+- Three
+
+- Four
+
+
+
+4. Which dependency can be automatically detected by Terraform?
+
+- Explicit dependency
+
+- **Implicit dependency**
+
+
+
+## Organizing and Reusing Configuration with Terraform Modules
+
+### Lab - Automating the Deployment of Infrastructure Using Terraform
+
+#### Overview
+
+Terraform enables you to safely and predictably create, change, and improve infrastructure. It is an open-source tool that codifies APIs into declarative configuration files that can be shared among team members, treated as code, edited, reviewed, and versioned.
+
+In this lab, you create a Terraform configuration with a module to automate the deployment of Google Cloud infrastructure. Specifically, you deploy one auto mode network with a firewall rule and two VM instances, as shown in this diagram:
+
+![Terraform configuration diagram](images/tQ3NS2xpirSs1UXVcklIYVQM7WkUc%2F8iC7ryGFPSfRs%3D.png)
+
+#### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Create a configuration for an auto mode network
+- Create a configuration for a firewall rule
+- Create a module for VM instances
+- Create and deploy a configuration
+- Verify the deployment of a configuration
+
+#### Setup
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 1. Set up Terraform and Cloud Shell
+
+Configure your Cloud Shell environment to use Terraform.
+
+#### Install Terraform
+
+Terraform is now integrated into Cloud Shell. Verify which version is installed.
+
+1. In the Cloud Console, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)).
+2. If prompted, click **Continue**.
+3. To confirm that Terraform is installed, run the following command:
+
+```
+terraform --version
+```
+
+
+
+The output should look like this:
+
+```
+Terraform v1.3.3
+```
+
+**Note:** Don't worry if you get a warning that the version of Terraform is out of date, because the lab instructions will work with Terraform v1.3.3 and later. The available downloads for the latest version of Terraform are on the [Terraform website](https://www.terraform.io/downloads). Terraform is distributed as a binary package for all supported platforms and architectures, and Cloud Shell uses Linux 64-bit.
+
+1. To create a directory for your Terraform configuration, run the following command:
+
+```
+mkdir tfinfra
+```
+
+
+
+1. In Cloud Shell, click **Open editor** (![Cloud Shell Editor icon](https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D)).
+
+**Note:** If you see the message **"Unable to load code editor because third-party cookies are disabled"**, click **Open in New Window.** The code editor will open in a new tab. Return to the original tab, click **Open Terminal** and then switch back to the code editor tab. You will periodically need to switch back to the Cloud Shell terminal in this lab.
+
+1. In the left pane of the code editor, expand the **tfinfra** folder.
+
+#### Initialize Terraform
+
+Terraform uses a plugin-based architecture to support the numerous infrastructure and service providers available. Each "provider" is its own encapsulated binary distributed separately from Terraform itself. Initialize Terraform by setting Google as the provider.
+
+1. To create a new file inside **tfinfra** folder, `right-click` on **tfinfra** folder and then click **New File**.
+2. Name the new file **provider.tf**, and then open it.
+3. Copy the code into `provider.tf`:
+
+```
+provider "google" {}
+```
+
+
+
+1. To save **provider.tf**, click **File** > **Save**.
+2. To initialize Terraform, run the following command:
+
+```
+cd tfinfra
+terraform init
+```
+
+
+
+The output should look like this:
+
+```
+* provider.google: version = "~> 4.43.0"
+Terraform has been successfully initialized!
+```
+
+You are now ready to work with Terraform in Cloud Shell.
+
+#### Task 2. Create mynetwork and its resources
+
+Create the auto mode network **mynetwork** along with its firewall rule and two VM instances (**mynet_vm_1** and **mynet_vm_2**).
+
+#### Configure mynetwork
+
+Create a new configuration, and define **mynetwork**.
+
+1. To create a new file inside **tfinfra**, `right-click` on **tfinfra** folder and then click **New File**.
+2. Name the new file **mynetwork.tf**, and then open it.
+3. Copy the following base code into `mynetwork.tf`:
+
+```
+# Create the mynetwork network
+resource [RESOURCE_TYPE] "mynetwork" {
+name = [RESOURCE_NAME]
+# RESOURCE properties go here
+}
+```
+
+
+
+This base template is a great starting point for any Google Cloud resource. The **name** field allows you to name the resource, and the **type** field allows you to specify the Google Cloud resource that you want to create. You can also define properties, but these are optional for some resources.
+
+1. In `mynetwork.tf`, replace `[RESOURCE_TYPE]` with `"google_compute_network"` (with the quotes).
+
+**Note:** The **google_compute_network** resource is a VPC network. Available resources are in the [Google Cloud provider documentation](https://www.terraform.io/docs/providers/google/index.html). Learn more about this specific resource in the [Terraform documentation](https://www.terraform.io/docs/providers/google/r/compute_network).
+
+1. In `mynetwork.tf`, replace `[RESOURCE_NAME]` with `"mynetwork"` (with the quotes).
+2. Add the following property to `mynetwork.tf`:
+
+```
+auto_create_subnetworks = "true"
+```
+
+
+
+By definition, an auto mode network automatically creates a subnetwork in each region. Therefore, you are setting **auto_create_subnetworks** to **true**.
+
+1. Verify that **mynetwork.tf** file look like this:
+
+```
+# Create the mynetwork network
+resource "google_compute_network" "mynetwork" {
+name = "mynetwork"
+# RESOURCE properties go here
+auto_create_subnetworks = "true"
+}
+```
+
+
+
+1. To save `mynetwork.tf`, click **File** > **Save**.
+
+#### Configure the firewall rule
+
+Define a firewall rule to allow HTTP, SSH, RDP, and ICMP traffic on mynetwork.
+
+1. Add the following base code to `mynetwork.tf`:
+
+```
+# Add a firewall rule to allow HTTP, SSH, RDP and ICMP traffic on mynetwork
+resource [RESOURCE_TYPE] "mynetwork-allow-http-ssh-rdp-icmp" {
+name = [RESOURCE_NAME]
+# RESOURCE properties go here
+}
+```
+
+
+
+1. In `mynetwork.tf`, replace `[RESOURCE_TYPE]` with `"google_compute_firewall"` (with the quotes).
+
+**Note:** The **google_compute_firewall** resource is a firewall rule. Learn more about this specific resource in the [Terraform documentation](https://www.terraform.io/docs/providers/google/r/compute_firewall).
+
+1. In `mynetwork.tf`, replace `[RESOURCE_NAME]` with `"mynetwork-allow-http-ssh-rdp-icmp"` (with the quotes).
+2. Add the following property to `mynetwork.tf`:
+
+```
+network = google_compute_network.mynetwork.self_link
+```
+
+
+
+**Note:** Because this firewall rule depends on its network, you are using the **google_compute_network.mynetwork.self_link** reference to instruct Terraform to resolve these resources in a dependent order. In this case, the network is created before the firewall rule.
+
+1. Add the following properties to `mynetwork.tf`:
+
+```
+allow {
+    protocol = "tcp"
+    ports    = ["22", "80", "3389"]
+    }
+allow {
+    protocol = "icmp"
+    }
+source_ranges = ["0.0.0.0/0"]
+```
+
+
+
+The list of **allow** rules specifies which protocols and ports are permitted.
+
+1. Verify that your `mynetwork.tf` file look like this:
+
+```
+# Create the mynetwork network
+resource "google_compute_network" "mynetwork" {
+name = "mynetwork"
+# RESOURCE properties go here
+auto_create_subnetworks = "true"
+}
+# Add a firewall rule to allow HTTP, SSH, RDP and ICMP traffic on mynetwork
+resource "google_compute_firewall" "mynetwork-allow-http-ssh-rdp-icmp" {
+name = "mynetwork-allow-http-ssh-rdp-icmp"
+# RESOURCE properties go here
+network = google_compute_network.mynetwork.self_link
+allow {
+    protocol = "tcp"
+    ports    = ["22", "80", "3389"]
+    }
+allow {
+    protocol = "icmp"
+    }
+source_ranges = ["0.0.0.0/0"]
+}
+```
+
+
+
+1. To save **mynetwork.tf**, click **File** > **Save**.
+
+#### Configure the VM instance
+
+Define the VM instances by creating a VM instance module. A module is a reusable configuration inside a folder. You will use this module for both VM instances of this lab.
+
+1. To create a new folder inside **tfinfra**, select the **tfinfra** folder, and then click **File** > **New Folder**.
+2. Name the new folder **instance**.
+3. To create a new file inside **instance**, `right-click` on **instance** folder and then click **New File**.
+4. Name the new file **main.tf**, and then open it.
+
+You should have the following folder structure in Cloud Shell:
+
+![Folder structure](https://cdn.qwiklabs.com/UJ7m%2FkMpZmKg8p%2FB4KLOgDIFPKFLJ8q22vLkPFu34nA%3D)
+
+1. Copy the following base code into **main.tf**:
+
+```
+resource [RESOURCE_TYPE] "vm_instance" {
+  name = [RESOURCE_NAME]
+  # RESOURCE properties go here
+}
+```
+
+
+
+1. In `main.tf`, replace `[RESOURCE_TYPE]` with `"google_compute_instance"` (with the quotes).
+
+**Note:** The **google_compute_instance** resource is a Compute Engine instance. Learn more about this specific resource in the [Terraform documentation](https://www.terraform.io/docs/providers/google/r/compute_instance).
+
+1. In `main.tf`, replace `[RESOURCE_NAME]` with `"${var.instance_name}"` (with the quotes).
+
+Because you will be using this module for both VM instances, you are defining the instance name as an input variable. This allows you to control the name of the variable from mynetwork.tf. Learn more about input variables in the [Terraform: Define Input Variables Guide](https://learn.hashicorp.com/terraform/getting-started/variables).
+
+1. Add the following properties to `main.tf`:
+
+```
+  zone         = "${var.instance_zone}"
+  machine_type = "${var.instance_type}"
+```
+
+
+
+These properties define the zone and machine type of the instance as input variables.
+
+1. Add the following properties to `main.tf`:
+
+```
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+      }
+  }
+```
+
+
+
+This property defines the boot disk to use the Debian 11 OS image. Because both VM instances will use the same image, you can hard-code this property in the module.
+
+1. Add the following properties to `main.tf`:
+
+```
+  network_interface {
+    network = "${var.instance_network}"
+    access_config {
+      # Allocate a one-to-one NAT IP to the instance
+    }
+  }
+```
+
+
+
+This property defines the network interface by providing the network name as an input variable and the access configuration. Leaving the access configuration empty results in an ephemeral external IP address (required in this lab). To create instances with only an internal IP address, remove the access_config section. For more information, see the [Terraform documentation](https://www.terraform.io/docs/providers/google/r/compute_instance).
+
+1. Verify that `main.tf` looks like this, including brackets `{}`
+
+```
+resource "google_compute_instance" "vm_instance" {
+  name         = "${var.instance_name}"
+  zone         = "${var.instance_zone}"
+  machine_type = "${var.instance_type}"
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+      }
+  }
+  network_interface {
+    network = "${var.instance_network}"
+    access_config {
+      # Allocate a one-to-one NAT IP to the instance
+    }
+  }
+}
+```
+
+
+
+1. To save main.tf, click **File** > **Save**.
+2. To create a new file inside **instance**, `right-click` on **instance** folder and then click **New File**.
+3. Name the new file **variables.tf**, and then open it.
+4. Define the 4 input variables in `variables.tf`.
+
+```
+variable "instance_name" {}
+variable "instance_zone" {}
+variable "instance_type" {
+  default = "e2-micro"
+  }
+variable "instance_network" {}
+```
+
+
+
+By giving **instance_type** a default value, you make the variable optional. The **instance_name**, **instance_zone**, and **instance_network** are required, and you will define them in `mynetwork.tf`.
+
+1. To save variables.tf, click **File** > **Save**.
+2. Add the following VM instances to `mynetwork.tf`:
+
+```
+# Create the mynet-vm-1 instance
+module "mynet-vm-1" {
+  source           = "./instance"
+  instance_name    = "mynet-vm-1"
+  instance_zone    = "us-west1-a"
+  instance_network = google_compute_network.mynetwork.self_link
+}
+
+# Create the mynet-vm-2" instance
+module "mynet-vm-2" {
+  source           = "./instance"
+  instance_name    = "mynet-vm-2"
+  instance_zone    = "us-central1-a"
+  instance_network = google_compute_network.mynetwork.self_link
+}
+```
+
+
+
+These resources are leveraging the module in the **instance** folder and provide the name, zone, and network as inputs. Because these instances depend on a VPC network, you are using the **google_compute_network.mynetwork.self_link** reference to instruct Terraform to resolve these resources in a dependent order. In this case, the network is created before the instance.
+
+**Note:** The benefit of writing a Terraform module is that it can be reused across many configurations. Instead of writing your own module, you can also leverage existing modules from the [Terraform Module registry](https://registry.terraform.io/browse?provider=google&verified=true).
+
+1. To save `mynetwork.tf`, click **File** > **Save**.
+2. Verify that `mynetwork.tf` looks like this, including brackets `{}`
+
+```
+# Create the mynetwork network
+resource "google_compute_network" "mynetwork" {
+name = "mynetwork"
+# RESOURCE properties go here
+auto_create_subnetworks = "true"
+}
+# Add a firewall rule to allow HTTP, SSH, RDP and ICMP traffic on mynetwork
+resource "google_compute_firewall" "mynetwork-allow-http-ssh-rdp-icmp" {
+name = "mynetwork-allow-http-ssh-rdp-icmp"
+# RESOURCE properties go here
+network = google_compute_network.mynetwork.self_link
+allow {
+    protocol = "tcp"
+    ports    = ["22", "80", "3389"]
+    }
+allow {
+    protocol = "icmp"
+    }
+source_ranges = ["0.0.0.0/0"]
+}
+# Create the mynet-vm-1 instance
+module "mynet-vm-1" {
+  source           = "./instance"
+  instance_name    = "mynet-vm-1"
+  instance_zone    = "us-west1-a"
+  instance_network = google_compute_network.mynetwork.self_link
+}
+# Create the mynet-vm-2" instance
+module "mynet-vm-2" {
+  source           = "./instance"
+  instance_name    = "mynet-vm-2"
+  instance_zone    = "us-central1-a"
+  instance_network = google_compute_network.mynetwork.self_link
+}
+```
+
+
+
+#### Create mynetwork and its resources
+
+It's time to apply the mynetwork configuration.
+
+1. To rewrite the Terraform configuration files to a canonical format and style, run the following command:
+
+```
+terraform fmt
+```
+
+
+
+The output should look like this:
+
+```
+mynetwork.tf
+```
+
+**Note:** If you get an error, revisit the previous steps to ensure that your configuration matches the lab instructions. If you cannot troubleshoot the issue of your configuration, download and then look at these finished configurations:
+
+- [mynetwork.tf](https://storage.googleapis.com/cloud-training/archinfra/terraform/mynetwork.tf)
+- [main.tf](https://storage.googleapis.com/cloud-training/archinfra/terraform/instance/main.tf)
+- [provider.tf](https://storage.googleapis.com/cloud-training/archinfra/terraform/provider.tf)
+- [variables.tf](https://storage.googleapis.com/cloud-training/archinfra/terraform/instance/variables.tf)
+
+1. To initialize Terraform, run the following command:
+
+```
+terraform init
+```
+
+
+
+The output should look like this:
+
+```
+Initializing modules...
+- mynet-vm-2 in instance
+- mynet-vm-2 in instance
+...
+* provider.google: version = "~> 4.43.0"
+
+Terraform has been successfully initialized!
+```
+
+**Note:** If you get an error, revisit the previous steps to ensure that you have the correct folder/file structure. If you cannot troubleshoot the issue of your configuration, refer to the finished configurations linked above. When you have corrected the issue, re-run the previous command.
+
+1. To create an execution plan, run the following command:
+
+```
+terraform plan
+```
+
+
+
+The output should look like this:
+
+```
+...
+Plan: 4 to add, 0 to change, 0 to destroy.
+...
+```
+
+Terraform determined that the following 4 resources need to be added:
+
+| Name                              | Description                                    |
+| :-------------------------------- | :--------------------------------------------- |
+| mynetwork                         | VPC network                                    |
+| mynetwork-allow-http-ssh-rdp-icmp | Firewall rule to allow HTTP, SSH, RDP and ICMP |
+| mynet-vm-2                        | VM instance in `us-west1-a`                    |
+| mynet-vm-2                        | VM instance in `us-central1-a`                 |
+
+1. To apply the desired changes, run the following command:
+
+```
+terraform apply
+```
+
+
+
+1. To confirm the planned actions, type:
+
+```
+yes
+```
+
+
+
+The output should look like this:
+
+```
+...
+Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
+```
+
+Click **Check my progress** to verify the objective.
+
+Create mynetwork and its resources
+
+
+
+Check my progress
+
+
+
+**Note:** If you get an error during the execution, revisit the previous steps to ensure that you have the correct folder/file structure. If you cannot troubleshoot the issue of your configuration, refer to the finished configurations linked above. When you have corrected the issue, re-run the previous command.
+
+#### Task 3. Verify your deployment
+
+In the Cloud Console, verify that the resources were created.
+
+#### **Verify your network in the Cloud Console**
+
+1. In the Cloud Console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **VPC network** > **VPC networks**.
+2. View the **mynetwork** VPC network with a subnetwork in every region.
+3. On the **Navigation menu**, click **VPC network** > **Firewall**.
+4. Sort the firewall rules by **Network**.
+5. View the **mynetwork-allow-http-ssh-rdp-icmp** firewall rule for **mynetwork**.
+
+#### **Verify your VM instances in the Cloud Console**
+
+1. On the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** > **VM instances**.
+2. View the **mynet-vm-1** and **mynet-vm-2** instances.
+3. Note the internal IP address for **mynet-vm-2**.
+4. For **mynet-vm-1**, click **SSH** to launch a terminal and connect.
+5. To test connectivity to **mynet-vm-2**'s internal IP address, run the following command in the SSH terminal (replacing mynet-vm-2's internal IP address with the value noted earlier):
+
+```
+ping -c 3 <Enter mynet-vm-2's internal IP here>
+```
+
+
+
+**Note:** This should work because both VM instances are on the same network, and the firewall rule allows ICMP traffic!
+
+#### Task 4. Review
+
+In this lab, you created a Terraform configuration with a module to automate the deployment of Google Cloud infrastructure. As your configuration changes, Terraform can create incremental execution plans, which allows you to build your overall configuration step by step.
+
+The instance module allowed you to re-use the same resource configuration for multiple resources while providing properties as input variables. You can leverage the configuration and module that you created as a starting point for future deployments.
+
+
+
+### Quiz: Organizing and Reusing Configuration with Terraform Modules
+
+1. What happens when a version argument is specified in a module block?
+
+- Terraform automatically downgrades the modules to the specific version.
+
+- **Terraform automatically upgrades the module to the latest version matching the specified version constraint.**
+
+- Terraform automatically downgrades the module to the oldest version.
+
+- Terraform automatically upgrades the modules to the specific version.
+
+
+
+2. Which code construct of Terraform helps you parameterize a configuration?
+
+- Output values
+
+- Resources
+
+- Modules
+
+- **Variables**
+
+  
+
+3. What is the purpose of output values within modules?
+
+- Initialize Terraform to download the plugins.
+
+- Ensure that the syntax is in canonical format.
+
+- Parameterize a configuration.
+
+- **Pass resource attributes outside a module.**
+
+  
+
+4. State true or false. The source of a module can only be remote.
+
+- True
+
+- **False**
+
+
+
+
+
+## Introduction to Terraform State
+
+### Lab - Creating a Remote Backend
+
+#### Overview
+
+In this lab, you will create a local backend and then create a Cloud Storage bucket to migrate the state to a remote backend
+
+#### Objectives
+
+In this lab, you will learn how to perform the following tasks:
+
+- Create a local backend.
+- Create a Cloud Storage backend.
+- Refresh your Terraform state.
+
+#### Task 1. Sign in to the Cloud Console
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 2. Verify Terraform is installed
+
+1. On the **Google Cloud** menu, click **Activate Cloud Shell**.
+2. If prompted, click Continue.
+3. Confirm that Terraform is installed by running the following command:
+
+```
+terraform --version
+```
+
+
+
+#### Task 3. Add a local backend
+
+In this section, you will configure a local backend which will then be moved to a Cloud Storage bucket.
+
+1. In a new Cloud Shell window, create a `main.tf` configuration file.
+
+```
+touch main.tf
+```
+
+
+
+1. To retrieve your Project ID, run the following command:
+
+```
+gcloud config list --format 'value(core.project)'
+```
+
+
+
+1. On the Cloud Shell toolbar, click **Open Editor**. To switch between Cloud Shell and the code editor, click **Open Editor** or **Open Terminal** as required.
+2. Copy the Cloud Storage bucket resource code into your `main.tf` configuration file:
+
+```
+provider "google" {
+  project     = "Project ID"
+  region      = "Region"
+}
+resource "google_storage_bucket" "test-bucket-for-state" {
+  name        = "Project ID"
+  location    = "US" # Replace with EU for Europe region
+  uniform_bucket_level_access = true
+}
+```
+
+
+
+1. Add a local backend to your `main.tf` file:
+
+```
+terraform {
+  backend "local" {
+    path = "terraform/state/terraform.tfstate"
+  }
+}
+```
+
+
+
+This will reference a `terraform.tfstate` file in the `terraform/state` directory.
+
+The final code in `main.tf` is as shown below.
+
+```
+provider "google" {
+  project     = "Project ID"
+  region      = "Region"
+}
+resource "google_storage_bucket" "test-bucket-for-state" {
+  name        = "Project ID"
+  location    = "US" # Replace with EU for Europe region
+  uniform_bucket_level_access = true
+}
+terraform {
+  backend "local" {
+    path = "terraform/state/terraform.tfstate"
+  }
+}
+```
+
+
+
+Terraform must initialize any configured backend before use.
+
+1. On the Cloud Shell toolbar, click **Open Terminal**, then initialize Terraform using the following command:
+
+```
+terraform init
+```
+
+
+
+1. Apply the changes. Type **yes** at the prompt to confirm.
+
+```
+terraform apply
+```
+
+
+
+The Cloud Shell Editor should now display the state file called `terraform.tfstate` in the `terraform/state` directory.
+
+1. Examine your state file:
+
+```
+terraform show
+```
+
+
+
+Your `google_storage_bucket.test-bucket-for-state` resource should be displayed.
+
+Click **Check my progress** to verify local backend is created.
+
+Add a local backend
+
+
+
+Check my progress
+
+
+
+#### Task 4. Add a Cloud Storage backend
+
+1. Navigate back to your `main.tf` file in the editor. You will now replace the current local backend with a `gcs` backend.
+2. To change the existing local backend configuration, replace the code for local backend with the following configuration in the `main.tf` file.
+
+```
+terraform {
+  backend "gcs" {
+    bucket  = "Project ID"
+    prefix  = "terraform/state"
+  }
+}
+```
+
+
+
+The final code in `main.tf` is as shown below:
+
+```
+provider "google" {
+  project     = "Project ID"
+  region      = "Region"
+}
+resource "google_storage_bucket" "test-bucket-for-state" {
+  name        = "Project ID"
+  location    = "US" # Replace with EU for Europe region
+  uniform_bucket_level_access = true
+}
+terraform {
+  backend "gcs" {
+    bucket  = "Project ID"
+    prefix  = "terraform/state"
+  }
+}
+```
+
+
+
+1. Initialize your backend again. Type **yes** at the prompt to confirm.
+
+```
+terraform init -migrate-state
+```
+
+
+
+1. In the Cloud Console, in the **Navigation menu**, click **Cloud Storage** and then **Bucket**.
+2. Click on your bucket and navigate to the file `terraform/state/default.tfstate`.
+
+Your state file now exists in a Cloud Storage bucket!
+
+![remote_backend](images/k%2FWdbV7Am9NeU45IvDlG18a%2BJJReFzC%2BDeTD5rjW0KM%3D.png)
+
+Click **Check my progress** to verify remote backend is created.
+
+Add a Cloud Storage backend
+
+
+
+Check my progress
+
+
+
+#### Task 5. Refresh the state
+
+The `terraform refresh` command is used to reconcile the state Terraform knows about (via its state file) with the real-world infrastructure. This can be used to detect any drift from the last-known state and to update the state file. This does not modify infrastructure, but does modify the state file. If the state is changed, this may cause changes to occur during the next plan or apply.
+
+1. Return to your storage bucket in the Cloud Console. Select the check box next to the name, and click the **Labels** button on the top. The info panel with **Labels** tabs will open up.
+2. Click **+ADD LABEL**. Set the **Key1** = `key` and **Value1** = `value`.
+3. Click **Save**.
+4. Return to Cloud Shell and use the following command to update the state file:
+
+```
+terraform refresh
+```
+
+
+
+Click **Check my progress** to verify terraform is refreshed.
+
+Refresh the state
+
+
+
+Check my progress
+
+
+
+#### Task 6. Clean up the workspace
+
+1. First, revert your backend to `local` so you can delete the storage bucket. Copy and replace the `gcs` configuration with the following:
+
+```
+terraform {
+  backend "local" {
+    path = "terraform/state/terraform.tfstate"
+  }
+}
+```
+
+
+
+1. Initialize the `local` backend again. Type **yes** at the prompt to confirm.
+
+```
+terraform init -migrate-state
+```
+
+
+
+1. In the `main.tf` file, add the `force_destroy = true` argument to your `google_storage_bucket` resource. When you delete a bucket, this boolean option will [delete all contained objects](https://www.terraform.io/docs/providers/google/r/storage_bucket.html#force_destroy).
+
+**Note:** If you try to delete a bucket that contains objects, Terraform will fail that run.
+
+Your resource configuration should resemble the following:
+
+```
+resource "google_storage_bucket" "test-bucket-for-state" {
+  name        = "Project ID"
+  location    = "US" # Replace with EU for Europe region
+  uniform_bucket_level_access = true
+  force_destroy = true
+}
+```
+
+
+
+1. Apply the changes. Type **yes** at the prompt to confirm.
+
+```
+terraform apply
+```
+
+
+
+1. You can now successfully destroy your infrastructure. Type **yes** at the prompt to confirm.
+
+```
+terraform destroy
+```
+
+
+
+Click **Check my progress** to verify the backend is deleted.
+
+Clean up the workspace
+
+
+
+Check my progress
+
+
+
+#### Congratulations!
+
+In this lab, you learned how to manage backends and state with Terraform. You created local and Cloud Storage backends to manage your state file, and also refreshed the state. In this lab, you learned how to perform the following tasks:
+
+- Create a local backend.
+- Create a Cloud Storage backend.
+- Refresh your Terraform state.
+
+
+
+#### Quiz: Introduction to Terraform State
+
+
+
+1. State true or false. A state file is stored by default in a local file named terraform.tfstate.
+
+- False
+
+- **True**
+
+
+
+2. Select the three benefits of storing a Terraform state file remotely.
+
+- **Sharing and delegation**
+
+- **Secure access**
+
+- Usage analytics
+
+- **Locking**
+- Automatic insights
+
+
+
+# V. Cloud Operations and Service Mesh with Anthos
+
+## Introducing Anthos Service Mesh
+
+### Lab - AHYBRID032 Anthos Service Mesh Walkthrough
+
+### Overview
+
+This lab shows you the benefits of using Anthos Service Mesh to manage a microservices-based application deployed across multiple GKE clusters. Microservices are the centric component of a modern application. Organizations, teams, and products are organized to build resilient, secure, scalable services that solve customer needs.
+
+Every service needs four qualities: resiliency, scale, security, and ease of management. Resiliency is important because services need to adapt to infrastructure and machine or human error. Scale allows services to run across clusters, regions, and zones to fulfill customer requests in a timely fashion. Security means encrypting all traffic between services and being able to implement and enforce policies to and from every service. Ease of management involves being able to observe metrics in a service, deliver traffic to the right service, and reliably roll out new versions.
+
+To provide resiliency, you must be able to recover from infrastructure failure such as losing a cluster where a service might be running. To do this, you can run a service in multiple clusters with the so-called *distributed services*. A distributed service is a set of Kubernetes services that acts as a single logical service. Distributed services are more resilient than Kubernetes services because they run on multiple Kubernetes clusters in the same namespace.
+
+A distributed service provides multi-regional availability and remains up even if one or more GKE clusters are down, but only if the healthy clusters can serve the desired load. Running distributed services makes cluster lifecycle management easier because you can bring clusters down for maintenance or upgrades while other clusters service traffic. In order to create a distributed service, service mesh functionality provided by Anthos Service Mesh is used to link services running on multiple clusters together to act as a single logical service.
+
+### Introduction
+
+Two GKE clusters called `gke-region1` and `gke-region2` have been provisioned in `REGION` and `REGION 2`. Anthos Service Mesh has been configured across these clusters to provide cross-cluster service discoverability and secure routing so that a microservice pod running on `gke-region2` can seamlessly communicate with a pod on `gke-region1`. Additionally, the Bank of Anthos application has been deployed across these two clusters as shown in the following diagram.
+
+![Bank of Anthos Architecture diagram](images/0jG1f2ahPKx4t0JHMzj9kgNTEYI9i62s7jzWu4pOEcY%3D.png)
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Navigate Google Cloud and explore Anthos clusters from the Google Cloud Console.
+- Perform east-west cross-cluster traffic routing.
+- Observe distributed services, view metrics, set up SLOs, and investigate network topology.
+- Use the Anthos Service Mesh Dashboards to verify security and encryption configuration.
+
+### Setup and requirements
+
+In this task, you use Qwiklabs and perform initialization steps for your lab.
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+### **Google Cloud Platform Console**
+
+After you complete the initial sign-in steps, the project dashboard appears.
+
+- Click **Select a project**, select your GCP Project ID, and click **Open** to select your project.
+
+### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D-0775437.png)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D-0775450.png)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+
+
+**Output:**
+
+```
+Credentialed accounts:
+ - @.com (active)
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+
+
+**Output:**
+
+```
+[core]
+project = 
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+### Task 1. Explore the app deployed in Anthos clusters
+
+1. On the **Navigation menu**, click **Kubernetes Engine > Clusters**, and verify that two Anthos clusters are registered.
+2. In the navigation pane, click **Workloads**, and verify that every microservice is deployed on both GKE clusters except from the two databases, **accounts-db** and **ledger-db**, which are only running in **gke-region1**.
+
+![The Workloads Overview tabbed page, wherein several micro services are listed along with their cluster.](images/oZoLm%2B2LGsbVPcJ7yfzhwQM2SYWCU33g9lb%2Fj2UKAnY%3D.png)
+
+1. In the navigation pane, click **Gateways, Services & Ingress**, and verify that every microservice is deployed on both GKE clusters, including the two databases, **accounts-db** and **ledger-db**, which are needed for traffic routing.
+   **istio-ingressgateway** is also in the list and should be available in both clusters.
+
+This component provides a public IP address, creates a Cloud Load Balancer, and enables access to the application from outside the cluster.
+
+1. To open websites, click on the IP addresses for each of the instances of **istio-ingressgateway**.
+   This will open the sign-in page for each website.
+2. Click **Sign In** to sign in with an existing test user.
+3. Deposit funds or send a payment, which will create a new transaction on the shared database.
+4. Refresh the pages and confirm that both **Transaction History** and **Current Balance** are the same across clusters.
+
+**Note:** Notice that even though all services are replicated across clusters, they are both using the same database because the **ledger-db** is only deployed on one cluster. Anthos Service Mesh routes requests to the available pods regardless of the cluster you are ingressing from. This is called east-west routing.
+
+### Task 2. Force cross-cluster traffic routing
+
+In this task, you delete all frontend pods in one cluster to force the traffic to be routed to the other cluster from the ingress gateway. That simulates a scenario where an application might be unavailable due to an upgrade or a spike in traffic.
+
+1. In the Google Cloud Console, return to **Kubernetes Engine > Workloads**.
+2. To open the dashboard, click on the **frontend** deployment in the **gke-region2** cluster.
+3. On the **Actions** dropdown, select **Scale** **>** **Edit replicas**.
+4. Enter **0** replicas, and click **Scale**.
+5. Return to the **istio-ingressgateways** IP addresses that you opened before.
+   The application should continue to work.
+
+Congratulations! You successfully tested your application resiliency. You removed all pods from one cluster, and the application continued to work without experiencing any downtime.
+
+1. Return to your **frontend** deployment and scale it back to 1 replica.
+
+### Task 3. Observe distributed services
+
+1. To return to the home page of the Anthos Service Mesh dashboard, on the **Navigation menu**, click **Anthos > Service Mesh**.
+2. Under **Topology View**. A chart that represents your service mesh is displayed.
+
+![Service mesh topology.](images/5RV70dfq4lb0k%2B8rikaB4zxNPyxolsd1xNJ75lpC63E%3D.png)
+
+1. Click on the frontend workload node, and note the services called by that workload.
+
+![Service mesh topology with the highlighted frontend node, which displays the io.istio.CanonicalService service.](images/Ed7GnkwN8l6DXFrdQva8AM748DeGT5cGFLTfanCyzL4%3D.png)
+
+Take a couple of minutes to explore further and better understand the architecture of the application. You can rearrange nodes, drill down into workloads to see constituent deployments and pods, change time spans, investigate queries per second (QPS), etc.
+
+1. Under **List View**. A list of distributed services in your mesh across your two clusters is displayed.
+2. Click on the **frontend** service. This displays an overview of the inbound and outbound services it is communicating with. Also, you can see the golden signals: latency, traffic, errors, and saturation.
+3. Click **Metrics**. This displays a default dashboard that is automatically created for each service on a mesh. It provides breakdown metrics on requests per second, error rates, latencies, and more.
+4. Click **Health**. Here you can create Service Level Objectives (SLOs) to make sure that your metrics are always within certain parameters, so that you can monitor and alert when certain thresholds are surpassed.
+5. Click **Create SLO**.
+6. Select **Latency** as the metric, and click **Continue**.
+7. Set the latency threshold to **350 ms**, and click **Continue**.
+8. Set the **Period length** to **Calendar day**, and set the **Goal** to **99.5**%.
+9. Click **Continue**.
+10. Review the details and check the JSON object in case you might want to automate this operation in the future, and then click **Create SLO**.
+
+Notice that the created SLO is already out-of-budget. You could also set up an alert so that when this happens you can investigate any possible problems. This helps you understand and tune your services to provide a better user experience.
+
+Congratulations!You learned to view the topology of your service mesh, viewed service metrics, and set up SLOs.
+
+### Task 4. Verify service mesh security
+
+- From the **frontend** service ASM Dashboard, open the **Security** tab. The following diagram is displayed:
+
+![ASM service security inbound diagram within the Inbound tabbed page.](images/%2BIkeQsBZpCxfu6xzOLmnqRKxS7dI%2BuA%2BENUPzWgN7hM%3D.png)
+
+Notice that all service to service communication has a green lock. That's because all the communication is encrypted over mutual TLS. Also, notice that an unknown source has an open red lock. That means that an unauthenticated agent is accessing the frontend service that is communicating over plain text. This unauthenticated agent is the browser.
+
+**Note:** Anthos Service Mesh automatically enables mutual TLS (mTLS) across services, so that all communications are authenticated and encrypted.
+
+The table at the bottom of the page also shows the HTTP operations that clients are allowed to perform on the frontend service. In this case, the ingressgateway and the loadgenerator are allowed to perform HTTP GET and HTTP Post requests, but unauthenticated actors are only able to perform HTTP GET requests.
+
+**Note:** Anthos Service Mesh provides L7 networking policies that can be used in combination with Kubernetes L4 networking polices to provide in-depth security.
+
+### Congratulations!
+
+In this lab, you explored Anthos clusters in the Google Cloud Console and learned about the benefits of using Anthos Service Mesh to create distributed services. You observed distributed services, viewed metrics, set up SLOs, investigated network topology, and verified security and encryption configuration using the Anthos Service Mesh Dashboards.
+
+
+
+- 
+  Lab instructions and tasks
+- [Overview](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step1)
+- [Setup and requirements](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step2)
+- [Task 1. Install Cloud Service Mesh with tracing enabled](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step3)
+- [Task 2. Install the microservices-demo application on the cluster](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step4)
+- [Task 3. Review Google Cloud's operations suite functionality](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step5)
+- [Task 4. Deploy a canary release that has high latency](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step6)
+- [Task 5. Define your service level objective](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step7)
+- [Task 6. Diagnose the problem](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step8)
+- [Task 7. Roll back the release and verify an improvement](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step9)
+- [Task 8. Visualize your mesh with the Cloud Service Mesh dashboard](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step10)
+- [Review](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step11)
+- [End your lab](https://partner.cloudskillsboost.google/course_templates/435/labs/427979#step12)
+
+### Lab - AHYBRID041 Observing Anthos Services
+
+### Overview
+
+In this lab, you learn to install [Cloud Service Mesh (CSM)](https://cloud.google.com/products/service-mesh) on Google Kubernetes Engine. Cloud Service Mesh is a managed service based on [Istio](http://istio.io/), the leading open source service mesh.
+
+A service mesh gives you a framework for connecting, securing, and managing microservices. It provides a networking layer on top of Kubernetes with features such as advanced load balancing capabilities, service-to-service authentication, and monitoring without requiring any changes in service code.
+
+Cloud Service Mesh has a suite of additional features and tools that help you observe and manage secure, reliable services in a unified way. In this lab you also learn how to use some of these features:
+
+- **Service metrics and logs** for HTTP(S) traffic within your mesh's GKE cluster are automatically ingested to Google Cloud.
+- **Preconfigured service dashboards** give you the information you need to understand your services.
+- In-depth **telemetry** lets you dig deep into your metrics and logs, filtering and slicing your data on a wide variety of attributes.
+- **Service-to-service relationships** at a glance help you understand who connects to which service and the services that each service depends on.
+- **Service-level objectives (SLOs)** provide insights into the health of your services. You can easily define an SLO and alert on your own standards of service health.
+
+Cloud Service Mesh is the easiest and richest way to implement an Istio-based service mesh on your GKE Enterprise clusters.
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Install Cloud Service Mesh, with tracing enabled and configured to use Cloud Trace as the backend.
+- Deploy Bookinfo, an Istio-enabled multi-service application.
+- Enable external access using an Istio Ingress Gateway.
+- Use the Bookinfo application.
+- Evaluate service performance using Cloud Trace features within Google Cloud.
+- Create and monitor service-level objectives (SLOs).
+- Leverage the Cloud Service Mesh Dashboard to understand service performance.
+
+### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+After you complete the initial sign-in steps, the project dashboard appears.
+
+1. Click **Select a project**, highlight your *GCP Project ID*, and click **Open** to select your project.
+
+### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D-20241105115920962.png)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D-20241105115928754.png)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+
+
+**Output:**
+
+```
+Credentialed accounts:
+ - @.com (active)
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+
+
+**Output:**
+
+```
+[core]
+project = 
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+**Note:** The lab environment has already been partially configured: a GKE cluster named **gke** has been created and registered.
+
+### Task 1. Install Cloud Service Mesh with tracing enabled
+
+A Google Kubernetes Engine (GKE) cluster named **gke** has already been created and registered. You will install Cloud Service Mesh onto this cluster and override the standard configuration to enable the optional tracing components.
+
+### Configure cluster access for kubectl and verify the cluster
+
+To set environment variables for use in scripts, in Cloud Shell, run the following commands:
+
+1. Set the Name environment variable.
+
+   ```
+   CLUSTER_NAME=gke
+   ```
+
+   
+
+2. Set the Zone and Region environment variables.
+
+   ```
+   CLUSTER_ZONE="Zone added at lab start"
+   CLUSTER_REGION="Region added at lab start"
+   ```
+
+   
+
+3. Set the Project ID environment variable.
+
+   ```
+   PROJECT_ID="PROJECT ID added at lab start"
+   ```
+
+   
+
+4. Set the Project Number environment variable.
+
+   ```
+   PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} \
+     --format="value(projectNumber)")
+   ```
+
+   
+
+5. Set the Fleet Project ID environment variable.
+
+   ```
+   FLEET_PROJECT_ID="${PROJECT_ID}"
+   ```
+
+   
+
+6. Set the IDNS environment variable.
+
+   ```
+   IDNS="${PROJECT_ID}.svc.id.goog"
+   ```
+
+   
+
+7. Set the output directory.
+
+   ```
+   DIR_PATH=.
+   ```
+
+   
+
+8. Verify the environment variables are set correctly.
+
+   ```
+   printf '\nCLUSTER_NAME:'$CLUSTER_NAME'\nCLUSTER_ZONE:'$CLUSTER_ZONE'\nPROJECT_ID:'$PROJECT_ID'\nPROJECT_NUMBER:'$PROJECT_NUMBER'\nFLEET PROJECT_ID:'$FLEET_PROJECT_ID'\nIDNS:'$IDNS'\nDIR_PATH:'$DIR_PATH'\n'
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   CLUSTER_NAME:gke
+   CLUSTER_ZONE:"Zone"
+   PROJECT_ID:"PROJECT ID"
+   PROJECT_NUMBER:946429310725
+   FLEET PROJECT_ID:"PROJECT ID"
+   IDNS:"PROJECT ID".svc.id.goog
+   DIR_PATH:.
+   ```
+
+9. Configure `kubectl` to manage your GKE cluster:
+
+   ```
+    gcloud container clusters get-credentials $CLUSTER_NAME \
+        --zone $CLUSTER_ZONE --project $PROJECT_ID
+   ```
+
+   
+
+10. Review your kubectl configuration:
+
+    ```
+    kubectl config view
+    ```
+
+    
+
+**Output:**
+
+```
+ apiVersion: v1
+ clusters:
+ - cluster:
+     certificate-authority-data: DATA+OMITTED
+     server: https://34.67.123.27
+   name: gke_qwiklabs-gcp-04-6163e6198bad__gke
+ contexts:
+ - context:
+     cluster: gke_qwiklabs-gcp-04-6163e6198bad__gke
+     user: gke_qwiklabs-gcp-04-6163e6198bad__gke
+   name: gke
+ current-context: gke
+ kind: Config
+ preferences: {}
+ users:
+ - name: gke_qwiklabs-gcp-04-6163e6198bad__gke
+   user:
+     auth-provider:
+       config:
+         cmd-args: config config-helper --format=json
+         cmd-path: /usr/lib/google-cloud-sdk/bin/gcloud
+         expiry-key: '{.credential.token_expiry}'
+         token-key: '{.credential.access_token}'
+       name: gcp
+```
+
+1. Check that your cluster is running:
+
+```
+gcloud container clusters list
+```
+
+
+
+**Output:**
+
+```
+NAME: gke
+LOCATION: 
+MASTER_VERSION: 1.24.8-gke.2000
+MASTER_IP: 35.192.65.244
+MACHINE_TYPE: e2-standard-2
+NODE_VERSION: 1.24.8-gke.2000
+NUM_NODES: 3
+STATUS: RUNNING
+```
+
+**Note:**
+
+The master version in your installation might be different because you are using GKE's regular release channel to install the cluster.
+
+### Enable GKE Enterprise
+
+1. Enable GKE Enterprise from the command line. This also automatically enables the Fleet (GKE Hub) API.
+
+```
+gcloud services enable --project="${PROJECT_ID}" \
+anthos.googleapis.com
+```
+
+
+
+1. Register the GKE cluster called `gke` to the Fleet in the project.
+
+```
+gcloud container clusters update gke --enable-fleet --region "${CLUSTER_ZONE}"
+```
+
+
+
+1. Verify that the cluster got registered in your fleet successfully.
+
+```
+gcloud container fleet memberships list --project "${PROJECT_ID}"
+```
+
+
+
+### Install Cloud Service Mesh
+
+1. Enable Cloud Service Mesh on the fleet project.
+
+```
+gcloud container fleet mesh enable --project "${PROJECT_ID}"
+```
+
+
+
+1. Enable automatic management of the Cloud Service Mesh control plane.
+
+```
+gcloud container fleet mesh update \
+  --management automatic \
+  --memberships gke \
+  --project "${PROJECT_ID}" \
+  --location "$CLUSTER_REGION"
+```
+
+
+
+1. Verify that the control plane is being managed.
+
+```
+gcloud container fleet mesh describe --project "${PROJECT_ID}"
+```
+
+
+
+Wait until the controlPlaneManagement appears changes the state from PROVISIONING to REVISION_READY. This might take several minutes.
+
+**Output:**
+
+```
+createTime: '2024-10-09T08:36:54.101719145Z'
+membershipSpecs:
+projects/251431549018/locations/us-east1/memberships/gke:
+   mesh:
+      management: MANAGEMENT_AUTOMATIC
+membershipStates:
+projects/251431549018/locations/us-east1/memberships/gke:
+   servicemesh:
+      conditions:
+      - code: VPCSC_GA_SUPPORTED
+      details: This control plane supports VPC-SC GA.
+      documentationLink: http://cloud.google.com/service-mesh/docs/managed/vpc-sc
+      severity: INFO
+      controlPlaneManagement:
+      details:
+      - code: REVISION_READY
+         details: 'Ready: asm-managed'
+      implementation: TRAFFIC_DIRECTOR
+      state: ACTIVE
+      dataPlaneManagement:
+      details:
+      - code: MANAGED_CONTROL_PLANE_REQUIRED
+         details: Requires active managed control plane.
+      state: FAILED_PRECONDITION
+   state:
+      code: OK
+      description: 'Revision ready for use: asm-managed.'
+      updateTime: '2024-10-09T08:46:33.932321311Z'
+name: projects/qwiklabs-gcp-04-e66a83de81ad/locations/global/features/servicemesh
+resourceState:
+state: ACTIVE
+spec: {}
+updateTime: '2024-10-09T08:38:23.722727135Z'
+```
+
+1. Enable Cloud Service Mesh to send telemetry to Cloud Trace.
+
+```
+cat <<EOF | kubectl apply -n istio-system -f -
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+   name: enable-cloud-trace
+   namespace: istio-system
+spec:
+   tracing:
+   - providers:
+     - name: stackdriver
+EOF
+```
+
+
+
+1. Verify the config map has been enabled:
+
+   ```
+   kubectl get configmap
+   ```
+
+   
+
+**Output:**
+
+```
+NAME               DATA   AGE
+kube-root-ca.crt   1      48m
+```
+
+**Congratulations!**
+
+You now have a GKE cluster with Cloud Service Mesh installed. Kubernetes Metrics are being recorded to Cloud Monitoring, logs are being recorded to Cloud Logging, and distributed trace information is being sent to Cloud Trace.
+
+### Task 2. Install the microservices-demo application on the cluster
+
+**Online Boutique** is a cloud-native microservices demo application. Online Boutique consists of a 10-tier microservices application. The application is a web-based ecommerce app where users can browse items, add them to the cart, and purchase them.
+
+Google uses this application to demonstrate use of technologies like Kubernetes/GKE, Istio/ASM, Google Operations Suite, gRPC and OpenCensus. This application works on any Kubernetes cluster (such as a local one) and on Google Kubernetes Engine. It’s easy to deploy with little to no configuration.
+
+For more information about the application, refer to the [github repo](https://github.com/GoogleCloudPlatform/microservices-demo).
+
+### Configure the mesh data plane
+
+1. Enable Istio sidecar injection:
+
+   ```
+   kubectl label namespace default istio.io/rev- istio-injection=enabled --overwrite
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   namespace/default labeled
+   ```
+
+1. To enable Google to manage your data plane so that the sidecar proxies will be automatically updated for you, annotate the namespace:
+
+   ```
+   kubectl annotate --overwrite namespace default \
+     mesh.cloud.google.com/proxy='{"managed":"true"}'
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   namespace/default annotated 
+   ```
+
+### Install the Online Boutique application on the GKE cluster
+
+1. Deploy the application:
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/master/release/kubernetes-manifests.yaml
+   kubectl patch deployments/productcatalogservice -p '{"spec":{"template":{"metadata":{"labels":{"version":"v1"}}}}}'
+   ```
+
+   
+
+2. To be able to access the application from outside the cluster, install the ingress Gateway:
+
+   ```
+   git clone https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages
+   kubectl apply -f anthos-service-mesh-packages/samples/gateways/istio-ingressgateway
+   ```
+
+   
+
+3. Install the required custom resource definitions
+
+   ```
+   kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd/experimental?ref=v0.6.0"
+   kubectl kustomize "https://github.com/GoogleCloudPlatform/gke-networking-recipes.git/gateway-api/config/mesh/crd" | kubectl apply -f -
+   ```
+
+   
+
+4. Configure the Gateway:
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/master/release/istio-manifests.yaml
+   ```
+
+   
+
+5. Return to **Kubernetes** click on **Workloads** and then under **Networking** click **Gateways,Services & Ingress** pages, and verify that the new deployments and services have been created on the gke cluster.
+
+   **Note:** You can filter these pages by cluster, object type, and namespace to make it easier to parse the information presented.
+
+6. Take a couple of minutes to investigate the demo application using the console and UI.
+
+   **Note:** When the workloads show an **OK** status, use the IP address associated with the **frontend-external** service (for either cluster) to do one of the following:Look on the **Services & Ingress** page within the console.
+
+7. Explore the cluster using Cloud Shell.
+
+8. View the deployment using Cloud Shell
+
+   ```
+   kubectl get deployments
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+   adservice               1/1     1            1           2m39s
+   cartservice             1/1     1            1           2m41s
+   checkoutservice         1/1     1            1           2m44s
+   currencyservice         1/1     1            1           2m40s
+   emailservice            1/1     1            1           2m45s
+   frontend                1/1     1            1           2m43s
+   istio-ingressgateway    3/3     3            3           2m24s
+   loadgenerator           1/1     1            1           2m41s
+   paymentservice          1/1     1            1           2m42s
+   productcatalogservice   1/1     1            1           2m42s
+   recommendationservice   1/1     1            1           2m43s
+   redis-cart              1/1     1            1           2m39s
+   shippingservice         1/1     1            1           2m40s
+   ```
+
+9. View the services using Cloud Shell
+
+   ```
+   kubectl get services 
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME                    TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)                                      AGE
+   adservice               ClusterIP      10.28.7.144              9555/TCP                                     7m37s
+   cartservice             ClusterIP      10.28.12.9               7070/TCP                                     7m40s
+   checkoutservice         ClusterIP      10.28.15.239             5050/TCP                                     7m42s
+   currencyservice         ClusterIP      10.28.14.145             7000/TCP                                     7m39s
+   emailservice            ClusterIP      10.28.11.181             5000/TCP                                     7m43s
+   frontend                ClusterIP      10.28.1.40               80/TCP                                       7m41s
+   frontend-external       LoadBalancer   10.28.15.84    34.66.85.60     80:31445/TCP                                 7m41s
+   istio-ingressgateway    LoadBalancer   10.28.0.95     34.68.255.184   15021:30153/TCP,80:31266/TCP,443:30286/TCP   7m22s
+   kubernetes              ClusterIP      10.28.0.1                443/TCP                                      62m
+   paymentservice          ClusterIP      10.28.1.138              50051/TCP                                    7m41s
+   productcatalogservice   ClusterIP      10.28.8.22               3550/TCP                                     7m40s
+   recommendationservice   ClusterIP      10.28.0.104              8080/TCP                                     7m42s
+   redis-cart              ClusterIP      10.28.5.71               6379/TCP                                     7m38s
+   shippingservice         ClusterIP      10.28.5.69               50051/TCP                                    7m39s
+   ```
+
+10. Open a new tab and enter the IP address for the `frontend-external` service.
+
+11. Click through various pages to get a sense of the application.
+
+### Task 3. Review Google Cloud's operations suite functionality
+
+When you install a GKE or an Anthos cluster, you can enable cluster logs and metrics to be collected and forwarded to Cloud Logging and Cloud Monitoring. That gives you visibility about the cluster, the nodes, the pods and even the containers in that cluster. However, GKE and Anthos don't monitor the communication between microservices.
+
+With Cloud Service Mesh, because every request goes through an Envoy proxy, microservice telemetry information can be collected and inspected. Envoy proxy extensions then send that telemetry to Google Cloud, where you can inspect it. Use Cloud Trace dashboards to investigate requests and their latencies and obtain a breakdown from all services involved in a request.
+
+1. In the Google Cloud Console, on the **Navigation menu**, click **Trace**.
+
+   A trace graph displays service requests made within the demo application.
+
+2. Click on a dot that displays higher up in the graph (representing a higher overall) request time.
+
+- How long did the request take?
+- When did the request occur?
+- What service was being called?
+- What other services were called during execution of this request?
+- Where was most of the time spent in processing this request?
+
+Review the [Cloud Trace documentation](https://cloud.google.com/trace/docs/viewing-details) for more details on understanding trace information.
+
+### Task 4. Deploy a canary release that has high latency
+
+In this task, you deploy a new version of a service that has an issue which causes high latency. In subsequent tasks, you use the observability tools to diagnose and resolve.
+
+1. In Cloud Shell, clone the repository that has the configuration files you need for this part of the lab:
+
+   ```
+   git clone https://github.com/GoogleCloudPlatform/istio-samples.git \
+     ~/istio-samples
+   ```
+
+   
+
+2. Create the new destination rule on the **gke** cluster:
+
+   ```
+   kubectl apply -f ~/istio-samples/istio-canary-gke/canary/destinationrule.yaml
+   ```
+
+   
+
+3. Create the new product catalog on the **gke** cluster:
+
+   ```
+   kubectl apply -f ~/istio-samples/istio-canary-gke/canary/productcatalog-v2.yaml
+   ```
+
+   
+
+4. Create a traffic split on the **gke** cluster:
+
+   ```
+   kubectl apply -f ~/istio-samples/istio-canary-gke/canary/vs-split-traffic.yaml
+   ```
+
+   
+
+   **Note:** You are creating:
+
+   
+
+   - A DestinationRule to set routing of requests between the service versions
+   - A new deployment of the product catalog service that has high latency
+   - A VirtualService to split product catalog traffic 75% to v1 and 25% to v2
+
+   
+
+   You can open each of the configuration files in the Cloud Shell editor to better understand the definition of each new resource.
+
+### Task 5. Define your service level objective
+
+When you are not using Cloud Service Mesh, you can define SLOs with the [Service Monitoring](https://cloud.google.com/monitoring/service-monitoring) API. When you are using Cloud Service Mesh, as with the **gke** cluster, you can define and monitor SLOs via the Cloud Service Mesh dashboard.
+
+1. In the Google Cloud Console, on the **Navigation menu**, click **Kubernetes Engine** to open the **GKE** Dashboard.
+
+   Notice that there is one cluster registered in the fleet.
+
+2. On the side pannel, under **Features** click **Service Mesh** to go to the Cloud Service Mesh dashboard.
+
+   A summary of service performance, including SLO information, is displayed. You will define a new SLO for the product catalog service.
+
+3. In the **Services** list, click **productcatalogservice**.
+
+4. In the menu pane, click **Health**.
+
+5. Click **+CreateSLO**.
+
+6. In the **Set your SLI** slideout, for **metric**, select **Latency**.
+
+7. Select **Request-based** as the method of evaluation.
+
+8. Click **Continue**.
+
+9. Set **Latency Threshold** to **1000**, and click **Continue**.
+
+10. Set **Period type** to **Calendar**.
+
+11. Set **Period length** to **Calendar day**.
+
+    **Note:** Ninety-nine percent availability over a single day is different from 99% availability over a month. The first SLO would not permit more than 14 minutes of consecutive downtime (24 hrs * 1%), but the second SLO would allow consecutive downtime up to ~7 hours (30 days * 1%).
+
+12. Set **Performance goal** to **99.5%**.
+
+    The **Preview** graph shows how your goal is reflected against real historical data.
+
+13. Click **Continue**.
+
+14. Review **Display name**: **99.5% - Latency - Calendar day**.
+
+    You can adjust this as needed.
+
+    The autogenerated JSON document is also displayed. You could use the APIs instead to automate the creation of SLOs in the future.
+
+15. To create the SLO, click **+CreateSLO**.
+
+### Task 6. Diagnose the problem
+
+### Use service metrics to see where the problem is
+
+1. Click on your SLO entry in the SLO list.
+
+   This displays an expanded view. Your SLO will probably show that you are already out of error budget. If not, wait 3-5 minutes and refresh the page. Eventually, you will exhaust your error budget, because too many of the requests to this service will hit the new backend, which has high latency.
+
+2. In the menu pane, click **Metrics**.
+
+   Scroll down to the **Latency** section of the **Metrics** view and note that the service latency increased a few minutes earlier, around the time you deployed the canary version of the service.
+
+3. From the **Breakdown By** dropdown, select **Source service**.
+
+   Which pods are showing high latency and causing the overall failure to hit your SLO?
+
+4. To return to the Service Mesh page, in the menu pane, click **Service Mesh**.
+
+   One SLO is flagged as out of error budget, and a warning indicator is displayed next to the problem service in the **Services** listing.
+
+   **Note:** You have only defined a single SLO for a single service. In a real production environment, you would probably have multiple SLOs for each service.
+
+   
+
+   Also, you have not defined any alerting policy for your SLO. You would probably have Cloud Monitoring execute an alert if you are exhausting your error budget faster than expected.
+
+### Use Cloud Trace to better understand where the delay is
+
+1. In the Google Cloud Console, on the **Navigation menu**, click **Trace > Trace explorer**.
+
+2. Click on a dot that charts at around 3000ms; it should represent one of the requests to the product catalog service.
+
+   Note that all the time seems to be spent within the catalog service itself. Although calls are made to other services, they all appear to return very quickly, and something within the product catalog service is taking a long time.
+
+   **Note:** Cloud Service Mesh is automatically collecting information about network calls within the mesh and providing trace data that documents time spent on these calls. This is useful and required no extra developer effort.
+
+   
+
+   However, how time is spent within the workload, in this case the product catalog service pod, isn't instrumented directly by Istio. If needed, to get this level of detail, the developer would add instrumentation logic within the service itself.
+
+### Task 7. Roll back the release and verify an improvement
+
+1. In Cloud Shell, back out the destination rule canary release:
+
+   ```
+   kubectl delete -f ~/istio-samples/istio-canary-gke/canary/destinationrule.yaml
+   ```
+
+   
+
+2. In Cloud Shell, back out the product catalog canary release:
+
+   ```
+   kubectl delete -f ~/istio-samples/istio-canary-gke/canary/productcatalog-v2.yaml
+   ```
+
+   
+
+3. In Cloud Shell, back out the traffic split canary release:
+
+   ```
+   kubectl delete -f ~/istio-samples/istio-canary-gke/canary/vs-split-traffic.yaml
+   ```
+
+   
+
+4. In the Google Cloud Console, on the **Navigation menu**, click **Anthos > Service Mesh**.
+
+5. Click on **productcatalogservice**, and then in the menu pane, click **Health**.
+
+   Note the current compliance percentage.
+
+6. Click **Metrics**.
+
+   On the latency chart, all the latency series show a dip that corresponds to when you rolled back the bad version of the workload.
+
+7. Return to the **Health** page.
+
+8. Compare the current compliance metric with the one you saw earlier. It should be higher now, reflecting the fact that you are no longer seeing high-latency requests.
+
+### Task 8. Visualize your mesh with the Cloud Service Mesh dashboard
+
+1. On the **Navigation menu**, click **Kuberenetes Engine > Service Mesh**.
+
+2. View the **Topology** on the right side.
+
+   A chart representing your service mesh is displayed.
+
+   ![The topology chart](images/aujwSTeruv7wbc78VYHBiMLPe05Yx3fJAv1yPwIHC94%3D.png)
+
+   If you don't see a full topology chart like this, it's possible that not all the topology data has been collected. It can take 10+ minutes for this data to be reflected in the chart. You can proceed to the next section and return later to see the chart.
+
+3. Click on the frontend workload node and note the services called by that workload.
+
+   ![Service dependencies on the topology chart](images/o0QnLi0W%2FPPJa2rrCSZiNSzf9dMLiGY7ojTm0L4%2FnX4%3D.png)
+
+Take a couple of minutes to explore further and better understand the architecture of the application. You can rearrange nodes, drill down into workloads to see constituent deployments and pods, change time spans, etc.
+
+**Congratulations!** You've used Google Cloud's operations suite tooling to evaluate, troubleshoot, and improve service performance on your GKE Enterprise cluster.
+
+### Review
+
+In this lab, you learned about logging, monitoring, and tracing using Google Cloud's operations suite.
+
+### Test your knowledge
+
+
+
+1. Which CLI tool is used to install and manage Anthos Service Mesh?
+
+- gcloud
+
+- meshctl
+
+- **asmcli**
+
+- kubectl
+
+In the lecture, you learned that the asmcli utility is used to install Anthos Service Mesh. You download the asmcli utility on to a machine with direct access to your cluster in order to perform the installation.
+
+2. The Anthos Service Mesh control plane interacts with the Envoy proxies to
+
+- Secure requests using mTLS as they flow through the mesh.
+
+- **Configure them on pod creation.**
+
+- Check quotas and ACLs as requests flow through the mesh.
+
+- Route requests as they flow through the mesh.
+
+The Anthos Service Mesh control plane configures the Envoy proxies when the pods are created.
+
+3. Wasm plugins can be used to send telemetry to external backend such as Cloud Monitoring.
+
+- **True**
+
+- False
+
+Anthos Service Mesh installs a WebAssembly plugin in the Envoy proxy that contains the functionality to call the Cloud Monitoring and Cloud Tracing APIs.
+
+
+
+## Managing Traffic Flow with Anthos Service Mesh
+
+### Lab - AHYBRID051 Managing Traffic Flow with Anthos Service Mesh
+
+#### Overview
+
+With Anthos Service Mesh, you can manage service discovery, traffic routing, and load balancing for your services without having to update code in your services. Anthos Service Mesh simplifies configuration of service-level properties like timeouts and retries, and makes it straightforward to set up tasks like staged rollouts with percentage-based traffic splits.
+
+Anthos Service Mesh’s traffic management model relies on the following two components:
+
+- Control plane: manages and configures the Envoy proxies to route traffic and enforce policies.
+- Data plane: encompasses all network communication between microservices performed at runtime by the Envoy proxies.
+
+![The Anthos Service Mesh's traffic management model.](images/6AyWls%2BJxv3XRwNQoFee6Y29lxmruYOhl%2BeHlEWWZhM%3D.png)
+
+These components enable mesh traffic management features including:
+
+- Service discovery
+- Load balancing
+- Traffic routing and control
+
+#### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Configure and use Istio Gateways
+- Apply default destination rules, for all available versions
+- Apply virtual services to route by default to only one version
+- Route to a specific version of a service based on user identity
+- Shift traffic gradually from one version of a microservice to another
+- Use the Anthos Service Mesh dashboard to view routing to multiple versions
+- Setup networking best practices such as retries, circuit breakers and timeouts
+
+#### Setup and requirements
+
+In this task, you use Qwiklabs and perform initialization steps for your lab.
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+After you complete the initial sign-in steps, the project dashboard appears.
+
+![The Project Dashboard](images/dxfeoOcn1ObyC0BYyoqqqSi4rO%2FeMdbWPFjoK6C0YYk%3D-0793739.png)
+
+1. Click **Select a project**, highlight your *GCP Project ID*, and click **OPEN** to select your project.
+
+#### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D-20241105160231097.png)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D-20241105160241316.png)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+
+
+**Output:**
+
+```
+Credentialed accounts:
+ - @.com (active)
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+
+
+**Output:**
+
+```
+[core]
+project = 
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+#### Task 1. Review Traffic Management use cases
+
+Different traffic management capabilities are enabled by using different configuration options.
+
+#### Example: traffic splitting
+
+Route traffic to multiple versions of a service.
+
+![Traffic splitting example, which includes its host, name, kind, and API version.](images/CYhAJvkREi1fcv3TkOYcFqhx44U0%2BT1PqZTgAw8lWhk%3D.png)
+
+#### Example: timeouts
+
+Set a timeout, the amount of time Istio waits for a response to a request. The timeout for HTTP requests is 15 seconds, but it can be overridden.
+
+![Timeouts example, which includes its name, kind, and API version.](images/p9nCO6j8v696BJRPTNp4moB52hhCwrsS4K1vvqaSJrY%3D.png)
+
+#### Example: retries
+
+A retry is an attempt to complete an operation multiple times if it fails. Adjust the maximum number of retry attempts, or the number of attempts possible within the default or overridden timeout period.
+
+![Retries example, which includes its API version, kind, and subset.](images/PRde7lNpqiE9NDk%2Fr4G6W7s2GvDZeltBE9rf7TmXj7w%3D.png)
+
+#### Example: fault injection: inserting delays
+
+Fault injection is a testing method that introduces errors into a system to ensure that it can withstand and recover from error conditions.
+
+![Fault Injection Delays example, which includes its name, API version, and percent.](images/bNpNnvHY6AZFhuCj83%2FZHhGcD9WlZIqDyLUP4mLkn4o%3D.png)
+
+This example introduces a 5 second delay in 10% of the requests to the "v1" version of the ratings microservice.
+
+#### Example: fault injection: inserting aborts
+
+![Fault Injection example, which includes its percent, name, and http status.](images/YWHgqXhGwKR4OmsdOI80PjmokOlVey5fL0i%2BIro3wWk%3D.png)
+
+The above example returns an HTTP 400 error code for 10% of the requests to the ratings service "v1".
+
+#### Example: conditional routing: based on source labels
+
+![Conditional Source Labels example, which includes its kind, API version, and hosts.](images/WFtJeiFL%2Fpg8qA57tHtHvMJwEWr0FYqctYiwwNqXGgM%3D.png)
+
+A rule can indicate that it only applies to calls from workloads (pods) implementing the version v2 of the reviews service.
+
+#### Example: conditional routing: based on request headers
+
+![Conditional End User example, which includes its name, API version, and exact.](images/vxDmL5tzCrbj7k4xeLUwjeL3iaYS1EENEr3qBv3aSYA%3D.png)
+
+The above rule only applies to an incoming request if it includes a custom "end-user" header that contains the string “atharvak”.
+
+#### Task 2. Complete lab setup
+
+This lab environment has already been partially configured.
+
+- A GKE cluster named `gke` was created.
+- Anthos Service Mesh has been installed
+- The Bookinfo multi-service sample application was deployed.
+
+#### Configure cluster access for kubectl
+
+1. Set the Zone environment variable:
+
+   ```
+   CLUSTER_ZONE="Zone added at lab start"
+   ```
+
+   
+
+2. In **Cloud Shell**, set environment variables cluster name:
+
+   ```
+   export CLUSTER_NAME=gke
+   ```
+
+   
+
+3. Configure `kubectl` command line access by running:
+
+   ```
+   export GCLOUD_PROJECT=$(gcloud config get-value project)
+   gcloud container clusters get-credentials $CLUSTER_NAME \
+       --zone $CLUSTER_ZONE --project $GCLOUD_PROJECT
+   ```
+
+   
+
+   If prompted, click the **Authorize** button.
+
+#### Verify cluster and Anthos Service Mesh installation
+
+1. Check that your cluster is up and running:
+
+   ```
+   gcloud container clusters list
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME: gke
+   LOCATION: "Zone"
+   MASTER_VERSION: 1.24.8-gke.2000
+   MASTER_IP: 35.222.150.207
+   MACHINE_TYPE: e2-standard-4
+   NODE_VERSION: 1.24.8-gke.2000
+   NUM_NODES: 2
+   STATUS: RUNNING
+   ```
+
+2. Ensure the Kubernetes pods for the Anthos Service Mesh control plane are deployed:
+
+   ```
+   kubectl get pods -n istio-system
+   ```
+
+   
+
+**Output:**
+
+```
+NAME                                    READY   STATUS    ...
+istiod-asm-1120-4-86bf846958-6xskt      1/1     Running
+istiod-asm-1120-4-86bf846958-9277m      1/1     Running
+```
+
+Pod status should be **Running** or **Completed**.
+
+1. Ensure corresponding Kubernetes services for the Anthos Service Mesh control plane are deployed:
+
+   ```
+   kubectl get service -n istio-system
+   ```
+
+   
+
+**Output:**
+
+```
+NAME                        TYPE            ...
+istiod                      ClusterIP
+istiod-asm-1120-4           ClusterIP
+```
+
+1. Ensure corresponding Kubernetes pods for the Anthos Service Mesh control plane are deployed, so that telemetry data is displayed in the ASM Dashboard:
+
+   ```
+   kubectl get pods -n asm-system
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME                                                    READY  STATUS  ...
+   canonical-service-controller-manager-7684454647-4pgx7   2/2    Running
+   ```
+
+   Pod status should be **Running**.
+
+#### Verify the Bookinfo deployment
+
+1. Confirm that the application has been deployed correctly:
+
+   ```
+   kubectl get pods
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME                              READY     STATUS
+   details-v1-1520924117-48z17       2/2       Running
+   productpage-v1-560495357-jk1lz    2/2       Running
+   ratings-v1-734492171-rnr5l        2/2       Running
+   reviews-v1-874083890-f0qf0        2/2       Running
+   reviews-v2-1343845940-b34q5       2/2       Running
+   reviews-v3-1813607990-8ch52       2/2       Running
+   ```
+
+   **Note:** See how each pod has two containers? That's the application container and the Istio sidecar proxy.
+
+2. Review running application services:
+
+   ```
+   kubectl get services
+   ```
+
+   
+
+   **Output:**
+
+   ```
+    NAME          TYPE        CLUSTER-IP    EXTERNAL-IP   ...
+    details       ClusterIP   10.7.248.49   
+    kubernetes    ClusterIP   10.7.240.1    
+    productpage   ClusterIP   10.7.248.22   
+    ratings       ClusterIP   10.7.247.26   
+    reviews       ClusterIP   10.7.246.22   
+   ```
+
+#### Task 3. Install Gateways to enable ingress
+
+In a Kubernetes environment, the Kubernetes Ingress Resource is used to specify services that should be exposed outside the cluster. In Anthos Service Mesh, a better approach, which also works in Kubernetes and other environments, is to use a Gateway resource. A Gateway allows mesh features such as monitoring, mTLS, and advanced routing capabilities rules to be applied to traffic **entering** the cluster.
+
+![The Istio gateways and the Mesh boundary layout.](images/mEjOpgz8BLXxqQ0oS1W2iof8bMYV3NZKSX7eLftfATw%3D.png)
+
+Gateways overcome Kubernetes Ingress shortcomings by separating the L4-L6 spec from L7. The **Gateway** configures the L4-L6 functions, such as the ports to expose, or the protocol to use. Then service owners bind **VirtualService** to configure L7 traffic routing options, such as routing based on paths, headers, weights, etc.
+
+There are two options for deploying gateways, either shared or dedicated. Shared gateways use a single centralized gateway is that used by many applications, possibly across many namespaces. In the example below, the Gateway in the ingress namespace delegates ownership of routes to application namespaces, but retains control over TLS configuration. This works well when using shared TLS certificates or shared infrastructure. In this lab we will use this option.
+
+![The Shared gateway diagram](images/sMaz4Be5UA77fcL3eGlxLEi2D1%2Bof9htw6cGsKCvn8k%3D)
+
+Dedicated gateways give full control and ownership to a single namespace, since an application namespace has its own dedicated gateway. This works well for applications that require isolation for security or performance.
+
+![The Dedicated gateway diagram](https://cdn.qwiklabs.com/mnfrsn2E1E98lt8ndp700aatnrh5Sv30zLBFdBoGX%2FM%3D)
+
+#### Install an ingress gateway in your cluster
+
+1. Create a namespace for the gateway:
+
+   ```
+   kubectl create namespace ingress
+   ```
+
+   
+
+2. Label the gateway namespace with a revision label for auto-injection:
+
+   ```
+   kubectl label namespace ingress \
+     istio.io/rev=$(kubectl -n istio-system get pods -l app=istiod -o json | jq -r '.items[0].metadata.labels["istio.io/rev"]') \
+     --overwrite
+   ```
+
+   
+
+   The revision label is used by the sidecar injector webhook to associate injected proxies with a particular control plane revision.
+
+   You can ignore the message "istio-injection not found" in the output. That means that the namespace didn't previously have the istio-injection label, which you should expect in new installations of Anthos Service Mesh or new deployments.
+
+   Because auto-injection fails if a namespace has both the istio-injection and the revision label, all kubectl label commands in the Anthos Service Mesh documentation includes removing the istio-injection label.
+
+3. Download and apply the gateway configuration files. These include the pods and services that will first receive the incoming requests from outside the cluster:
+
+   ```
+   git clone https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages
+   kubectl apply -n ingress -f anthos-service-mesh-packages/samples/gateways/istio-ingressgateway
+   ```
+
+   
+
+4. After you create the deployment, verify that the new services are working:
+
+   ```
+   kubectl get pod,service -n ingress
+   ```
+
+   
+
+   Notice the resource is a `LoadBalancer`. This ingress gateway uses an external TCP load balancer in GCP.
+
+5. Deploy the Gateway to specify the port and protocol to be used. In this case, the gateway enables `HTTP` traffic over port 80:
+
+   ```
+   cat <<EOF | kubectl apply -f -
+   apiVersion: networking.istio.io/v1
+   kind: Gateway
+   metadata:
+     name: bookinfo-gateway
+     namespace: ingress
+   spec:
+     selector:
+       istio: ingressgateway
+     servers:
+     - port:
+         number: 80
+         name: http
+         protocol: HTTP
+       hosts:
+       - "*"
+   EOF
+   ```
+
+   
+
+   The Gateway resource must be located in the same namespace as the gateway deployment.
+
+6. Deploy the VirtualService to route traffic from the gateway pods and service that you just created into the BookInfo application:
+
+   ```
+   cat <<EOF | kubectl apply -f -
+   apiVersion: networking.istio.io/v1
+   kind: VirtualService
+   metadata:
+     name: bookinfo
+   spec:
+     hosts:
+     - "*"
+     gateways:
+     - ingress/bookinfo-gateway
+     http:
+     - match:
+       - uri:
+           exact: /productpage
+       - uri:
+           prefix: /static
+       - uri:
+           exact: /login
+       - uri:
+           exact: /logout
+       - uri:
+           prefix: /api/v1/products
+       route:
+       - destination:
+           host: productpage
+           port:
+             number: 9080
+   EOF
+   ```
+
+   
+
+   The VirtualService resource must be located in the same namespace as the application. Notice that it establishes the `productpage` service as the default destination.
+
+7. Verify that the Gateway and VirtualService have been created and notice that the VirtualService is pointing to the Gateway:
+
+   ```
+   kubectl get gateway,virtualservice
+   ```
+
+   
+
+8. Save this external IP in your **Cloud Shell** environment:
+
+   ```
+   export GATEWAY_URL=$(kubectl get svc -n ingress istio-ingressgateway \
+   -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+   echo The gateway address is $GATEWAY_URL
+   ```
+
+   
+
+**Note:** If the gateway address is empty, wait 1-2 minutes and try the last command again. Do this until you have an address in your $GATEWAY_URL variable.
+
+#### Generate some background traffic
+
+Generate some background traffic against the application so that when you explore the Anthos Service Mesh dashboard, there's some interesting data to view.
+
+1. In Cloud Shell, install **siege**, a load generation tool:
+
+   ```
+   sudo apt install siege
+   ```
+
+   
+
+2. Use **siege** to create traffic against your services:
+
+   ```
+   siege http://${GATEWAY_URL}/productpage
+   ```
+
+   
+
+#### Access the BookInfo application
+
+1. In Cloud Shell, open another tab by clicking on the **+** icon in the Cloud Shell menu bar.
+
+2. Set the Zone environment variable:
+
+   ```
+   CLUSTER_ZONE="Zone added at lab start"
+   ```
+
+   
+
+3. Initialize the new Cloud Shell tab:
+
+   ```
+   export CLUSTER_NAME=gke
+   export GCLOUD_PROJECT=$(gcloud config get-value project)
+   gcloud container clusters get-credentials $CLUSTER_NAME \
+       --zone $CLUSTER_ZONE --project $GCLOUD_PROJECT
+   export GATEWAY_URL=$(kubectl get svc istio-ingressgateway \
+   -o=jsonpath='{.status.loadBalancer.ingress[0].ip}' -n ingress)
+   ```
+
+   
+
+4. Confirm that the Bookinfo application responds by sending a `curl` request to it from some pod, **within** the cluster, for example from `ratings`:
+
+   ```
+   kubectl exec -it \
+   $(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}') \
+   -c ratings -- curl productpage:9080/productpage \
+   | grep -o "<title>.*</title>"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   <title>Simple Bookstore App</title>
+   ```
+
+5. Check that the Bookinfo app responds to a `curl` request sent to it from **outside** the cluster, using the external IP saved earlier:
+
+   ```
+   curl -I http://${GATEWAY_URL}/productpage
+   ```
+
+   
+
+   **Output:**
+
+   ```
+    HTTP/1.1 200 OK
+    content-type: text/html; charset=utf-8
+    content-length: 5293
+    server: istio-envoy
+    date: Wed, 01 Feb 2023 13:28:58 GMT
+    x-envoy-upstream-service-time: 27
+   ```
+
+6. Open the Bookinfo application in your browser. Run this command in the Cloud Shell to get the full URL:
+
+   ```
+   echo http://${GATEWAY_URL}/productpage
+   ```
+
+   
+
+**Congratulations!** You exposed an HTTP endpoint for the Bookinfo productpage service to external traffic. The Gateway configuration resources allow external traffic to enter the service mesh and make the traffic management and policy features available for edge services.
+
+### Task 4. Use the Anthos Service Mesh dashboard view routing to multiple versions
+
+There are a couple of items to note when it comes to viewing data in the Anthos Service Mesh dashboard.
+
+The first is that, for most pages, it takes 1-2 minutes for the data to be available for display. That means that if you look at a page, it might not have the data you expect for 1-2 minutes. If you don't see the data you want, wait for a minute or so and then refresh the page.
+
+The Topology page also has a big initial delay before data is shown. It can take up to 5+ minutes for the initial set of data to be available. If you see a message that there is no data, wait a bit and then refresh the page and return to the Topology view.
+
+In the previous paragraphs, you are instructed to wait AND to refresh the page. As it turns out, not only is the data a bit delayed in arriving, but many pages won't show the available data without a page refresh. So if you expect the data to be available and you don't see it, make sure to do a refresh of the page in your browser.
+
+### View routing information in the Table View
+
+1. From the **Navigation menu**, select **Anthos > Service Mesh**.
+
+   ![Anthos Service Mesh Dashboard, with a list of services and their specifications.](images/bM808Qci54ApZDEof4tmfqb%2FXbV2HeFLYOeKe9WdYkg%3D.png)
+
+**Note:** If the Topology view is not displayed, refresh the browser window.
+
+1. Click on the **productpage** service, then select **Connected Services** on the left.
+
+![Connected services diagram within the Inbound tabbed page, with the topology metric of Requests/sec (avg).](images/%2FrGe4DMsa8JV8pQNU9iSLBl0XhVIYDH5oqih6zonnd4%3D.png)
+
+1. Select the **OUTBOUND** tab and note the two services called by the **productpage** pods.
+
+![Connected services diagram within the Outbound tabbed page, with the topology metric of Requests/sec (avg).](images/IEGjDqhDthfIt01KqrZ%2B%2F%2BbPkqlMy%2B4M6ctvmFfSVzU%3D.png)
+
+1. Click on the **reviews** service.
+
+   ![The highlighted reviews category within the topology.](images/oI%2F6AmmH6W3mkQwA6MiGg0xoOrRoqFPlclzt8E2UAkk%3D.png)
+
+2. Note the service statistics, then select the **Infrastructure** link on the left-hand menu.
+
+![The reviews page, wherein a graph is displayed to depict the requests per second according to three different reviews.](images/9CoxHEfsk25VpOPReWhKZcgg8VOsgoMM4sewK%2B1%2F2mk%3D.png)
+
+You can see that there are multiple pods, running different versions of the reviews logic, that receive traffic sent to the reviews service.
+
+1. Click on **Traffic** in the left-hand menu to see another view of traffic distribution.
+
+   ![A diagram depicting the incoming traffic and how many are linked to each review kind.](images/U90EgM7DCcG%2BoF3zXIMcu8qxdoshR6POifF%2BM7iqOjk%3D.png)
+
+   You can see that there is relatively even distribution of traffic across the three backend pods running the different versions of the application logic.
+
+### View routing information in the Topology View
+
+1. Click on the Anthos Service Mesh logo in the upper left corner to return to the main dashboard page.
+
+**Note:** If you see an error message indicating that there is no data available to graph, or you see a chart that doesn't have all the traffic you expect, wait 1-2 minutes and try again.
+
+1. Rearrange the mesh graph so that you can easily view:
+
+   - The **productpage** service going to **productpage** deployment
+   - The **productpage** deployment going to **reviews** service
+   - The **reviews** service going to three version of **reviews**
+
+   ![The Mesh topology depicting the details, reviews, and ratings.](images/uhACn7MwlBZ7ehqyFi90zQglqhwrcMFraCCZevQCaIY%3D.png)
+
+2. Click on the **reviews** service node and see relative qps for each backend version.
+
+   ![The review details, including the clusters, latency, and error rate.](images/8hFs7jFJ4xDPGT63CRiyaDE7dKUhyITpIvbP4rbpPfs%3D.png)
+
+### Task 5. Apply default destination rules, for all available versions
+
+In this task, you define all the available versions, called subsets, in destination rules.
+
+1. Review the configuration found in [Github](https://github.com/istio/istio/blob/master/samples/bookinfo/networking/destination-rule-all.yaml). This configuration defines 4 `DestinationRule` resources, 1 for each service.
+
+2. Apply the configuration with the following command in Cloud Shell:
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/destination-rule-all.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   destinationrule.networking.istio.io/productpage created
+   destinationrule.networking.istio.io/reviews created
+   destinationrule.networking.istio.io/ratings created
+   destinationrule.networking.istio.io/details created
+   ```
+
+3. Check that 4 `DestinationRule` resources were defined.
+
+   ```
+   kubectl get destinationrules
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME          HOST          AGE
+   details       details       1m
+   productpage   productpage   1m
+   ratings       ratings       1m
+   reviews       reviews       1m
+   ```
+
+4. Review the details of the destination rules:
+
+   ```
+   kubectl get destinationrules -o yaml
+   ```
+
+   
+
+   Notice that `subsets` are defined within the `spec` of a `DestinationRule`.
+
+5. Wait for 1-2 minutes, then return to the Anthos Service Mesh dashboard.
+
+6. Look in both the table and topology views and confirm that the traffic continues to be evenly distributed across the three backend versions. You can click **SHOW TIMELINE** to adjust the period of time that is being charted, making it easier to zero in on the data you are interested in.
+
+### Task 6. Apply virtual services to route by default to only one version
+
+In this task, you apply virtual services for each service that routes all traffic to v1 of the service workload.
+
+1. Review the configuration found in [Github](https://github.com/istio/istio/blob/master/samples/bookinfo/networking/virtual-service-all-v1.yaml). This configuration defines 4 `VirtualService` resources, 1 for each service.
+
+2. Apply the configuration with the following command in Cloud Shell:
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/virtual-service-all-v1.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   virtualservice.networking.istio.io/productpage created
+   virtualservice.networking.istio.io/reviews created
+   virtualservice.networking.istio.io/ratings created
+   virtualservice.networking.istio.io/details created
+   ```
+
+   Because configuration propagation is eventually consistent, wait a few seconds for the virtual services to take effect.
+
+3. Check that 4 routes, `VirtualService` resources, were defined:
+
+   ```
+   kubectl get virtualservices
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME          GATEWAYS             HOSTS
+   bookinfo      ["bookinfo-gateway"]   ["*"]
+   details                            ["details"]
+   productpage                        ["productpage"]
+   ratings                            ["ratings"]
+   reviews                            ["reviews"]
+   ```
+
+4. In **Cloud Shell**, get the **external IP** address of the **ingress gateway**:
+
+   ```
+   echo $GATEWAY_URL
+   ```
+
+   
+
+5. Test the new routing configuration using the Bookinfo UI.
+
+   - Open the Bookinfo site in your browser. The URL is `http://[GATEWAY_URL]/productpage`, where `GATEWAY_URL` is the External IP address of the ingress.
+   - Refresh the page a few times to issue multiple requests.
+
+   Notice that the **Book Reviews** part of the page displays with no rating stars, no matter how many times you refresh. This is because you configured the mesh to route all traffic for the reviews service to the version **reviews:v1** and this version of the service does **not** access the star ratings service.
+
+6. Wait for 1-2 minutes, then return to the Anthos Service Mesh dashboard by navigating to **Navigation menu > Anthos > Service Mesh > reviews > Infrastructure**.
+
+7. Select **SHOW TIMELINE** and focus the chart on the last 5 minutes of traffic. You should see that the traffic goes from being evenly distributed to being routed to the version 1 workload 100% of the time.
+
+   ![A graph showing all traffic going to version 1](images/rd0Y8e3wi0D82vk02c9VlhuoqNks8QIEOoQAoztoiMU%3D.png)
+
+   You can also see the new traffic distribution by looking at the **Traffic** tab or the topology view - though these both take a couple extra minutes before the data is shown.
+
+### Task 7. Route to a specific version of a service based on user identity
+
+In this task, you change the route configuration so that all traffic from a specific user is routed to a specific service version. In this case, all traffic from user `jason` will be routed to the service `reviews:v2`, the version that includes the star ratings feature.
+
+**Note:** Istio does not have any special, built-in understanding of user identity. This example is enabled by the fact that the productpage service adds a custom end-user header to all outbound HTTP requests to the reviews service.
+
+1. Review the configuration found in [Github](https://github.com/istio/istio/blob/master/samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml). This configuration defines 1 `VirtualService` resource.
+
+2. Apply the configuration with the following command in Cloud Shell:
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   virtualservice.networking.istio.io/reviews configured
+   ```
+
+3. Confirm the rule is created:
+
+   ```
+   kubectl get virtualservice reviews
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME      GATEWAYS   HOSTS       AGE
+   reviews              ["reviews"]   35m
+   ```
+
+4. Test the new routing configuration using the Bookinfo UI:
+
+   - Browse again to `/productpage` of the Bookinfo application.
+   - This time, click **Sign in**, and use **User Name** of `jason` with no password.
+   - Notice the UI shows stars from the rating service.
+
+   You can sign out, and try signing in as other users. You will no longer see stars with reviews.
+
+To better visualize the effect of the new traffic routing, you can create a new background load of authenticated requests to the service.
+
+1. Start a new siege session, generating only 20% of the traffic of the first, but with all requests being authenticated as `jason`:
+
+   ```
+   curl -c cookies.txt -F "username=jason" -L -X \
+       POST http://$GATEWAY_URL/login
+   cookie_info=$(grep -Eo "session.*" ./cookies.txt)
+   cookie_name=$(echo $cookie_info | cut -d' ' -f1)
+   cookie_value=$(echo $cookie_info | cut -d' ' -f2)
+   siege -c 5 http://$GATEWAY_URL/productpage \
+       --header "Cookie: $cookie_name=$cookie_value"
+   ```
+
+   
+
+2. Wait for 1-2 minutes, refresh the page showing the Infrastructure telemetry, adjust the timeline to show the current time, and then check in the Anthos Dashboard and you should see that roughly 85% of requests over the last few minutes have gone to version 1 because they are unauthenticated. About 15% have gone to version two because they are made as `jason`.
+
+3. In Cloud Shell, cancel the siege session by typing `Ctrl+c`.
+
+4. Clean up from this task by removing the application virtual services:
+
+   ```
+   kubectl delete -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/virtual-service-all-v1.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   virtualservice.networking.istio.io "productpage" deleted
+   virtualservice.networking.istio.io "reviews" deleted
+   virtualservice.networking.istio.io "ratings" deleted
+   virtualservice.networking.istio.io "details" deleted
+   ```
+
+5. You can wait for 1-2 minutes, refresh the Anthos Service Mesh dashboard, adjust the timeline to show the current time, and confirm that traffic is once again evenly balanced across versions.
+
+   ![Back to even distribution diagram](images/Ku3rWibciFPAE5iYYGTjqwETwQ4MKFjbfjdhodqtlNM%3D.png)
+
+### Task 8. Shift traffic gradually from one version of a microservice to another
+
+In this task, you gradually migrate traffic from one version of a microservice to another. For example, you might use this approach to migrate traffic from an older version to a new version.
+
+You will send 50% of traffic to reviews:v1 and 50% to reviews:v3. Then, you will complete the migration by sending 100% of traffic to reviews:v3.
+
+In Anthos Service Mesh, you accomplish this goal by configuring a sequence of rules that route a percentage of traffic to one service or another.
+
+1. In Cloud Shell, route all traffic to the v1 version of each service:
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/virtual-service-all-v1.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   virtualservice.networking.istio.io/productpage created
+   virtualservice.networking.istio.io/reviews created
+   virtualservice.networking.istio.io/ratings created
+   virtualservice.networking.istio.io/details created
+   ```
+
+2. Browse again to `/productpage` of the Bookinfo application and confirm that you do not see stars with reviews. All traffic is being routed to the v1 backend.
+
+3. Wait 1 minute, then refresh the Anthos Service Mesh dashboard, adjust the timeline to show the current time, and confirm that all traffic has been routed to the v1 backend.
+
+4. Transfer 50% of the traffic from reviews:v1 to reviews:v3.
+
+   ```
+   kubectl apply -f \
+       https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   virtualservice.networking.istio.io/reviews configured
+   ```
+
+5. Browse again to `/productpage` of the Bookinfo application.
+
+6. Refresh your view to issue multiple requests.
+
+   Notice a roughly even distribution of reviews with no stars, from v1, and reviews with red stars, from v3, that accesses the ratings service.
+
+7. Wait 1 minute, then refresh the page, adjust the timeline to show the, current time, and confirm in the Anthos Service Mesh dashboard that traffic to the reviews service is split 50/50 between v1 and v3.
+
+   ![A diagram depicting 50-50 distribution between services](images/Mf3GJ%2F%2FSwj8dmlFembZARz1RUc8nPw2GfdwjxocdaPM%3D.png)
+
+8. Transfer the remaining 50% of traffic to reviews:v3.
+
+9. Assuming you decide that the reviews:v3 service is stable, route 100% of the traffic to reviews:v3 by applying this virtual service:
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking//virtual-service-reviews-v3.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   virtualservice.networking.istio.io/reviews configured
+   ```
+
+10. Test the new routing configuration using the Bookinfo UI.
+
+11. Browse again to `/productpage` of the Bookinfo application.
+
+12. Refresh the `/productpage`; you will always see book reviews with red colored star ratings for each review.
+
+13. Wait 1 minute, refresh the page, then confirm in the Anthos Service Mesh dashboard that all traffic to the reviews service is sent to v3.
+
+    ![A diagram depicting 100% to Version 3](images/nW%2F4KFx7A%2FSdJb%2B%2F4YyVIrBOZRzfdN19AnIbBer%2BCQo%3D.png)
+
+14. Clean up from this exercise, by removing the application virtual services.
+
+    ```
+    kubectl delete -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/virtual-service-all-v1.yaml
+    ```
+
+    
+
+    **Output:**
+
+    ```
+    virtualservice.networking.istio.io "productpage" deleted
+    virtualservice.networking.istio.io "reviews" deleted
+    virtualservice.networking.istio.io "ratings" deleted
+    virtualservice.networking.istio.io "details" deleted
+    ```
+
+In this task you migrated traffic from an old version to a new version of the reviews service using Anthos Service Mesh weighted routing feature. This is very different than doing version migration using the deployment features of container orchestration platforms, which use instance scaling to manage the traffic.
+
+With Anthos Service Mesh, you can allow the two versions of the reviews service to scale up and down independently, without affecting the traffic distribution between them.
+
+### Task 9. Add timeouts to avoid waiting indefinitely for service replies
+
+A timeout for HTTP requests can be specified using the timeout field of the route rule. By default, the request timeout is disabled, but in this task you override the reviews service timeout to 1 second. To see its effect, however, you also introduce an artificial 2 second delay in calls to the ratings service. We will start by introducing the delay.
+
+1. In Cloud Shell, route all traffic to the v1 version of each service:
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/virtual-service-all-v1.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   virtualservice.networking.istio.io/productpage created
+   virtualservice.networking.istio.io/reviews created
+   virtualservice.networking.istio.io/ratings created
+   virtualservice.networking.istio.io/details created
+   ```
+
+2. Route requests to v2 of the reviews service, i.e., a version that calls the ratings service:
+
+   ```
+   kubectl apply -f - <<EOF
+   apiVersion: networking.istio.io/v1
+   kind: VirtualService
+   metadata:
+     name: reviews
+   spec:
+     hosts:
+     - reviews
+     http:
+     - route:
+       - destination:
+           host: reviews
+           subset: v2
+   EOF
+   ```
+
+   
+
+3. Add a 2 second delay to calls to the ratings service:
+
+   ```
+   kubectl apply -f - <<EOF
+   apiVersion: networking.istio.io/v1
+   kind: VirtualService
+   metadata:
+     name: ratings
+   spec:
+     hosts:
+     - ratings
+     http:
+     - fault:
+         delay:
+           percent: 100
+           fixedDelay: 2s
+       route:
+       - destination:
+           host: ratings
+           subset: v1
+   EOF
+   ```
+
+   
+
+4. Open the Bookinfo URL `http://$GATEWAY_URL/productpage` in your browser. You should see the Bookinfo application working normally (with ratings stars displayed), but there is a 2 second delay whenever you refresh the page. (If the Bookinfo application does not work normally, change the delay to 1 second and try again.)
+
+5. Navigate to reviews / metrics to see that the latency is spiking to 2 seconds. (If you changed the delay to 1 second, the latency should spike to 1 second.)
+
+   ![The Metrics tabbed page, wherein a graph is displayed to depict the latency.](images/6fXERzIdypPvyOiofyTFwDx2%2BgvDSPtAjp8PUCqyzbg%3D.png)
+
+6. Now add a half second request timeout for calls to the reviews service:
+
+   ```
+   kubectl apply -f - <<EOF
+   apiVersion: networking.istio.io/v1
+   kind: VirtualService
+   metadata:
+     name: reviews
+   spec:
+     hosts:
+     - reviews
+     http:
+     - route:
+       - destination:
+           host: reviews
+           subset: v2
+       timeout: 0.5s
+   EOF
+   ```
+
+   
+
+7. Refresh the Bookinfo web page.
+
+You should now see that it returns in about 1 second, instead of 2, and the reviews are unavailable.
+
+**Note:** The reason why the response takes 1 second, even though the timeout is configured at half a second, is because there is a hard-coded retry in the productpage service, so it calls the timing out reviews service twice before returning. If you want to change the retry setting, configure the VirtualService by executing the command shown below.
+
+```
+kubectl apply -f - <<EOF
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: productpage
+spec:
+  hosts:
+  - productpage
+  http:
+  - route:
+    - destination:
+        host: productpage
+        subset: v1
+    retries:
+      attempts: 1
+      perTryTimeout: 2s
+EOF
+```
+
+
+
+1. Clean up from this exercise, by removing the application virtual services.
+
+   ```
+   kubectl delete -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/virtual-service-all-v1.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   virtualservice.networking.istio.io "productpage" deleted
+   virtualservice.networking.istio.io "reviews" deleted
+   virtualservice.networking.istio.io "ratings" deleted
+   virtualservice.networking.istio.io "details" deleted
+   ```
+
+In this task, you used Istio to set the request timeout for calls to the reviews microservice for half a second. By default the request timeout is disabled. Since the reviews service subsequently calls the ratings service when handling requests, you used Istio to inject a 2 second delay in calls to ratings to cause the reviews service to take longer than half a second to complete and consequently you could see the timeout in action.
+
+You observed that instead of displaying reviews, the Bookinfo product page (which calls the reviews service to populate the page) displayed the message: "Sorry, product reviews are currently unavailable for this book". This was the result of it receiving the timeout error from the reviews service.
+
+### Task 10. Add circuit breakers to enhance your microservices' resiliency
+
+This task shows you how to configure circuit breaking for connections, requests, and outlier detection.
+
+Circuit breaking is an important pattern for creating resilient microservice applications. Circuit breaking allows you to write applications that limit the impact of failures, latency spikes, and other undesirable effects of network peculiarities.
+
+In this task, you will configure circuit breaking rules and then test the configuration by intentionally “tripping” the circuit breaker.
+
+1. In Cloud Shell, route all traffic to the v1 version of each service:
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/virtual-service-all-v1.yaml
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   virtualservice.networking.istio.io/productpage created
+   virtualservice.networking.istio.io/reviews created
+   virtualservice.networking.istio.io/ratings created
+   virtualservice.networking.istio.io/details created
+   ```
+
+2. Create a destination rule to apply circuit breaking settings when calling the productpage service:
+
+   ```
+   kubectl apply -f - <<EOF
+   apiVersion: networking.istio.io/v1
+   kind: DestinationRule
+   metadata:
+     name: productpage
+   spec:
+     host: productpage
+     subsets:
+     - name: v1
+       labels:
+         version: v1
+     trafficPolicy:
+       connectionPool:
+         tcp:
+           maxConnections: 1
+         http:
+           http1MaxPendingRequests: 1
+           maxRequestsPerConnection: 1
+       outlierDetection:
+         consecutive5xxErrors: 1
+         interval: 1s
+         baseEjectionTime: 3m
+         maxEjectionPercent: 100
+   EOF
+   ```
+
+   
+
+3. In Cloud Shell, go to the first tab and run `Ctrl+c` to stop the siege.
+
+4. Create a client to send traffic to the productpage service.
+
+The client is a simple load-testing client called fortio. Fortio lets you control the number of connections, concurrency, and delays for outgoing HTTP calls. You will use this client to “trip” the circuit breaker policies you set in the DestinationRule:
+
+```
+  kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.9/samples/httpbin/sample-client/fortio-deploy.yaml
+```
+
+
+
+1. Log in to the client pod and use the fortio tool to call the `productpage`. Pass in curl to indicate that you just want to make one call:
+
+   ```
+   export FORTIO_POD=$(kubectl get pods -lapp=fortio -o 'jsonpath={.items[0].metadata.name}')
+   kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio curl -quiet http://${GATEWAY_URL}/productpage
+   ```
+
+   
+
+2. Call the service with two concurrent connections (`-c 2`) and send 20 requests (`-n 20`):
+
+   ```
+   kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio load -c 2 -qps 0 -n 20 -loglevel Warning http://${GATEWAY_URL}/productpage
+   ```
+
+   
+
+   It’s interesting to see that almost all requests made it through! That's interesting because `maxConnections: 1` and `http1MaxPendingRequests: 1`. These rules indicate that if you exceed more than one connection and request concurrently, you should see some failures when the istio-proxy opens the circuit for further requests and connections.
+
+   However, we see that the istio-proxy does allow for some leeway:
+
+   ```
+   Code 200 : 17 (85.0 %)
+   Code 503 : 3 (15.0 %)
+   ```
+
+3. Bring the number of concurrent connections up to 3:
+
+   ```
+   kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio load -c 3 -qps 0 -n 30 -loglevel Warning http://${GATEWAY_URL}/productpage
+   ```
+
+   
+
+   Now you start to see the expected circuit breaking behavior. Only 36.7% of the requests succeeded and the rest were trapped by circuit breaking:
+
+   ```
+   Code 200 : 11 (36.7 %)
+   Code 503 : 19 (63.3 %)
+   ```
+
+### Review
+
+In this lab, you learned about many different ways to manage and route traffic for different purposes. You also experimented with adjusting and viewing traffic shifting for yourself, including some layer 7, application layer, routing, that looks at request headers.
+
+### Next steps
+
+- Read more about [Istio Traffic Management](https://istio.io/docs/concepts/traffic-management/)
+- Read more about [Canary Deployments using Istio](https://istio.io/blog/2017/0.1-canary/) with Istio.
+
+### Test your knowledge
+
+
+
+1. How does service discovery work in an Anthos Service Mesh?
+
+- **Mesh control plane reads the Kubernetes endpoints and services.**
+
+- You must configure a ServiceEntry for each service you create.
+
+- Mesh learns the services in the network using machine learning.
+
+- You have to tell the mesh which services are available.
+
+The service mesh control plane adapters read the Kubernetes topology under it and register it in a service registry.
+
+*close*
+
+2. You can reduce errors in your applications with the help of Anthos Service Mesh by (select all that apply)
+
+- **Doing canary deployments using weights in your VirtualServices.**
+
+Canary deployments are very useful in reducing application errors; you can test your changes out on a small number of users before rolling changes to your entire user community. However, this is not the only correct answer.
+
+- **Introducing retries in the Envoy proxies.**
+
+Retries can enhance service availability and application performance - but it’s not the only correct answer.
+
+- **Mirroring traffic to new versions.**
+
+Mirroring live traffic to a new version before deploying the version can be a great way to minimize risk. However, it’s not the only correct answer.
+
+- **Setting connection pools on mesh services.**
+
+Setting connection pools on mes services can help reduce errors - but it’s not the only correct answer.
+
+3. An Ingress Gateway runs as
+
+- The DNS service in your cluster.
+
+- The Google Router.
+
+- A Kubernetes DaemonSet.
+
+- **A Kubernetes deployment.**
+
+The Ingress Gateway is a Kubernetes deployment and Kubernetes Service of type LoadBalancer.
+
+## Securing Network Traffic with Anthos Service Mesh
+
+### Lab - AHYBRID061 Securing Traffic with Anthos Service Mesh
+
+#### Overview
+
+Anthos Service Mesh security helps you mitigate insider threats and reduce the risk of a data breach by ensuring that all communications between workloads are encrypted, mutually authenticated, and authorized.
+
+In this lab, you learn how PERMISSIVE mode mTLS allows services to receive both plaintext and mTLS traffic from clients, allowing you to incrementally adopt mTLS. You also enabled STRICT mode mTLS across your service mesh effectively blocking plaintext traffic to all your Istio injected services and then you scoped STRICT mode mTLS down to a single namespace
+
+#### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Enforce STRICT mTLS mode across the service mesh
+- Enforce STRICT mTLS mode on a single namespace
+- Explore the security configurations in the Anthos Service Mesh Dashboard
+- Add authorization policies to enforce access based on a JSON Web Token (JWT)
+- Add authorization policies for HTTP traffic in an Istio mesh
+
+#### Setup and requirements
+
+In this task, you use Qwiklabs and perform initialization steps for your lab.
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+After you complete the initial sign-in steps, the project dashboard appears.
+
+![GCP Project Dashboard](images/dxfeoOcn1ObyC0BYyoqqqSi4rO%2FeMdbWPFjoK6C0YYk%3D-20241105174648790.png)
+
+#### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D-20241105174701159.png)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D-20241105174710264.png)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+
+
+**Output:**
+
+```
+Credentialed accounts:
+ - @.com (active)
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+
+
+**Output:**
+
+```
+[core]
+project = 
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+#### Task 1. Confirm Anthos Service Mesh setup
+
+This lab environment has already been partially configured. A GKE cluster with 2 nodes has been provisioned for you. If you would like to investigate how the cluster creation process happened, look at the **setup-vm** startup-script.
+
+#### Configure cluster access for kubectl
+
+1. Set the Zone environment variable:
+
+   ```
+   CLUSTER_ZONE="Zone added at lab start"
+   ```
+
+   
+
+2. Set environment variables for the zone and cluster name:
+
+   ```
+   export CLUSTER_NAME=gke
+   ```
+
+   
+
+3. In Cloud Shell, configure **kubectl** command line access by running:
+
+   ```
+   # get the project id
+   export GCLOUD_PROJECT=$(gcloud config get-value project)
+   
+   # configure kubectl
+   gcloud container clusters get-credentials $CLUSTER_NAME \
+       --zone $CLUSTER_ZONE --project $GCLOUD_PROJECT
+   ```
+
+   
+
+#### Verify cluster and Anthos Service Mesh installation
+
+1. Check that your cluster is up and running:
+
+   ```
+   gcloud container clusters list
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME: gke
+   LOCATION: "ZONE"
+   MASTER_VERSION: 1.28.8-gke.1095000
+   MASTER_IP: 35.186.181.121
+   MACHINE_TYPE: e2-standard-2
+   NODE_VERSION: 1.28.8-gke.1095000
+   NUM_NODES: 3
+   STATUS: RUNNING   
+   ```
+
+2. Ensure the following Kubernetes **istiod** services are deployed:
+
+   ```
+   kubectl get service -n istio-system
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME                      TYPE             CLUSTER-IP
+   istiod-asm-1153-6         ClusterIP        10.7.249.134
+   istiod                    ClusterIP        10.7.249.95
+   ```
+
+3. Ensure the corresponding Kubernetes **istiod-\*** pods are deployed and all containers are up and running:
+
+   ```
+   kubectl get pods -n istio-system
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME                                      READY   STATUS
+   istiod-asm-1153-6-6d66584796-865d8        1/1     Running
+   istiod-asm-1153-6-6d66584796-bph5h        1/1     Running
+   ...
+   ```
+
+#### Task 2. Deploy sleep and httpbin services
+
+In this task, you create a set of namespaces to host the [httpbin](https://github.com/istio/istio/tree/release-1.6/samples/httpbin), and [sleep](https://github.com/istio/istio/tree/release-1.6/samples/sleep) services. You will use those services to explore the impact of mTLS on traffic. The **sleep** service acts as the client and will call the **httpbin** service, which acts as a server.
+
+#### Setup the authentication example
+
+You will deploy this example configuration and then use it to explore the authentication options that Istio offers:
+
+![The mTLS Istio Permissive diagram](images/jYbq9lGg6Fsl6SNQ6tCQCuxqEPWmpbmja6g6ziatX1o%3D.png)
+
+1. In Cloud Shell, create namespaces for the example clients and services. Traffic in the **legacy-*** namespaces takes place over plain text, while traffic in the **mtls-*** namespaces happens over mTLS:
+
+   ```
+   kubectl create ns mtls-client
+   kubectl create ns mtls-service
+   kubectl create ns legacy-client
+   kubectl create ns legacy-service
+   
+   kubectl get namespaces
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAME              STATUS   AGE
+   ...
+   legacy-client     Active   5m50s
+   legacy-service    Active   5m34s
+   mtls-client       Active   5m56s
+   mtls-service      Active   5m40s
+   ```
+
+2. Deploy the legacy services in the **legacy-*** namespaces. You call them legacy because they are not part of the mesh:
+
+   ```
+   #configurations are stored in Github
+   
+   kubectl apply -f \
+   https://raw.githubusercontent.com/istio/istio/release-1.6/samples/sleep/sleep.yaml \
+   -n legacy-client
+   
+   kubectl apply -f \
+   https://raw.githubusercontent.com/istio/istio/release-1.6/samples/httpbin/httpbin.yaml \
+   -n legacy-service
+   ```
+
+   
+
+3. Enable auto-injection of the Istio sidecar proxy on the **mtls-*** namespaces:
+
+   ```
+   # get the revision label
+   export DEPLOYMENT=$(kubectl get deployments -n istio-system | grep istiod)
+   export VERSION=asm-$(echo $DEPLOYMENT | cut -d'-' -f 3)-$(echo $DEPLOYMENT \
+       | cut -d'-' -f 4 | cut -d' ' -f 1)
+   
+   # enable auto-injection on the namespaces
+   kubectl label namespace mtls-client istio.io/rev=${VERSION} --overwrite
+   kubectl label namespace mtls-service istio.io/rev=${VERSION} --overwrite
+   ```
+
+   
+
+4. Deploy the services in the **mtls-*** namespaces:
+
+   ```
+   kubectl apply -f \
+   https://raw.githubusercontent.com/istio/istio/release-1.6/samples/sleep/sleep.yaml \
+   -n mtls-client
+   
+   kubectl apply -f \
+   https://raw.githubusercontent.com/istio/istio/release-1.6/samples/httpbin/httpbin.yaml \
+   -n mtls-service
+   ```
+
+   
+
+5. Verify that the **sleep** service and the **httpbin** service are each deployed in both the **mtls-service** and **legacy-service** namespaces:
+
+   ```
+   kubectl get services --all-namespaces
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAMESPACE        NAME                        TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                      AGE
+   ...
+   legacy-client    sleep                       ClusterIP      10.7.248.186           80/TCP                                                       31s
+   legacy-service   httpbin                     ClusterIP      10.7.248.121           8000/TCP                                                     14s
+   mtls-client      sleep                       ClusterIP      10.7.252.127           80/TCP                                                       99s
+   mtls-service     httpbin                     ClusterIP      10.7.247.200           8000/TCP                                                     50s
+   ```
+
+6. Verify that a **sleep** pod is running in the **mtls-client** and **legacy-client** namespaces and that an **httpbin** pod is running in the **mtls-service** and **legacy-service** namespaces:
+
+   ```
+   kubectl get pods --all-namespaces
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   NAMESPACE        NAME                                                       READY   STATUS    RESTARTS   AGE
+   ...
+   legacy-client    sleep-f8cbf5b76-5v8f9                                      1/1     Running   0          65s
+   legacy-service   httpbin-779c54bf49-5fr9k                                   1/1     Running   0          47s
+   mtls-client      sleep-64d4546bdb-gnpc5                                     2/2     Running   0          2m13s
+   mtls-service     httpbin-5d7bdc9d78-7mfn5                                   2/2     Running   0          84s
+   ```
+
+#### Verify that the two sleep clients can communicate with the two httpbin services
+
+- Use Cloud Shell to run this nested command loop:
+
+  ```
+  for from in "mtls-client" "legacy-client"; do
+    for to in "mtls-service" "legacy-service"; do
+      kubectl exec $(kubectl get pod -l app=sleep -n ${from} -o jsonpath={.items..metadata.name}) -c sleep -n ${from} -- curl "http://httpbin.${to}:8000/ip" -s -o /dev/null -w "sleep.${from} to httpbin.${to}: %{http_code}\n"
+    done
+  done
+  ```
+
+  
+
+  **Output:**
+
+  ```
+  sleep.mtls-client to httpbin.mtls-service: 200
+  sleep.mtls-client to httpbin.legacy-service: 200
+  sleep.legacy-client to httpbin.mtls-service: 200
+  sleep.legacy-client to httpbin.legacy-service: 200
+  ```
+
+Now you're ready to enforce security policies for this application.
+
+#### Task 3. Understand authentication and enable service to service authentication with mTLS
+
+#### Anthos Service Mesh
+
+1. In the console, go to **Navigation Menu > Kubernetes Engine > Service Mesh**.
+
+   In the Anthos Service Mesh dashboard, you will see the 2 services that were created in the `mtls-service` and `mtls-client/sleep` namespaces. You don't see the legacy services because you did not label their namespace, and therefore they remain outside of the mesh.
+
+2. In the list view section Click on **>** icon next to **httpbin** (**mtls-service/httpbin**) namespace.
+
+3. Click on **Go to dashboard**
+
+4. In the left side panel, go to **Connected Services**.
+
+   Notice that you have 2 services:
+
+   - The `sleep` service in the `mtls-client` namespace, which is part of the mesh and has a sidecar proxy. Therefore you see the real name and communication goes over mTLS, as it's the default behavior in Istio.
+   - An `unknown` service, which represents the `sleep` service in the `legacy-client`, which is not part of the mesh and has no sidecar proxy. Therefore you do not see the real name and the communication goes over plain text.
+
+5. Use your mouse to hover over the lock symbol in the **Request port** column, and verify that green means mTLS and red means plain text.
+
+![The httpbin page displaying the lock symbols in the Request port column](images/9mtAHAhkU5lhT4BkF1CZqWRPCzPOiroQ9VwOTRdm5MQ%3D.png)
+
+1. Now check out the **Security** tab in the left side panel. It shows you that the **httpbin** service has received both plaintext and mTLS traffic.
+
+![The Security tabbed page](images/EtbasABtlXpBfXuDD%2BsWYoeW22cQx2H6hClomuBkHxg%3D.png)
+
+#### Test auto mutual TLS
+
+By default, Istio configures destination workloads in `PERMISSIVE` mode. When `PERMISSIVE` mode is enabled a service can accept both plaintext and mTLS traffic. mTLS is used when the request contains the **X-Forwarded-Client-Cert** header.
+
+1. Use the Cloud Shell to send a request from the **sleep** service in the **mtls-client** namespace to the **httpbin** service in the **mtls-service** namespace:
+
+   ```
+   kubectl exec $(kubectl get pod -l app=sleep -n mtls-client -o jsonpath={.items..metadata.name}) -c sleep -n mtls-client -- curl http://httpbin.mtls-service:8000/headers -s | grep X-Forwarded-Client-Cert
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   "X-Forwarded-Client-Cert": "By=spiffe:// ...
+   ```
+
+   The traffic included the **X-Forwarded-Client-Cert** header and therefore was mutually authenticated and encrypted
+
+2. Now send a request from the **sleep** service in the **mtls-client** namespace to the **httpbin** service in the **legacy-service** namespace:
+
+   ```
+   kubectl exec $(kubectl get pod -l app=sleep -n mtls-client -o jsonpath={.items..metadata.name}) -c sleep -n mtls-client -- curl http://httpbin.legacy-service:8000/headers -s | grep X-Forwarded-Client-Cert
+   ```
+
+   
+
+   The **X-Forwarded-Client-Cert** header isn't present so the traffic was sent and received in plaintext.
+
+3. Finally, send a request from the **sleep** service in the **legacy-client** namespace to the **httpbin** service in the **mtls-service** namespace:
+
+   ```
+   kubectl exec $(kubectl get pod -l app=sleep -n legacy-client -o jsonpath={.items..metadata.name}) -c sleep -n legacy-client -- curl http://httpbin.mtls-service:8000/headers -s | grep X-Forwarded-Client-Cert
+   ```
+
+   
+
+   The **X-Forwarded-Client-Cert** header isn't present so the traffic was sent and received in plaintext
+
+**Note:** The **httpbin** service in the **mtls-service** namespace accepted mTLS traffic from the **sleep** service in the **mtls-client** namespace and plaintext from the **sleep** service in the **legacy-client** namespace.
+
+#### Enforce STRICT mTLS mode across the service mesh
+
+In `STRICT` mode, services injected with the Istio proxy will not accept plaintext traffic and will mutually authenticate with their clients.
+
+You can enforce `STRICT` mTLS mode across the whole mesh or on a per-namespace basis by creating PeerAuthentication resources.
+
+![The mTLS Istio STRICT diagram](images/2o%2BACwB%2F9BVdlT6KBnCNXYHfPcrly%2FVwlJ%2BRywYPKsk%3D.png)
+
+1. Create a Peer Authentication resources for the entire Service Mesh:
+
+   ```
+   kubectl apply -n istio-system -f - <<EOF
+   apiVersion: "security.istio.io/v1beta1"
+   kind: "PeerAuthentication"
+   metadata:
+     name: "mesh-wide-mtls"
+   spec:
+       mtls:
+           mode: STRICT
+   EOF
+   ```
+
+   
+
+2. Run this nested command loop:
+
+   ```
+   for from in "mtls-client" "legacy-client"; do
+     for to in "mtls-service" "legacy-service"; do
+       kubectl exec $(kubectl get pod -l app=sleep -n ${from} -o jsonpath={.items..metadata.name}) -c sleep -n ${from} -- curl "http://httpbin.${to}:8000/ip" -s -o /dev/null -w "sleep.${from} to httpbin.${to}: %{http_code}\n"
+     done
+   done
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   sleep.mtls-client to httpbin.mtls-service: 200
+   sleep.mtls-client to httpbin.legacy-service: 200
+   sleep.legacy-client to httpbin.mtls-service: 000
+   command terminated with exit code 56
+   sleep.legacy-client to httpbin.legacy-service: 200
+   ```
+
+**Note:** The **httpbin** service in the **mtls-service** namespace now rejects the plaintext traffic it receives from the **sleep** client in the **legacy-client** namespace.
+
+1. Remove the mesh wide mTLS PeerAuthentication resource by running this command in Cloud Shell:
+
+   ```
+   kubectl delete pa mesh-wide-mtls -n istio-system
+   ```
+
+   
+
+#### Enforce STRICT mTLS mode on a single namespace
+
+1. In Cloud Shell create a namespace for `STRICT` mTLS:
+
+   ```
+   kubectl create ns strict-mtls-service
+   ```
+
+   
+
+2. Enable auto-injection of the Istio sidecar proxy on the new namespace:
+
+   ```
+   # get the revision label
+   export DEPLOYMENT=$(kubectl get deployments -n istio-system | grep istiod)
+   export VERSION=asm-$(echo $DEPLOYMENT | cut -d'-' -f 3)-$(echo $DEPLOYMENT \
+       | cut -d'-' -f 4 | cut -d' ' -f 1)
+   
+   # enable auto-injection on the namespaces
+   kubectl label namespace strict-mtls-service istio.io/rev=${VERSION} --overwrite
+   ```
+
+   
+
+3. Use Cloud Shell to deploy another instance of the httpbin service in the **strict-mtls-service** namespace:
+
+   ```
+   kubectl apply -f \
+   https://raw.githubusercontent.com/istio/istio/release-1.6/samples/httpbin/httpbin.yaml \
+   -n strict-mtls-service
+   ```
+
+   
+
+4. Create a PeerAuthentication resource for the **strict-mtls-service** namespace:
+
+   ```
+   kubectl apply -n strict-mtls-service -f - <<EOF
+   apiVersion: "security.istio.io/v1beta1"
+   kind: "PeerAuthentication"
+   metadata:
+       name: "restricted-mtls"
+       namespace: strict-mtls-service
+   spec:
+       mtls:
+           mode: STRICT
+   EOF
+   ```
+
+   
+
+5. Verify that the **httpbin** service in the **mtls-service** namespace still accepts plaintext traffic:
+
+   ```
+   kubectl exec $(kubectl get pod -l app=sleep -n legacy-client -o jsonpath={.items..metadata.name}) -c sleep -n legacy-client -- curl "http://httpbin.mtls-service:8000/ip" -s -o /dev/null -w "sleep.legacy-client to httpbin.mtls-service: %{http_code}\n"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   sleep.legacy-client to httpbin.mtls-service: 200
+   ```
+
+6. Now check to see that the **strict-mtls-service** namespace **httpbin** service does not accept plaintext traffic:
+
+   ```
+   kubectl exec $(kubectl get pod -l app=sleep -n legacy-client -o jsonpath={.items..metadata.name}) -c sleep -n legacy-client -- curl "http://httpbin.strict-mtls-service:8000/ip" -s -o /dev/null -w "sleep.legacy-client to httpbin.strict-mtls-service: %{http_code}\n"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   sleep.legacy-client to httpbin.strict-mtls-service: 000
+   command terminated with exit code 56
+   ```
+
+7. Verify that the **httpbin** service in the **strict-mtls-service** namespace does accept mTLS traffic:
+
+   ```
+   kubectl exec $(kubectl get pod -l app=sleep -n mtls-client -o jsonpath={.items..metadata.name}) -c sleep -n mtls-client -- curl "http://httpbin.strict-mtls-service:8000/ip" -s -o /dev/null -w "sleep.mtls-client to httpbin.strict-mtls-service: %{http_code}\n"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   sleep.mtls-client to httpbin.strict-mtls-service: 200
+   ```
+
+8. In the Google Cloud console, select **Navigation Menu > Kubernetes Engine > > Service Mesh**.
+
+In Anthos Service Mesh dashboard, you will see that you have 3 services now.
+
+1. In the list view section Click on **>** icon next to **strict-mtls-service/httpbin** namespace.
+
+2. Click on **Go to dashboard**
+
+3. In the left side panel, click on **Connected Services**.
+
+4. Use your mouse to hover over the lock symbol in the **Request Port** column to see that only **mTLS** traffic has been received. Traffic might take a couple of minutes to be reflected in the dashboard. If you don't see the `sleep` service, wait 1-2 minutes and refresh the dashboard.
+
+5. Now check out the **Security** tab in the left side panel. Again only **mTLS** traffic has been received.
+
+6. Remove the **strict-mtls-service** peer authentication policy by running this command in Cloud Shell:
+
+   ```
+   kubectl delete pa restricted-mtls -n strict-mtls-service
+   ```
+
+   
+
+#### Task 4. Leverage RequestAuthentication and AuthorizationPolicy resources
+
+This task shows you how to set up and use RequestAuthentication and AuthorizationPolicy resources. Ultimately, you will allow requests that have an approved JWT, and deny requests that don't.
+
+#### RequestAuthentication
+
+A RequestAuthentication resource defines the request authentication methods that are supported by a workload. Requests with invalid authentication information will be rejected. Requests with no authentication credentials will be accepted but will not have any authenticated identity.
+
+1. Create a RequestAuthentication resource for the `httpbin` workload in the `mtls-service` namespace. This policy allows the workload to accept requests with a JWT issued by `testing@secure.istio.io`.
+
+   ```
+   kubectl apply -f - <<EOF
+   apiVersion: "security.istio.io/v1beta1"
+   kind: "RequestAuthentication"
+   metadata:
+     name: "jwt-example"
+     namespace: mtls-service
+   spec:
+     selector:
+       matchLabels:
+         app: httpbin
+     jwtRules:
+     - issuer: "testing@secure.istio.io"
+       jwksUri: "https://raw.githubusercontent.com/istio/istio/release-1.8/security/tools/jwt/samples/jwks.json"
+   EOF
+   ```
+
+   
+
+2. Verify that a request with an invalid JWT is denied:
+
+   ```
+   kubectl exec "$(kubectl get pod -l app=sleep -n mtls-client -o jsonpath={.items..metadata.name})" -c sleep -n mtls-client -- curl "http://httpbin.mtls-service:8000/headers" -s -o /dev/null -H "Authorization: Bearer invalidToken" -w "%{http_code}\n"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   401
+   ```
+
+3. Verify that a request without any JWT is allowed:
+
+   ```
+   kubectl exec "$(kubectl get pod -l app=sleep -n mtls-client -o jsonpath={.items..metadata.name})" -c sleep -n mtls-client -- curl "http://httpbin.mtls-service:8000/headers" -s -o /dev/null -w "%{http_code}\n"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   200
+   ```
+
+#### AuthorizationPolicy
+
+1. Create an AuthorizationPolicy resource for the `httpbin` workload in the `mtls-service` namespace:
+
+   ```
+   kubectl apply -f - <<EOF
+   apiVersion: security.istio.io/v1beta1
+   kind: AuthorizationPolicy
+   metadata:
+     name: require-jwt
+     namespace: mtls-service
+   spec:
+     selector:
+       matchLabels:
+         app: httpbin
+     action: ALLOW
+     rules:
+     - from:
+       - source:
+          requestPrincipals: ["testing@secure.istio.io/testing@secure.istio.io"]
+   EOF
+   ```
+
+   
+
+   The policy requires all requests to the `httpbin` workload to have a valid JWT with `requestPrincipal` set to `testing@secure.istio.io/testing@secure.istio.io`. Istio constructs the `requestPrincipal` by combining the `iss` and `sub` of the JWT token with a / separator as shown:
+
+2. Download a legitimate JWT that can be used to send accepted requests:
+
+   ```
+   TOKEN=$(curl https://raw.githubusercontent.com/istio/istio/release-1.8/security/tools/jwt/samples/demo.jwt -s) && echo "$TOKEN" | cut -d '.' -f2 - | base64 --decode -
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   {"exp":4685989700,"foo":"bar","iat":1532389700,"iss":"testing@secure.istio.io","sub":"testing@secure.istio.io"}
+   ```
+
+   Note that the `iss` and `sub` keys are set to `testing@secure.istio.io`. This causes Istio to generate the attribute `requestPrincipal` with the value `testing@secure.istio.io/testing@secure.istio.io`:
+
+3. Verify that a request with a valid JWT is allowed:
+
+   ```
+   kubectl exec "$(kubectl get pod -l app=sleep -n mtls-client -o jsonpath={.items..metadata.name})" -c sleep -n mtls-client -- curl "http://httpbin.mtls-service:8000/headers" -s -o /dev/null -H "Authorization: Bearer $TOKEN" -w "%{http_code}\n"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   200
+   ```
+
+4. Verify that a request without a JWT is denied:
+
+   ```
+   kubectl exec "$(kubectl get pod -l app=sleep -n mtls-client -o jsonpath={.items..metadata.name})" -c sleep -n mtls-client -- curl "http://httpbin.mtls-service:8000/headers" -s -o /dev/null -w "%{http_code}\n"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   403
+   ```
+
+#### Task 5. Authorizing requests based on method and path
+
+This task shows you how to control access to workloads by using an AuthorizationPolicy that evaluates the request type and URL.
+
+1. Update the `require-jwt` authorization policy for the `httpbin` workload in the `mtls-service` namespace. The new policy will still have the JWT requirement that you set up in the previous task. In addition, you are going to limit the type of HTTP requests, so that clients can only perform GET requests to the `/ip` endpoint:
+
+   ```
+   kubectl apply -f - <<EOF
+   apiVersion: security.istio.io/v1beta1
+   kind: AuthorizationPolicy
+   metadata:
+     name: require-jwt
+     namespace: mtls-service
+   spec:
+     selector:
+       matchLabels:
+         app: httpbin
+     action: ALLOW
+     rules:
+     - from:
+       - source:
+           requestPrincipals: ["testing@secure.istio.io/testing@secure.istio.io"]
+       to:
+       - operation:
+           methods: ["GET"]
+           paths: ["/ip"]
+   EOF
+   ```
+
+   
+
+2. Verify that a request to the `httpbin`'s `/ip` endpoint works:
+
+   ```
+   kubectl exec "$(kubectl get pod -l app=sleep -n mtls-client -o jsonpath={.items..metadata.name})" -c sleep -n mtls-client -- curl "http://httpbin.mtls-service:8000/ip" -s -o /dev/null -H "Authorization: Bearer $TOKEN" -w "%{http_code}\n"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   200
+   ```
+
+3. Verify that a request to the `httpbin`'s `/headers` endpoint is denied:
+
+   ```
+   kubectl exec "$(kubectl get pod -l app=sleep -n mtls-client -o jsonpath={.items..metadata.name})" -c sleep -n mtls-client -- curl "http://httpbin.mtls-service:8000/headers" -s -o /dev/null -H "Authorization: Bearer $TOKEN" -w "%{http_code}\n"
+   ```
+
+   
+
+   **Output:**
+
+   ```
+   403
+   ```
+
+4. Remove the **require-jwt** authorization policy by running this command:
+
+   ```
+   kubectl delete AuthorizationPolicy require-jwt -n mtls-service
+   ```
+
+   
+
+#### Review
+
+In this lab, you explored **mutual TLS** authentication in Istio. You saw how PERMISSIVE mode mTLS allows services to receive both plaintext and mTLS traffic from clients, allowing you to incrementally adopt mTLS. You also enabled STRICT mode mTLS across your service mesh effectively blocking plaintext traffic to all your Istio injected services and then you scoped STRICT mode mTLS down to a single namespace.
+
+In addition, you explored **RequestAuthentication** and **AuthorizationPolicy** resources in Istio.
+
+#### Next steps
+
+- Learn more about [Concepts: Istio Security](https://istio.io/docs/concepts/security/).
+- Learn more about expanding authorization to entire namespaces [here](https://istio.io/docs/tasks/security/authz-http/#namespace-level-access-control).
+- Learn about [TLS Origination for Egress Traffic](https://istio.io/docs/tasks/traffic-management/egress/egress-tls-origination/).
