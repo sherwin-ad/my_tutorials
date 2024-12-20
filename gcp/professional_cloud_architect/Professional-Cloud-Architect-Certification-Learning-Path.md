@@ -10871,6 +10871,1324 @@ Compute Engine is the foundation of Google Cloud's infrastructure as a service. 
 
 # Getting Started with Google Kubernetes Engine
 
+## Lab - Accessing the Google Cloud Console and Cloud Shell
+
+## Overview
+
+In this lab, you become familiar with Google Cloud's web-based interface. Two integrated environments are available:
+
+- A GUI environment called the Google Cloud console
+- A command-line interface called Cloud Shell, which has the commands from the Cloud SDK pre-installed
+
+In this course, you use both environments.
+
+You need to know a few things about the Google Cloud console:
+
+- The Google Cloud console is under continuous development, so the graphical layout occasionally changes. These changes are often made to accommodate new Google Cloud features or changes in the technology, resulting in a slightly different workflow.
+- You can perform most common Google Cloud actions in the Google Cloud console. Sometimes new features are implemented in the Cloud SDK before they are made available in the Google Cloud console.
+- The Google Cloud console is extremely fast for some activities. The Google Cloud console can perform multiple actions on your behalf that might require many command-line actions.
+- The commands in the Cloud SDK are valuable tools for automation.
+
+## Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Learn how to access the Google Cloud console and Cloud Shell
+- Become familiar with the Google Cloud console
+- Become familiar with Cloud Shell features, including the Cloud Shell Editor
+- Use the Google Cloud console and Cloud Shell to create buckets and VMs and service accounts
+- Perform other commands in Cloud Shell
+
+## Lab Setup
+
+### Access Qwiklabs
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+After you complete the initial sign-in steps, the project dashboard appears.
+
+![Google Cloud Project Dashboard](images\dxfeoOcn1ObyC0BYyoqqqSi4rO%2FeMdbWPFjoK6C0YYk%3D.png)
+
+## Task 1. Explore the Google Cloud console
+
+In this task, you explore the Google Cloud console and create resources.
+
+### **Verify that your project is selected**
+
+1. In the Google Cloud console title bar, click the **Select a project** drop-down list and select the project ID that Qwiklabs provided with your authentication credentials.
+2. The project ID will take a form like [*qwiklabs-gcp-*] followed by a long hexadecimal number.
+3. Click **Cancel** to close the dialog.
+
+Your title bar should indicate the project ID as shown in the following screenshot. Each lab in the Qwiklabs environment has a unique project ID, as well as unique authentication credentials.
+
+### ![Title bar displaying project ID](images\brd2du0aCIwztH7yt6b18W1vaTEZmFaUNGP5npdjkL4%3D.png)
+
+### **Navigate to Google Cloud Storage and create a bucket**
+
+Cloud Storage allows worldwide storage and retrieval of any amount of data at any time. You can use Cloud Storage for a range of scenarios including serving website content, storing data for archival and disaster recovery, or distributing large data objects to users via direct download.
+
+A Cloud Storage bucket must have a globally unique name. In your organization, you should follow Google Cloud's [Best practices for Cloud Storage Guide](https://cloud.google.com/storage/docs/best-practices). For this lab, we can easily get a unique name for our bucket by using the ID of the Google Cloud project that Qwiklabs created for us, because Google Cloud project IDs are also globally unique.
+
+1. In the Google Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Cloud overview > Dashboard** .
+2. In the **Dashboard** tab of the resulting screen, the **Project info** section shows your Google Cloud project ID.
+3. Select and copy the project ID. Because this project ID was created for you by Qwiklabs, it will take the form of [*qwiklabs-gcp-*] followed by a long hexadecimal number.
+4. In the Google Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Cloud Storage** > **Buckets**.
+5. Click **Create Bucket**.
+6. For **Name**, paste in the Google Cloud project ID string you copied in an earlier step. These lab instructions will later refer to the name that you typed as `[BUCKET_NAME]`.
+7. Click **Continue**.
+8. For **Location Type**, select **Region** and select `REGION` from the dropdown.
+9. Click **Continue**.
+10. Click on **Choose how to control access to objects** and uncheck **Enforce public access prevention on this bucket**, then select **Fine-grained**.
+11. Click **Continue**.
+12. Leave all other values as their defaults.
+13. Click **Create**.
+
+**Note:** The Google Cloud console has a **Notifications** (![notifications icon](https://cdn.qwiklabs.com/Lw54cJOEOiS84F4E7EUq%2FqcyLe07TFRGkqxDl7YsM78%3D)) icon. Feedback from the underlying commands is sometimes provided there. You can click the icon to check the notifications for additional information and history.
+
+### Create a virtual machine (VM) instance
+
+Google Compute Engine offers virtual machines running in Google's datacenters and on its network as a service. Google Kubernetes Engine makes use of Compute Engine as a component of its architecture. For this reason, it's helpful to learn a bit about Compute Engine before learning about Google Kubernetes Engine.
+
+1. On the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** > **VM instances**.
+2. Click **Create instance**.
+3. For **Name**, type **first-vm** as the name of your instance.
+4. For **Region**, select `REGION`.
+5. For **Zone**, select `ZONE`.
+6. For **Machine type**, examine the options.
+
+**Note:** The machine type menu lists the number of virtual CPUs, the amount of memory, and a symbolic name such as *e2-medium*. The symbolic name is the parameter you use to select the machine type when using the `gcloud` command to create a VM. To the right of the region, zone, and machine type is a per-month estimated cost.
+
+1. To see the breakdown of estimated costs, click **View Pricing Details** to the right of the **Machine type** list underneath the estimated costs.
+2. For **Machine type**, click **Standard** > **e2-standard-2**.
+
+How did the cost change?
+
+1. For **Machine type,** click **Shared-core** > **e2-micro**.
+
+The micro type is a shared-core VM that is inexpensive.
+
+1. For **Firewall**, click **Allow HTTP traffic**.
+2. Leave the remaining settings as their defaults, and click **Create**.
+
+Wait until the new VM is created.
+
+### **Explore the VM details**
+
+1. On the **VM instances** page, click the name of your VM: **first-vm**.
+2. In **Machine configuration**, notice the value of **CPU platform**, notice the value.
+3. Click on the pencil icon on the top to edit the `first-vm` instance.
+
+**Note:** You can't change the machine type, the CPU platform, or the zone of a running Google Cloud VM. You can add network tags and allow specific network traffic from the internet through firewalls.
+
+
+
+Some properties of a VM are integral to the VM and are established when the VM is created. They cannot be changed. Other properties can be edited. For example, you can add disks, and you can determine whether the boot disk is deleted when the instance is deleted.
+
+1. Scroll down to the **Management** section and examine **Availability policies**.
+
+**Note:** Compute Engine offers Spot VM instances, which cost less per hour but can be terminated by Google Cloud at any time. These spot instances can save you a lot of money, but you must make sure that your workloads are suitable to be interrupted.
+
+
+
+You can't convert a non-spot instance into a spot one. This choice must be made at VM creation.
+
+
+
+If a VM is stopped for any reason (for example, an outage or a hardware failure), the automatic restart feature starts it back up. Is this the behavior you want? Are your applications idempotent (written to handle a second startup properly)?
+
+
+
+During host maintenance, the VM is set for live migration. However, you can have the VM terminated instead of migrated.
+
+
+
+If you make changes, they can sometimes take several minutes to be implemented, especially if they involve networking changes, like adding firewalls or changing the external IP.
+
+1. Click **Cancel**.
+
+### **Create an IAM service account**
+
+An IAM service account is a special type of Google account that belongs to an application or a virtual machine, instead of to an individual end user.
+
+1. On the **Navigation menu**, click **IAM & admin** > **Service accounts**.
+2. Click **+ Create service account**.
+3. On the **Service account details** page, specify the **Service account name** as `test-service-account`.
+4. Click **Create and Continue**.
+5. On the **Grant this service account access to project** page, specify the role as **Basic** > **Editor**.
+6. Click **Continue**.
+7. Click **Done**.
+8. On the **Service accounts** page, move to the extreme right of the `test-service-account` and click on the three dots.
+9. Click **Manage keys**.
+10. Click **ADD KEY**
+11. Select **Create new key**
+12. Select **JSON** as the key type.
+13. Click **Create**.
+
+A JSON key file is downloaded. In a later step, you find this key file and upload it to the VM.
+
+1. Click **Close**.
+
+Click **Check my progress** to verify the objective.
+
+Create a bucket, a VM instance with necessary firewall rule, and an IAM service account
+
+
+
+Check my progress
+
+
+
+## Task 2. Explore Cloud Shell
+
+Cloud Shell provides you with command-line access to your cloud resources directly from your browser. With Cloud Shell, Cloud SDK command-line tools such as gcloud are always available, up to date, and fully authenticated.
+
+Cloud Shell provides the following features and capabilities:
+
+- Temporary Compute Engine VM
+- Command-line access to the instance through a browser
+- 5 GB of persistent disk storage (`$HOME dir`)
+- Preinstalled Cloud SDK and other tools
+- `gcloud`: for working with Compute Engine, Google Kubernetes Engine (GKE), and many Google Cloud services
+- `gcloud storage` and `gsutil`: for working with Cloud Storage
+- `kubectl`: for working with GKE and Kubernetes
+- `bq`: for working with BigQuery
+- Language support for Java, Go, Python, Node.js, PHP, and Ruby
+- Web preview functionality
+- Built-in authorization for access to resources and instances
+
+After one hour of inactivity, the Cloud Shell instance is recycled. Only the `/home` directory persists. Any changes made to the system configuration, including environment variables, are lost between sessions.
+
+In this task, you use Cloud Shell to create and examine some resources.
+
+### **Open Cloud Shell and explore its features**
+
+1. On the Google Cloud console title bar, click **Activate Cloud Shell** (![Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)).
+2. When prompted, click **Continue**.
+
+Cloud Shell opens at the bottom of the Google Cloud console window.
+
+The following icons are on the far right of Cloud Shell toolbar:
+
+- **Hide/Restore:** This icon hides and restores the window, giving you full access to the Google cloud Console without closing Cloud Shell.
+- **Open in new window:** Having Cloud Shell at the bottom of the Google Cloud console is useful when you are issuing individual commands. But when you edit files or want to see the full output of a command, clicking this icon displays Cloud Shell in a full-sized terminal window.
+- **Close all tabs:** This icon closes Cloud Shell. Every time you close Cloud Shell, the virtual machine is recycled and all machine context is lost. However, data that you stored in your home directory is still available to you the next time you start Cloud Shell.
+
+### **Use Cloud Shell to set up the environment variables for this task**
+
+In Cloud Shell, use the following commands to define the environment variables used in this task.
+
+1. Replace **[BUCKET_NAME]** with the name of the first bucket from task 1.
+2. Replace **[BUCKET_NAME_2]** with a globally unique name of your choice.
+3. In Cloud Shell, execute the following command to create environment variables:
+
+```
+MY_BUCKET_NAME_1=[BUCKET_NAME]
+```
+
+Copied!
+
+```
+MY_BUCKET_NAME_2=[BUCKET_NAME_2]
+```
+
+Copied!
+
+```
+MY_REGION="REGION"
+```
+
+Copied!
+
+**Note:** When you are working in the Cloud Shell or writing scripts, creating environment variables is a good practice. You can easily and consistently reuse these environment variables, which makes your work less error-prone.
+
+**Note:** Make sure you replace the full placeholder string, such as `[BUCKET_NAME]`with the unique name that you choose, for example `MY_BUCKET_NAME_1=unique_bucket_name`.
+
+### **Move the credentials file you created earlier into Cloud Shell**
+
+You downloaded a JSON-encoded credentials file in an earlier task when you created your first IAM service account.
+
+1. On your local workstation, locate the JSON key that you just downloaded and rename the file to `credentials.json`
+2. In Cloud Shell, click the three-dot menu icon (![Three-dot menu icon](https://cdn.qwiklabs.com/2ufrDePg5inKfodUoT2Kib4oE7II7emYn%2BypCC85FjQ%3D)) in the Cloud Shell toolbar to display further options.
+3. Click **Upload** and choose `credentials.json` file from your local machine.
+4. Click **Open**.
+5. Click **Upload** to transfer `credentials.json` to Cloud Shell VM.
+6. Click the **X** icon to close the file upload pop-up window.
+7. In Cloud Shell, type **ls** and press ENTER to confirm that the file was uploaded.
+
+### **Create a second Cloud Storage bucket and verify it in the Google Cloud console**
+
+The `gcloud storage` and `gsutil`commands let you work with Cloud Storage from the command line. In this task, you use the `gcloud storage` command in Cloud Shell.
+
+1. In Cloud Shell, use the `gcloud storage` command to create a bucket:
+
+```
+gcloud storage buckets create gs://$MY_BUCKET_NAME_2 --location=REGION
+```
+
+Copied!
+
+Click **Authorize** if prompted.
+
+1. In the Google Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Cloud Storage** > **Buckets**, or click **Refresh** if you are already in the Cloud Storage page.
+
+The second bucket should appear in the **Buckets** list.
+
+### **Use the gcloud command line to create a second virtual machine**
+
+1. In Cloud Shell, execute the following command to list all the zones in a given region:
+
+```
+gcloud compute zones list | grep $MY_REGION
+```
+
+Copied!
+
+1. Select a zone from the first column of the list. Notice that a Google Cloud zone's name consists of its region name, followed by a hyphen and a letter.
+
+You may choose a zone that is the same as or different from the zone that you used for the first VM in task 1.
+
+1. Execute the following command to store your chosen zone in an environment variable.
+
+You replace `[ZONE]` with your selected zone:
+
+```
+MY_ZONE=[ZONE]
+```
+
+Copied!
+
+1. Set this zone to be your default zone by executing the following command:
+
+```
+gcloud config set compute/zone $MY_ZONE
+```
+
+Copied!
+
+1. Execute the following command to store a name in an environment variable you will use to create a VM. You will call your second VM `second-vm`:
+
+```
+MY_VMNAME=second-vm
+```
+
+Copied!
+
+1. Create a VM in the default zone that you set earlier in this task using the new environment variable to assign the VM name:
+
+```
+gcloud compute instances create $MY_VMNAME \
+--machine-type "e2-standard-2" \
+--image-project "debian-cloud" \
+--image-family "debian-11" \
+--subnet "default"
+```
+
+Copied!
+
+1. List the virtual machine instances in your project:
+
+```
+gcloud compute instances list
+```
+
+Copied!
+
+You will see both your newly created and your first virtual machine in the list.
+
+1. In the Google Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** > **VM Instances**. Just as in the output of `gcloud compute instances list`, you will see both of the virtual machines you created.
+2. Look at the **External IP** column. Notice that the external IP address of the first VM you created is shown as a link. (If necessary, click the **Hide info panel** button to reveal the External IP column.) The Google Cloud console offers the link because you configured this VM's firewall to allow HTTP traffic.
+3. Click the link you found in your first VM's **External IP** column. Your browser will present a *Connection refused* message in a new browser tab. This message occurs because, although there is a firewall port open for HTTP traffic to your VM, no web server is running there. Close the browser tab you just created.
+
+### **Use the gcloud command line to create a second service account**
+
+1. In Cloud Shell, execute the following command to create a new service account:
+
+```
+gcloud iam service-accounts create test-service-account2 --display-name "test-service-account2"
+```
+
+Copied!
+
+**Note:** If you see the following output, type Y and press ENTER:
+
+```
+API [iam.googleapis.com] not enabled on project [560255523887]. Would
+you like to enable and retry (this will take a few minutes)? (y/N)?
+```
+
+1. In the Google Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **IAM & admin** > **Service accounts**.
+
+**Note:** Refresh the page until you see *test-service-account2*.
+
+Click **Check my progress** to verify the objective.
+
+Create a second bucket, a VM instance, and an IAM service account
+
+
+
+Check my progress
+
+
+
+1. In Cloud Shell, execute the following command to grant the second service account the `viewer` role:
+
+```
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member serviceAccount:test-service-account2@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com --role roles/viewer
+```
+
+Copied!
+
+**Note:** `GOOGLE_CLOUD_PROJECT` is an environment variable that is automatically populated in Cloud Shell and is set to the project ID of the current context.
+
+1. In the Google Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **IAM & admin** > **IAM**.
+2. You will see the new service account called `test-service-account2` listed as a member of the `viewer` role.
+
+## Task 3. Work with Cloud Storage in Cloud Shell
+
+### **Download a file to Cloud Shell and copy it to Cloud Storage**
+
+1. Copy a picture of a cat from a Google-provided Cloud Storage bucket to your Cloud Shell:
+
+```
+gcloud storage cp gs://cloud-training/ak8s/cat.jpg cat.jpg
+```
+
+Copied!
+
+1. Copy the file into the first bucket that you created earlier:
+
+```
+gcloud storage cp cat.jpg gs://$MY_BUCKET_NAME_1
+```
+
+Copied!
+
+1. Copy the file from the first bucket into the second bucket:
+
+```
+gcloud storage cp gs://$MY_BUCKET_NAME_1/cat.jpg gs://$MY_BUCKET_NAME_2/cat.jpg
+```
+
+Copied!
+
+1. In the Google Cloud console, on the **Navigation menu**(![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Cloud Storage** > **Buckets**, select both the buckets that you created, and verify that both contain the `cat.jpg` file.
+
+### **Set the access control list for a Cloud Storage object**
+
+1. To get the default access list that's been assigned to `cat.jpg` (when you uploaded it to your Cloud Storage bucket), execute the next two commands.
+2. First, execute the following command in Cloud Shell:
+
+```
+gsutil acl get gs://$MY_BUCKET_NAME_1/cat.jpg  > acl.txt
+cat acl.txt
+```
+
+Copied!
+
+The output should look like the following example, but with different numbers. This output shows that anyone with an `owner`, `editor`, or `viewer` role for the project has access (`OWNER` access for owners and editors, and `READER` access for viewers).
+
+```
+[
+  {
+    "entity": "project-owners-560255523887",
+    "projectTeam": {
+      "projectNumber": "560255523887",
+      "team": "owners"
+    },
+    "role": "OWNER"
+  },
+  {
+    "entity": "project-editors-560255523887",
+    "projectTeam": {
+      "projectNumber": "560255523887",
+      "team": "editors"
+    },
+    "role": "OWNER"
+  },
+  {
+    "entity": "project-viewers-560255523887",
+    "projectTeam": {
+      "projectNumber": "560255523887",
+      "team": "viewers"
+    },
+    "role": "READER"
+  },
+  {
+    "email": "google12345678_student@qwiklabs.net",
+    "entity": "user-google12345678_student@qwiklabs.net",
+    "role": "OWNER"
+  }
+]
+```
+
+1. Then, to change the object to have private access, execute the following command:
+
+```
+gsutil acl set private gs://$MY_BUCKET_NAME_1/cat.jpg
+```
+
+Copied!
+
+1. To verify the new ACL that's been assigned to `cat.jpg`, execute the following two commands:
+
+```
+gsutil acl get gs://$MY_BUCKET_NAME_1/cat.jpg  > acl-2.txt
+cat acl-2.txt
+```
+
+Copied!
+
+The output should look similar to the following example.
+
+```
+[
+  {
+    "email": "google12345678_student@qwiklabs.net",
+    "entity": "user-google12345678_student@qwiklabs.net",
+    "role": "OWNER"
+  }
+]
+```
+
+Now only the original creator of the object (your lab account) has `OWNER` access.
+
+### **Authenticate as a service account in Cloud Shell**
+
+1. In Cloud Shell, execute the following command to view the current configuration:
+
+```
+gcloud config list
+```
+
+Copied!
+
+You should see output that looks like the following example. In your output, the zone should be equal to the zone that you set when you created your second VM in task 2. The account and project should match your Qwiklabs lab credentials.
+
+```
+[component_manager]
+disable_update_check = True
+[compute]
+gce_metadata_read_timeout_sec = 30
+zone = "ZONE"
+[core]
+account = google12345678_student@qwiklabs.net
+disable_usage_reporting = False
+project = qwiklabs-Google Cloud-1aeffbc5d0acb416
+[metrics]
+environment = devshell
+
+Your active configuration is: [cloudshell-16441]
+```
+
+1. In Cloud Shell, execute the following command to change the authenticated user to the first service account (which you created in an earlier task) through the credentials that you downloaded to your local machine and then uploaded into Cloud Shell (`credentials.json`):
+
+```
+gcloud auth activate-service-account --key-file credentials.json
+```
+
+Copied!
+
+Cloud Shell is now authenticated as `test-service-account`.
+
+1. To verify the active account, execute the following command:
+
+```
+gcloud config list
+```
+
+Copied!
+
+You should see output that looks like the following example. The account is now set to the `test-service-account` service account.
+
+```
+[component_manager]
+disable_update_check = True
+[compute]
+gce_metadata_read_timeout_sec = 30
+zone = "ZONE"
+[core]
+account = test-service-account@qwiklabs-Google Cloud-1aeffbc5d0acb416.iam.gserviceaccount.com
+disable_usage_reporting = False
+project = qwiklabs-Google Cloud-1aeffbc5d0acb416
+[metrics]
+environment = devshell
+
+Your active configuration is: [cloudshell-16441]
+```
+
+1. To verify the list of authorized accounts in Cloud Shell, execute the following command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+You should see output that looks like the following example.
+
+```
+Credentialed Accounts
+
+ACTIVE:
+ACCOUNT: student-03-5165fd82c14b@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. To verify that the current account (`test-service-account`) cannot access the `cat.jpg` file in the first bucket that you created, execute the following command:
+
+```
+gcloud storage cp gs://$MY_BUCKET_NAME_1/cat.jpg ./cat-copy.jpg
+```
+
+Copied!
+
+Because you restricted access to this file to the owner earlier in this task, you should see output that looks like the following example.
+
+**Output**
+
+```
+ERROR: (gcloud.storage.cp) HTTPError 403:
+```
+
+1. Verify that the current account (`test-service-account`) can access the `cat.jpg` file in the second bucket that you created:
+
+```
+gcloud storage cp gs://$MY_BUCKET_NAME_2/cat.jpg ./cat-copy.jpg
+```
+
+Copied!
+
+Because access has not been restricted to this file, you should see output that looks like the following example.
+
+```
+Copying gs://test-bucket-123/cat.jpg...
+- [1 files][ 81.7 KiB/ 81.7 KiB]
+Operation completed over 1 objects/81.7 KiB.
+```
+
+1. To switch to the lab account, execute the following command, replacing *[USERNAME]* with the username provided in the **Qwiklabs Connection Details** pane on the left of the lab instructions page:
+
+```
+gcloud config set account [USERNAME]
+```
+
+Copied!
+
+1. To verify that you can access the `cat.jpg` file in the [BUCKET_NAME] bucket (the first bucket that you created), execute the following command:
+
+```
+gcloud storage cp gs://$MY_BUCKET_NAME_1/cat.jpg ./copy2-of-cat.jpg
+```
+
+Copied!
+
+You should see output that looks like the following example. The lab account created the bucket and object, and remained an owner when the object access control list (ACL) was converted to private, so the lab account can still access the object.
+
+```
+Copying gs://test-bucket-123/cat.jpg...
+- [1 files][ 81.7 KiB/ 81.7 KiB]
+Operation completed over 1 objects/81.7 KiB.
+```
+
+1. Make the first Cloud Storage bucket readable by everyone, including unauthenticated users:
+
+```
+gsutil iam ch allUsers:objectViewer gs://$MY_BUCKET_NAME_1
+```
+
+Copied!
+
+**Note:** This is an appropriate setting for hosting public website content in Cloud Storage.
+
+1. In the Cloud Console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Cloud Storage** > **Buckets**.
+2. Select the first storage bucket with the project ID that you created. Notice that the `cat.jpg` file has `Public access`.
+3. Click **Copy URL** to copy the link.
+4. Open a new incognito browser tab and paste the link into its address bar. You will see a picture of a cat. Leave this browser tab open.
+
+Click **Check my progress** to verify the objective.
+
+Work with Cloud Storage in Cloud Shell
+
+
+
+Check my progress
+
+
+
+## Task 4. Explore the Cloud Shell Editor
+
+In this task, you explore using the Cloud Shell code editor.
+
+### **Open the Cloud Shell Editor**
+
+1. In Cloud Shell, click the **Open Editor** icon (![Cloud Shell editor icon](https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D)).
+2. In Cloud Shell Editor, click the menu and select **File** > **Open Folder**.
+
+![Cloud Shell Editor menu](images\PmnrQK026a0ExsTO3gmczCKXgFfwKw7Uw9btA6ougms%3D.png)
+
+1. Click **Ok**.
+
+The folder opens and displays a list of files and directories in the left pane.
+
+1. Click **Open Terminal**, and in Cloud Shell, execute the following command to clone a `git` repository:
+
+```
+git clone https://github.com/googlecodelabs/orchestrate-with-kubernetes.git
+```
+
+Copied!
+
+The `orchestrate-with-kubernetes` folder appears in the left pane of the Cloud Shell Editor window.
+
+1. In Cloud Shell, execute the following command to create a test directory:
+
+```
+mkdir test
+```
+
+Copied!
+
+The `test` folder now appears in the left pane of the Cloud Shell Editor window.
+
+1. In the Cloud Shell Editor, click the arrow to the left of `orchestrate-with-kubernetes` to expand the folder.
+
+![orchestrate-with-kubernetes folder](images\Vvd4LR%2FLZ4kwPhqPU%2F5XHIeWUjZ3MvNJuZy1%2F0YDFqk%3D.png)
+
+1. In the left pane, click the `cleanup.sh` file to open it in the right pane of the Cloud Shell Editor window.
+2. Add the following text as the last line of the `cleanup.sh` file:
+
+```
+echo Finished cleanup!
+```
+
+Copied!
+
+**Note:** No action is necessary to save your work.
+
+1. In Cloud Shell, execute the following commands to change directory and display the contents of `cleanup.sh`:
+
+```
+cd orchestrate-with-kubernetes
+cat cleanup.sh
+```
+
+Copied!
+
+1. Verify that the output of `cat cleanup.sh` includes the line of text that you added.
+2. In the Cloud Shell code editor, right click the `orchestrate-with-kubernetes` folder, and select **New File**.
+
+**Note:** If you are prompted with a pop-up to "see text and images copied to the clipboard", click **Allow**.
+
+1. Name the file **index.html**.
+2. Click **Save**.
+3. In the right hand pane, paste in this HTML text:
+
+```
+<html><head><title>Cat</title></head>
+<body>
+<h1>Cat</h1>
+<img src="REPLACE_WITH_CAT_URL">
+</body></html>
+```
+
+Copied!
+
+**Note:** Use your local computer's keyboard shortcut to paste: `Cmd-V` for a Mac, `Ctrl-V` for a Windows or Linux machine.
+
+1. Replace the string `REPLACE_WITH_CAT_URL` with the URL of the cat image from an earlier task. The URL will look like this:
+
+```
+https://storage.googleapis.com/qwiklabs-Google Cloud-1aeffbc5d0acb416/cat.jpg
+```
+
+1. On the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** > **VM instances**.
+2. In the row for your **first-vm**, click the **SSH** button.
+3. In the **SSH login** window that opens on your VM, install the `nginx` Web server:
+
+```
+sudo apt-get remove -y --purge man-db
+sudo touch /var/lib/man-db/auto-update
+sudo apt-get update
+sudo apt-get install nginx
+```
+
+Copied!
+
+**Note:** It may take few minutes to complete the process. If prompted, click `Y` to continue.
+
+1. In your Cloud Shell window, copy the HTML file you created using the Cloud Shell Editor to your virtual machine:
+
+```
+gcloud compute scp index.html first-vm:index.nginx-debian.html --zone="ZONE"
+```
+
+Copied!
+
+**Note:** If you are prompted whether to add a host key to your list of known hosts, answer Y.
+
+**Note:** If you are prompted to enter a passphrase, press the ENTER key to respond with an empty passphrase. Press the ENTER key again when prompted to confirm the empty passphrase.
+
+1. In the **SSH login** window for your VM, copy the HTML file from your home directory to the document root of the `nginx` web server:
+
+```
+sudo cp index.nginx-debian.html /var/www/html
+```
+
+Copied!
+
+Click **Check my progress** to verify the objective.
+
+Install the nginx web server and customize the welcome page
+
+
+
+Check my progress
+
+
+
+1. On the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** > **VM instances**.
+
+2. Click the link in the **External IP** column for your **first-vm**. If you see the message that the site does not support a secure connection, click **Continue to site**.
+
+   A new browser tab opens with a webpage that contains the cat image.
+
+
+
+## Quiz
+
+
+
+1.What Identity and Access Management (IAM) hierarchy structure is best for building an application in Google Cloud?
+
+- Create new projects for each of the component applications, then create folders inside those for the resources.
+
+- Create new projects and resources inside departmental folders for the resources needed, organized by the component applications.
+
+- Create a new organization node for the project, then create all projects and resources inside the new organization node.
+
+- **Create a new folder inside your organization node, then create projects inside that folder for the resources.**
+
+
+
+2. You are considering deploying a solution by using containers on Google Cloud. What Google Cloud solution provides a managed compute platform with native support for containers?
+
+- Artifact Registry
+
+- **Google Kubernetes Engine clusters**
+
+- Cloud Run functions
+
+- Compute Engine autoscaling groups
+
+
+
+3. You are developing a new product for a customer and need to be mindful of cost and resources. What Google Cloud tools can be used to ensure costs stay manageable before consumption gets too high?
+
+- **Set up budgets and alerts at the project level.**
+
+- Configure the billing account for each project associated with the product.
+
+- Configure the billing account at the product folder level in the resource hierarchy.
+
+- Configure quotas and limits for each product folder.
+
+
+
+4. One of the main characteristics of cloud computing is that resources are elastic. What does that mean?
+
+- Resources can be allocated automatically.
+
+- **When customers need more resources, they can get more. When they need less, they can scale back.**
+
+- You share resources from a large pool that enables economies of scale.
+
+- You can quickly get more resources when you need them.
+
+# Introduction to Containers and Kubernetes
+
+## Lab - Working with Cloud Build
+
+## Overview
+
+In this lab you will build a Docker container image from provided code and a Dockerfile using Cloud Build. You will then upload the container to the Artifact Registry.
+
+## Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Use Cloud Build to build and push containers
+- Use Artifact Registry to store and deploy containers
+
+## Lab setup
+
+### Access the lab
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+After you complete the initial sign-in steps, the project dashboard opens.
+
+### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images\WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D.png)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images\hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D.png)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+**Output:**
+
+```
+Credentialed accounts:
+ - @.com (active)
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = 
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+## Task 1. Confirm that needed APIs are enabled
+
+1. Make a note of the name of your Google Cloud project. This value is shown in the top bar of the Google Cloud console. It will be of the form `qwiklabs-gcp-` followed by hexadecimal numbers.
+2. In the Google Cloud console, on the **Navigation menu**(![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **APIs & Services**.
+3. Click **Library**.
+4. In the **Search for APIs & Services** box, enter **Cloud Build**.
+5. In the resulting card for the Cloud Build API, if you do not see a message confirming that the Cloud Build API is enabled, click the **Enable** button.
+6. Use the **Back** button to return to the previous screen with a search box. In the search box, enter **Artifact Registry**.
+7. In the resulting card for the Google Artifact Registry API, if you do not see a message confirming that the Artifact Registry API is enabled, click the **Enable** button.
+
+## Task 2. Building containers with DockerFile and Cloud Build
+
+You can write build configuration files to provide instructions to Cloud Build as to which tasks to perform when building a container. These build files can fetch dependencies, run unit tests, analyses and more. In this task, you'll create a DockerFile and use it as a build configuration script with Cloud Build. You will also create a simple shell script (quickstart.sh) which will represent an application inside the container.
+
+1. On the Google Cloud console title bar, click **Activate Cloud Shell**.
+2. When prompted, click **Continue**.
+
+Cloud Shell opens at the bottom of the Google Cloud console window.
+
+1. Create an empty `quickstart.sh` file using the nano text editor:
+
+```
+nano quickstart.sh
+```
+
+Copied!
+
+1. Add the following lines in to the `quickstart.sh` file:
+
+```
+#!/bin/sh
+echo "Hello, world! The time is $(date)."
+```
+
+Copied!
+
+1. Save the file and close nano by pressing the CTRL+X keys, then press Y and ENTER.
+2. Create an empty `Dockerfile` file using the nano text editor:
+
+```
+nano Dockerfile
+```
+
+Copied!
+
+1. Add the following Dockerfile command:
+
+```
+FROM alpine
+```
+
+Copied!
+
+This instructs the build to use the Alpine Linux base image.
+
+1. Add the following Dockerfile command to the end of the Dockerfile:
+
+```
+COPY quickstart.sh /
+```
+
+Copied!
+
+This adds the `quickstart.sh` script to the / directory in the image.
+
+1. Add the following Dockerfile command to the end of the Dockerfile:
+
+```
+CMD ["/quickstart.sh"]
+```
+
+Copied!
+
+This configures the image to execute the `/quickstart.sh` script when the associated container is created and run.
+
+The Dockerfile should now look like this:
+
+```
+FROM alpine
+COPY quickstart.sh /
+CMD ["/quickstart.sh"]
+```
+
+Copied!
+
+1. Save the file and close nano by pressing the CTRL+X keys, then press Y and ENTER.
+2. In Cloud Shell, run the following command to make the `quickstart.sh` script executable:
+
+```
+chmod +x quickstart.sh
+```
+
+Copied!
+
+1. Create a new Docker repository named `quickstart-docker-repo` in the location ``with the description "Docker repository"
+
+```
+gcloud artifacts repositories create quickstart-docker-repo --repository-format=docker \
+    --location="REGION" --description="Docker repository"
+```
+
+Copied!
+
+1. In Cloud Shell, run the following command to build the Docker container image in Cloud Build:
+
+```
+gcloud builds submit --tag "REGION"-docker.pkg.dev/${DEVSHELL_PROJECT_ID}/quickstart-docker-repo/quickstart-image:tag1
+```
+
+Copied!
+
+When the build completes, your Docker image is built and pushed to the Artifact Registry.
+
+1. In the Google Cloud console, in the **Search Bar** (Located at the top of the console window), Search for **Artifact Registry**.
+2. Click the repository named `quickstart-docker-repo`.
+
+The `quickstart-image` Docker image appears in the list.
+
+## Task 3. Building containers with a build configuration file and Cloud Build
+
+Cloud Build also supports custom build configuration files. In this task you will incorporate an existing Docker container using a custom YAML-formatted build file with Cloud Build.
+
+Let's create a sample custom cloud build configuration file called `cloudbuild.yaml`.
+
+1. Create and open a file called `cloudbuild.yaml` with **nano** using the following command:
+
+```
+nano cloudbuild.yaml
+```
+
+Copied!
+
+1. Once nano has opened, paste the following into the `cloudbuild.yaml` file:
+
+```
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'YourRegionHere-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1', '.' ]
+images:
+- 'YourRegionHere-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1'
+```
+
+Copied!
+
+1. Press **Ctrl+O**, and then press **Enter** to save your edited file.
+2. Press **Ctrl+X** to exit the nano text editor.
+3. Run the below command to set our region variable and insert that value into the yaml file.
+
+```
+export REGION="REGION"
+sed -i "s/YourRegionHere/$REGION/g" cloudbuild.yaml
+```
+
+Copied!
+
+1. In Cloud Shell, execute the following command to view the contents of `cloudbuild.yaml`:
+
+```
+cat cloudbuild.yaml
+```
+
+Copied!
+
+You will see the following:
+
+```
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', '"REGION"-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1', '.' ]
+images:
+- '"REGION"-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1'
+```
+
+This file instructs Cloud Build to use Docker to build an image using the Dockerfile specification in the current local directory, tag it with `gcr.io/$PROJECT_ID/quickstart-image` (`$PROJECT_ID` is a substitution variable automatically populated by Cloud Build with the project ID of the associated project), and then push that image to Artifact Registry.
+
+1. In Cloud Shell, execute the following command to start a Cloud Build using `cloudbuild.yaml` as the build configuration file:
+
+```
+gcloud builds submit --config cloudbuild.yaml
+```
+
+Copied!
+
+The build output to Cloud Shell should be the same as before. When the build completes, a new version of the same image is pushed to Artifact Registry.
+
+1. In the Google Cloud console, in the **Search Bar** (Located at the top of the console window), Search for **Artifact Registry**.
+2. Click the repository named `quickstart-docker-repo`.
+
+Two versions of `quickstart-image` are now in the list.
+
+Click **Check my progress** to verify the objective.
+
+Build two container images in Cloud Build
+
+
+
+Check my progress
+
+
+
+1. In the Google Cloud console, in the **Search Bar** (Located at the top of the console window), Search for **Cloud Build**.
+2. In search results, click **Cloud Build**.
+3. In **Cloud Build**, click **History**. Two builds appear in the list.
+4. Click the build ID for the build at the top of the list. The details of the build, including the build log, are displayed.
+
+## Task 4. Building and testing containers with a build configuration file and Cloud Build
+
+The true power of custom build configuration files is their ability to perform other actions, in parallel or in sequence, in addition to simply building containers: running tests on your newly built containers, pushing them to various destinations, and even deploying them to Kubernetes Engine.
+
+In this task, we will see a simple example, a build configuration file that tests the container it built and reports the result to its calling environment. The first step is to alter the `quickstart.sh` file.
+
+1. In Cloud Shell, open `quickstart.sh` in nano.
+
+   ```
+   nano quickstart.sh
+   ```
+
+   Copied!
+
+2. Replace the existing with the following:
+
+```
+#!/bin/sh
+if [ -z "$1" ]
+then
+	echo "Hello, world! The time is $(date)."
+	exit 0
+else
+	exit 1
+fi
+```
+
+Copied!
+
+1. Press **Ctrl+O**, and then press **Enter** to save your edited file.
+2. Press **Ctrl+X** to exit the nano text editor.
+
+Let's create a new custom cloud build configuration file called `cloudbuild2.yaml`. This has been slightly modified to demonstrate Cloud Build's ability to test the containers it has built.
+
+1. Create and open a file called `cloudbuild2.yaml` with **nano** using the following command:
+
+```
+nano cloudbuild2.yaml
+```
+
+Copied!
+
+1. Once nano has opened, paste the following into the `cloudbuild2.yaml` file:
+
+```
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'YourRegionHere-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1', '.' ]
+- name: 'YourRegionHere-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1'
+  args: ['fail']
+images:
+- 'YourRegionHere-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1'
+```
+
+Copied!
+
+1. Press **Ctrl+O**, and then press **Enter** to save your edited file.
+2. Press **Ctrl+X** to exit the nano text editor.
+3. Run the below command to insert our region value into the yaml file.
+
+```
+sed -i "s/YourRegionHere/$REGION/g" cloudbuild2.yaml
+```
+
+Copied!
+
+1. In Cloud Shell, execute the following command to view the contents of `cloudbuild2.yaml`:
+
+```
+cat cloudbuild2.yaml
+```
+
+Copied!
+
+You will see the following:
+
+```
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', '"REGION"-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1', '.' ]
+- name: 'gcr.io/$PROJECT_ID/quickstart-image'
+  args: ['fail']
+images:
+- '"REGION"-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1'
+```
+
+In addition to its previous actions, this build configuration file runs the `quickstart-image` it has created. In this task, the `quickstart.sh` script has been modified so that it simulates a test failure when an argument `['fail']` is passed to it.
+
+1. In Cloud Shell, execute the following command to start a Cloud Build using `cloudbuild.yaml` as the build configuration file:
+
+```
+gcloud builds submit --config cloudbuild2.yaml
+```
+
+Copied!
+
+You will see output from the command that ends with text like this:
+
+**Output**
+
+```
+BUILD FAILURE: Build step failure: build step 1 "us-east1-docker.pkg.dev/qwiklabs-gcp-02-1c7ba5c697a0/quickstart-docker-repo/quickstart-image:tag1" failed: starting step container failed: Error response from daemon: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: exec: "fail": executable file not found in $PATH: unknown
+ERROR: (gcloud.builds.submit) build 96c4a454-be06-4010-aa7c-da57c14165f4 completed with status "FAILURE"
+```
+
+1. Confirm that your command shell knows that the build failed:
+
+```
+echo $?
+```
+
+Copied!
+
+The command will reply with a non-zero value. If you had embedded this build in a script, your script would be able to act up on the build's failure.
+
+Click **Check my progress** to verify the objective.
+
+Build and test containers with a build configuration file and Cloud Build
+
+
+
+Check my progress
+
+
+
+## End your lab
+
+## Quiz
+
+
+
+1. What is significant about the topmost layer in a container? Choose two options.
+
+- **The topmost layer's contents are ephemeral. When the container is deleted, the contents are lost.**
+
+- Reading from or writing to the topmost layer requires special privileges.
+
+- Reading from or writing to the topmost layer requires special software libraries.
+
+- **An application running in a container can only modify the topmost layer.**
+
+
+
+2. When using Kubernetes, you must describe the desired state you want, and Kubernetes's job is to make the deployed system conform to that desired state and keep it there despite failures. What is the name of this management approach?
+
+- Containerization
+
+- Imperative configuration
+
+- **Declarative configuration**
+
+- Virtualization
+
+
+
+3. What is the name for the computers in a Google Kubernetes Engine cluster that run workloads?
+
+- Container images
+
+- **Nodes**
+
+- Containers
+
+- Control planes
+
+# Kubernetes Architecture
+
 
 
 # Compute Engine: Qwik Start - Windows
@@ -11017,7 +12335,7 @@ project = "PROJECT_ID"
 4. In the **Boot disk** section, click **Change** to begin configuring your boot disk.
 5. Under **Operating system** select **Windows Server** and under **Version** select **Windows Server 2022 Datacenter**, and then click **Select**. Leave all other settings as their defaults.
 
-![Boot disk configuration](https://cdn.qwiklabs.com/TStRmO40sF8Mmz3knFNsjqhC6RfZnd3jYEVYTp3TFAE%3D)
+![Boot disk configuration](images\TStRmO40sF8Mmz3knFNsjqhC6RfZnd3jYEVYTp3TFAE%3D.png)
 
 1. Click **Create** to create the instance.
 
