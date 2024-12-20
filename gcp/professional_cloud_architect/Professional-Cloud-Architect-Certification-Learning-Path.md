@@ -10869,6 +10869,8 @@ Submit
 
 Compute Engine is the foundation of Google Cloud's infrastructure as a service. You created a VM with Compute Engine and can now map your existing server infrastructure, load balancers, and network topology to Google Cloud.
 
+# Getting Started with Google Kubernetes Engine
+
 
 
 # Compute Engine: Qwik Start - Windows
@@ -16265,21 +16267,19 @@ Here are some guidelines you've been requested to follow when deploying:
 
 ## Task 1. Create a cluster and deploy your app
 
-1. Before you can deploy the application, you'll need to create a cluster in the `<Zone>` zone, and name it as `Cluster Name`.
-
+1. Before you can deploy the application, you'll need to create a cluster in the `us-east1-b` zone, and name it as `onlineboutique-cluster-491`.
 2. Start small and make a zonal cluster with only two (2) nodes.
-
 3. Before you deploy the shop, make sure to set up some namespaces to separate resources on your cluster in accordance with the 2 environments - `dev` and `prod`.
 
-   ```
-   ZONE=us-central1-b
-   
-   gcloud container clusters create Cluster_Name --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --machine-type=e2-standard-2 --num-nodes=2
-   
-   kubectl create namespace dev
-   
-   kubectl create namespace prod
-   ```
+```
+export ZONE=us-east1-b
+
+gcloud container clusters create onlineboutique-cluster-491 --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --machine-type=e2-standard-2 --num-nodes=2
+
+kubectl create namespace dev
+
+kubectl create namespace prod
+```
 
 4. After that, deploy the application to the `dev` namespace with the following command:
 
@@ -16306,32 +16306,29 @@ Check my progress
 
 1. After successfully deploying the app to the dev namespace, take a look at the node details:
 
-![Node details table](images\uYinv2VTYdTkOsSsWGkvXvD%2FmTd4IsJXz4vkrNyl9no%3D.png)
+![Node details table](images/uYinv2VTYdTkOsSsWGkvXvD%2FmTd4IsJXz4vkrNyl9no%3D-4666715.png)
 
 You come to the conclusion that you should make changes to the cluster's node pool:
 
 - There's plenty of left over RAM from the current deployments so you should be able to use a node pool with machines that offer **less RAM**.
 - Most of the deployments that you might consider increasing the replica count of will require only 100mcpu per additional pod. You could potentially use a node pool with **less total CPU** if you configure it to use smaller machines. However, you also need to consider how many deployments will need to scale, and how much they need to scale by.
 
-1. Create a new node pool named `Pool Name` with **custom-2-3584** as the machine type.
-
+1. Create a new node pool named `optimized-pool-9038` with **custom-2-3584** as the machine type.
 2. Set the **number of nodes** to **2**.
-
 3. Once the new node pool is set up, migrate your application's deployments to the new nodepool by **cordoning off and draining** `default-pool`.
-
 4. **Delete** the default-pool once the deployments have safely migrated.
 
-   ```
-   gcloud container node-pools create Pool_Name --cluster=Cluster_Name --machine-type=custom-2-3584 --num-nodes=2 --zone=$ZONE
+```
+gcloud container node-pools create optimized-pool-9038 --cluster=onlineboutique-cluster-491 --machine-type=custom-2-3584 --num-nodes=2 --zone=$ZONE
    
-   for node in $(kubectl get nodes -l cloud.google.com/gke-nodepool=default-pool -o=name); do  kubectl cordon "$node"; done
+for node in $(kubectl get nodes -l cloud.google.com/gke-nodepool=default-pool -o=name); do  kubectl cordon "$node"; done
    
-   for node in $(kubectl get nodes -l cloud.google.com/gke-nodepool=default-pool -o=name); do kubectl drain --force --ignore-daemonsets --delete-local-data --grace-period=10 "$node"; done
+for node in $(kubectl get nodes -l cloud.google.com/gke-nodepool=default-pool -o=name); do kubectl drain --force --ignore-daemonsets --delete-local-data --grace-period=10 "$node"; done
    
-   kubectl get pods -o=wide --namespace=dev
+kubectl get pods -o=wide --namespace=dev
    
-   gcloud container node-pools delete default-pool --cluster Cluster_Name --zone $ZONE
-   ```
+gcloud container node-pools delete default-pool --cluster onlineboutique-cluster-491 --zone $ZONE
+```
 
 Click *Check my progress* to verify the objective.
 
@@ -16359,8 +16356,9 @@ gcr.io/qwiklabs-resources/onlineboutique-frontend:v2.1
 
 
 
-1. **Edit** your **frontend** deployment and change its image to the updated one.
-2. While editing your deployment, change the **ImagePullPolicy** to **Always**.
+4. **Edit** your **frontend** deployment and change its image to the updated one.
+
+5. While editing your deployment, change the **ImagePullPolicy** to **Always**.
 
 Click *Check my progress* to verify the objective.
 
@@ -16407,18 +16405,19 @@ But what if the spike exceeds the compute resources you currently have provision
 
 2. Thinking ahead, you configure both a minimum number of nodes, and a maximum number of nodes. This way, the cluster can add nodes when traffic is high, and reduce the number of nodes when traffic is low.
 
-3. Update your **cluster autoscaler** to scale between **1 node minimum** and **6 nodes maximum**.
+3. Update your **cluster autoscaler** to scale between **1 node minimum** and **13 nodes maximum**.
 
    ```
-   kubectl autoscale deployment frontend --cpu-percent=50 --min=1 --max=17 --namespace dev
+   kubectl autoscale deployment frontend --cpu-percent=50 \
+      --min=1 --max=13 --namespace dev
    
    kubectl get hpa --namespace dev
-   ZONE=us-central1-b
+   ZONE=us-east1-b
    
-   gcloud beta container clusters update Cluster_Name --enable-autoscaling --min-nodes 1 --max-nodes 6 --zone=$ZONE
+   gcloud beta container clusters update onlineboutique-cluster-491 --enable-autoscaling --min-nodes 1 --max-nodes 6 --zone=$ZONE
    
    ```
-
+   
    
 
 Click *Check my progress* to verify the objective.
