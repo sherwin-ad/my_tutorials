@@ -16266,8 +16266,21 @@ Here are some guidelines you've been requested to follow when deploying:
 ## Task 1. Create a cluster and deploy your app
 
 1. Before you can deploy the application, you'll need to create a cluster in the `<Zone>` zone, and name it as `Cluster Name`.
+
 2. Start small and make a zonal cluster with only two (2) nodes.
+
 3. Before you deploy the shop, make sure to set up some namespaces to separate resources on your cluster in accordance with the 2 environments - `dev` and `prod`.
+
+   ```
+   ZONE=us-central1-b
+   
+   gcloud container clusters create Cluster_Name --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --machine-type=e2-standard-2 --num-nodes=2
+   
+   kubectl create namespace dev
+   
+   kubectl create namespace prod
+   ```
+
 4. After that, deploy the application to the `dev` namespace with the following command:
 
 ```
@@ -16293,7 +16306,7 @@ Check my progress
 
 1. After successfully deploying the app to the dev namespace, take a look at the node details:
 
-![Node details table](https://cdn.qwiklabs.com/uYinv2VTYdTkOsSsWGkvXvD%2FmTd4IsJXz4vkrNyl9no%3D)
+![Node details table](images\uYinv2VTYdTkOsSsWGkvXvD%2FmTd4IsJXz4vkrNyl9no%3D.png)
 
 You come to the conclusion that you should make changes to the cluster's node pool:
 
@@ -16301,9 +16314,24 @@ You come to the conclusion that you should make changes to the cluster's node po
 - Most of the deployments that you might consider increasing the replica count of will require only 100mcpu per additional pod. You could potentially use a node pool with **less total CPU** if you configure it to use smaller machines. However, you also need to consider how many deployments will need to scale, and how much they need to scale by.
 
 1. Create a new node pool named `Pool Name` with **custom-2-3584** as the machine type.
+
 2. Set the **number of nodes** to **2**.
+
 3. Once the new node pool is set up, migrate your application's deployments to the new nodepool by **cordoning off and draining** `default-pool`.
+
 4. **Delete** the default-pool once the deployments have safely migrated.
+
+   ```
+   gcloud container node-pools create Pool_Name --cluster=Cluster_Name --machine-type=custom-2-3584 --num-nodes=2 --zone=$ZONE
+   
+   for node in $(kubectl get nodes -l cloud.google.com/gke-nodepool=default-pool -o=name); do  kubectl cordon "$node"; done
+   
+   for node in $(kubectl get nodes -l cloud.google.com/gke-nodepool=default-pool -o=name); do kubectl drain --force --ignore-daemonsets --delete-local-data --grace-period=10 "$node"; done
+   
+   kubectl get pods -o=wide --namespace=dev
+   
+   gcloud container node-pools delete default-pool --cluster Cluster_Name --zone $ZONE
+   ```
 
 Click *Check my progress* to verify the objective.
 
@@ -16338,7 +16366,21 @@ Click *Check my progress* to verify the objective.
 
 Apply a Frontend Update
 
+```
+kubectl create poddisruptionbudget onlineboutique-frontend-pdb --selector app=frontend --min-available 1 --namespace dev
 
+KUBE_EDITOR="nano" kubectl edit deployment/frontend --namespace dev
+
+
+Find the image under spec replace.
+
+replace image: gcr.io/qwiklabs-resources/onlineboutique-frontend:v2.1
+
+and in imagePullPolicy: Always
+
+
+Press ctrl+x and Y then enter, for save and exit
+```
 
 Check my progress
 
@@ -16362,8 +16404,22 @@ Of course, you want to make sure that users won’t experience downtime while th
 But what if the spike exceeds the compute resources you currently have provisioned? You may need to add additional compute nodes.
 
 1. Next, ensure that your cluster is able to automatically spin up additional compute nodes if necessary. However, handling scaling up isn’t the only case you can handle with autoscaling.
+
 2. Thinking ahead, you configure both a minimum number of nodes, and a maximum number of nodes. This way, the cluster can add nodes when traffic is high, and reduce the number of nodes when traffic is low.
+
 3. Update your **cluster autoscaler** to scale between **1 node minimum** and **6 nodes maximum**.
+
+   ```
+   kubectl autoscale deployment frontend --cpu-percent=50 --min=1 --max=17 --namespace dev
+   
+   kubectl get hpa --namespace dev
+   ZONE=us-central1-b
+   
+   gcloud beta container clusters update Cluster_Name --enable-autoscaling --min-nodes 1 --max-nodes 6 --zone=$ZONE
+   
+   ```
+
+   
 
 Click *Check my progress* to verify the objective.
 
@@ -16948,7 +17004,7 @@ project = "PROJECT_ID"
 
 **Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
 
-### Understanding Regions and Zones
+###### Understanding Regions and Zones
 
 Certain Compute Engine resources live in regions or zones. A region is a specific geographical location where you can run your resources. Each region has one or more zones. For example, the us-central1 region denotes a region in the Central United States that has zones `us-central1-a`, `us-central1-b`, `us-central1-c`, and `us-central1-f`.
 
@@ -17761,35 +17817,74 @@ As part of this challenge, you will need to create the following:
 
 Create a VPC network with two subnets and firewalls to open connections between resources.
 
-1. Create a VPC network named `network name` with two subnets: `subnet a name` and `subnet b name`. Use a **Regional** dynamic routing mode.
-2. For `subnet a name` set the region to `network region 1`.
+1. Create a VPC network named `vpc-network-9277` with two subnets: `subnet-a-7tm0` and `subnet-b-kzh1`. Use a **Regional** dynamic routing mode.
+
+   ```
+   gcloud compute networks create vpc-network-9277 --subnet-mode=custom
+   ```
+
+2. For `subnet-a-7tm0` set the region to `us-central1`.
+
    - Set the **IP stack type** to **IPv4 (single-stack)**
    - Set IPv4 range to `10.10.10.0/24`
-3. For `subnet b name` set the region to `network region 2`.
+
+   ```
+   gcloud compute networks subnets create subnet-a-7tm0 --network=vpc-network-9277 --region=us-central1 --range=10.10.10.0/24
+   ```
+
+3. For `subnet-b-kzh1` set the region to `europe-west1`.
+
    - Set the **IP stack type** to **IPv4 (single-stack)**
    - Set IPv4 range to `10.10.20.0/24`
+
+   ```
+   gcloud compute networks subnets create subnet-b-kzh1 --network=vpc-network-9277 --region=europe-west1 --range=10.10.20.0/24
+   ```
+
+   
 
 ## Task 2. Add firewall rules
 
 On this network your team will need to be able to connect to Linux and Windows machines using SSH and RDP, as well as diagnose network communication issues via ICMP.
 
-1. Create a firewall rule named `firewall rule 1`.
-   - For the network, use `network name`.
+1. Create a firewall rule named `vwvi-firewall-ssh`.
+
+   - For the network, use `vpc-network-9277`.
    - Set the priority to **1000**, the traffic to **Ingress** and action to **Allow**
    - The targets should be set to *all instances in the network* and the IPv4 ranges to `0.0.0.0/0`
    - Set the Protocol to **TCP** and port to `22`
-2. Create a firewall rule named `firewall rule 2`.
-   - For the network, use `network name`.
+
+   ```
+   gcloud compute firewall-rules create vwvi-firewall-ssh --allow tcp:22 --network vpc-network-9277 --source-ranges 0.0.0.0/0 --priority 1000
+   ```
+
+2. Create a firewall rule named `csvu-firewall-rdp`.
+
+   - For the network, use `vpc-network-9277`.
    - Set the priority to **65535**, the traffic to **Ingress** and action to **Allow**
    - The targets should be set to *all instances in the network* and the IPv4 ranges to `0.0.0.0/24`
    - Set the Protocol to **TCP** and port to `3389`
-3. Create a firewall rule named `firewall rule 3`.
-   - For the network, use `network name`.
+
+   ```
+   gcloud compute firewall-rules create csvu-firewall-rdp --allow tcp:3389 --network vpc-network-9277 --source-ranges 0.0.0.0/24 --priority 65535
+   ```
+
+3. Create a firewall rule named `ihuo-firewall-icmp`.
+
+   - For the network, use `vpc-network-9277`.
    - Set the priority to **1000**, the traffic to **Ingress** and action to **Allow**
    - The targets should be set to *all instances in the network* and the IPv4 ranges to `10.10.10.0/24` and `10.10.20.0/24`
    - Set the Protocol to **icmp**
 
+   ```
+   gcloud compute firewall-rules create ihuo-firewall-icmp --allow icmp --network vpc-network-9277 --source-ranges "10.10.10.0/24","10.10.20.0/24" --priority 1000
+   ```
+
+   
+
 Click **Check my progress** to verify the objective.
+
+Assessment Completed!
 
 Create network, subnetworks and firewalls.
 
@@ -17797,14 +17892,25 @@ Create network, subnetworks and firewalls.
 
 Check my progress
 
+*Assessment Completed!*
+
 
 
 ## Task 3. Add VMs to your network
 
 Create a virtual machine in each subnet, and confirm that the machines can communicate with each other using a protocol that you already set up. Each machine will use network tags that the firewall rules need to allow network traffic.
 
-1. Create an instance name **us-test-01** in `subnet a name` and set the zone to `ZONE`.
-2. Create an instance name **us-test-02** in `subnet b name` and set the zone to `ZONE`.
+1. Create an instance name **us-test-01** in `subnet-a-7tm0` and set the zone to `us-central1-b`.
+
+   ```
+   gcloud compute instances create us-test-01 --subnet subnet-a-7tm0 --zone us-central1-b --machine-type e2-micro
+   ```
+
+2. Create an instance name **us-test-02** in `subnet-b-kzh1` and set the zone to `europe-west1-c`.
+
+   ```
+   gcloud compute instances create us-test-02 --subnet subnet-b-kzh1 --zone europe-west1-c --machine-type e2-micro
+   ```
 
 ### Verify you can connect your VM.
 
@@ -17829,12 +17935,14 @@ Use ping to measure the latency between instances between all the regions.
 To observe the latency, run the following command after opening an SSH window on the `us-test-01`:
 
 ```
-ping -c 3 us-test-02.ZONE
+ping -c 3 us-test-02.europe-west1-c
 ```
 
 
 
 Click **Check my progress** to verify the objective.
+
+We're having trouble checking your progress. Try again later.
 
 Create two instances in specified zones for Traceroute and performance testing.
 
@@ -17842,9 +17950,12 @@ Create two instances in specified zones for Traceroute and performance testing.
 
 Check my progress
 
+*We're having trouble checking your progress. Try again later.*
+
 
 
 ## Congratulations!
 
 In this challenge lab you have shown that you know how to create a network, add subnets and virtual machines, and confirmed that the VMs can communicate with each other.
 
+### Google Cloud training and certification
