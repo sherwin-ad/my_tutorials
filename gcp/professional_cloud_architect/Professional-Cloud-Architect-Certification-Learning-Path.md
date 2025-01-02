@@ -66,7 +66,7 @@ Correct! A StatefulSet represents a group of persistent Pods. The YAML file will
 
 - **Use containers instead of VMs, and use a GKE autoscaling deployment.**
 
-###### **Correct! Treating each app as one or more stateless processes means externalizing state to a separate database service. This allows for more concurrent processing.**
+Correct! Treating each app as one or more stateless processes means externalizing state to a separate database service. This allows for more concurrent processing.
 
 6. Cymbal Direct is working with Cymbal Retail, a separate, autonomous division of Cymbal with different staff, networking teams, and data center. Cymbal Direct and Cymbal Retail are not in the same Google Cloud organization. Cymbal Retail needs access to Cymbal Direct’s web application for making bulk orders, but the application will not be available on the public internet. You want to ensure that Cymbal Retail has access to your application with low latency. You also want to avoid egress network charges if possible. What should you do?
 
@@ -12189,6 +12189,934 @@ Check my progress
 
 # Kubernetes Architecture
 
+## Lab - Deploying GKE Autopilot Clusters
+
+## Overview
+
+In this lab, you use the Google Cloud Console to build GKE Autopilot clusters and deploy a sample Pod.
+
+## Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Use the Google Cloud Console to build and manipulate GKE Autopilot clusters
+- Use the Google Cloud Console to deploy a Pod
+- Use the Google Cloud Console to examine the cluster and Pods
+
+## Lab setup
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+After you complete the initial sign-in steps, the project dashboard opens.
+
+## Task 1. Deploy GKE clusters
+
+In this task, you use the Google Cloud Console and Cloud Shell to deploy GKE clusters.
+
+### Use the Google Cloud Console to deploy a GKE cluster
+
+1. In the Google Cloud Console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Kubernetes Engine** > **Clusters**.
+2. Click **Create** to begin creating a GKE cluster.
+3. Examine the console UI and the controls to change the cluster name, the cluster location, the Kubernetes version, the number of nodes, and the node resources such as the machine type in the default node pool.
+
+Clusters can be created across a region or in a single zone. A single zone is the default. When you deploy across a region the nodes are deployed to three separate zones and the total number of nodes deployed will be three times higher.
+
+1. Change the cluster name to **autopilot-cluster-1** and region to `us-east1`. Leave all the values at their defaults and click **Create**.
+
+The cluster begins provisioning.
+
+**Note:** You need to wait a few minutes for the cluster deployment to complete.
+
+When provisioning is complete, the **Kubernetes Engine > Clusters** page looks like this screenshot:
+
+![Clusters page](images\XH8GI2rG7sgMWo6fcoyrw2g87aH8tEUUm2ivmJtvudU%3D.png)
+
+Click *Check my progress* to verify the objective.
+
+Deploy GKE cluster
+
+
+
+Check my progress
+
+
+
+1. Click the cluster name **autopilot-cluster-1** to view the cluster details.
+2. You can scroll down the page to view more details.
+3. Click the **Storage** tab under the cluster name (autopilot-cluster-1) at the top to view more of the cluster details.
+
+## Task 2. Deploy a sample workload
+
+In this task, you will use the Google Cloud console to deploy a Pod running the nginx web server as a sample workload.
+
+1. In the Google Cloud Console, on the **Navigation menu**(![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Kubernetes Engine** > **Workloads**.
+
+2. Click **Create deployment**.
+
+3. For **Deployment name** enter **nginx-1**.
+
+   Accept the default container image, nginx:latest, which deploys three Pods each with a single container running the latest version of nginx.
+
+4. Click the **Deploy** button, leaving the **Configuration** details at the defaults.
+
+5. When the deployment completes your screen will refresh to show the details of your new nginx deployment.
+
+Click *Check my progress* to verify the objective.
+
+Deploy a sample nginx workload
+
+
+
+Check my progress
+
+
+
+## Task 3. View details about workloads in the Google Cloud Console
+
+In this task, you view details about your GKE workloads directly in the Google Cloud Console.
+
+1. In the Google Cloud Console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Kubernetes Engine** > **Workloads**.
+2. In the Google Cloud Console, on the **Kubernetes Engine > Workloads** page, click **nginx-1**.
+
+This displays the overview information for the workload, showing details like resource utilization charts, links to logs, and details of the Pods associated with this workload.
+
+1. In the Google Cloud Console, click the **Details** tab for the **nginx-1** workload. The Details tab shows more details about the workload including the Pod specification, number and status of Pod replicas, and details about the horizontal Pod autoscaler.
+2. Click the **Revision History** tab. This displays a list of the revisions that have been made to this workload.
+3. Click the **Events** tab. This tab lists events associated with this workload.
+4. Then, click the **YAML** tab. This tab provides the complete YAML file that defines these components and full configuration of this sample workload.
+5. While you are still in the Google Cloud Console's **Details** tab for the **nginx-1** workload, click the **Overview** tab, scroll down to the **Managed Pods** section, and click the name of one of the Pods to view the details page for that Pod.
+6. The Pod details page provides information on the Pod configuration and resource utilization and the node where the Pod is running.
+7. In the **Pod details** page, you can click the Events and Logs tabs to view event details and links to container logs in Cloud Operations.
+8. Click the **YAML** tab to view the detailed YAML file for the Pod configuration.
+
+# Quiz
+
+
+
+1. You want to deploy multiple copies of an application in an effort to load balance traffic. How should you deploy Pods to production to achieve this?
+
+- Deploy the Pod manifest multiple times until you achieve the number of replicas required.
+
+- Create separate named Pod manifests for each instance of the application, and deploy as many as you need.
+
+- **Create a deployment manifest that specifies the number of replicas that you want to run.**
+
+- Create a Service manifest for the LoadBalancer that specifies the number of replicas you want to run.
+
+2. Google Kubernetes Engine offers two modes of operation: Autopilot and Standard mode. Which one of the options below is a use case for using Standard mode.
+
+- You want to avoid cluster configuration.
+
+- **You require SSH access to nodes.**
+
+- You want machine types based on workloads.
+
+- You want to only pay for Pods and not nodes.
+
+3. When designing an application, you want the containers to be located as close to each other as possible in order to minimize latency. Which design decision helps meet this requirement?
+
+- Place the containers in the same Namespace.
+
+- Give the containers the same labels.
+
+- Place the containers in the same cluster.
+
+- **Place the containers in the same Pod.**
+
+
+
+# Kubernetes Operations
+
+## Lab - Deploying GKE Autopilot Clusters from Cloud Shell
+
+## Overview
+
+In this lab, you use the command line to build GKE clusters. You inspect the kubeconfig file, and you use `kubectl` to manipulate the cluster.
+
+## Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Use `kubectl` to build and manipulate GKE clusters
+- Use `kubectl` and configuration files to deploy Pods
+- Use Container Registry to store and deploy containers
+
+## Lab setup
+
+### **Access Qwiklabs**
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+After you complete the initial sign-in steps, the project dashboard appears.
+
+![Project dashboard tabbed page](images\dxfeoOcn1ObyC0BYyoqqqSi4rO%2FeMdbWPFjoK6C0YYk%3D.png)
+
+### **Open Cloud Shell**
+
+You will do most of the work in [Cloud Shell](https://cloud.google.com/developer-shell/#how_do_i_get_started). Cloud Shell is a command-line environment running in Google Cloud. This Debian-based virtual machine is loaded with all the management tools you need (such as `docker`, `gcloud,gsutil`, and `kubectl`) and provides a persistent 5GB home directory.
+
+1. On the Google Cloud console title bar, click **Activate Cloud Shell** (![Activate cloud shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)).
+2. Click **Continue**.
+
+After a moment of provisioning, the Cloud Shell prompt appears:
+
+![Cloud Shell prompt displaying the message: Welcome to Cloud Shell! Type "help" to get started.](images\Ois24pu6m%2FxwQvtYfb7uru5orN%2FHm52dN2ump6Zq5MU%3D.png)
+
+## Task 1. Deploy GKE clusters
+
+In this task, you use Cloud Shell to deploy GKE clusters.
+
+1. In Cloud Shell, type the following command to set the environment variable for the zone and cluster name:
+
+```
+export my_region=Region
+export my_cluster=autopilot-cluster-1
+```
+
+Copied!
+
+1. In Cloud Shell, type the following command to create a Kubernetes cluster. If prompted, click **Authorize**:
+
+```
+gcloud container clusters create-auto $my_cluster --region $my_region
+```
+
+Copied!
+
+This form of the command sets most options to their defaults. To view the entire set of possible options, refer to the [gcloud container clusters create reference](https://cloud.google.com/sdk/gcloud/reference/container/clusters/create).
+
+You will see a number of warnings highlighting changes to default GKE cluster settings that were introduced as newer versions of Kubernetes have been adopted by GKE.
+
+**Note:** You need to wait a few minutes for the cluster deployment to complete.
+
+When deployment is complete, the Google Cloud console **Kubernetes Engine > Clusters** page should look like this screenshot:
+
+![Kubernetes Clusters page displaying details such as location, cluster size, total cores, and total memory for autopilot-cluster-1](images\Fd%2BsNhb1P7puGkm5fOERa%2FhMEUw0NqtHYwWwNNfrLvQ%3D.png)
+
+Click **Check my progress** to verify the objective.
+
+Deploy GKE clusters
+
+
+
+Check my progress
+
+
+
+## Task 2. Connect to a GKE cluster
+
+In this task, you use Cloud Shell to authenticate to a GKE cluster and then inspect the kubectl configuration files.
+
+Authentication in Kubernetes applies both to communicating with the cluster from an external client through the kube-APIserver running on the master and to cluster containers communicating within the cluster or externally.
+
+In Kubernetes, authentication can take several forms. For GKE, authentication is typically handled with OAuth2 tokens and can be managed through Cloud Identity and Access Management across the project as a whole and, optionally, through role-based access control which can be defined and configured within each cluster.
+
+In GKE, cluster containers can use service accounts to authenticate to and access external resources.
+
+**Note:** For Kubernetes versions before 1.12, client certificates and basic authentication are not disabled by default. These are lower security methods of authentication and should be disabled to increase cluster security. (For versions 1.12 and later, both of these methods are disabled by default.)
+
+1. To create a kubeconfig file with the credentials of the current user (to allow authentication) and provide the endpoint details for a specific cluster (to allow communicating with that cluster through the `kubectl` command-line tool), execute the following command:
+
+```
+gcloud container clusters get-credentials $my_cluster --region $my_region
+```
+
+Copied!
+
+This command creates a `.kube` directory in your home directory if it doesn't already exist. In the `.kube` directory, the command creates a file named `config` if it doesn't already exist, which is used to store the authentication and configuration information. The config file is typically called the kubeconfig file.
+
+1. Open the kubeconfig file with the nano text editor:
+
+```
+nano ~/.kube/config
+```
+
+Copied!
+
+You can now examine all of the authentication and endpoint configuration data stored in the file. Information for the cluster should appear. The information was populated during cluster creation.
+
+1. Press CTRL+X to exit the nano editor.
+
+**Note:** The kubeconfig file can contain information for many clusters. The currently active context (the cluster that `kubectl` commands manipulate) is indicated by the `current-context` property.
+
+
+
+You don't have to run the `gcloud container clusters get-credentials` command to populate the kubeconfig file for clusters that you created in the same context (the same user in the same environment), because those clusters already have their details populated when the cluster is created.
+
+
+
+But you do have to run the command to connect to a cluster created by another user or in another environment. The command is also an easy way to switch the active context to a different cluster.
+
+## Task 3. Use kubectl to inspect a GKE cluster
+
+In this task, you use Cloud Shell and kubectl to inspect a GKE cluster.
+
+After the kubeconfig file is populated and the active context is set to a particular cluster, you can use the `kubectl` command-line tool to execute commands against the cluster. Most such commands ultimately trigger a REST API call against the master API server, which triggers the associated action.
+
+1. In Cloud Shell, execute the following command to print out the content of the kubeconfig file:
+
+```
+kubectl config view
+```
+
+Copied!
+
+The sensitive certificate data is replaced with DATA+OMITTED.
+
+1. In Cloud Shell, execute the following command to print out the cluster information for the active context:
+
+```
+kubectl cluster-info
+```
+
+Copied!
+
+The output describes the active context cluster.
+
+**Output:**
+
+```
+Kubernetes control plane is running at https://34.133.211.75
+GLBCDefaultBackend is running at https://34.133.211.75/api/v1/namespaces/kube-system/services/default-http-backend:http/proxy
+KubeDNS is running at https://34.133.211.75/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+KubeDNSUpstream is running at https://34.133.211.75/api/v1/namespaces/kube-system/services/kube-dns-upstream:dns/proxy
+Metrics-server is running at https://34.133.211.75/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+```
+
+1. In Cloud Shell, execute the following command to print out the active context:
+
+```
+kubectl config current-context
+```
+
+Copied!
+
+A line of output indicates the active context cluster.
+
+**Output:**
+
+```
+gke_Project_ID_Region_autopilot-cluster-1
+```
+
+`PROJECT_ID` is your project ID. This information is the same as the information in the `current-context` property of the kubeconfig file.
+
+1. In Cloud Shell, execute the following command to print out some details for all the cluster contexts in the kubeconfig file:
+
+```
+kubectl config get-contexts
+```
+
+Copied!
+
+Several lines of output indicate details about the cluster you created and indicate which is the active context cluster. In general, this command lists some details of the clusters present in the user's kubeconfig file, including any other clusters that were created by the user as well as any manually added to the kubeconfig file.
+
+1. In Cloud Shell, execute the following command to change the active context:
+
+```
+kubectl config use-context gke_${DEVSHELL_PROJECT_ID}_Region_autopilot-cluster-1
+```
+
+Copied!
+
+In this case you have only one cluster, so this command didn't change anything.
+
+However, in the future you may have more than one cluster in a project. You can use this approach to switch the active context when your kubeconfig file has the credentials and configuration for several clusters already populated. This approach requires the full name of the cluster, which includes the `gke` prefix, the project ID, the location, and the display name, all concatenated with underscores.
+
+1. In Cloud Shell, execute the following command to enable bash autocompletion for `kubectl`:
+
+```
+source <(kubectl completion bash)
+```
+
+Copied!
+
+This command produces no output.
+
+1. In Cloud Shell, type **kubectl** followed by a space and press the **Tab** key twice.
+
+The shell outputs all the possible commands:
+
+![Cloud shell displaying all possible output commands](images\25VuknPH6GIEtwV2D0fLkPmHHnM9fpzV00iwvTBSZhU%3D.png)
+
+1. In Cloud Shell, type **kubectl co** and press the **Tab** key twice.
+
+The shell outputs all commands starting with "co" (or any other text you type).
+
+![Cloud shell displaying all output commands starting with co, such as completion, convert, config, and cordon](images\exkh2Jq37jEp4I3Z%2FmeqJFvVQPYJtd4Xnei5kzw2c1s%3D.png)
+
+## Task 4. Deploy Pods to GKE clusters
+
+In this task, you use Cloud Shell to deploy Pods to GKE clusters.
+
+### Use kubectl to deploy Pods to GKE
+
+Kubernetes introduces the abstraction of a Pod to group one or more related containers as a single entity to be scheduled and deployed as a unit on the same node. You can deploy a Pod that is a single container from a single container image. Or a Pod can contain many containers from many container images.
+
+1. In Cloud Shell, execute the following command to deploy nginx as a Pod named nginx-1:
+
+```
+kubectl create deployment --image nginx nginx-1
+```
+
+Copied!
+
+This command creates a Pod named nginx with a container running the nginx image. When a repository isn't specified, the default behavior is to try to find the image either locally or in the Docker public registry. In this case, the image is pulled from the Docker public registry.
+
+1. In Cloud Shell, execute the following command to view all the deployed Pods in the active context cluster:
+
+```
+kubectl get pods
+```
+
+Copied!
+
+The output should look like the following example, but with a slightly different Pod name.
+
+**Note:**If you see a message that the server is currently unable to handle the request, wait for the deployment to finish and become ready.
+
+**Output:**
+
+```
+NAME                       READY     STATUS    RESTARTS   AGE
+nginx-1-74c7bbdb84-nvwsc   1/1       Running   0          2m52s
+```
+
+1. In Cloud Shell, execute the following command to view the resource usage across the nodes of the cluster:
+
+```
+kubectl top node
+```
+
+Copied!
+
+The output should look like the following example.
+
+**Output:**
+
+```
+NAME                                                 CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
+gk3-autopilot-cluster-1-pool-2-7246ae0e-4q7s          1971m       102%    1803Mi          30%       
+```
+
+**Note:** If you receive an error as `metrics not available yet`, re-run the above command.
+
+Another `top` command (`kubectl top pods`) shows similar information across all the deployed Pods in the cluster.
+
+1. You will now enter your Pod name into a variable that we will use throughout this lab. Using variables like this can help you minimize human error when typing long names. You must type your Pod's unique name in place of `[your_pod_name]`:
+
+```
+export my_nginx_pod=[your_pod_name]
+```
+
+Copied!
+
+**Example:**
+
+```
+export my_nginx_pod=nginx-1-74c7bbdb84-nvwsc
+```
+
+1. Confirm that you have set the environment variable successfully by having the shell echo the value back to you:
+
+```
+echo $my_nginx_pod
+```
+
+Copied!
+
+**Output:**
+
+```
+nginx-1-74c7bbdb84-nvwsc
+```
+
+1. In Cloud Shell, execute the following command to view the complete details of the Pod you just created:
+
+```
+kubectl describe pod $my_nginx_pod
+```
+
+Copied!
+
+The output should look like the following example. Details of the Pod, as well as its status and conditions and the events in its lifecycle, are displayed.
+
+**Output:**
+
+```
+    Image:          nginx
+    Image:          nginx
+    Image:          nginx
+    Image ID:       docker.io/library/nginx@sha256:480868e8c8c797794257e2abd88d0f9a8809b2fe956cbfbc05dcc0bca1f7cd43
+    Port:           
+    Host Port:      
+    State:          Running
+      Started:      Wed, 17 May 2023 10:47:04 +0000
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:                500m
+      ephemeral-storage:  1Gi
+      memory:             2Gi
+    Requests:
+      cpu:                500m
+      ephemeral-storage:  1Gi
+      memory:             2Gi
+    Environment:          
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-ksxxr (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  kube-api-access-ksxxr:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       
+    DownwardAPI:             true
+QoS Class:                   Guaranteed
+Node-Selectors:              
+Tolerations:                 kubernetes.io/arch=amd64:NoSchedule
+                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age    From                                   Message
+  ----     ------            ----   ----                                   -------
+  Warning  FailedScheduling  5m42s  gke.io/optimize-utilization-scheduler  0/2 nodes are available: 2 Insufficient cpu, 2 Insufficient memory. preemption: 0/2 nodes are available: 2 No preemption victims found for incoming pod.
+  Normal   Scheduled         4m15s  gke.io/optimize-utilization-scheduler  Successfully assigned default/nginx-1-6b7bff9fc7-t7fzk to gk3-autopilot-cluster-1-pool-1-242a3a6a-j9rh
+  Normal   TriggeredScaleUp  5m34s  cluster-autoscaler                     pod triggered scale-up: [{https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-92c260add90a/zones/Zone/instanceGroups/gk3-autopilot-cluster-1-pool-1-242a3a6a-grp 0->1 (max: 1000)}]
+  Normal   Pulling           3m30s  kubelet                                Pulling image "nginx"
+  Normal   Pulled            3m16s  kubelet                                Successfully pulled image "nginx" in 13.843394735s (13.843643782s including waiting)
+  Normal   Created           3m16s  kubelet                                Created container nginx
+  Normal   Started           3m15s  kubelet                                Started container nginx
+```
+
+### Push a file into a container
+
+To be able to serve static content through the nginx web server, you must create and place a file into the container.
+
+1. In Cloud Shell, type the following commands to open a file named `test.html` in the nano text editor:
+
+```
+nano ~/test.html
+```
+
+Copied!
+
+1. Add the following text (shell script) to the empty `test.html` file:
+
+```
+ This is title
+ Hello world 
+```
+
+Copied!
+
+1. Press CTRL+X, then press Y and enter to save the file and exit the nano editor.
+2. In Cloud Shell, execute the following command to place the file into the appropriate location within the nginx container in the nginx Pod to be served statically:
+
+```
+kubectl cp ~/test.html $my_nginx_pod:/usr/share/nginx/html/test.html
+```
+
+Copied!
+
+This command copies the `test.html` file from the local home directory to the `/usr/share/nginx/html` directory of the first container in the nginx Pod. You can specify other containers in a multi-container Pod by using the `-c` option, followed by the name of the container.
+
+### **Expose the Pod for testing**
+
+A service is required to expose a Pod to clients outside the cluster. Services are discussed elsewhere in the course and used extensively in other labs. You can use a simple command to create a service to expose a Pod.
+
+1. In Cloud Shell, execute the following command to create a service to expose our nginx Pod externally:
+
+```
+kubectl expose pod $my_nginx_pod --port 80 --type LoadBalancer
+```
+
+Copied!
+
+This command creates a LoadBalancer service, which allows the nginx Pod to be accessed from internet addresses outside of the cluster.
+
+1. In Cloud Shell, execute the following command to view details about services in the cluster:
+
+```
+kubectl get services
+```
+
+Copied!
+
+The output should look like the following example. You use the external IP address in the next step.
+
+**Note:** You might have to repeat the command a few times before the new service has its external IP populated.
+
+**Output:**
+
+```
+NAME             TYPE          CLUSTER-IP    EXTERNAL-IP  PORT(S)      AGE
+kubernetes       ClusterIP     10.11.240.1          443/TCP       1h
+nginx-1-7...wsc  LoadBalancer  10.11.240.87      80:31695/TCP  3s
+```
+
+The Kubernetes service is one of the default services created or used by the cluster. The nginx service that you created is also displayed.
+
+You may need to re-run this command several times before the external IP address is displayed.
+
+**Output:**
+
+```
+NAME             TYPE         CLUSTER-IP   EXTERNAL-IP    PORT(S)     AGE
+kubernetes       ClusterIP    10.11.240.1           443/TCP      1h
+nginx-1-7...wsc  LoadBalancer 10.11.240.87 104.154.177.46 80:31695/TCP 1m
+```
+
+Click **Check my progress** to verify the objective.
+
+Deploy Pods to GKE clusters
+
+
+
+Check my progress
+
+
+
+1. In Cloud Shell, execute the following command to verify that the nginx container is serving the static HTML file that you copied.
+
+You replace [*EXTERNAL_IP*] with the external IP address of your service that you obtained from the output of the previous step.
+
+```
+curl http://[EXTERNAL_IP]/test.html
+```
+
+Copied!
+
+The file contents appear in the output. You can go to the same address in your browser to see the file rendered as HTML.
+
+**Example:**
+
+```
+curl http://104.154.177.46/test.html
+
+ This is title
+ Hello world 
+```
+
+1. In Cloud Shell, execute the following command to view the resources being used by the nginx Pod:
+
+```
+kubectl top pods
+```
+
+Copied!
+
+**Output:**
+
+```
+NAME                       CPU(cores)   MEMORY(bytes)
+nginx-1-74c7bbdb84-nvwsc   0m           2Mi
+```
+
+## Task 5. Introspect GKE Pods
+
+In this task, you connect to a Pod to adjust settings, edit files, and make other live changes to the Pod.
+
+**Note:** Use this process only when troubleshooting or experimenting. Because the changes you make are not made to the source image of the Pod, they won't be present in any replicas.
+
+### **Prepare the environment**
+
+The preferred way of deploying Pods and other resources to Kubernetes is through configuration files, which are sometimes called manifest files. Configuration files are typically written in the YAML syntax, specifying the details of the resource. With configuration files, you can more easily specify complex options than with a long line of command-line arguments.
+
+YAML syntax is similar to, but more concise than, JSON syntax and it enables the same kind of hierarchical structuring of objects and properties. The source repository for the lab contains sample YAML files that have been prepared for you.
+
+1. In Cloud Shell, enter the following command to clone the repository to the lab Cloud Shell:
+
+```
+git clone https://github.com/GoogleCloudPlatform/training-data-analyst
+```
+
+Copied!
+
+1. Create a soft link as a shortcut to the working directory:
+
+```
+ln -s ~/training-data-analyst/courses/ak8s/v1.1 ~/ak8s
+```
+
+Copied!
+
+1. Change to the directory that contains the sample files for this lab:
+
+```
+cd ~/ak8s/GKE_Shell/
+```
+
+Copied!
+
+A sample manifest YAML file for a Pod called `new-nginx-pod.yaml` has been provided for you:
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: new-nginx
+  labels:
+    name: new-nginx
+spec:
+  containers:
+  - name: new-nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+```
+
+1. To deploy your manifest, execute the following command:
+
+```
+kubectl apply -f ./new-nginx-pod.yaml
+```
+
+Copied!
+
+**Note:** You may need to wait a few minutes for the pod deployment to complete and the status change to running.
+
+Click **Check my progress** to verify the objective.
+
+Deploy a new pod using a Yaml file
+
+
+
+Check my progress
+
+
+
+1. To see a list of Pods, execute the following command:
+
+```
+kubectl get pods
+```
+
+Copied!
+
+The output should look like the example.
+
+**Output:**
+
+```
+NAME                       READY     STATUS    RESTARTS   AGE
+new-nginx                  1/1       Running   0          9s
+nginx-1-74c7bbdb84-nvwsc   1/1       Running   0          55m
+```
+
+You can see your new nginx Pod as well as the one we created earlier in the lab.
+
+### **Use shell redirection to connect to a Pod**
+
+Some container images include a shell environment that you can launch. This shell environment might be more convenient than executing individual commands with `kubectl`. For instance, the nginx image includes a bash shell. In this task you use shell redirection to connect to the bash shell in your new nginx pod to carry out a sequence of actions.
+
+1. In Cloud Shell, execute the following command to start an interactive bash shell in the nginx container:
+
+```
+kubectl exec -it new-nginx -- /bin/bash
+```
+
+Copied!
+
+A new shell prompt appears.
+
+**Output:**
+
+```
+root@new-nginx:/#
+```
+
+You have started an interactive bash shell in the container of the new-nginx Pod. If the Pod had several containers, you could specify one by name with the `-c` option.
+
+Because the nginx container image has no text editing tools by default, you need to install one.
+
+1. In Cloud Shell, in the nginx bash shell, execute the following commands to install the nano text editor:
+
+```
+apt-get update
+apt-get install nano
+```
+
+Copied!
+
+When prompted with **Do you want to continue (Y/n)**, press Y to confirm.
+
+You need to create a `test.html` file in the static served directory on the nginx container.
+
+1. In Cloud Shell, in the nginx bash shell, execute the following commands to switch to the static files directory and create a `test.html` file:
+
+```
+cd /usr/share/nginx/html
+nano test.html
+```
+
+Copied!
+
+1. In Cloud Shell, in the nginx bash shell nano session, type the following text:
+
+```
+ This is title
+ Hello world 
+```
+
+Copied!
+
+1. Press CTRL+X, then press Y and enter to save the file and exit the nano editor.
+2. In Cloud Shell, in the nginx bash shell, execute the following command to exit the nginx bash shell:
+
+```
+exit
+```
+
+Copied!
+
+To connect to and test the modified nginx container (with the new static HTML file), you could create a service. An easier way is to use port forwarding to connect to the Pod directly from Cloud Shell.
+
+1. In Cloud Shell, execute the following command to set up port forwarding from Cloud Shell to the nginx Pod (from port 10081 of the Cloud Shell VM to port 80 of the nginx container):
+
+```
+kubectl port-forward new-nginx 10081:80
+```
+
+Copied!
+
+The output should look like the example.
+
+**Output:**
+
+```
+Forwarding from 127.0.0.1:10081 -> 80
+Forwarding from [::1]:10081 -> 80
+```
+
+This is a foreground process, so you need to open another Cloud Shell instance to test.
+
+1. In the Cloud Shell menu bar, click the plus sign (**+**) icon to start a new Cloud Shell session.
+
+![(+) icon highlighted in the Cloud Shell menu bar](images\gFDWeAxBRKo8euELdXf6ysVEBkbEeI6Wf0jXnB7zOfk%3D.png)
+
+A second Cloud Shell session appears in your Cloud Shell window. You can switch between sessions by clicking the titles in the menu bar.
+
+1. In the second Cloud Shell session, execute the following command to test the modified nginx container through the port forwarding:
+
+```
+curl http://127.0.0.1:10081/test.html
+```
+
+Copied!
+
+The HTML text you placed in the `test.html` file is displayed.
+
+```
+ This is title
+ Hello world 
+```
+
+### View the logs of a Pod
+
+1. In the Cloud Shell menu bar, click the plus sign (**+**) icon to start another new Cloud Shell session.
+
+A third Cloud Shell session appears in your Cloud Shell window. As before, you can switch sessions by clicking them in the menu bar.
+
+1. In the third Cloud Shell window, execute the following command to display the logs and to stream new logs as they arrive (and also include timestamps) for the new-nginx Pod:
+
+```
+kubectl logs new-nginx -f --timestamps
+```
+
+Copied!
+
+1. You will see the logs display in this new window.
+2. Return to the second Cloud Shell window and re-run the curl command to generate some traffic on the Pod.
+3. Review the additional log messages as they appear in the third Cloud Shell window.
+
+![Third Cloud Shell window displaying additional log messages](images\KvIC%2BE08QQzz0isYnqYkLEZIMQKHllgbZrU4lTJHDpk%3D.png)
+
+1. Close the third Cloud Shell window to stop displaying the log messages.
+2. Close the original Cloud Shell window to stop the port forwarding process.
+
+
+
+## Quiz
+
+1. What command can be used to identify which containers in a Pod are successfully running, and which are failing or having issues?
+
+- kubectl exec
+
+- kubectl logs
+
+- kubectl get pod
+
+- **kubectl describe pod**
+
+
+
+2. Which command can be used to display error messages from containers in a Pod that are failing to run successfully?
+
+- kubectl describe pod
+
+- kubectl exec -it -- sh
+
+- **kubectl logs**
+
+- kubectl get pod
+
+  
+
+3. You want to use kubectl to configure your cluster, but first you must configure it. Where does the kubectl command store its configuration file?
+
+- The configuration information is stored in environment variables in the current shell. when required.
+
+- The configuration information is entered in Kubectl before executing commands.
+
+- kubectl uses the same authorization and credential tokens as the gcloud CLI utilities.
+
+- **The configuration information is stored in the $HOME/.kube/config file.**
+
+
+
+4. You attempt to update a container image to a new version by using the “kubectl describe pod command,” but are not successful. The output of the command shows that the Pod status has changed to “Pending,”the state is shown as “Waiting,” and the reason shown is “ImagePullBackOff.” What is the most probable cause of this error?
+
+- **The container image failed to download.**
+
+- You specified an invalid container name.
+
+- The latest container image has already been deployed.
+
+- The container image pull policy has been set to “Never.”
+
 
 
 # Compute Engine: Qwik Start - Windows
@@ -19276,3 +20204,2076 @@ Check my progress
 In this challenge lab you have shown that you know how to create a network, add subnets and virtual machines, and confirmed that the VMs can communicate with each other.
 
 ### Google Cloud training and certification
+
+
+
+# Lab - Getting Started with Cloud KMS
+
+## Overview
+
+In this lab, you learn how to use some advanced features of Google Cloud Security and Privacy APIs, including:
+
+- Setting up a secure Cloud Storage bucket
+- Managing keys and encrypted data using Key Management Service
+- Viewing Cloud Storage audit logs
+
+You use abridged data from the Enron Corpus, encrypt it, and load it into Cloud Storage.
+
+### What you'll learn
+
+- How to encrypt data and manage encryption keys using Cloud Key Management Service (KMS).
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is the **Lab Details** panel with the following:
+
+   - The **Open Google Cloud console** button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-9746e3092d0c@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the **Username** in the **Lab Details** panel.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   jg5JNugchwdQ
+   ```
+
+   Copied!
+
+   You can also find the **Password** in the **Lab Details** panel.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To view a menu with a list of Google Cloud products and services, click the **Navigation menu** at the top-left. ![Navigation menu icon](images\nUxFb6oRFr435O3t6V7WYJAjeDFcrFb16G9wHWp5BzU%3D.png)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-04-2e43adc8980e`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-04-2e43adc8980e
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-9746e3092d0c@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-04-2e43adc8980e
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Task 1. Create a Cloud Storage bucket
+
+In order to store the data for this lab you need to create your own Cloud Storage bucket.
+
+1. Pick a name for your Cloud Storage bucket, such as **`qwiklabs-gcp-04-2e43adc8980e`-enron_corpus**. For more information on naming buckets, see the Cloud Storage bucket [naming guidelines](https://cloud.google.com/storage/docs/naming). Run the following command in Cloud Shell to set a variable to your bucket name:
+
+```
+BUCKET_NAME="qwiklabs-gcp-04-2e43adc8980e-enron_corpus"
+```
+
+Copied!
+
+1. Now create the bucket by running the following command:
+
+```
+gsutil mb gs://${BUCKET_NAME}
+```
+
+Copied!
+
+Running this command should also help to verify that you've got the `gsutil` command line client set up correctly, authentication is working, and you have write access to the cloud project you're operating under.
+
+1. After your bucket has been created, move on to the next step to download the Enron Corpus.
+
+Click **Check my progress** to verify the objective.
+
+Create a Cloud Storage bucket.
+
+
+
+Check my progress
+
+
+
+## Task 2. Review the data
+
+The [Enron Corpus](https://en.wikipedia.org/wiki/Enron_Corpus) is a large database of over 600,000 emails generated by 158 employees of the Enron Corporation. This data has been copied to the Cloud Storage bucket `gs://enron_emails/`.
+
+1. Download one of the source files locally so that you can see what it looks like by running:
+
+```
+gsutil cp gs://enron_emails/allen-p/inbox/1. .
+```
+
+Copied!
+
+1. Now `tail` the downloaded file to verify the email text is there:
+
+```
+tail 1.
+```
+
+Copied!
+
+You should receive the following output:
+
+```
+Attached is the Delta position for 1/18, 1/31, 6/20, 7/16, 9/24
+
+ << File: west_delta_pos.xls >>
+
+Let me know if you have any questions.
+```
+
+This should display the contents of a plaintext mail file. There are two types of files you'll be looking for: plaintext mail files and image files. If you're interested, use the same mechanism to check out what is in those other files.
+
+## Task 3. Enable Cloud KMS
+
+[Cloud KMS](https://cloud.google.com/kms/) is a cryptographic key management service on Google Cloud. Before using KMS you need to enable it in your project. In this lab you have been provisioned KMS should already have been enabled. You can make sure of this by using one of the `gcloud` CLI commands.
+
+- Run the following in your Cloud Shell session:
+
+```
+gcloud services enable cloudkms.googleapis.com
+```
+
+Copied!
+
+**Note:** KMS and other services can also be enabled on your project using the [Cloud Console UI](https://console.cloud.google.com/apis/api/cloudkms.googleapis.com) as well.
+
+You shouldn't have received any output. Cloud KMS is now enabled in your project!
+
+## Task 4. Create a Keyring and Cryptokey
+
+In order to encrypt the data, you need to create a KeyRing and a CryptoKey. KeyRings are useful for grouping keys. Keys can be grouped by environment (like **test**, **staging**, and **prod**) or by some other conceptual grouping. For this lab, your KeyRing will be called `test` and your CryptoKey will be called `qwiklab`.
+
+1. Run the following command in Cloud Shell to set environment variables:
+
+```
+KEYRING_NAME=test CRYPTOKEY_NAME=qwiklab
+```
+
+Copied!
+
+1. Execute the `gcloud` command to create the KeyRing. For this lab you will be using a global location, but it could also be set to a specific region:
+
+```
+gcloud kms keyrings create $KEYRING_NAME --location global
+```
+
+Copied!
+
+1. Next, using the new KeyRing, create a CryptoKey named `qwiklab`:
+
+```
+gcloud kms keys create $CRYPTOKEY_NAME --location global \
+      --keyring $KEYRING_NAME \
+      --purpose encryption
+```
+
+Copied!
+
+**Note:** CryptoKeys and KeyRings cannot be deleted in Cloud KMS!
+
+You shouldn't see any output. Just like that, you've created a KeyRing and CryptoKey!
+
+1. Open the [Key management](https://console.cloud.google.com/security/kms) through the Console by going to the **Navigation menu** > **Security** > **Key Management**.
+
+The Key Management web UI allows you to view and manage your CryptoKeys and KeyRings. You will use this UI later when you manage permissions.
+
+Click **Check my progress** to verify the objective.
+
+Create a Keyring and Crypto key.
+
+
+
+Check my progress
+
+
+
+## Task 5. Encrypt your data
+
+Next, try to encrypt some data!
+
+1. Take the contents of the email you looked at earlier and `base64` encode it by running the following:
+
+```
+PLAINTEXT=$(cat 1. | base64 -w0)
+```
+
+Copied!
+
+**Note**: Base64 encoding allows binary data to be sent to the API as plaintext. This command works for images, videos, or any other kind of binary data.
+
+Using the encrypt endpoint, you can send the base64-encoded text you want to encrypt to the specified key.
+
+1. Run the following:
+
+```
+curl -v "https://cloudkms.googleapis.com/v1/projects/$DEVSHELL_PROJECT_ID/locations/global/keyRings/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_NAME:encrypt" \
+  -d "{\"plaintext\":\"$PLAINTEXT\"}" \
+  -H "Authorization:Bearer $(gcloud auth application-default print-access-token)"\
+  -H "Content-Type: application/json"
+```
+
+Copied!
+
+**Note:** The `encrypt` action will return a different result each time even when using the same text and key.
+
+The response will be a JSON payload containing the encrypted text in the attribute `ciphertext`.
+
+1. Now that your data is encrypted, you can save it to a file and upload it to your Cloud Storage bucket. To grab the encrypted text from the JSON response and save it to a file, use the command-line utility [jq](https://stedolan.github.io/jq/). The response from the previous call can be piped into jq, which can parse out the `ciphertext` property to the file `1.encrypted`. Run the following:
+
+```
+curl -v "https://cloudkms.googleapis.com/v1/projects/$DEVSHELL_PROJECT_ID/locations/global/keyRings/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_NAME:encrypt" \
+  -d "{\"plaintext\":\"$PLAINTEXT\"}" \
+  -H "Authorization:Bearer $(gcloud auth application-default print-access-token)"\
+  -H "Content-Type:application/json" \
+| jq .ciphertext -r > 1.encrypted
+```
+
+Copied!
+
+1. To verify the encrypted data can be decrypted, call the `decrypt` endpoint to verify the decrypted text matches the original email. The encrypted data has information on which CryptoKey version was used to encrypt it, so the specific version is never supplied to the decrypt endpoint. Run the following:
+
+```
+curl -v "https://cloudkms.googleapis.com/v1/projects/$DEVSHELL_PROJECT_ID/locations/global/keyRings/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_NAME:decrypt" \
+  -d "{\"ciphertext\":\"$(cat 1.encrypted)\"}" \
+  -H "Authorization:Bearer $(gcloud auth application-default print-access-token)"\
+  -H "Content-Type:application/json" \
+| jq .plaintext -r | base64 -d
+```
+
+Copied!
+
+**Note:** Usually decryption is performed at the application layer. For a walkthrough on how to encrypt and decrypt data in multiple programming languages, read the [Cloud KMS Quickstart](https://cloud.google.com/kms/docs/quickstart).
+
+1. Now that you have verified the text has been encrypted successfully, upload the encrypted file to your Cloud Storage bucket.
+
+```
+gsutil cp 1.encrypted gs://${BUCKET_NAME}
+```
+
+Copied!
+
+Click **Check my progress** to verify the objective.
+
+Encrypt Your Data with the Cloud KMS key and upload it on the storage bucket.
+
+
+
+Check my progress
+
+
+
+## Task 6. Configure IAM permissions
+
+In KMS, there are two major permissions to focus on. One permissions allows a user or service account to **manage KMS resources**, the other allows a user or service account to use keys to **encrypt and decrypt** data.
+
+The permission to manage keys is `cloudkms.admin`, and allows anyone with the permission to create KeyRings and create, modify, disable, and destroy CryptoKeys. The permission to encrypt and decrypt is `cloudkms.cryptoKeyEncrypterDecrypter`, and is used to call the encrypt and decrypt API endpoints.
+
+For this exercise, you will use the current authorized user to assign IAM permissions.
+
+1. To get the current authorized user, run the command below:
+
+```
+USER_EMAIL=$(gcloud auth list --limit=1 2>/dev/null | grep '@' | awk '{print $2}')
+```
+
+Copied!
+
+1. Next, assign that user the ability to manage KMS resources. Run the following `gcloud` command to assign the IAM permission to manage the KeyRing you just created:
+
+```
+gcloud kms keyrings add-iam-policy-binding $KEYRING_NAME \
+    --location global \
+    --member user:$USER_EMAIL \
+    --role roles/cloudkms.admin
+```
+
+Copied!
+
+Since CryptoKeys belong to KeyRings, and KeyRings belong to Projects, a user with a specific role or permission at a higher level in that hierarchy inherits the same permissions on the child resources. For example, a user who has the role of Owner on a Project is also an Owner on all the KeyRings and CryptoKeys in that project. Similarly, if a user is granted the `cloudkms.admin` role on a KeyRing, they have the associated permissions on the CryptoKeys in that KeyRing.
+
+Without the `cloudkms.cryptoKeyEncrypterDecrypter` permission, the authorized user will not be able to use the keys to encrypt or decrypt data.
+
+1. Run the following `gcloud` command to assign the IAM permission to encrypt and decrypt data for any CryptoKey under the KeyRing you created:
+
+```
+gcloud kms keyrings add-iam-policy-binding $KEYRING_NAME \
+    --location global \
+    --member user:$USER_EMAIL \
+    --role roles/cloudkms.cryptoKeyEncrypterDecrypter
+```
+
+Copied!
+
+Now you can view the assigned permissions in the Cryptographic Keys section of [Key Management](https://console.cloud.google.com/security/kms).
+
+1. Check the box by the name of the key ring (`test`), then click **Principals** in the right info panel.
+
+This will open up a menu where you can see the accounts and permissions for the key ring you just added.
+
+## Task 7. Back up data on the command line
+
+Now that you have an understanding of how to encrypt a single file, and have permission to do so, you can run a script to backup all files in a directory. For this example, copy all emails for **allen-p**, encrypt them, and upload them to a Cloud Storage bucket.
+
+1. First, copy all emails for **allen-p** into your current working directory:
+
+```
+gsutil -m cp -r gs://enron_emails/allen-p .
+```
+
+Copied!
+
+1. Now copy and paste the following into Cloud Shell to back up and encrypt all the files in the **allen-p** directory to your Cloud Storage bucket:
+
+```
+MYDIR=allen-p
+FILES=$(find $MYDIR -type f -not -name "*.encrypted")
+for file in $FILES; do
+  PLAINTEXT=$(cat $file | base64 -w0)
+  curl -v "https://cloudkms.googleapis.com/v1/projects/$DEVSHELL_PROJECT_ID/locations/global/keyRings/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_NAME:encrypt" \
+    -d "{\"plaintext\":\"$PLAINTEXT\"}" \
+    -H "Authorization:Bearer $(gcloud auth application-default print-access-token)" \
+    -H "Content-Type:application/json" \
+  | jq .ciphertext -r > $file.encrypted
+done
+gsutil -m cp allen-p/inbox/*.encrypted gs://${BUCKET_NAME}/allen-p/inbox
+```
+
+Copied!
+
+This script loops over all the files in a given directory, encrypts them using the KMS API, and uploads them to Cloud Storage.
+
+Click **Check my progress** to verify the objective.
+
+Encrypt multiple files using KMS API and upload to Cloud Storage.
+
+
+
+Check my progress
+
+
+
+After the script completes, you can view the encrypted files when you click Storage from the Console's left menu.
+
+1. To find the files, go to **Navigation menu** > **Cloud Storage** > **Buckets** > **YOUR_BUCKET** > **allen-p** > **inbox**. You should see something like this:
+
+![Bucket content](images\LBBvUXIIKTjshgLeh04UeLEtvf70BTbi6CKxtuSYNwE%3D.png)
+
+**Note:** Cloud Storage supports [Server Side Encryption](https://cloud.google.com/storage/docs/encryption), which supports key rotation of your data and is the recommended way to encrypt data in Cloud Storage. The above example is for demonstration purposes only.
+
+## Task 8. View Cloud Audit logs
+
+Google Cloud Audit Logging consists of two log streams, Admin Activity and Data Access, which are generated by Google Cloud services to help you answer the question "who did what, where, and when?" within your Google Cloud projects.
+
+- To view the activity for any resource in KMS, go to **Navigation menu > Cloud Overview > Activity** tab. This will take you to the **Cloud Activity UI** and then click on **View Log Explorer**, Select **Cloud KMS Key Ring** as the `Resource Type` and you should see the creation and all modifications made to the KeyRing.
+
+You've now encrypted and uploaded data using KMS and Cloud Storage!
+
+### **What was covered**
+
+- Using IAM to manage KMS permissions.
+- Using KMS to encrypt data.
+- Using Cloud Storage to store encrypted data.
+- Using Cloud Audit Logging to view all activity for CryptoKeys and KeyRings.
+
+## Task 9. Test your knowledge
+
+Test your knowledge about Cloud KMS by taking this quiz.
+
+
+
+Cloud KMS is integrated with Cloud IAM and Cloud Audit Logging so that you can manage permissions on individual keys and monitor how these are used.
+
+
+
+True
+
+
+
+False
+
+
+
+## Congratulations!
+
+You learned how to encrypt data and manage encryption keys using Cloud Key Management Service (KMS).
+
+
+
+# Observability in Google Cloud
+
+# Configuring Google Cloud Services for Observability
+
+## Lab - Monitoring a Compute Engine by using Ops Agent
+
+## Overview
+
+In this lab you will create a compute engine to install and configure an Ops Agent. You will generate traffic and view metrics on the predefined Apache dashboard and also create an alerting policy.
+
+## Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Create a Compute Engine VM instance.
+- Install an Apache Web Server.
+- Install and configure the Ops Agent for the Apache Web Server.
+- Generate traffic and view metrics on the predefined Apache dashboard.
+- Create an alerting policy.
+
+## Create a Compute Engine VM instance
+
+1. In Google Cloud console, go to **Compute** and then select **Compute Engine**.
+2. To create a VM instance, click **Create instance**.
+3. Fill in the fields for your instance as follows:
+
+- In the **Name** field, enter `quickstart-vm`.
+- In the **Machine type** field, select **e2-small**.
+- Ensure the **Boot disk** is configured for **Debian GNU/Linux**.
+- In the **Firewall** field, select both **Allow HTTP traffic** and **Allow HTTPS traffic**.
+
+Leave the rest of the fields at their default values.
+
+1. Click **Create**. When your VM is ready, it appears in the list of instances in the Instances tab.
+
+Click **Check my progress** to verify the objective.
+
+Create a Compute Engine VM instance
+
+
+
+Check my progress
+
+
+
+## Install an Apache Web Server
+
+To deploy an Apache Web Server on your Compute Engine VM instance, do the following:
+
+1. To open a terminal to your instance, in the **Connect** column, click **SSH**.
+2. To update the package lists on your instance, run the following command:
+
+```
+sudo apt-get update
+```
+
+Copied!
+
+1. To install an Apache2 HTTP Server, run the following command:
+
+```
+sudo apt-get install apache2 php7.0
+```
+
+Copied!
+
+**Note:** If the previous command fails, then use sudo apt-get install apache2 php. If asked to continue the installation, enter `Y`.
+
+1. Open your browser and connect to your Apache2 HTTP server by using the URL `http://EXTERNAL_IP`, where `EXTERNAL_IP` is the external IP address of your VM. You can find this address in the **External IP** column of your VM instance.
+
+![Apache2 Works](images\xIN%2FXr5xvudX1GHokiSJAQNBcMqZXZQEnFbSLVdoDbI%3D.png)
+
+Click **Check my progress** to verify the objective.
+
+Install an Apache Web Server
+
+
+
+Check my progress
+
+
+
+## Install and configure the Ops Agent
+
+To collect logs and metrics from your Apache Web Server, install the [Ops Agent](https://cloud.google.com/logging/docs/agent/ops-agent) by using the terminal:
+
+1. To open a terminal to your VM instance, in the **Connect** column, click **SSH**.
+2. To install the Ops Agent, run the following command:
+
+```
+curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+```
+
+Copied!
+
+You see `google-cloud-ops-agent` installation succeeded.
+
+1. Copy the following command, then paste it into the terminal:
+
+```
+# Configures Ops Agent to collect telemetry from the app and restart Ops Agent.
+
+set -e
+
+# Create a back up of the existing file so existing configurations are not lost.
+sudo cp /etc/google-cloud-ops-agent/config.yaml /etc/google-cloud-ops-agent/config.yaml.bak
+
+# Configure the Ops Agent.
+sudo tee /etc/google-cloud-ops-agent/config.yaml > /dev/null << EOF
+metrics:
+  receivers:
+    apache:
+      type: apache
+  service:
+    pipelines:
+      apache:
+        receivers:
+          - apache
+logging:
+  receivers:
+    apache_access:
+      type: apache_access
+    apache_error:
+      type: apache_error
+  service:
+    pipelines:
+      apache:
+        receivers:
+          - apache_access
+          - apache_error
+EOF
+
+sudo service google-cloud-ops-agent restart
+sleep 60
+```
+
+Copied!
+
+The previous command creates the configuration to collect and ingest logs and metrics from the Apache Web Server. For more information about ingesting logs from the Apache Web Server, see [Configure the Ops Agent for Apache Web Server](https://cloud.google.com/logging/docs/agent/ops-agent/third-party/apache).
+
+Click **Check my progress** to verify the objective.
+
+Install the Ops Agent
+
+
+
+Check my progress
+
+
+
+## Generate traffic and view metrics
+
+Monitoring dashboards let you view and analyze metrics related to your services. In this quickstart, you generate metrics on your Apache Web Server and view metric data on the automatically created **Apache GCE Overview** dashboard.
+
+To generate metrics on your Apache Web Server, do the following:
+
+1. In the Google Cloud console, go to **Compute Engine**.
+2. In the **Connect** column, click **SSH** to open a terminal to your VM instance.
+3. To generate traffic on your Apache Web Server, run the following command:
+
+```
+timeout 120 bash -c -- 'while true; do curl localhost; sleep $((RANDOM % 4)) ; done'
+```
+
+Copied!
+
+The previous command generates traffic by making a request to the Apache Web Server every four seconds.
+
+To view the **Apache GCE Overview** dashboard, do the following:
+
+1. In the Google Cloud console, search for **Monitoring** in the top search bar and navigate to the **Monitoring** service.
+2. In the navigation pane, select **Dashboards**.
+3. In **All Dashboards**, select the **Apache Overview** dashboard. The dashboard opens.
+
+In the dashboard, there are several charts that contain information about your Apache and Compute Engine integration:
+
+![Apache Dashboard](images\ixAF74OALIDRkZLYNX4YYdCW4%2BlXfTswSlx24c2Clck%3D.png)
+
+Click **Check my progress** to verify the objective.
+
+Generate traffic and view metrics
+
+
+
+Check my progress
+
+
+
+## Create an alerting policy
+
+1. To set up an email notification channel, do the following:
+
+- In the Google Cloud console > **Monitoring** select **Alerting** and then click **Edit notification channels**.
+- In the **Email section**, click Add new and enter your desired Email Address.
+- **Name the Email Channel**: `An email address you have access to`
+
+To create an alerting policy that monitors a metric and sends an email notification when the traffic rate on your Apache Web Server exceeds 4 KiB/s, do the following:
+
+1. In the Google Cloud console > **Monitoring** select **Alerting** and then click **Create policy**.
+2. Select the time series to be monitored:
+
+- Click **Select a metric** and enter **VM instance** into the filter bar.
+- In the **Active metric categories** list, select **Apache**.
+- In the **Active metrics** list, select **workload/apache.traffic**.
+- Click **Apply**.
+
+The chart for Apache traffic is shown.
+
+1. In the **Transform data** section, select the following values and click **Next**:
+
+- **Rolling window**: `1 min`
+- **Rolling window function**: `rate`
+
+1. In the **Configure alert trigger** section, select the following values and click **Next**:
+
+- **Alert trigger**: `Any time series violates`
+- **Threshold position**: `Above threshold`
+- **Threshold value**: `4000`
+
+1. In the **Configure notifications and finalize alert** section, select the following values:
+
+- **Notification channels**: `An email address you have access to`
+- **Incident autoclose duration**: `30 min`
+- **Name the alert policy**: `Apache traffic above threshold`
+
+1. Click **Create policy**. Your alerting policy is now active.
+
+Click **Check my progress** to verify the objective.
+
+Create an alerting policy
+
+
+
+Check my progress
+
+
+
+## Test the alerting policy
+
+To test the alerting policy you just created, do the following:
+
+1. Navigate to Cloud Console > **Compute Engine**.
+2. In the **Connect** column, click **SSH** to open a terminal to your VM instance.
+3. In the terminal, enter the following command:
+
+```
+timeout 120 bash -c -- 'while true; do curl localhost; sleep $((RANDOM % 4)) ; done'
+```
+
+Copied!
+
+The previous command generates traffic in your Apache Web Server.
+
+After the traffic rate threshold value of 4 KiB/s is exceeded in your Apache Web Server, an email notification is sent. It might take several minutes for this process to complete.
+
+The email notification you receive looks similar to the following:
+
+![Notifcation Alert](images\Oer%2B%2BfLuduvYPWMkBMXGt7llmvitw423GrOLQlDP600%3D.png)
+
+## Congratulations!
+
+In this lab, you learned how to install Ops Agent on a VM and use it to set an alerting policy to notify a recipient of potential issues with the instance.
+
+## Quiz - Configuring Google Cloud Services for Observability
+
+
+
+1. What is used to collect metrics inside the VM instead of at the hypervisor level?
+
+- Graphana
+
+- **Ops Agent**
+
+- Cloud Monitoring
+
+- Monarch
+
+2. What are the three ways to install the Ops Agent?
+
+- **On a Single VM**
+
+- **On a fleet of VMs**
+- **Using Terraform**
+
+- On a storage bucket
+
+- On a container
+
+- Using Cloud Run functions to trigger install
+
+
+
+3. Management wants to see an analysis of resources divided by development team, department, cost center, and application status. What could you do to make this easier?
+
+- Use customized logging messages that include appropriate resource metadata.
+
+- Used standardized prefixes on the names of all resources.
+
+- **Add appropriate labels to your Google Cloud resources.**
+
+- Add appropriate tags to your Google Cloud resources.
+
+
+
+# Monitoring Google Cloud Network
+
+## Lab - Analyzing Network Traffic with VPC Flow Logs
+
+## Overview
+
+In this lab, you will configure a network to record traffic to and from an Apache web server using VPC Flow Logs. You will then export the logs to BigQuery to analyze them.
+
+### Objectives
+
+In this lab, you will learn how to perform the following tasks:
+
+- Configure a custom network with VPC flow logs.
+- Create an Apache web server.
+- Verify that network traffic is logged.
+- Export the network traffic to BigQuery to further analyze the logs.
+- Setup VPC flow log aggregation.
+
+## Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+## Task 1. Configure a custom network with VPC flow logs
+
+### Create the custom network
+
+By default, VPC Flow Logs are disabled for a network. Therefore, you will create a new custom-mode network and enable VPC flow logs.
+
+1. In the Cloud Console, in the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **VPC network > VPC networks**.
+
+2. Click **Create VPC Network**.
+
+3. Specify the following and leave the remaining settings as their defaults:
+
+   | Property    | Value (type value or select option as specified) |
+   | :---------- | :----------------------------------------------- |
+   | Name        | vpc-net                                          |
+   | Description | Enter an optional description                    |
+
+4. For **Subnet creation mode**, click **Custom**.
+
+5. Specify the following and leave the remaining settings as their defaults:
+
+   | Property         | Value (type value or select option as specified) |
+   | :--------------- | :----------------------------------------------- |
+   | Name             | vpc-subnet                                       |
+   | Region           | `REGION`                                         |
+   | IP address range | 10.1.3.0/24                                      |
+   | Flow Logs        | On                                               |
+
+**Note:** Turning on VPC flow logs doesn't affect performance, but some systems generate a large number of logs, which can increase costs. If you click on **Configure logs** you'll notice that you can modify the aggregation interval and sample rate. This allows you to trade off longer interval updates for lower data volume generation which lowers logging costs. For more information on this, refer to the [log sampling and processing](https://cloud.google.com/vpc/docs/using-flow-logs#log-sampling) documentation.
+
+1. Click **Done**.
+2. Click **Create**.
+
+Wait for the network to be created before continuing.
+
+### Create the firewall rule
+
+In order to serve HTTP and SSH traffic on the network, you need to create a firewall rule.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **VPC network > Firewall**.
+
+2. Click **CREATE FIREWALL RULE**.
+
+3. Specify the following and leave the remaining settings as their defaults:
+
+   | Property            | Value (type value or select option as specified)             |
+   | :------------------ | :----------------------------------------------------------- |
+   | Name                | allow-http-ssh                                               |
+   | Network             | vpc-net                                                      |
+   | Targets             | Specified target tags                                        |
+   | Target tags         | http-server                                                  |
+   | Source filter       | IPv4 Ranges                                                  |
+   | Source IPv4 ranges  | 0.0.0.0/0                                                    |
+   | Protocols and ports | Specified protocols and ports, and then *check* tcp, *type:* 80, 22 |
+
+**Note:** Make sure to include the **/0** in the **Source IPv4 ranges** to specify all networks.
+
+1. Click **Create**.
+
+Click *Check my progress* to verify the objective.
+
+Configure a custom network with VPC Flow Logs
+
+
+
+Check my progress
+
+
+
+## Task 2. Create an Apache web server
+
+### Create the web server
+
+1. In the **Navigation menu**, select **Compute Engine > VM instances**.
+
+2. Click **Create instance**.
+
+3. Specify the following and leave the remaining settings as their defaults:
+
+   | Property     | Value (type value or select option as specified) |
+   | :----------- | :----------------------------------------------- |
+   | Name         | web-server                                       |
+   | Region       | `REGION`                                         |
+   | Zone         | `ZONE`                                           |
+   | Series       | E2                                               |
+   | Machine type | e2-micro                                         |
+
+4. Click **Advanced Options**.
+
+5. Click **Networking**.
+
+6. For **Network tags**, type `http-server`.
+
+7. For **Network interfaces**, click **default**.
+
+8. Specify the following and leave the remaining settings as their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Network    | vpc-net                                          |
+   | Subnetwork | vpc-subnet (10.1.3.0/24)                         |
+
+9. Click **Done**.
+
+10. Click **Create**.
+
+### Install Apache
+
+Configure the VM instance that you created as an Apache web server and overwrite the default web page.
+
+1. For **web-server**, click **SSH** to launch a terminal and connect.
+
+2. In the **web-server** SSH terminal, update the package index:
+
+   ```
+   sudo apt-get update
+   ```
+
+   Copied!
+
+3. Install the apache2 package:
+
+   ```
+   sudo apt-get install apache2 -y
+   ```
+
+   Copied!
+
+4. To create a new default web page by overwriting the default, run the following:
+
+   ```
+   echo '<!doctype html><html><body><h1>Hello World!</h1></body></html>' | sudo tee /var/www/html/index.html
+   ```
+
+   Copied!
+
+5. Exit the SSH terminal:
+
+   ```
+   exit
+   ```
+
+   Copied!
+
+Click *Check my progress* to verify the objective.
+
+Create an Apache web server
+
+
+
+Check my progress
+
+
+
+## Task 3. Verify that network traffic is logged
+
+### Generate network traffic
+
+1. Return to the **VM instances** page in the Cloud Console.
+2. For **web-server**, click on the **External IP** to access the server.
+
+**Note:** You should see the **Hello World!** welcome page that you configured. Alternatively, you can access the server in a new tab by navigating to http://*Enter the external IP Address*.
+
+### Find your IP address
+
+Find the IP address of the computer you are using. One easy way to do this is to go to a website that provides this address.
+
+1. Open a browser in a new tab.
+2. Go to [Google.com](https://www.google.com/) and search for `what's my IP`. It will either directly reply with your IP or give you a list of sites that perform this service.
+3. Ensure that the IP address only contains numerals (IPv4) and is not represented in hexadecimal (IPv6).
+4. Copy your IP address. It will be referred to as *YOUR_IP_ADDRESS*.
+
+### Access the VPC flow logs
+
+1. On the Google Cloud console title bar, in the Search field, type **Logging**, click Search, and then click **Logging**.
+2. In the **Log fields** panel, under **RESOURCE TYPE**, click **Subnetwork**. In the Query results pane, entries from the subnetwork logs appear.
+3. In the **Log fields** panel, under **LOG NAME**, click **compute.googleapis.com/vpc_flows**. In the Query results panel, entries from the VPC flow logs appear. If you do not see **compute.googleapis.com/vpc_flows**, wait a few minutes for this log type to show up.
+4. Enable the **Show query** button.
+5. In the Query builder box, at the end of line 2, press **Enter** to create a new line.
+6. On line 3, enter *YOUR_IP_ADDRESS* and click **Run Query**.
+
+**Note:** If you do not see the **vpc_flows** filter option or if there are no logs, you might have to wait a few minutes and refresh. If after a couple of minutes you still don't see the **vpc_flows** filter option, click on the **External IP** of the **web-server** a couple of times to generate more traffic and check back on the **vpc_flows** filter option.
+
+1. Expand one of the log entries.
+2. Within the entry, expand the **jsonPayload** and then expand the **connection**.
+
+
+
+Which fields does the connection contain?
+
+
+
+Source IP address
+
+
+
+Source port
+
+
+
+Destination IP address
+
+
+
+Destination port
+
+
+
+The IANA protocol number
+
+
+
+Submit
+
+
+
+You can explore other fields within the log entry before continuing to the next task.
+
+## Task 4. Export the network traffic to BigQuery to further analyze the logs
+
+### Create an export sink
+
+1. On the Google Cloud console title bar, type **Logs explorer** in the **Search** field, then select **Logs explorer** from **Search Results**.
+2. Under the **RESOURCE TYPE**, click **Subnetwork**. In the Query results pane, entries for all available subnetworks appear.
+3. Under the **LOG NAME** filter, click **compute.googleapis.com/vpc_flows**. In the Query results pane, only the VPC flow log entries are shown.
+4. Select **Actions > Create Sink**.
+5. For the **Sink name**, type `bq_vpcflows`, and click **NEXT**.
+6. In the **Select sink service** drop-down list, select **BigQuery dataset**.
+7. In the **Select BigQuery dataset** drop-down list, select **Create new BigQuery dataset**.
+8. For **Dataset ID**, enter `bq_vpcflows`, and click **CREATE DATASET**.
+9. Click **NEXT** twice.
+10. Click **CREATE SINK**.
+
+### Generate log traffic for BigQuery
+
+Now that the network traffic logs are being exported to BigQuery, you need to generate more traffic by accessing the web-server several times. Using Cloud Shell, you can `curl` the IP address of the web-server several times.
+
+1. In the **Navigation menu**, select **Compute Engine > VM instances**.
+2. Note the **External IP** address for the **web-server** instance. It will be referred to as *EXTERNAL_IP*.
+3. Click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)).
+4. If prompted, click **Continue**.
+5. Store the *EXTERNAL_IP* in an environment variable in Cloud Shell:
+
+```
+export MY_SERVER=<Enter the EXTERNAL_IP here>
+```
+
+Copied!
+
+1. Access the web-server 50 times from Cloud Shell:
+
+```
+for ((i=1;i<=50;i++)); do curl $MY_SERVER; done
+```
+
+Copied!
+
+### Visualize the VPC flow logs in BigQuery
+
+1. In the Cloud Console, in the **Navigation menu**, click **BigQuery**.
+2. If prompted, click **Done**.
+3. In the left pane, expand the **bq_vpcflows** dataset to reveal the table. You might have to first expand the **Project ID** to reveal the dataset.
+4. Click on the name of the table. It should start with **compute_googleapis**.
+5. Click on the **Details** tab.
+6. Copy the *Table ID* value under Table info.
+
+**Note:** If you do not see the **bq_vpcflows** dataset or if it does not expand, wait and refresh the page.
+
+1. Click the + icon to open a new BidQuery Editor tab.
+2. Add the following to the BigQuery **Editor** and replace **your_table_id** with *TABLE_ID* while retaining the accents (`) on both sides:
+
+```
+#standardSQL
+SELECT
+jsonPayload.src_vpc.vpc_name,
+SUM(CAST(jsonPayload.bytes_sent AS INT64)) AS bytes,
+jsonPayload.src_vpc.subnetwork_name,
+jsonPayload.connection.src_ip,
+jsonPayload.connection.src_port,
+jsonPayload.connection.dest_ip,
+jsonPayload.connection.dest_port,
+jsonPayload.connection.protocol
+FROM
+`your_table_id`
+GROUP BY
+jsonPayload.src_vpc.vpc_name,
+jsonPayload.src_vpc.subnetwork_name,
+jsonPayload.connection.src_ip,
+jsonPayload.connection.src_port,
+jsonPayload.connection.dest_ip,
+jsonPayload.connection.dest_port,
+jsonPayload.connection.protocol
+ORDER BY
+bytes DESC
+LIMIT
+15
+```
+
+Copied!
+
+1. Click **Run**.
+
+**Note:** If you get an error, ensure that you did not remove the **#standardSQL** part of the query. If it still fails, ensure that the TABLE_ID did not include the Project ID.
+
+
+
+Which columns does the results table contain?
+
+
+
+Subnet name
+
+
+
+Protocol
+
+
+
+VPC name
+
+
+
+Sum of bytes sent
+
+
+
+Source IP address and port
+
+
+
+Destination IP address and port
+
+
+
+Submit
+
+
+
+### Analyze the VPC flow logs in BigQuery
+
+The previous query gave you the same information that you saw in the Cloud Console. Now, you will change the query to identify the top IP addresses that have exchanged traffic with your **web-server**.
+
+1. Create a new query in the BigQuery **Editor** with the following and replace **your_table_id** with *TABLE_ID* while retaining the accents (`) on both sides:
+
+```
+#standardSQL
+SELECT
+jsonPayload.connection.src_ip,
+jsonPayload.connection.dest_ip,
+SUM(CAST(jsonPayload.bytes_sent AS INT64)) AS bytes,
+jsonPayload.connection.dest_port,
+jsonPayload.connection.protocol
+FROM
+`your_table_id`
+WHERE jsonPayload.reporter = 'DEST'
+GROUP BY
+jsonPayload.connection.src_ip,
+jsonPayload.connection.dest_ip,
+jsonPayload.connection.dest_port,
+jsonPayload.connection.protocol
+ORDER BY
+bytes DESC
+LIMIT
+15
+```
+
+Copied!
+
+1. Click **Run**.
+
+**Note:** The results table now has a row for each source IP and is sorted by the highest amount of bytes sent to the **web-server**. The top result should reflect your Cloud Shell IP address.
+
+**Note:** Unless you accessed the **web-server** after creating the export sink, you will not see your machine's IP address in the table.
+
+You can generate more traffic to the **web-server** from multiple sources and query the table again to determine the bytes sent to the server.
+
+Click *Check my progress* to verify the objective.
+
+Export the network traffic to BigQuery to further analyze the logs
+
+
+
+Check my progress
+
+
+
+## Task 5. Add VPC flow log aggregation
+
+In this task, you will now explore a new release of [VPC flow log volume reduction](https://cloud.google.com/vpc/docs/using-flow-logs#log-sampling). Not every packet is captured into its own log record. However, even with sampling, log record captures can be quite large.
+
+You can balance your traffic visibility and storage cost needs by adjusting specific aspects of logs collection, which you will explore in this section.
+
+### Setting up aggregation
+
+1. In the Console, navigate to the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) and select **VPC network > VPC networks**.
+2. Click **vpc-net**.
+3. In the **Subnets** tab, click **vpc-subnet**:
+
+![VPC subnets in Subnets tab](images\loPbGvCESaB2oiby%2FYRCmr8qwwOlSoEo2G4bQwjPeSk%3D.png)
+
+1. Click **Edit > Advanced Settings** to expose the following fields:
+
+![Flow log settings additional fields](images\zeVvGMnBf81G7wcXHmYe%2BEwNbT3%2BOiZwuiEAT6a7ezs%3D.png)
+
+The purpose of each field is explained below.
+
+- **Aggregation time interval:** Sampled packets for a time interval are aggregated into a single log entry. This time interval can be 5 sec (default), 30 sec, 1 min, 5 min, 10 min, or 15 min.
+- **Metadata annotations:** By default, flow log entries are annotated with metadata information, such as the names of the source and destination VMs or the geographic region of external sources and destinations. This metadata annotation can be turned off to save storage space.
+- **Log entry sampling:** Before being written to the database, the number of logs can be sampled to reduce their number. By default, the log entry volume is scaled by 0.50 (50%), which means that half of entries are kept. You can set this from 1.0 (100%, all log entries are kept) to 0.0 (0%, no logs are kept).
+
+1. Set the **Aggregation Interval** to **30 seconds**.
+2. Set the **Secondary sampling rate** to **25%**.
+3. Click **Save**. You should see the following message:
+
+![Estimated logs generated per day notification](images\X1bEDNMrLRomcnHD0AAzR7Bne%2FiMjDDjwyptAVQY6hY%3D.png)
+
+Setting the aggregation level to 30 seconds can reduce your flow logs size by up to *83%* compared to the default aggregation interval of 5 seconds. Configuring your flow log aggregation can seriously affect your traffic visibility and storage costs.
+
+## Congratulations!
+
+You have configured a VPC network, enabled VPC Flow Logs, and created a web server in that network. Then, you generated HTTP traffic to the web server, viewed the traffic logs in the Cloud Console, and analyzed the traffic logs in BigQuery. Finally, you used VPC Flow Log aggregation for balancing your traffic visibility and storage cost.
+
+There are multiple use cases for VPC Flow Logs. For example, you might use VPC Flow Logs to determine where your applications are being accessed from in order to optimize network traffic expense, to create HTTP load balancers to balance traffic globally, or to deny unwanted IP addresses with Cloud Armor.
+
+# Quiz
+
+
+
+1. What lets you perform a live debugging of connections that are inadvertently dropped?
+
+- Firewall Rules Logging
+
+- **Firewall Insights**
+
+- Load Balancer Logs
+
+- Cloud NAT logs
+
+2. What logs help you monitor a network by recording a portion of network flows sent and received by VM instances (including GKE nodes)?
+
+- Firewall logs
+
+- Cloud NAT logs
+
+- **VPC Flow logs**
+
+- Load balancer logs
+
+3. What is one of the disadvantages of using packet mirroring?
+
+- No Disaster Recovery
+
+- Expensive
+
+- Increased Latency
+
+- **Bandwidth consumption**
+
+
+
+# Investigating Application Performance Issues
+
+## Lab - View application latency with Cloud Trace
+
+## Overview
+
+In this lab, you learn how to use Cloud Trace by sending an HTTP request to the sample application.
+
+### Objectives
+
+Learn how to use Cloud Trace by doing the following:
+
+- Deploy a sample application to a Google Kubernetes Engine (GKE) cluster.
+- Create a trace by sending an HTTP request to the sample application.
+- Use the Cloud Trace interface to view the latency information of the trace you created.
+
+## Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+## Task 1. Download and deploy your application
+
+To download and deploy the sample application, do the following:
+
+1. To open the Cloud Shell, click Activate Cloud Shell in the Google Cloud console toolbar:
+
+Activate Cloud Shell.
+
+After a few moments, a Cloud Shell session opens inside the Google Cloud console.
+
+1. To download the source code from GitHub, run the following command:
+
+```
+git clone https://github.com/GoogleCloudPlatform/python-docs-samples.git
+```
+
+Copied!
+
+1. Enable the Google Kubernetes Engine API by using the following command:
+
+```
+gcloud services enable container.googleapis.com
+```
+
+Copied!
+
+1. To create the GKE cluster named cloud-trace-demo in the `<filled in at lab start>` zone, run the following commands in the Cloud Shell:
+
+```
+ZONE=place_holder_text
+```
+
+Copied!
+
+```
+gcloud container clusters create cloud-trace-demo \
+   --zone $ZONE
+```
+
+Copied!
+
+This command takes a few minutes to complete. After it completes successfully, your Google Cloud project contains the GKE cluster named cloud-trace-demo. You must have permission to create clusters that have external access in your Google Cloud project.
+
+1. Update your GKE cluster credentials by running the following command:
+
+```
+gcloud container clusters get-credentials cloud-trace-demo --zone $ZONE
+```
+
+Copied!
+
+1. Verify access to the cluster by running the following command:
+
+```
+kubectl get nodes
+```
+
+Copied!
+
+A sample output of this command is:
+
+```
+NAME                                              STATUS   ROLES    AGE   VERSION
+gke-cloud-trace-demo-default-pool-063c0416-113s   Ready       78s   v1.22.12-gke.2300
+gke-cloud-trace-demo-default-pool-063c0416-1n27   Ready       79s   v1.22.12-gke.2300
+gke-cloud-trace-demo-default-pool-063c0416-frkd   Ready       78s   v1.22.12-gke.2300
+```
+
+1. Deploy the sample application by running the following command:
+
+```
+cd python-docs-samples/trace/cloud-trace-demo-app-opentelemetry && ./setup.sh
+```
+
+Copied!
+
+The script setup.sh configures three services of the application using a pre-built image. The workloads are named cloud-trace-demo-a, cloud-trace-demo-b, and cloud-trace-demo-c. The setup script waits for all resources to be provisioned, so the configuration might take several minutes to complete.
+
+A sample output of this command is:
+
+```
+deployment.apps/cloud-trace-demo-a is created
+service/cloud-trace-demo-a is created
+deployment.apps/cloud-trace-demo-b is created
+service/cloud-trace-demo-b is created
+deployment.apps/cloud-trace-demo-c is created
+service/cloud-trace-demo-c is created
+```
+
+Click **Check my progress** to verify the objective.
+
+Create a cluster and deploy the sample application
+
+
+
+Check my progress
+
+
+
+## Task 2. Create a trace
+
+1. To create a trace by sending a curl request to cloud-trace-demo-a, use the following command:
+
+```
+curl $(kubectl get svc -o=jsonpath='{.items[?(@.metadata.name=="cloud-trace-demo-a")].status.loadBalancer.ingress[0].ip}')
+```
+
+Copied!
+
+You can execute the curl command multiple times to generate multiple traces.
+
+The output looks like the following:
+
+```
+Hello, I am service A
+And I am service B
+Hello, I am service C
+```
+
+Click **Check my progress** to verify the objective.
+
+Create a cloud trace
+
+
+
+Check my progress
+
+
+
+### View the trace data
+
+1. In the Google Cloud console, select Cloud Trace.
+
+The Overview window is the default view in Trace. This window displays latency data and summary information, including an analysis report. If you created a new project, the most interesting pane of the Overview window is the pane labeled Recent traces:
+
+Recent traces pane that displays the most recent traces and their latency. This pane lists the most recent traces and their latency. To view the details of a trace, click its link.
+
+1. In the Trace navigation pane, click list Trace explorer:
+
+Trace explorer window for the quickstart.
+
+This window displays a graph and a table. Each dot on the graph represents a trace. Each dot also corresponds to a row in the table.
+
+1. To view a trace in detail, select a dot in the graph or a row in the table. Waterfall display that shows five spans.
+   - After you select a dot, the scatter plot is refreshed and the dot you selected is highlighted with a circle drawn around the dot.
+   - The dots that represent all other traces are dimmed.
+   - The Trace details pane displays information about the trace. The first row of the table is for the trace, and there exists one row for each span in the trace.
+2. To view details about a span, click the latency bar:
+
+Additional details about each span are shown in the details pane.
+
+## Congratulations!
+
+In this lab, you performed the following tasks:
+
+- Deployed a sample application to a Google Kubernetes Engine (GKE) cluster.
+- Created a trace by sending an HTTP request to the sample application.
+- Used the Cloud Trace interface to view the latency information of the trace you created.
+
+Good job.
+
+## End your lab
+
+
+
+## Quiz
+
+
+
+1. Which profile signifies the amount of memory allocated in the heap of the program?
+
+- **Heap**
+
+- CPU time
+
+- Allocated heap
+
+- Wall time
+
+2. You have an SLO that states that 90% of your http requests need to respond in less than 100 ms. You want a report that compares latency for your last two versions. What tool would you use to most easily create this report?
+
+- Error Reporting
+
+- **Trace**
+
+- Logging
+
+- Profiler
+
+3. You deployed a new version of a service and all of a sudden significantly more instances are being created in your Kubernetes cluster. Your service scales when average CPU utilization is greater than 70%. What tool can help you investigate the problem?
+
+- **Logging**
+
+- Error Reporting
+
+- Trace
+
+- Profiler
+
+
+
+## Optimizing the Costs for Google Cloud Observability
+
+## Quiz
+
+1. What is Cloud Logging pricing based on?
+
+- Profiler Usage
+
+- Read operation in the Cloud Logging API
+
+- Number of uptime checks
+
+- **Volume of chargeable logs**
+
+2. What is one of the best practices to reduce monitoring costs?
+
+- Increasing custom metric usage.
+
+- **Reduce Ops Agents usage**
+
+- Increase label usage
+
+- Reduce the number of time series
+
+
+
+# Cloud Architecture: Design, Implement, and Manage
+
+
+
+## Lab - Deploy a Compute Instance with a Remote Startup Script: Challenge Lab
+
+## Overview
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students who have enrolled in the [Cloud Architecture: Design, Implement, and Manage](https://www.cloudskillsboost.google/course_templates/640) skill badge or preparing for the [Google Cloud Certified Professional Cloud Architect](https://cloud.google.com/certification/cloud-architect) certification exam. Are you up for the challenge?
+
+## Challenge scenario
+
+You have been given the responsibility of managing the configuration of your organization's Google Cloud virtual machines. You have decided to make some changes to the framework used for managing the deployment and configuration machines - you want to make it easier to modify the startup scripts used to initialize a number of the compute instances. Instead of storing startup scripts directly in the instances' metadata, you have decided to store the scripts in a Cloud Storage bucket and then configure the virtual machines to point to the relevant script file in the bucket.
+
+A basic bash script that installs the Apache web server software called `install-web.sh` has been provided for you as a sample startup script. You can download this from the Student Resources links on the left side of the page. You can also find the startup script in a public Cloud Storage bucket at `gs://spls/gsp301/install-web.sh`.
+
+## Your challenge
+
+Configure a Linux Compute Engine instance that installs the Apache web server software using a remote startup script. In order to confirm that a compute instance Apache has successfully installed, the Compute Engine instance must be accessible via HTTP from the internet. You must create your instance in the following zone: `ZONE`.
+
+**Note:** In order to ensure accurate activity tracking you should not modify or change any of the pre-created lab resources, in particular the lab-monitor Compute Engine instance.
+
+### Task 1. Create a storage bucket
+
+Create a storage bucket
+
+```
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+gsutil cp gs://sureskills-ql/challenge-labs/ch01-startup-script/install-web.sh gs://$DEVSHELL_PROJECT_ID
+```
+
+install-web.sh
+
+```
+#!/bin/bash
+apt-get update
+apt-get install -y apache2
+```
+
+
+
+Check my progress
+
+
+
+### Task 2. Create a VM instance with a remote startup script
+
+Create a VM instance with a remote startup script
+
+```
+gcloud compute instances create example-instance --zone=us-central1-a --tags=http-server --metadata startup-script-url=gs://$DEVSHELL_PROJECT_ID/install-web.sh
+```
+
+
+
+Check my progress
+
+
+
+### Task 3. Create a firewall rule to allow traffic (80/tcp)
+
+Create a firewall rule to allow traffic (80/tcp)
+
+```
+gcloud compute firewall-rules create allow-http --target-tags http-server --source-ranges 0.0.0.0/0 --allow tcp:80
+```
+
+
+
+Check my progress
+
+
+
+### Task 4. Test that the VM is serving web content
+
+Test that the VM is serving web content
+
+
+
+Check my progress
+
+
+
+### Tips and Tricks
+
+- **Configure Instance Metadata.** The [Running Startup Scripts](https://cloud.google.com/compute/docs/startupscript) documentation page explains how Compute Engine instance metadata can be used to configure startup scripts.
+- **Check if your Compute Engine instance is executing the startup script**. Use the Serial Console for the running virtual machine to look at the startup events to make sure that the startup script is being executed.
+- **Check permissions.** Your Compute Engine instance might not have the correct permissions required to read the startup script from the storage bucket. The virtual machine needs to be given permissions that align with the storage permissions.
+- **Check firewalls.** If the startup script has installed the software you may be unable to connect if a firewall has not been correctly configured.
+- **Check the URL and address.** You will be unable to connect to the Apache web server if you are trying to access the Compute Engine instance using an HTTPS address rather than HTTP; or you are using the incorrect IP address. Check that your URL is `http://[EXTERNAL_IP]` rather than `https://[EXTERNAL_IP]` or `http://[INTERNAL_IP]`
+
+## Congratulations!
+
+Congratulations! In this lab, you configured a Linux Compute Engine instance that installs the Apache web server software using a remote startup script. You also configured the Compute Engine instance to be accessible via HTTP from the internet.
+
+
+
+## Lab - Configure Secure RDP using a Windows Bastion Host: Challenge Lab
+
+## Overview
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students preparing for the [Google Cloud Certified Professional Cloud Architect](https://cloud.google.com/certification/cloud-architect) certification exam. Are you up for the challenge?
+
+## Challenge scenario
+
+Your company has decided to deploy new application services in the cloud and your assignment is developing a secure framework for managing the Windows services that will be deployed. You will need to create a new VPC network environment for the secure production Windows servers.
+
+Production servers must initially be completely isolated from external networks and cannot be directly accessed from, or be able to connect directly to, the internet. In order to configure and manage your first server in this environment, you will also need to deploy a bastion host, or jump box, that can be accessed from the internet using the Microsoft Remote Desktop Protocol (RDP). The bastion host should only be accessible via RDP from the internet, and should only be able to communicate with the other compute instances inside the VPC network using RDP.
+
+Your company also has a monitoring system running from the default VPC network, so all compute instances must have a second network interface with an internal only connection to the default VPC network.
+
+## Your challenge
+
+Deploy the secure Windows machine that is not configured for external communication inside a new VPC subnet, then deploy the Microsoft Internet Information Server on that secure machine. For the purposes of this lab, all resources should be provisioned in the following region and zone:
+
+- **Region**: `region`
+- **Zone**: `zone`
+
+### Tasks
+
+The key tasks are listed below. Good luck!
+
+- Create a new VPC network with a single subnet.
+- Create a firewall rule that allows external RDP traffic to the bastion host system.
+- Deploy two Windows servers that are connected to both the VPC network and the default network.
+- Create a virtual machine that points to the startup script.
+- Configure a firewall rule to allow HTTP access to the virtual machine.
+
+## Task 1. Create the VPC network
+
+1. Create a new VPC network called `securenetwork`.
+
+Click **Check my progress** to verify the objective.
+
+Create the VPC network.
+
+```
+gcloud compute networks create securenetwork --subnet-mode=custom
+```
+
+Check my progress
+
+2. Create a new VPC subnet inside `securenetwork` in the `region` region.
+
+Click **Check my progress** to verify the objective.
+
+Create the VPC subnet.
+
+```
+gcloud compute networks subnets create securenetwork --network=securenetwork --region=us-central1 --range=192.168.1.0/24
+```
+
+Check my progress
+
+3. Once the network and subnet have been configured, configure a firewall rule that allows inbound RDP traffic (TCP port 3389) from the internet to the bastion host. This rule should be applied to the appropriate host using network tags.
+
+```
+gcloud compute firewall-rules create myfirewalls --network securenetwork --allow=tcp:3389 --target-tags=rdp
+```
+
+Click **Check my progress** to verify the objective.
+
+Create the firewall rule.
+
+
+
+Check my progress
+
+
+
+## Task 2. Deploy your Windows instances and configure user passwords
+
+1. Deploy a Windows 2016 server (Server with Desktop Experience) instance called
+
+   ```
+   vm-securehost
+   ```
+
+   with two network interfaces in the zone.
+
+   - Configure the first network interface with an internal only connection to the newly created VPC subnet.
+   - The second network interface with an internal only connection to the default VPC network. This is the secure server.
+
+   ```
+   gcloud compute instances create vm-securehost --project=qwiklabs-gcp-03-5c4b30840bb5 --zone=us-east4-a --machine-type=n1-standard-2 --network-interface=stack-type=IPV4_ONLY,subnet=securenetwork,no-address --network-interface=stack-type=IPV4_ONLY,subnet=default,no-address --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=855436298519-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/trace.append --tags=rdp --create-disk=auto-delete=yes,boot=yes,device-name=vm-securehost,image=projects/windows-cloud/global/images/windows-server-2016-dc-v20241212,mode=rw,size=50,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --labels=goog-ec-src=vm_add-gcloud --reservation-affinity=any
+   ```
+
+   
+
+Click **Check my progress** to verify the objective.
+
+Create the `vm-securehost` instance.
+
+
+
+Check my progress
+
+
+
+1. Deploy a second Windows 2016 server (Server with Desktop Experience) instance called 'vm-bastionhost' with two network interfaces in the`us-east4-a`zone.
+
+   - Configure the first network interface to connect to the newly created VPC subnet with an ephemeral public (external NAT) address.
+   - The second network interface with an internal only connection to the default VPC network. This is the jump box or bastion host.
+
+   ```
+   gcloud compute instances create vm-bastionhost --zone=us-east4-a --machine-type=n1-standard-2 --subnet=securenetwork --network-tier=PREMIUM --maintenance-policy=MIGRATE --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --tags=rdp --image=windows-server-2016-dc-v20200211 --image-project=windows-cloud --boot-disk-size=50GB --boot-disk-type=pd-standard --boot-disk-device-name=vm-bastionhost --reservation-affinity=any
+   
+   ```
+
+   
+
+Click **Check my progress** to verify the objective.
+
+Create the `vm-bastionhost` instance.
+
+
+
+Check my progress
+
+
+
+### Configure user passwords
+
+1. After your Windows instances have been created, create a user account and reset the Windows passwords in order to connect to each instance.
+
+**NOTE:** Copy the User name and Password of both instances for later use.
+
+1. The following `gcloud` command creates a new user called `app-admin` and resets the password for a host called `vm-bastionhost` located in the `placeholder` zone:
+
+```
+gcloud compute reset-windows-password vm-bastionhost --user app_admin --zone "placeholder"
+```
+
+Copied!
+
+1. The following `gcloud` command creates a new user called `app-admin` and resets the password for a host called `vm-securehost` located in the `placeholder` zone:
+
+```
+gcloud compute reset-windows-password vm-securehost --user app_admin --zone "placeholder"
+```
+
+Copied!
+
+- Alternatively, you can force a password reset from the Compute Engine console. You will have to repeat this for the second host as the login credentials for that instance will be different.
+
+## Task 3. Connect to the secure host and configure Internet Information Server
+
+1. To connect to the secure host, you have to RDP into the **`bastion host`** first. A Windows Compute Instance with an external address can be connected to via RDP using the RDP button that appears next to Windows Compute instances in the Compute Instance summary page.
+2. Once you are connected to the bastion host using RDP session then open a new RDP session inside the **`bastion host`** to connect to the internal private network address of the **`secure host`**.
+3. When connected to a Windows server, you can launch the Microsoft RDP client using the command `mstsc.exe`, or you can search for `Remote Desktop Manager` from the Start menu. This will allow you to connect from the bastion host to other compute instances on the same VPC even if those instances do not have a direct internet connection themselves.
+
+Once you connect to the `vm-securehost` machine through RDP then configure Internet Information Server.
+
+1. Once you log in to the vm-securehost machine, Open the Server Management window. And `Configure the local server` to Add **roles and features**.
+2. Use the **`Role-based or feature-based installation`** to add the **`Web Server (IIS)`** role.
+
+Click **Check my progress** to verify the objective.
+
+Configure the IIS web server software.
+
+
+
+Check my progress
+
+
+
+## Troubleshooting
+
+- **Unable to connect to the Bastion host:** Make sure you are attempting to connect to the external address of the bastion host. If the address is correct you may not be able to connect to the bastion host if the firewall rule is not correctly configured to allow TCP port 3389 (RDP) traffic from the internet, or your own system's public IP-address, to the network interface on the bastion host that has an external address. Finally, you might have issues connecting via RDP if your own network does not allow access to internet addresses via RDP. If everything else is definitely OK, you will need to talk to the owner of the network you are connected to the internet with to open up port 3389 or connect using a different network.
+- **Unable to connect to the Secure Host from the Bastion host:** If you can successfully connect to the bastion host but are unable to make the internal RDP connection using Microsoft Remote Desktop Connection application, check that both instances are connected to the same VPC network.
+
+## Congratulations!
+
+Congratulations! In this lab, you configured a secure Windows server environment using a bastion host and a VPC network. You also configured a firewall rule to allow HTTP access to the virtual machine, and deployed the Microsoft Internet Information Server on the secure machine.
+
+
+
+## Lab - Build and Deploy a Docker Image to a Kubernetes Cluster: Challenge Lab
+
+## Overview
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students preparing for the [Google Cloud Certified Professional Cloud Architect](https://cloud.google.com/certification/cloud-architect) certification exam. Are you up for the challenge?
+
+## Challenge scenario
+
+Your development team is interested in adopting a containerized microservices approach to application architecture. You need to test a sample application they have provided for you to make sure that it can be deployed to a Google Kubernetes container. The development group provided a simple Go application called `echo-web` with a Dockerfile and the associated context that allows you to build a Docker image immediately.
+
+### Your challenge
+
+To test the deployment, you need to download the sample application, then build the Docker container image using a tag that allows it to be stored on the Container Registry. Once the image has been built, you'll push it out to the Container Registry before you can deploy it.
+
+With the image prepared you can then create a Kubernetes cluster, then deploy the sample application to the cluster.
+
+**Note:** In order to ensure accurate lab activity tracking you must use `echo-app` as the container repository image name, call your Kubernetes cluster `echo-cluster`, create the Kubernetes cluster in `ZONE` zone and use `echo-web` for the deployment name.
+
+## Task 1. Create a Kubernetes cluster
+
+1. Your test environment is limited in capacity, so you should limit the test Kubernetes cluster you are creating to just two `e2-standard-2` instances. You must call your cluster `echo-cluster`.
+
+Click **Check my progress** to verify the objective.
+
+Create the Kubernetes cluster
+
+```
+gcloud config set compute/zone us-central1-a
+gcloud container clusters create echo-cluster --num-nodes=2 --machine-type=n1-standard-2
+```
+
+
+
+Check my progress
+
+
+
+## Task 2. Build a tagged Docker image
+
+The sample application, including the Dockerfile and the application context files, are contained in an archive called `echo-web.tar.gz`. The archive has been copied to a Cloud Storage bucket belonging to your lab project called `gs://[PROJECT_ID].`
+
+- You must deploy this with a tag called `v1.`
+
+## Task 3. Push the image to the Google Container Registry
+
+- Your organization has decided that it will always use the `gcr.io` Container Registry hostname for all projects. The sample application is a simple web application that reports some data describing the configuration of the system where the application is running. It is configured to use TCP port 8000 by default.
+
+Click **Check my progress** to verify the objective.
+
+An application image with a v1 tag has been pushed to the gcr.io repository
+
+```
+mkdir echo-web && cd echo-web
+gsutil cp -r gs://$DEVSHELL_PROJECT_ID/echo-web.tar.gz .
+tar -xzf echo-web.tar.gz
+rm echo-web.tar.gz
+cd echo-web
+docker build -t echo-app:v1 .
+docker tag echo-app:v1 gcr.io/$DEVSHELL_PROJECT_ID/echo-app:v1
+docker push gcr.io/$DEVSHELL_PROJECT_ID/echo-app:v1
+```
+
+
+
+Check my progress
+
+
+
+## Task 4. Deploy the application to the Kubernetes cluster
+
+- Even though the application is configured to respond to HTTP requests on port 8000, you must configure the service to respond to normal web requests on port 80. When configuring the cluster for your sample application, call your deployment `echo-web`.
+
+Click **Check my progress** to verify the objective.
+
+Check that an application has been deployed to the cluster
+
+```
+kubectl create deployment echo-web --image=gcr.io/$DEVSHELL_PROJECT_ID/echo-app:v1
+```
+
+
+
+Check my progress
+
+
+
+Click **Check my progress** to verify the objective.
+
+Test that a service exists that responds to requests like Echo-app
+
+```
+kubectl expose deployment echo-web --type=LoadBalancer --port 80 --target-port 8000
+```
+
+
+
+Check my progress
+
+
+
+## Troubleshooting
+
+**Receiving a 504, Gateway timeout error:** This might just indicate that the application hasn't quite initialized yet, but it could also be caused by a mismatch between the default port that is set in the Dockerfile (TCP port 8000) and the choice of application port you configured when deploying the application image, or when you configured external access.
+
+**Not receiving assessment score for the last three objectives:** This might just indicate that you have created your Kubernetes cluster in the different zone rather than `ZONE` zone which is expected in the lab.
+
+## Congratulations!
+
+Congratulations! In this lab, you have deployed a sample application to a Kubernetes cluster. You started by creating a Kubernetes cluster, then built a Docker image and pushed it to the Container Registry. Finally, you deployed the application to the cluster.
+
+
+
+## Lab - Scale Out and Update a Containerized Application on a Kubernetes Cluster: Challenge Lab
+
+## Overview
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students preparing for the [Google Cloud Certified Professional Cloud Architect](https://cloud.google.com/certification/cloud-architect) certification exam. Are you up for the challenge?
+
+## Challenge scenario
+
+You are taking over ownership of a test environment and have been given an updated version of a containerized test application to deploy. Your systems' architecture team has started adopting a containerized microservice architecture. You are responsible for managing the containerized test web applications. You will first deploy the initial version of a test application, called `echo-app` to a Kubernetes cluster called `echo-cluster` in a deployment called `echo-web`. The cluster will be deployed in the `ZONE` zone.
+
+1. Before you get started, in the **Navigation menu**, select **Cloud Storage**.
+2. Verify the `echo-web-v2.tar.gz` file is in the `bucket name` bucket.
+
+![Storage browser containing the relevant bucket](images\6LFiu9lfhzr7qtTo4e1BifM0q0cRiNDzEHnvYmfvrjc%3D.png)
+
+Next, you will check to make sure your GKE cluster has been created before continuing.
+
+1. In the **Navigation menu**, select select **Kuberntes Engine** > **Clusters**.
+
+Continue when you see a green checkmark next to `echo-cluster`:
+
+![echo-cluster with green checkmark on the Kubernetes clusters page](images\QouWWaKBDJ2Dug%2B1QP3Zw4jqG5NTXpXmRhrfTXvdF08%3D.png)
+
+1. To deploy your first version of the application, run the following commands in Cloud Shell to get up and running:
+
+```
+gcloud container clusters get-credentials echo-cluster --zone=ZONE
+```
+
+Copied!
+
+```
+kubectl create deployment echo-web --image=gcr.io/qwiklabs-resources/echo-app:v1
+```
+
+Copied!
+
+```
+kubectl expose deployment echo-web --type=LoadBalancer --port 80 --target-port 8000
+```
+
+Copied!
+
+### Your challenge
+
+You need to update the running `echo-app` application in the `echo-web` deployment from the v1 to the v2 code you have been provided. You must also scale out the application to 2 instances and confirm that they are all running.
+
+## Task 1. Build and deploy the updated application with a new tag
+
+The updated sample application, including the Dockerfile and the application context files, are contained in an archive called `echo-web-v2.tar.gz`. The archive has been copied to a Cloud Storage bucket in your lab project called `bucket name`. V2 of the application adds a version number to the output of the application. In this task, you will download the archive, build the Docker image, and tag it with the `v2` tag.
+
+## Task 2. Push the image to the Container Registry
+
+Your organization uses the Container Registry to host Docker images for deployments, and uses the `gcr.io` Container Registry hostname for all projects. You must push the updated image to the Container Registry before deploying it.
+
+Click **Check my progress** to verify the objective.
+
+Check that there is a tagged image in gcr.io for echo-app:v2.
+
+
+
+Check my progress
+
+
+
+## Task 3. Deploy the updated application to the Kubernetes cluster
+
+In this task, you will deploy the updated application to the Kubernetes cluster. The deployment should be named `echo-web` and the application should be exposed on port 80. The application should be accessible from outside the cluster.
+
+Click **Check my progress** to verify the objective.
+
+Deploy the updated application version (v2) to the Kubernetes cluster.
+
+
+
+Check my progress
+
+
+
+## Task 4. Scale out the application
+
+In this task, you will need to scale out the application to 2 replicas.
+
+Click **Check my progress** to verify the objective.
+
+Scale out the kubernetes application so that it is running 2 replicas.
+
+
+
+Check my progress
+
+
+
+## Task 5. Confirm the application is running
+
+In this task, you will need to confirm that the application is running and responding correctly. You can use the external IP address of the application to test it.
+
+Click **Check my progress** to verify the objective.
+
+Verify your deployed application service is responding correctly.
+
+
+
+Check my progress
+
+
+
+## Troubleshooting
+
+**Receiving a 504, Gateway timeout error:** This might just indicate that the application hasn't quite initialized yet, but it could also be caused by a mismatch between the default port that is set in the Dockerfile (TCP port 8000) and:
+
+- The choice of application port you configured when deploying the application image, or
+- When you configured external access.
+
+## Congratulations!
+
+Congratulations! In this lab, you deployed a containerized application to a Kubernetes cluster, updated the application, and scaled it out. You are now ready to take on the world of containerized applications!
