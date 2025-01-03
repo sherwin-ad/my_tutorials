@@ -22219,6 +22219,18 @@ Click **Check my progress** to verify the objective.
 
 Check that there is a tagged image in gcr.io for echo-app:v2.
 
+```
+mkdir echo-web && cd echo-web
+gsutil cp -r gs://$DEVSHELL_PROJECT_ID/echo-web-v2.tar.gz .
+tar -xzf echo-web-v2.tar.gz
+rm echo-web-v2.tar.gz
+docker build -t echo-app:v2 .
+docker tag echo-app:v2 gcr.io/$DEVSHELL_PROJECT_ID/echo-app:v2
+docker push gcr.io/$DEVSHELL_PROJECT_ID/echo-app:v2
+```
+
+
+
 
 
 Check my progress
@@ -22233,7 +22245,10 @@ Click **Check my progress** to verify the objective.
 
 Deploy the updated application version (v2) to the Kubernetes cluster.
 
-
+```
+gcloud container clusters get-credentials echo-cluster --zone=us-central1-a
+kubectl create deployment echo-web --image=gcr.io/qwiklabs-resources/echo-app:v2
+```
 
 Check my progress
 
@@ -22247,7 +22262,9 @@ Click **Check my progress** to verify the objective.
 
 Scale out the kubernetes application so that it is running 2 replicas.
 
-
+```
+kubectl scale deployment echo-web --replicas=2
+```
 
 Check my progress
 
@@ -22260,6 +22277,10 @@ In this task, you will need to confirm that the application is running and respo
 Click **Check my progress** to verify the objective.
 
 Verify your deployed application service is responding correctly.
+
+```
+kubectl expose deployment echo-web --type=LoadBalancer --port 80 --target-port 8000
+```
 
 
 
@@ -22277,3 +22298,938 @@ Check my progress
 ## Congratulations!
 
 Congratulations! In this lab, you deployed a containerized application to a Kubernetes cluster, updated the application, and scaled it out. You are now ready to take on the world of containerized applications!
+
+
+
+
+
+## Lab - Migrate a MySQL Database to Google Cloud SQL: Challenge Lab
+
+## Overview
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students preparing for the [Google Cloud Certified Professional Cloud Architect](https://cloud.google.com/certification/cloud-architect) certification exam. Are you up for the challenge?
+
+## Setup
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+## Challenge scenario
+
+Your WordPress blog is running on a server that is no longer suitable. As the first part of a complete migration exercise, you are migrating the locally hosted database used by the blog to Cloud SQL.
+
+The existing WordPress installation is installed in the `/var/www/html/wordpress` directory in the instance called `blog` that is already running in the lab. You can access the blog by opening a web browser and pointing to the external IP address of the blog instance.
+
+The existing database for the blog is provided by MySQL running on the same server. The existing MySQL database is called `wordpress` and the user called **blogadmin** with password **Password1\***, which provides full access to that database.
+
+### Your challenge
+
+1. You need to create a new Cloud SQL instance to host the migrated database.
+2. Once you have created the new database and configured it, you can then create a database dump of the existing database and import it into Cloud SQL.
+3. When the data has been migrated, you will then reconfigure the blog software to use the migrated database.
+
+For this lab, the WordPress site configuration file is located here: `/var/www/html/wordpress/wp-config.php`.
+
+To sum it all up, your challenge is to migrate the database to Cloud SQL and then reconfigure the application so that it no longer relies on the local MySQL database. Good luck!
+
+**Note:** Your lab activity tracking score will initially report a score of 20 points because your blog is running. If you reconfigure the blog application to use Cloud SQL database successfully, those points will remain in your grand total.
+
+
+
+If the database has been incorrectly migrated, the "blog is running" test will fail, reducing your score by 20 points.
+
+**Note:** Use the following values for the zone and region where applicable Zone: `ZONE` Region: `REGION`
+
+### Tips and tricks
+
+**Google Cloud SQL - How-To Guides**: The Cloud SQL documentation includes a set of [How-to guides](https://cloud.google.com/sql/docs/mysql/how-to) that provide guidance on how to create instances and databases, and how to connect applications to those databases.
+
+**WordPress Installation and Migration:** The [WordPress Codex](https://codex.wordpress.org/Installing_WordPress) provides information on how to install, configure, and migrate WordPress sites. You will find the instructions on how to create and prepare databases for use with WordPress [here](https://codex.wordpress.org/Installing_WordPress#Detailed_Instructions).
+
+## Task 1. Create a new Cloud SQL instance
+
+In this task, you need to set up a new Cloud SQL instance in Google Cloud. Choose the right configurations and make sure to create the SQL instance in the **Zone**:`ZONE` and **Region**: `REGION` that will be suitable for hosting the WordPress database. Make sure you understand the requirements for the database to support the WordPress blog.
+
+Click **Check my progress** to verify the objective.
+
+Check that there is a Cloud SQL instance.
+
+- Go to SQL -> Create Instance -> MySQL -> fill the name with "lab" and fill the password
+    It will take a several times to create the instance, you can go to Task 2 without waiting here
+
+Check my progress
+
+
+
+## Task 2. Configure the new database
+
+Once you've created the Cloud SQL instance, your next step is to configure the database within it. Set up the necessary database parameters, ensuring it's prepared to receive the existing WordPress database data.
+
+Click **Check my progress** to verify the objective.
+
+Check that there is a user database on the Cloud SQL instance.
+
+- Go to Compute Engine, click SSH button on "blog" instance
+  - run mysqldump --databases wordpress -h localhost -u blogadmin -p --hex-blob --skip-triggers --single-transaction --default-character-set=utf8mb4 > wordpress.sql
+    - Enter the password with Password1*
+    - run export PROJECT_ID=$(gcloud info --format='value(config.project)')
+    - run gsutil mb gs://${PROJECT_ID}
+    - run gsutil cp ~/wordpress.sql gs://${PROJECT_ID}
+  - Back to Cloud Console -> SQL -> lab -> Databases -> Create Database
+    - Fill the database name with wordpress and on character set, choose utf8mb4 then click Create
+  - Click Overview -> Import -> Browse -> Select wordpress.sql from your bucket -> Select -> Import
+  - Check Your Progress
+
+Check my progress
+
+
+
+## Task 3. Perform a database dump and import the data
+
+Your task here is to perform a dump of the existing **wordpress** MySQL database and then import this data into your newly created Cloud SQL database. This step is crucial in migrating the database effectively.
+
+Click **Check my progress** to verify the objective.
+
+Check that the blog instance is authorized to access Cloud SQL.
+
+- On left panel, click Users -> Add User Account
+    - Fill the name field with blogadmin and password field with Password1* -> add
+  - On the left pannel, Click Connections
+    - Click Add Network Under the Authorized networks
+    - Fill the name with blog
+    - Fill the Network with IP Address from Demo Blog Site Field, Change the latest part of the IP address with 0 and add /24 ( example: If IP = 34.123.155.123, fill with 34.123.155.0/24 )
+    - Check Your Progress
+
+Check my progress
+
+
+
+## Task 4. Reconfigure the WordPress installation
+
+Now that the database has been migrated to Cloud SQL, you need to reconfigure the WordPress software to use this new database. This involves editing the `wp-config.php` file in the WordPress directory to point to the Cloud SQL database, moving away from the local MySQL database.
+
+Click **Check my progress** to verify the objective.
+
+Check that wp-config.php points to the Cloud SQL instance.
+
+- Go to SQL -> Copy the Public IP Address from lab SQL instance
+  - Go to VM Instances click SSH Shell at "blog"
+    - run cd /var/www/html/wordpress/
+    - run sudo nano wp-config.php
+    - Change localhost string on DB_HOST with Public IP Address of SQL Instance that has copied before
+    - Check Your Progress
+
+Check my progress
+
+
+
+## Task 5. Validate and troubleshoot
+
+Your final task is to ensure that the WordPress blog is functioning correctly with the new Cloud SQL database. Check if the blog operates as expected and troubleshoot any issues you encounter. This step is important to confirm the success of your database migration and the overall functionality of the blog.
+
+Click **Check my progress** to verify the objective.
+
+Check that the blog still responds to requests.
+
+- Now You can open your Demo Blog Site in the new tab and verify that no error
+  - Check Your Progress
+
+Check my progress
+
+
+
+## Congratulations!
+
+You have migrated a MySQL database to Google Cloud SQL. You successfully migrated the database to Cloud SQL and reconfigured the WordPress software to use the new database. You also validated the functionality of the blog and troubleshooted any issues you encountered.
+
+
+
+## Lab - Deploy and Troubleshoot a Website: Challenge Lab
+
+## Overview
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students preparing for the [Google Cloud Certified Professional Cloud Architect](https://cloud.google.com/certification/cloud-architect) certification exam. Are you up for the challenge?
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+## Challenge scenario
+
+Your company is ready to launch a brand new product! Because you are entering a totally new space, you have decided to deploy a new website as part of the product launch. The new site is complete, but the person who built the new site left the company before they could deploy it.
+
+### Your challenge
+
+Your challenge is to deploy the site in the public cloud by completing the tasks below. You will use a simple Apache web server as a placeholder for the new site in this exercise. Good luck!
+
+### Running a basic Apache web server
+
+A virtual machine instance on Compute Engine can be controlled like any standard Linux server. Deploy a simple Apache web server (a placeholder for the new product site) to learn the basics of running a server on a virtual machine instance.
+
+## Task 1. Create a Linux VM instance
+
+- Create a Linux virtual machine, name it `dev-eng-5f8` and specify the zone as `us-central1-a`.
+
+Set lab variables
+
+```
+export VM_NAME=dev-eng-5f8
+export ZONE=us-central1-a
+```
+
+Deploy vm and install Apache web service via startup script
+
+```
+gcloud compute instances create $VM_NAME --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --machine-type=e2-medium --tags=web-server,http-server --metadata=startup-script='sudo apt-get update;sudo apt-get install -y apache2;'
+```
+
+## Task 2. Enable public access to VM instance
+
+- While creating the Linux instance, make sure to apply the appropriate firewall rules so that potential customers can find your new product.
+
+Click **Check my progress** to verify the objective.
+
+Create a Compute Engine instance, add necessary firewall rules.
+
+```
+gcloud compute --project=$DEVSHELL_PROJECT_ID firewall-rules create allow-http --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0 --target-tags=web-server
+```
+
+
+
+Check my progress
+
+
+
+## Task 3. Running a basic Apache Web Server
+
+A virtual machine instance on Compute Engine can be controlled like any standard Linux server.
+
+- Deploy a simple Apache web server (a placeholder for the new product site) to learn the basics of running a server on a virtual machine instance.
+
+Click **Check my progress** to verify the objective.
+
+Add Apache2 HTTP Server to your instance
+
+
+
+Check my progress
+
+
+
+## Task 4. Test your server
+
+- Test that your instance is serving traffic on its external IP.
+
+You should see the "Hello World!" page (a placeholder for the new product site).
+
+Click **Check my progress** to verify the objective.
+
+Test your server
+
+
+
+Check my progress
+
+
+
+### **Troubleshooting**
+
+- Receiving a Connection Refused error:
+  - Your VM instance is not publicly accessible because the VM instance does not have the proper tag that allows Compute Engine to apply the appropriate firewall rules, or your project does not have a firewall rule that allows traffic to your instance's external IP address.
+  - You are trying to access the VM using an https address. Check that your URL is http:// EXTERNAL_IP and not https:// EXTERNAL_IP.
+
+## Congratulations!
+
+You have deployed a new website!
+
+
+
+# Deploy and Manage Apigee
+
+
+
+## Lab - Provisioning an Apigee X Evaluation Organization
+
+## Overview
+
+In this lab, you learn how to create an Apigee X [organization](https://cloud.google.com/apigee/docs/api-platform/fundamentals/organization-structure) (org). You use the [Apigee X provisioning wizard](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro) to create the Apigee X org. After installing and configuring the org, you install an API proxy and make API calls to verify that the org is operational.
+
+An [Apigee evaluation org](https://cloud.google.com/apigee/docs/api-platform/fundamentals/organization-structure#org_types) created in your own Google Cloud project is typically available for 60 days. The org you provision for this lab is deleted when the lab ends, and you lose access to the org.
+
+It is recommended that you read through the lab before you click **Start Lab**. After starting the lab, you will have 90 minutes to complete the lab. When the allowed time for the lab has expired, the lab ends and the Apigee evaluation org is deleted.
+
+In this lab, you learn how to perform the following tasks:
+
+- Create an Apigee X evaluation org using the provisioning wizard
+- Understand the Apigee X architecture and how it integrates with a Google Cloud project
+- Create a VM to call an Apigee proxy from an internal IP address
+- Call an Apigee proxy from an external IP address
+
+## Setup
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+**Note:** It is recommended that you use a new Incognito window to complete this lab.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is the **Lab Details** panel with the following:
+
+   - The **Open Google Cloud console** button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-e6acd509df0d@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the **Username** in the **Lab Details** panel.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   HVDjrtewJ1Du
+   ```
+
+   Copied!
+
+   You can also find the **Password** in the **Lab Details** panel.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To view a menu with a list of Google Cloud products and services, click the **Navigation menu** at the top-left. ![Navigation menu icon](images\nUxFb6oRFr435O3t6V7WYJAjeDFcrFb16G9wHWp5BzU%3D.png)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-02-5b09346e1195`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-02-5b09346e1195
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-e6acd509df0d@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-02-5b09346e1195
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Task 1. Provision an Apigee X org
+
+In this task, you use the provisioning wizard to [provision an Apigee X evaluation org](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro).
+
+An Apigee X org is attached to a customer-managed Google Cloud project.
+
+### Prerequisites
+
+Before creating an Apigee X evaluation org, certain [prerequisites](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro#prerequisites) must be met:
+
+- With Apigee X, the name of your Apigee organization matches the name of the associated Google Cloud project. The project name must start with a lowercase letter, and the only allowed characters are lowercase letters (a-z), digits (0-9), and hyphens.
+- A project used for Apigee X must be associated with a Google Cloud account with active billing. This requirement applies whether you are creating a paid or an evaluation Apigee X org. An evaluation org does not incur charges against your account, but some APIs used by the organization do.
+- The [Cloud SDK](https://cloud.google.com/sdk/install) is used to install and interact with your Apigee organization.
+
+The lab project adheres to these prerequisites.
+
+### Start the provisioning wizard
+
+1. Open a **new incognito tab** and open the provisioning wizard at [apigee.google.com/setup](https://apigee.google.com/setup).
+
+2. From the lab information on the left, copy your **Google Cloud project name** into the clipboard.
+
+   ![The highlighted Copy icon next to the Google Cloud project name within the Lab Details panel.](images\2jNV3txbSUN6BgPJDXX2Y8LyBsa7Hh%2FDVlS6kwHQPPE%3D.png)
+
+   **Note:** When creating your own Apigee X evaluation org, use your own project name rather than the lab project name.
+
+3. Paste the **project name** into the **Project** text box.
+
+   A message is displayed indicating that an Apigee subscription is not enabled for this project.
+
+   **Note:** A warning may indicate that you do not have the correct permissions to configure the Apigee org. The permissions should propagate shortly. Refresh the page and try again until you are shown the subscription message.
+
+4. Click **Start Evaluation**.
+
+### Enable APIs
+
+Apigee X organizations require that the Apigee, Service Networking, and Compute Engine APIs must be enabled in the Google Cloud project. The wizard enables the required APIs.
+
+1. Next to **Enable APIs**, click **Edit**.
+
+   The list of APIs to be enabled is shown:
+
+   - The **Apigee APIs** are used to configure and interact with your Apigee organization.
+   - The **Compute Engine APIs** are used to create the [managed instance group](https://cloud.google.com/compute/docs/instance-groups#managed_instance_groups) (MIG) that acts as a network bridge to connect to the Apigee instance private IP address.
+   - The **Service Networking APIs** are used to allow your Google Cloud project to communicate with the Apigee evaluation org that is managed by Google.
+
+2. Click **Enable APIs**.
+
+   After a short wait, the APIs will be completed and a check mark will appear next to **Enable APIs**.
+
+### Set up networking
+
+The provisioning wizard creates [Virtual Private Cloud](https://cloud.google.com/vpc/docs/using-vpc) (VPC) network peering between the customer's Google Cloud project and the Google-managed project containing the Apigee runtime. The wizard also creates a [private service connection](https://cloud.google.com/vpc/docs/private-services-access) for communication with the Apigee runtime.
+
+1. Next to **Networking**, click **Edit**.
+
+   The **Set up networking** pane asks you to specify an authorized network. The default network is already available and can be used for an evaluation org, but it is typically not recommended to use the default network.
+
+2. Click **See VPC networks in your project**.
+
+   The VPC Networks page in the console is opened in another tab.
+
+3. Click **+Create VPC Network**.
+
+4. Name the network `apigeex-vpc`.
+
+5. In the **New subnet** pane, set the following values:
+
+   | Property              | Value                 |
+   | :-------------------- | :-------------------- |
+   | Name                  | **apigeex-vpc**       |
+   | Region                | select `europe-west4` |
+   | IPv4 range            | **10.0.0.0/20**       |
+   | Private Google Access | **On**                |
+
+   The IP address range is specified in [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) format. The decimal number specifies the size of the range, from /32 (a single IP address) to /8 (the largest private IP range, from 10.0.0.0 to 10.255.255.255).
+
+   Your subnet must use a range large enough to hold a **/22** range. The **/20** range being used here is 4 times larger than the /22 range which will be used by Apigee.
+
+6. In the **New subnet** pane, click **Done**.
+
+7. Click **Create**.
+
+   A new VPC network with a single subnet is created in your project. A circle spins next to the apigeex-vpc network until it has completed.
+
+8. Wait for the **apigeex-vpc** network to be created, and then return to the wizard **Setup** tab.
+
+9. Click **Refresh authorized networks** (![refresh networks button](https://cdn.qwiklabs.com/BOi73jhhhf9HGLOw6U4yZBNkLQwU7LYHmzWp5YKX5oQ%3D)), and then select the **apigeex-vpc** authorized network.
+
+10. Select **Automatically allocate IP range**.
+
+A [peering IP range](https://cloud.google.com/apigee/docs/api-platform/system-administration/peering-ranges) named **google-managed-services-apigeex-vpc** with prefix length /22 will be created.
+
+**Note:** The peering range prefix length specifies how many peered internal IP addresses are allocated to Apigee. The number of addresses is 2 ^ (32 - prefix length). The peering range prefix length for a paid org should be /16 or /20, corresponding to 65536 or 4096 IP addresses respectively.
+
+
+
+An evaluation org can only use a prefix length of /22, which corresponds to 1024 IP addresses. The small number of IP addresses limits how much Apigee can scale for an evaluation org. Paid orgs are able to handle much more traffic than evaluation orgs.
+
+1. Click **Allocate and connect**.
+2. Wait for the Networking configuration to finish.
+
+A check mark appears next to **Networking** when the network configuration setup has completed.
+
+1. Return to the **VPC networks** tab, and then click **Refresh**.
+2. Click **apigeex-vpc**.
+3. Where the **Subnets** tab is selected, scroll to the right and select the **Private Service Connection** tab.
+
+The **google-managed-services-apigeex-vpc** IP range has been created with a /22 internal IP range.
+
+Click *Check my progress* to verify the objective.
+
+Enable APIs and set up networking.
+
+
+
+Check my progress
+
+
+
+### Create the Apigee evaluation organization
+
+The provisioning wizard creates an Apigee evaluation org.
+
+1. Return to the wizard **Setup** tab.
+
+2. Next to **Apigee evaluation organization**, click **Edit**.
+
+   The **Create an Apigee evaluation organization** pane lets you select the Google Cloud [regions](https://cloud.google.com/compute/docs/regions-zones) that are used for the Apigee runtime and Analytics hosting.
+
+3. Select **`europe-west4`** for the **Runtime location**.
+
+   You select a region for the runtime location. Apigee chooses a zone in the region in which to provision the evaluation org.
+
+4. Select **`europe-west4`** for the **Analytics hosting region**.
+
+   **Note:** If the chosen runtime region is not available as an analytics hosting region, choose a region that is geographically close to the runtime region. For example, if your runtime region is us-east4, you might select us-east1 as your analytics region.
+
+   **Note:** An evaluation org can only have a single runtime instance hosted in a single Google Cloud zone.
+
+   
+
+   A paid org runtime instance runs in multiple zones within a region. More than one runtime instance may be created for an organization, with each being hosted in a different region.
+
+   
+
+   For a multi-region Apigee org, choose an analytics hosting region that is central to your runtime regions or close to your most important region or regions.
+
+5. Click **Provision**.
+
+   You will return to the provisioning wizard later to configure **Access Routing**.
+
+## Task 2. Wait for provisioning to complete
+
+In this task, you wait for the Apigee evaluation org provisioning to complete.
+
+The Apigee organization provisioning takes quite a while to complete. The org provisioning progress can be monitored by using the [Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest).
+
+### Start monitoring script
+
+1. Return to the **console** tab.
+
+2. On the top-right toolbar, click the **Activate Cloud Shell** button.
+
+   ![The Activate Cloud Shell button highlighted.](images\%2Bs5BdmFabeL8x4IIoJGI023GY1IWRNGCWnglQhW9IZE%3D.png)
+
+3. If prompted, click **Continue**.
+
+   It takes a few moments to provision and connect to the Cloud Shell. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*.
+
+4. In the Cloud Shell, verify the variable with your Apigee org name:
+
+   ```
+   echo ${GOOGLE_CLOUD_PROJECT}
+   ```
+
+   Copied!
+
+   The variable **GOOGLE_CLOUD_PROJECT** should contain the name of your project, which is the same as your Apigee organization name.
+
+5. **If the GOOGLE_CLOUD_PROJECT variable is not set**, set the variable manually using a command that looks like this, replacing with your project name:
+
+   ```
+   export GOOGLE_CLOUD_PROJECT=<project>
+   ```
+
+   Copied!
+
+6. Paste the following command into Cloud Shell:
+
+   ```
+   export INSTANCE_NAME=eval-instance; export ENV_NAME=eval; export PREV_INSTANCE_STATE=; echo "waiting for runtime instance ${INSTANCE_NAME} to be active"; while : ; do export INSTANCE_STATE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}" | jq "select(.state != null) | .state" --raw-output); [[ "${INSTANCE_STATE}" == "${PREV_INSTANCE_STATE}" ]] || (echo; echo "INSTANCE_STATE=${INSTANCE_STATE}"); export PREV_INSTANCE_STATE=${INSTANCE_STATE}; [[ "${INSTANCE_STATE}" != "ACTIVE" ]] || break; echo -n "."; sleep 5; done; echo; echo "instance created, waiting for environment ${ENV_NAME} to be attached to instance"; while : ; do export ATTACHMENT_DONE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}/attachments" | jq "select(.attachments != null) | .attachments[] | select(.environment == \"${ENV_NAME}\") | .environment" --join-output); [[ "${ATTACHMENT_DONE}" != "${ENV_NAME}" ]] || break; echo -n "."; sleep 5; done; echo; echo "${ENV_NAME} environment attached"; echo "***ORG IS READY TO USE***";
+   ```
+
+   Copied!
+
+   This series of commands uses the Apigee API to determine when the runtime instance has been created, and then waits for the eval environment to be attached to the instance.
+
+7. Wait for the provisioning to complete.
+
+   When the text `***ORG IS READY TO USE***` is printed, the org can be tested.
+
+   **Note: Continue reading this lab** to learn about the Apigee X architecture, API proxy call lifecycle, and Apigee UI while you wait for the organization to be fully created.
+
+   
+
+   This process may take close to 30 minutes. Pay attention to the time remaining in the lab, and periodically check the Cloud Shell output to see when the org can be tested.
+
+   
+
+   Other labs in this quest will automatically create the Apigee org for you.
+
+### Apigee X architecture overview
+
+An Apigee X organization requires two Google Cloud projects: one managed by the customer, and one managed by Google for the Apigee X runtime. Each project uses its own [Virtual Private Cloud](https://cloud.google.com/vpc/docs/using-vpc) (VPC) network. By default, VPC networks in two separate projects cannot communicate with each other.
+
+![Two separate projects, wherein there is a line between them depicting the inability of their VPCs to comunicate with one another.](images\jQ%2FoV1TRuzvHNdjPSr9ID6z%2FnZNd7KBqa0W7dqxL3GE%3D.png)
+
+To enable communication between these VPCs, Apigee uses [VPC network peering](https://cloud.google.com/vpc/docs/vpc-peering). Network peering allows internal IP address connectivity between the two networks.
+
+![The VPC network peering overlapping with the Google's VPC as well as the customer's VPC, enabling communication.](images\%2FeY5cpxHTBKgqRCCKQYXZvdJLUS6q%2BanYLpjZsSgyLw%3D.png)
+
+The Apigee runtime runs your API proxies, and is provisioned in the Google-managed project. Incoming requests to the runtime are sent to an [internal TCP load balancer](https://cloud.google.com/load-balancing/docs/internal) which is accessible by using a private IP address in the peered network.
+
+To route traffic from clients on the internet to the Apigee runtime, you can use a global [external HTTPS load balancer](https://cloud.google.com/load-balancing/docs/https) (XLB). However, an XLB cannot communicate directly with an internal IP address in another project, even if the networks are peered. To solve this problem, a [managed instance group](https://cloud.google.com/compute/docs/instance-groups#managed_instance_groups) (MIG) of virtual machines (VMs) serves as a network bridge.
+
+![The overall architecture when using a MIG as a network bridge, including global and backend services.](images\OgvhjLznRlpo50UK7OouAz3NRP9dDaXEWPhwp200xrQ%3D.png)
+
+The VMs in the MIG can communicate bidirectionally across the peered networks. A request coming from the internet would flow through the XLB to a bridge VM in the MIG. The VM can call the private IP of the Apigee runtime's internal load balancer.
+
+The runtime can also directly call internal IP addresses in the peered network in the customer project, or call external IPs through the Google-managed project's Cloud NAT (network address translation) gateway.
+
+### API proxy call lifecycle
+
+The following illustration shows the lifecycle of an API proxy call for a paid Apigee X org.
+
+![The proxy call lifecycle, starting at the Apigee API proxy request, and ending in the Apigee request return.](images\Wg7mH3l%2FNs93T27sOhXrPYCXLfHO3puVOLikbLN1RXA%3D.png)
+
+1. A client calls an Apigee API proxy.
+2. The request lands on a global external HTTPS load balancer (XLB). The XLB is configured with an external public IP address and a TLS certificate.
+3. The XLB forwards the request to a VM in the MIG.
+4. The VM forwards the request to the internal load balancer private IP address which is routed to the Apigee runtime.
+5. After processing the request, the Apigee runtime sends the request to the backend service. The response returns along the same path.
+
+### Apigee UI
+
+The Apigee UI is used to manage your org. You may explore your org in the UI by navigating to [apigee.google.com](https://apigee.google.com/).
+
+**Note:** The Apigee X org should be visible in the Apigee UI a few minutes after the provisioning process has started.
+
+Click *Check my progress* to verify the objective.
+
+Create the Apigee evaluation organization and wait for it to be provisioned.
+
+
+
+Check my progress
+
+
+
+## Task 3. Set up access routing
+
+In this task, you use the provisioning wizard to create the infrastructure that allows API calls to be made from outside of the VPC network.
+
+1. Return to the wizard **Setup** tab.
+
+   **Note:** If the previous progress checkpoint was completed successfully, the Apigee evaluation organization process (step 3) should be marked as completed, or will be marked as completed shortly. Wait for step 3 to complete.
+
+2. Next to **Access routing**, click **Edit**.
+
+3. Select **Enable internet access**.
+
+   **Note:** The wizard mentions a cost for the Google Cloud Load Balancer. There is no cost for you when using this lab.
+
+4. Select **Use wildcard DNS service**.
+
+   A [wildcard DNS service](https://cloud.google.com/anthos/run/docs/default-domain?hl=en_US#choosing_between_a_wildcard_dns_service_and_a_custom_domain) will automatically return a DNS entry based upon an IP address embedded in the hostname. For example, the hostname `eval-34.100.120.55.nip.io` would resolve to the IP address 34.100.120.55.
+
+5. To use the default wildcard DNS provider, [nip.io](https://nip.io/), leave the **domain** unchanged.
+
+6. For **Subnetwork**, select **apigeex-vpc**.
+
+7. Click **Set Access**.
+
+   Wait until the access routing configuration has completed.
+
+Click *Check my progress* to verify the objective.
+
+Set up access routing.
+
+
+
+Check my progress
+
+
+
+External access for the evaluation org is being created. Creation of the **apigee-ssl-cert** used by the load balancer may take several minutes, so you'll start by testing internal access.
+
+## Task 4. Test the Apigee evaluation org using internal access
+
+In this task, you test that a proxy in the Apigee evaluation org can be called from an internal IP address.
+
+To call an API proxy on a runtime instance using an internal IP address, you will create a VM on the same network that has the ability to make a call to the instance.
+
+### Create a virtual machine that can make calls to the Apigee runtime
+
+After provisioning, an Apigee evaluation org only allows internal IP addresses to communicate with the Apigee runtime. A Compute Engine VM within your cluster can send requests to the internal load balancer for the Apigee runtime.
+
+1. Using Cloud Shell, set the following variables:
+
+   ```
+   export ORG=${GOOGLE_CLOUD_PROJECT}
+   export PROJECT_NUMBER=$(gcloud projects describe ${GOOGLE_CLOUD_PROJECT} --format="value(projectNumber)")
+   export NETWORK=apigeex-vpc
+   export SUBNET=apigeex-vpc
+   export INSTANCE_NAME=eval-instance
+   export VM_NAME=apigeex-test-vm
+   export VM_ZONE=europe-west4-c
+   export RUNTIME_IP=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/instances/${INSTANCE_NAME}" | jq ".host" --raw-output)
+   echo "RUNTIME_IP=${RUNTIME_IP}"
+   ```
+
+   Copied!
+
+   The runtime IP address is retrieved using the Apigee API that retrieves the details for a runtime instance. The tool [jq](https://stedolan.github.io/jq/) is used to parse the JSON response and retrieve a specific field.
+
+2. Create a virtual machine:
+
+   ```
+   gcloud beta compute --project=${GOOGLE_CLOUD_PROJECT} \
+   instances create ${VM_NAME} \
+   --zone=${VM_ZONE} \
+   --machine-type=e2-micro \
+   --subnet=${SUBNET} \
+   --service-account=${PROJECT_NUMBER}-compute@developer.gserviceaccount.com \
+   --scopes=https://www.googleapis.com/auth/cloud-platform \
+   --tags=http-server,https-server \
+   --image-family=debian-11 \
+   --image-project=debian-cloud \
+   --boot-disk-size=10GB \
+   --boot-disk-device-name=${VM_NAME} \
+   --metadata=startup-script="sudo apt-get update -y && sudo apt-get install -y jq"
+   ```
+
+   Copied!
+
+   This `gcloud` command creates a new virtual machine using the following parameters:
+
+   - **zone:** the zone for the VM instance
+   - **machine-type:** e2-micro is a cost-effective, shared core machine type
+   - **subnet:** the subnet you created in the apigeex-vpc network
+   - **service-account:** the identity attached to the instance
+   - **scopes:** the level of access that is provided to the service account on the VM
+   - **tags:** a list of tags that are applied to the instance; used to provide default firewall rules and routes
+   - **image-family:** the image family to use for the image; the latest non-deprecated image in the family will be used
+   - **image-project:** the Google Cloud project hosting the public image family
+   - **boot-disk-size:** size of the VM boot disk to be created
+   - **boot-disk-device-name:** the name of the created boot disk
+   - **metadata:** specifies the startup script to be run; this script installs jq which is used by the tests
+
+   For more information about the parameters, you can use the following command:
+
+   ```
+   gcloud compute instances create --help
+   ```
+
+   Copied!
+
+3. Add a firewall rule to allow secure shell (ssh) access to VMs in the network:
+
+   ```
+   gcloud compute --project=${GOOGLE_CLOUD_PROJECT} \
+   firewall-rules create ${NETWORK}-allow-ssh \
+   --direction=INGRESS \
+   --priority=65534 \
+   --network=${NETWORK} \
+   --action=ALLOW \
+   --rules=tcp:22 \
+   --source-ranges=0.0.0.0/0
+   ```
+
+   Copied!
+
+   This command specifies that incoming requests to SSH to the machine are allowed from any source. SSH sessions still require the user to be authenticated.
+
+4. In Cloud Shell, open an SSH connection to the new VM:
+
+   ```
+   gcloud compute ssh ${VM_NAME} --zone=${VM_ZONE} --force-key-file-overwrite
+   ```
+
+   Copied!
+
+5. For each question asked, click **Enter** or **Return** to specify the default input.
+
+   Your logged in identity is the owner of the project, so SSH to this machine is allowed.
+
+   Your Cloud Shell session is now running inside the VM.
+
+### Test the Apigee evaluation org
+
+1. In the VM's shell, set required shell variables:
+
+   ```
+   export PROJECT_NAME=$(gcloud config get-value project)
+   export ORG=${PROJECT_NAME}
+   export INSTANCE_NAME=eval-instance
+   export INSTANCE_IP=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/instances/${INSTANCE_NAME}" | jq ".host" --raw-output)
+   export ENV_GROUP_HOSTNAME=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/envgroups" | jq ".environmentGroups[0].hostnames[0]" --raw-output)
+   echo "INSTANCE_IP=${INSTANCE_IP}"
+   echo "ENV_GROUP_HOSTNAME=${ENV_GROUP_HOSTNAME}"
+   ```
+
+   Copied!
+
+   The environment group hostname is used to route calls to API proxies deployed to an environment in the eval environment group.
+
+2. Call the deployed **hello-world** API proxy using an internal IP address:
+
+   ```
+   curl -i -k --resolve "${ENV_GROUP_HOSTNAME}:443:${INSTANCE_IP}" \
+   "https://${ENV_GROUP_HOSTNAME}/hello-world"
+   ```
+
+   Copied!
+
+   The **--resolve** setting forces commands sent to the environment group hostname to resolve to the instance's load balancer IP address, since there is no DNS entry for the environment group hostname. The **-k** option skips verification of the TLS certificate presented by the instance's load balancer.
+
+   This `curl` command uses a virtual machine connected to the peered network to call the internal IP address of the runtime's load balancer. The `curl` command returns the output from the **hello-world** proxy: `Hello, Guest!`
+
+Click *Check my progress* to verify the objective.
+
+Test the Apigee evaluation organization using internal access.
+
+
+
+Check my progress
+
+
+
+## Task 5. Test the Apigee evaluation org using external access
+
+In this task, you test that a proxy in the Apigee evaluation org can be called from an external IP address.
+
+The Access Routing step of the provisioning process creates the infrastructure necessary to call your API proxies from external IP addresses. The provisioning wizard creates an external load balancer that calls the runtime through a managed instance group.
+
+### Explore the created infrastructure
+
+1. In the console, navigate to **Network services > Load balancing**.
+
+   A load balancer named **apigee-proxy-url-map** was created.
+
+2. Click **apigee-proxy-url-map**.
+
+   The load balancer configuration sections includes the Frontend, Host and path rules, and the Backend.
+
+   The **Frontend** specifies details about incoming traffic. This load balancer should be accepting **HTTPS** traffic on port 443 of an external IP address. The certificate is named **apigee-ssl-cert**.
+
+   The **Host and path rules** specify which hostnames and URL paths can be used to call a specific backend. In this case, requests containing any hostname and path will be forwarded to the **apigee-proxy-backend** backend service.
+
+   The **Backend** specifies the service to be called by the load balancer. The **apigee-proxy-`europe-west4`** instance group contains 2 virtual machines to forward requests to the runtime instance. A global load balancer cannot forward requests to an internal IP address, but the instance group VMs can call an internal IP address.
+
+3. To access the certificate details, in the **Frontend** configuration, click **apigee-ssl-cert**.
+
+   The certificate used by the load balancer, when active, has a certificate chain that allows curl to call the load balancer without skipping certificate validation. The domain for the certificate is *[IP_ADDRESS].nip.io*, where the IP address is the frontend **external IP address**.
+
+   Google Cloud needs to provision the certificate, and it may take a significant period of time to complete the provisioning.
+
+   The configuration for an active certificate looks like this:
+
+   ![The active certification configuration settings, including that of the status, type, and certificate chain.](images\s8XYZK5Cyw64ckKa6pgNWTYFrohs%2BHkv%2BXGfRIGO2Cc%3D.png)
+
+   If the certificate's status is **PROVISIONING**, Google Cloud may have created the certificate but is still working with the Certificate Authority to sign it.
+
+   Provisioning typically takes under 10 minutes, but may take up to an hour. Refer to the [Managed status troubleshooting guide](https://cloud.google.com/load-balancing/docs/ssl-certificates/troubleshooting#certificate-managed-status) for details.
+
+4. In Cloud Shell, open a new tab by clicking **Open a new tab** (+).
+
+   The Cloud Shell cannot call private IP addresses in the Google Cloud project.
+
+5. Call the deployed **hello-world** API proxy using an external IP address:
+
+   ```
+   export PROJECT_NAME=$(gcloud config get-value project)
+   export SSL_HOSTNAME=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://compute.googleapis.com/compute/v1/projects/${PROJECT_NAME}/global/sslCertificates/apigee-ssl-cert" | jq ".managed.domains[0]" --raw-output)
+   echo "SSL_HOSTNAME=${SSL_HOSTNAME}"
+   curl -H "Cache-Control: no-cache" "https://${SSL_HOSTNAME}/hello-world"
+   ```
+
+   Copied!
+
+   The [sslCertificates.get](https://cloud.google.com/compute/docs/reference/rest/v1/sslCertificates/get) method of the Compute Engine API is used to retrieve the nip.io hostname that is associated with the certificate.
+
+   If the certificate is fully provisioned, the curl command again returns the output from the **hello-world** proxy: `Hello, Guest!`
+
+   If the curl command returns a **handshake failure**, the SSL certificate is not yet configured for the load balancer.
+
+6. Return to the certificate details page and check the status of the certificate. If the certificate's status is still not **ACTIVE**, wait for the certificate to become active and then retry the curl command.
+
+## Congratulations!
+
+In this lab, you created a Virtual Private Cloud (VPC) network and an Apigee X evaluation org. You then created a virtual machine (VM) and used it to call the runtime directly, calling an API proxy running on the Apigee X org. Finally, you enabled internet access and called the proxy through a global load balancer.
