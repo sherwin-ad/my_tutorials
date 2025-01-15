@@ -23233,3 +23233,2099 @@ The Access Routing step of the provisioning process creates the infrastructure n
 ## Congratulations!
 
 In this lab, you created a Virtual Private Cloud (VPC) network and an Apigee X evaluation org. You then created a virtual machine (VM) and used it to call the runtime directly, calling an API proxy running on the Apigee X org. Finally, you enabled internet access and called the proxy through a global load balancer.
+
+
+
+## Lab - Adding an Apigee X Environment and Group
+
+## Overview
+
+In this lab, you learn how to add a new [environment and environment group](https://cloud.google.com/apigee/docs/api-platform/fundamentals/environments-overview) to an Apigee X org.
+
+An *environment* is a **runtime execution context for API proxies**. An API proxy must be deployed to an environment before the API it exposes is accessible over the network.
+
+An *environment group* is a **logical grouping of environments**. Hostnames are defined on an environment group, and Apigee routes requests to the environments within a group based on the hostname. The request will then be handled by an API proxy that is deployed to one of the environments in the environment group and also has a matching basepath.
+
+The instructions in this lab are also appropriate for adding environments and environment groups to paid orgs.
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Add a second environment to an Apigee X org
+- Add a second environment group to an Apigee X org, assigning environments and hostnames
+- Deploy an environment to a runtime instance
+- Deploy and call an API proxy in each environment
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is the **Lab Details** panel with the following:
+
+   - The **Open Google Cloud console** button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-00-1f148a49825d@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the **Username** in the **Lab Details** panel.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   IqxNPFYywD2h
+   ```
+
+   Copied!
+
+   You can also find the **Password** in the **Lab Details** panel.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To view a menu with a list of Google Cloud products and services, click the **Navigation menu** at the top-left. ![Navigation menu icon](mages\nUxFb6oRFr435O3t6V7WYJAjeDFcrFb16G9wHWp5BzU%3D.png)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-01-cef74d1cb77e`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-01-cef74d1cb77e
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-00-1f148a49825d@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-01-cef74d1cb77e
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+### Open the Apigee UI
+
+The Apigee UI is accessed on a page separate from the Google Cloud Console. This lab has automatically created an Apigee organization that has the same name as the Google Cloud project.
+
+- Click to open the [Apigee UI](https://apigee.google.com/).
+
+  You may also open the Apigee UI from the Google Cloud Console by opening the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) click **View All Products** under **Integration Services** select **Apigee**.
+
+If you see an error indicating that the project does not have an organization provisioned, the tab might be trying to load the organization for a previous lab.
+
+If you get this error:
+
+- Click on the organization dropdown.
+
+  ![Not provisioned error message](images\a0d5TSC4OOYQe%2FdgKoHBEnFq%2FVeW%2BhTpkXnCwV1KfNM%3D.png)
+
+  The organization dropdown should show an organization that has the same name as the Google Cloud project.
+
+  ![Apigee UI organization dropdown](https://cdn.qwiklabs.com/oKdJQNWhJve9sTrlVC1l%2FfAJ%2FKqy%2BuVtMXtGmQWpaSk%3D)
+
+  The organizations listed are those that are accessible by the logged-in user. For this lab, you should be logged in with the lab credentials provided in the **Lab Details** panel when you started the lab.
+
+  You can navigate the Apigee UI using its **left navigation menu**. The landing page also shows **quick links** for navigating to commonly used locations.
+
+## Task 1. Examine the eval environment and environment group
+
+In this task, you explore environments and environment groups using the Apigee console.
+
+An evaluation org for Apigee X initially contains a single environment named **eval** and a single environment group named **eval-group**. The eval environment is a member of the eval-group environment group.
+
+1. Select the [Apigee Console](https://apigee.google.com/) tab in your browser window.
+2. Navigate to **Admin > Environments > Overview**.
+3. Click on the **eval** environment.
+
+The eval environment has been configured as a member of the eval-group environment group.
+
+The eval environment is marked "Ready for deployment," indicating that API proxies may be deployed to the environment.
+
+1. Navigate to **Admin > Environments > Groups**.
+2. On the **eval-group** environment group box, click **Edit** (![Edit icon](https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D)).
+
+A single hostname *(eval.example.com)* is currently listed for the eval-group environment group, but more than one hostname may be used.
+
+The eval-group environment group currently contains the eval environment as its only member, but more than one environment may be in an environment group.
+
+1. Click **Cancel**.
+
+## Task 2. Create a prod environment
+
+In this task, you [create a new environment](https://cloud.google.com/apigee/docs/api-platform/fundamentals/environments-working-with).
+
+1. Navigate to **Admin > Environments > Overview**.
+2. In the upper right corner, click **+Environment**.
+
+**Note:** Expand your browser window horizontally if you do not see the **+Environment** button.
+
+1. Specify **prod** for **Display name** and **Environment name**. Other fields should remain unchanged.
+2. Click **Create**.
+
+You should get a message that the environment has been defined. The new prod environment is marked **Pending Provisioning**.
+
+Shortly after, you should see the message that the environment is ready for use, and the environment will no longer be marked *Pending Provisioning*.
+
+Click *Check my progress* to verify the objective.
+
+Create a prod environment
+
+
+
+Check my progress
+
+
+
+## Task 3. Create a prod-group environment group
+
+In this task, you [create a new environment group](https://cloud.google.com/apigee/docs/api-platform/fundamentals/environmentgroups-working-with).
+
+1. Navigate to **Admin > Environments > Groups**.
+
+A warning indicates that the prod environment is not assigned to an environment group.
+
+1. In the upper right corner, click **+Environment Group**.
+
+**Note:** Expand your browser window horizontally if you do not see the **+Environment Group** button.
+
+1. Name the environment group **prod-group**, and then click **Add**.
+2. In the **prod-group** environment group box, click the edit (pencil) button (![Edit icon](https://cdn.qwiklabs.com/gxpkSIEUos0DI7OhXBWU3M7CY%2FmdpNZjz6DZemLVG0g%3D)).
+3. In the **Environments** box, click the + button.
+4. Select the **prod** environment, and then click **Add**.
+5. In the **Hostnames** box, replace the existing hostname with:
+
+```
+prod.example.com
+```
+
+Copied!
+
+1. Click **Save**.
+
+Click *Check my progress* to verify the objective.
+
+Create a prod-group environment group
+
+
+
+Check my progress
+
+
+
+## Task 4. Wait for instance provisioning to complete
+
+In this task, you wait for the Apigee evaluation org provisioning to complete.
+
+The Apigee organization provisioning takes quite a while to complete. The org provisioning progress can be monitored by using the [Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest).
+
+### Start monitoring script
+
+1. Return to the **Cloud Console** tab.
+2. On the top-right toolbar, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)).
+3. If prompted, click **Continue**.
+
+It takes a few moments to provision and connect to Cloud Shell. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*.
+
+1. In Cloud Shell, verify the variable with your Apigee org name:
+
+```
+echo ${GOOGLE_CLOUD_PROJECT}
+```
+
+Copied!
+
+The variable **GOOGLE_CLOUD_PROJECT** should contain the name of your project, which is the same as your Apigee organization name.
+
+1. **If the GOOGLE_CLOUD_PROJECT variable is not set**, set the variable manually using a command that looks like this, replacing *{project}* with your project name:
+
+```
+export GOOGLE_CLOUD_PROJECT={project}
+```
+
+Copied!
+
+**Note:** The curly braces should be removed during this step.
+
+1. Run the following commands in the Cloud Shell:
+
+```
+export INSTANCE_NAME=eval-instance; export ENV_NAME=eval; export PREV_INSTANCE_STATE=; echo "waiting for runtime instance ${INSTANCE_NAME} to be active"; while : ; do export INSTANCE_STATE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}" | jq "select(.state != null) | .state" --raw-output); [[ "${INSTANCE_STATE}" == "${PREV_INSTANCE_STATE}" ]] || (echo; echo "INSTANCE_STATE=${INSTANCE_STATE}"); export PREV_INSTANCE_STATE=${INSTANCE_STATE}; [[ "${INSTANCE_STATE}" != "ACTIVE" ]] || break; echo -n "."; sleep 5; done; echo; echo "instance created, waiting for environment ${ENV_NAME} to be attached to instance"; while : ; do export ATTACHMENT_DONE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}/attachments" | jq "select(.attachments != null) | .attachments[] | select(.environment == \"${ENV_NAME}\") | .environment" --join-output); [[ "${ATTACHMENT_DONE}" != "${ENV_NAME}" ]] || break; echo -n "."; sleep 5; done; echo; echo "${ENV_NAME} environment attached"; echo "***ORG IS READY TO USE***";
+```
+
+Copied!
+
+This series of commands uses the Apigee API to determine when the runtime instance has been created, and then waits for the eval environment to be attached to the instance.
+
+When the text `***ORG IS READY TO USE***` is printed, proxies deployed to the eval environment can accept traffic.
+
+**Note:** Learn about Apigee X users and roles while waiting for the instance and environment to be fully created. Pay attention to the time remaining in the lab and periodically check the Cloud Shell output to see when the org can be tested.
+
+### Users and roles
+
+Access to Apigee is granted by using [users and roles](https://cloud.google.com/apigee/docs/api-platform/system-administration/users-roles-overview). A *user* represents an authenticated account that can access an Apigee organization and the entities within the organization, such as environments and API proxies. The capabilities that you grant to the user depend on the type of *role *assigned to them.
+
+To add a new user to your Apigee organization, you grant access to the user's *account*, first in the Cloud project, and then optionally in the Apigee UI. Permissions granted on a resource in the Google Cloud resource hierarchy are inherited by resources contained within the resource.
+
+If an [Apigee role](https://cloud.google.com/apigee/docs/api-platform/system-administration/apigee-roles) is assigned to a user on the Cloud project, then the user can access all Apigee resources within the organization (including all environments) in that role. Within the Apigee UI, an Apigee role can also be assigned to a user for a specific environment. This permission is in addition to the role set at the project level.
+
+To adhere to the [principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege), the minimum permissions for a given user should be specified at the project level, with expanded permissions given at the environment level.
+
+This image shows how inheritance works for this access model:
+
+![The Inheritance Flow chart displaying the inheritance between Google Cloud and Apigee](images\PZ01bSdy40dZtXUTeD73RQrfhRqNklDy27UkhVuzgfQ%3D.png)
+
+### Apigee roles
+
+This table summarizes the pre-defined [Apigee roles](https://cloud.google.com/apigee/docs/api-platform/system-administration/apigee-roles).
+
+| Apigee role              | Description                                                  |
+| :----------------------- | :----------------------------------------------------------- |
+| Apigee Org Admin         | Full access to all Apigee resources in an Apigee organization. |
+| Apigee Read Only Admin   | Read-only access to all Apigee resources in an Apigee organization. |
+| Apigee Analytics Editor  | Creates and analyzes reports on API proxy traffic for an Apigee organization. Can edit queries and reports. |
+| Apigee Analytics Viewer  | User of Apigee Analytics. Cannot edit queries or reports.    |
+| Apigee API Admin         | A developer who creates and tests API proxies.               |
+| Apigee Environment Admin | Deploys and undeploys API proxies in environments.           |
+| Apigee Developer Admin   | Manages developer access to APIs.                            |
+
+Learn more about API permissions for each Apigee role from the [Apigee roles guide](https://cloud.google.com/iam/docs/understanding-roles#apigee-roles).
+
+## Task 5. Add the prod environment to the runtime instance
+
+In this task, you add the prod environment to the runtime instance, allowing proxies deployed to prod to be run.
+
+### Attach the prod environment to the instance
+
+1. Confirm that the commands run in Cloud Shell returned `***ORG IS READY TO USE***`.
+2. To begin the process of attaching the prod environment to the runtime, run the following command:
+
+```
+export INSTANCE_NAME=eval-instance; curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "Content-Type: application/json" -X POST "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}/attachments" -d '{ "environment": "prod" }' | jq
+```
+
+Copied!
+
+If you get an error message, look at the details of the message:
+
+- A *NOT_FOUND* error might indicate that the prod environment was not created successfully.
+- A *FAILED_PRECONDITION* error with a message that *"the resource is locked by another operation"* indicates that the full provisioning of the eval environment may not have completed.
+
+When you have successfully begun the process of attaching the prod environment to the runtime, you should see a return message with a state of *IN_PROGRESS* looking similar to this:
+
+```
+{
+  "name": "organizations/qwiklabs-gcp-01-e12f9fd402f4/operations/c4e1a09f-05d2-4c46-95ed-559457507379",
+  "metadata": {
+    "@type": "type.googleapis.com/google.cloud.apigee.v1.OperationMetadata",
+    "operationType": "INSERT",
+    "targetResourceName": "organizations/qwiklabs-gcp-01-e12f9fd402f4/instances/eval-instance/attachments/c2e04a79-15e6-4656-9d25-f618080b57fb",
+    "state": "IN_PROGRESS"
+  }
+}
+```
+
+1. Check the status of the **prod** attachment using this command:
+
+```
+export ATTACHING_ENV=prod; export INSTANCE_NAME=eval-instance; echo "waiting for ${ATTACHING_ENV} attachment"; while : ; do export ATTACHMENT_DONE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}/attachments" | jq "select(.attachments != null) | .attachments[] | select(.environment == \"${ATTACHING_ENV}\") | .environment" --join-output); [[ "${ATTACHMENT_DONE}" != "${ATTACHING_ENV}" ]] || break; echo -n "."; sleep 5; done; echo; echo "***${ATTACHING_ENV} ENVIRONMENT ATTACHED***";
+```
+
+Copied!
+
+This series of commands uses the Apigee API to determine when the prod environment is attached to the instance and proxies deployed to prod are ready to take traffic.
+
+When the text `***prod ENVIRONMENT ATTACHED***` is printed, proxies deployed to the prod environment can accept traffic.
+
+Leave the command running and continue with the next task.
+
+Click *Check my progress* to verify the objective.
+
+Attach the prod environment to the instance
+
+
+
+Check my progress
+
+
+
+## Task 6. Create an API proxy
+
+In this task, you create an API proxy that uses [flow variables](https://cloud.google.com/apigee/docs/api-platform/reference/variables-reference) to return the hostname and environment for the API call.
+
+1. Select the [Apigee console](https://apigee.google.com/) tab in your browser window.
+2. On the left navigation menu, select **Develop > API Proxies**.
+3. To start the [proxy wizard](https://cloud.google.com/apigee/docs/api-platform/fundamentals/build-simple-api-proxy), click **Create New**.
+4. Click **No Target**.
+
+**Note:** Do not click the "Use OpenAPI Spec" link.
+
+1. Specify the following properties:
+
+   | Property  | Value         |
+   | :-------- | :------------ |
+   | Name      | **test-env**  |
+   | Base path | **/test-env** |
+
+2. Click **Next**.
+
+3. Leave the Common policies settings as their defaults, and click **Next**.
+
+4. On the Summary page, click **Create**.
+
+Your API proxy will be generated. You will deploy your proxy later.
+
+1. Click **Edit proxy**.
+2. If a **Switch to Classic** link is in the upper right corner, click that link.
+3. Click the **Develop** tab.
+
+This tab is used to edit the API proxy. The Proxy Endpoint PreFlow is selected.
+
+1. In the **Flow** pane, click **+Step** on the lower left.
+
+**Note:** To see the +Step button on the lower left, you may need to expand the Flow pane by dragging the separator between the Flow and Code panes.
+
+![Flow: PreFlow page highlighting the Proxy Endpoint Preflow option, +Step button and proxy preflow response code](images\%2BJ%2Bzc3Q6MhW78xJ4B7dzpT39xHqAF9z0VV7kccwkMvk%3D.png)
+
+You will add a policy step to the PreFlow response. A policy implements a specific, limited management function.
+
+1. Select **Assign Message**, then specify **AM-SetResponse** as the **Name** and **Display Name**, and then click **Add**.
+
+![The Add Step page with Assign Message and Display Name fields completed, and the Add button highlighted](images\mdnDNzsx46VFMf0e2IH0qHTSytuVFFq4%2Bt9NBOQCAJw%3D.png)
+
+This attaches a new AssignMessage policy to the API proxy. You should see the **AssignMessage** code below the Flow pane:
+
+![Policy AM-SetResponse tab displaying AssignMessage code](images\plvLC7qCTWrnoAhz6WxtVmr2auNEfKFlDyudjkYvjTg%3D.png)
+
+1. Replace the AssignMessage code with the following:
+
+```
+<AssignMessage continueOnError="false" enabled="true" name="AM-SetResponse">
+    <Set>
+        <Payload contentType="application/json">{
+    "environment": "{environment.name}",
+    "hostname": "{request.header.Host}"
+}
+</Payload>
+    </Set>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="true" transport="http" type="response"/>
+</AssignMessage>
+```
+
+Copied!
+
+This policy creates a response returning the environment name and hostname. The proxy flow variable **environment.name** contains the environment of the deployed proxy that has received the traffic, and the variable **request.header.Host** contains the Host header, which indicates the hostname used for the API call.
+
+1. Click **Save**.
+
+**Note:** If you are prompted that a new revision was created, click **OK**.
+
+1. Click **Deploy to eval**, and then, in the message box, click **Deploy**.
+
+This deploys the proxy to the eval environment.
+
+1. Expand the dropdown (![dropdown icon](https://cdn.qwiklabs.com/XcHzqS%2BmJau%2BKmqFv%2FGvnfNvSRvPySWsx4RkA6UePOk%3D)) next to **Deploy to eval**, and then click **Deploy 1** for prod.
+
+![Deploy to eval dropdown menu and Deploy 1 for prod option highlighted](images\o0qX01Z%2FE%2FX5g%2BFsvSo4STTal9ctzjvWwAraSEP0%2F5s%3D.png)
+
+This deploys the proxy to the prod environment.
+
+1. In the message box, click **Deploy**.
+2. Click the **Overview** tab.
+3. Wait for both deployments to complete.
+
+When the proxy is deployed to both environments, the **Deployments** section of the Overview tab should look like this:
+
+![Deployments section displaying Revision number as 1 and Status as Revision 1 for both eval and prod environments](images\w8trVlcY7wAMkwXxsj5NjpNoTkQXf6ZTqLvyeExiuYI%3D.png)
+
+**Note:** If after a few minutes the proxy is not deployed to the prod environment, the prod environment may not have finished attaching to the runtime instance. You can check the status by returning to Cloud Shell and waiting for the commands to return "***prod ENVIRONMENT ATTACHED***".
+
+Click *Check my progress* to verify the objective.
+
+Create an API proxy
+
+
+
+Check my progress
+
+
+
+## Task 7. Test the prod and eval environments
+
+In this task, you make calls to the test and prod environments.
+
+A virtual machine named **apigeex-test-vm** was automatically created. Use this virtual machine to call the Apigee runtime using a private IP address.
+
+### Make calls to the Apigee runtime
+
+1. In Cloud Shell, run the following to open an SSH connection to the VM:
+
+```
+TEST_VM_ZONE=$(gcloud compute instances list --filter="name=('apigeex-test-vm')" --format "value(zone)")
+gcloud compute ssh apigeex-test-vm --zone=${TEST_VM_ZONE} --force-key-file-overwrite
+```
+
+Copied!
+
+1. For each question asked, click **Enter** or **Return** to specify the default input.
+
+Your logged in identity is the owner of the project, so SSH to this machine is allowed.
+
+Your Cloud Shell session is now running inside the VM.
+
+1. In the VM's shell, set required shell variables:
+
+```
+export PROJECT_NAME=$(gcloud config get-value project)
+export ORG=${PROJECT_NAME}
+export INSTANCE_NAME=eval-instance
+export INTERNAL_LB_IP=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/instances/${INSTANCE_NAME}" | jq ".host" --raw-output)
+export EVAL_ENVGROUP_HOSTNAME=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/envgroups/eval-group" | jq ".hostnames[0]" --raw-output)
+export PROD_ENVGROUP_HOSTNAME=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/envgroups/prod-group" | jq ".hostnames[0]" --raw-output)
+echo "INTERNAL_LB_IP=${INTERNAL_LB_IP}"
+echo "EVAL_ENVGROUP_HOSTNAME=${EVAL_ENVGROUP_HOSTNAME}"
+echo "PROD_ENVGROUP_HOSTNAME=${PROD_ENVGROUP_HOSTNAME}"
+```
+
+Copied!
+
+The **PROD_ENVGROUP_HOSTNAME** was retrieved from the **prod-group** environment group you created in a previous task.
+
+1. Call the deployed **test-env** API proxy in the **eval** environment:
+
+```
+curl -i -k --resolve "${EVAL_ENVGROUP_HOSTNAME}:443:${INTERNAL_LB_IP}" \
+  "https://${EVAL_ENVGROUP_HOSTNAME}/test-env"
+```
+
+Copied!
+
+The **--resolve** setting forces commands sent to the environment group hostname to resolve to the internal load balancer IP address instead of using DNS to resolve the IP address. The **-k** option skips verification of the TLS certificate of the internal load balancer, since the internal load balancer does not host a TLS certificate with the hostnames you are using.
+
+Your `curl` command should return the response generated by the **test-env** proxy, which should look similar to this:
+
+```
+HTTP/2 200
+content-type: application/json
+content-length: 66
+date: Tue, 10 Aug 2021 17:02:53 GMT
+server: apigee
+
+{
+    "environment": "eval",
+    "hostname": "eval.example.com"
+}
+```
+
+1. Call the deployed **test-env** API proxy in the **prod** environment:
+
+```
+curl -i -k --resolve "${PROD_ENVGROUP_HOSTNAME}:443:${INTERNAL_LB_IP}" \
+  "https://${PROD_ENVGROUP_HOSTNAME}/test-env"
+```
+
+Copied!
+
+This time, the environment and hostname should both return **prod** instead of **eval**.
+
+## Congratulations!
+
+In this lab, you created a new environment and environment group for your org, and attached the environment to your runtime instance. You then created and deployed an API proxy. Finally, you called the proxy using the eval and prod hostnames and the API proxy was able to detect the environment that was being called.
+
+
+
+## Lab - Using NAT for Apigee X Backend Services
+
+## Overview
+
+In this lab, you enable a NAT ([network address translation](https://en.wikipedia.org/wiki/Network_address_translation)) IP address for requests from an Apigee instance to backend services, creating a predictable IP address that can be allow-listed.
+
+### Objectives
+
+You will learn how to perform the following tasks:
+
+- Call the Apigee API from the Apigee API documentation
+- Create and activate a NAT IP address for Apigee requests coming from the Apigee runtime
+- Confirm that requests to a backend server use the configured NAT IP address
+
+## Setup
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is the **Lab Details** panel with the following:
+
+   - The **Open Google Cloud console** button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-00-87756b1c58f9@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the **Username** in the **Lab Details** panel.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   XFAjBAIIIUY5
+   ```
+
+   Copied!
+
+   You can also find the **Password** in the **Lab Details** panel.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To view a menu with a list of Google Cloud products and services, click the **Navigation menu** at the top-left. ![Navigation menu icon](images\nUxFb6oRFr435O3t6V7WYJAjeDFcrFb16G9wHWp5BzU%3D.png)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-03-9772ebfc0ec4`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-03-9772ebfc0ec4
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-00-87756b1c58f9@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-03-9772ebfc0ec4
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+### Open the Apigee UI
+
+The Apigee UI is accessed on a page separate from the Google Cloud Console. This lab has automatically created an Apigee organization that has the same name as the Google Cloud project.
+
+- Click to open the [Apigee UI](https://apigee.google.com/).
+
+  You may also open the Apigee UI from the Google Cloud Console by opening the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) click **View All Products** under **Integration Services** select **Apigee**.
+
+If you see an error indicating that the project does not have an organization provisioned, the tab might be trying to load the organization for a previous lab.
+
+If you get this error:
+
+- Click on the organization dropdown.
+
+  ![Not provisioned error message](images\a0d5TSC4OOYQe%2FdgKoHBEnFq%2FVeW%2BhTpkXnCwV1KfNM%3D.png)
+
+  The organization dropdown should show an organization that has the same name as the Google Cloud project.
+
+  ![Apigee UI organization dropdown](images\oKdJQNWhJve9sTrlVC1l%2FfAJ%2FKqy%2BuVtMXtGmQWpaSk%3D.png)
+
+  The organizations listed are those that are accessible by the logged-in user. For this lab, you should be logged in with the lab credentials provided in the **Lab Details** panel when you started the lab.
+
+  You can navigate the Apigee UI using its **left navigation menu**. The landing page also shows **quick links** for navigating to commonly used locations.
+
+## Task 1. Explore the Apigee API documentation
+
+In this task, you explore the Apigee API documentation using the [Google APIs Explorer](https://developers.google.com/explorer-help).
+
+1. Copy the following Googgle API Explorer link and paste it in a new tab of your browser window for the Google Cloud Console: [Google APIs Explorer for the Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest).
+
+The Apigee API can be used to programmatically develop and manage your organization. The Apigee API can be called from the documentation pages directly.
+
+1. In the **right** pane, navigate to the **v1.organizations.instances** [REST resource](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest#rest-resource:-v1.organizations.instances).
+2. In the **v1.organizations.instances** section, click **list**.
+
+This page describes the **list instances** method of the Apigee API.
+
+1. In the **Try this API** pane, set the **parent** to:
+
+```
+organizations/qwiklabs-gcp-03-9772ebfc0ec4
+```
+
+Copied!
+
+1. Click **Execute**.
+2. If a window pops up and asks you to choose an account to continue to the Google API Explorer, select your lab username, and then click **Allow**.
+
+Your API response should resemble this:
+
+```
+{
+  "instances": [
+    {
+      "name": "eval-instance",
+      "location": "us-west1-a",
+      "host": "172.21.60.2",
+      "port": "443",
+      "state": "ACTIVE"
+    }
+  ]
+}
+```
+
+or this:
+
+```
+  {
+  "instances": [
+    {
+      "name": "eval-instance",
+      "location": "europe-west1",
+      "createdAt": "1706780597609",
+      "lastModifiedAt": "1706780670711",
+      "state": "CREATING",
+      "peeringCidrRange": "SLASH_22",
+      "runtimeVersion": "1-11-0-apigee-14",
+      "ipRange": "10.188.120.0/28"
+    }
+  ]
+}
+```
+
+The instance's name is **eval-instance**. You create a NAT IP address for this instance.
+
+1. In the upper right corner of the **Try this API** pane, click **Expand** ![expand icon](https://cdn.qwiklabs.com/0FPdkCa0Gqw5KNBAUu%2F8crmzTO6MeNAfd0U5SxGRGTU%3D).
+
+The pane expands to show the cURL equivalent for the request and also provides the HTTP request and a JavaScript code snippet that can be used to make the request.
+
+![The Try this API pane displaying the HTTP request under the cURL section, and JavaScript under the application/json section](images\tkmE%2FJHa6kiPvsfGiN9c%2BaMnyiu7evJbwgOOV8I5UdA%3D.png)
+
+1. To close the expanded pane, click **Revert**![revert icon](https://cdn.qwiklabs.com/zyTYR9z9LuWa2sXUkrZvZVMr%2FEICceQVG528MaJT%2B5E%3D).
+
+## Task 2. Wait for instance provisioning to complete
+
+In this task, wait for the Apigee evaluation org provisioning to complete.
+
+The Apigee organization provisioning may take quite a while to complete. The org provisioning progress can be monitored by using the [Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest).
+
+### Start monitoring script
+
+1. Return to the **Cloud Console** tab.
+2. On the top-right toolbar, click the **Activate Cloud Shell** button.
+
+![The Cloud console with the Activate Cloud Shell button highlighted](images\%2Bs5BdmFabeL8x4IIoJGI023GY1IWRNGCWnglQhW9IZE%3D.png)
+
+1. If prompted, click **Continue**.
+
+It takes a few moments to provision and connect to the Cloud Shell. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*.
+
+1. In Cloud Shell, verify that the *GOOGLE_CLOUD_PROJECT* variable contains your project name by using the following command:
+
+```
+echo ${GOOGLE_CLOUD_PROJECT}
+```
+
+Copied!
+
+The variable **GOOGLE_CLOUD_PROJECT** should contain the name of your project, which is the same as your Apigee organization name.
+
+1. **If the GOOGLE_CLOUD_PROJECT variable is not set**, set the variable manually using a command that looks like this, replacing *{project}* with your project name:
+
+```
+export GOOGLE_CLOUD_PROJECT={project}
+```
+
+Copied!
+
+**Note:** The curly braces should be removed during this step.
+
+1. Paste the following command into the Cloud Shell:
+
+```
+export INSTANCE_NAME=eval-instance; export ENV_NAME=eval; export PREV_INSTANCE_STATE=; echo "waiting for runtime instance ${INSTANCE_NAME} to be active"; while : ; do export INSTANCE_STATE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}" | jq "select(.state != null) | .state" --raw-output); [[ "${INSTANCE_STATE}" == "${PREV_INSTANCE_STATE}" ]] || (echo; echo "INSTANCE_STATE=${INSTANCE_STATE}"); export PREV_INSTANCE_STATE=${INSTANCE_STATE}; [[ "${INSTANCE_STATE}" != "ACTIVE" ]] || break; echo -n "."; sleep 5; done; echo; echo "instance created, waiting for environment ${ENV_NAME} to be attached to instance"; while : ; do export ATTACHMENT_DONE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}/attachments" | jq "select(.attachments != null) | .attachments[] | select(.environment == \"${ENV_NAME}\") | .environment" --join-output); [[ "${ATTACHMENT_DONE}" != "${ENV_NAME}" ]] || break; echo -n "."; sleep 5; done; echo; echo "${ENV_NAME} environment attached"; echo "***ORG IS READY TO USE***";
+```
+
+Copied!
+
+This series of commands uses the Apigee API to determine when the runtime instance has been created and the eval environment has been attached.
+
+1. Wait until the instance is ready.
+
+When the text `***ORG IS READY TO USE***` is printed, the instance is ready.
+
+**Note:** If the command immediately indicates that the org is ready to use, the lab may have been prewarmed before you entered the lab.
+
+Click *Check my progress* to verify the objective.
+
+Execute monitoring script and wait for instance
+
+
+
+Check my progress
+
+
+
+## Task 3. Create and deploy an API proxy
+
+In this task, create an API proxy to test the IP address seen by a backend service.
+
+1. In your browser window, select the [Apigee console tab](https://apigee.google.com/).
+2. On the left navigation menu, select **Develop > API Proxies**.
+3. For the **Select Environment** dropdown, select **eval**.
+
+**Note:** If the dropdown does not let you select the eval environment, refresh the page.
+
+1. To start the [proxy wizard](https://cloud.google.com/apigee/docs/api-platform/fundamentals/build-simple-api-proxy), click **Create New**.
+2. Click **Reverse proxy (most common)**.
+
+**Note:** Do not click the "Use OpenAPI Spec" link.
+
+1. Specify the following properties:
+
+   | Property              | Value                      |
+   | :-------------------- | :------------------------- |
+   | Name                  | **test-nat**               |
+   | Base path             | **/test-nat**              |
+   | Target (Existing API) | **https://httpbin.org/ip** |
+
+You are creating an API proxy for the [httpbin](https://httpbin.org/) request and response service. This service can be useful when testing APIs.
+
+When a request travels through proxy servers, each server's IP address is added to the [X-Forwarded-For header](https://en.wikipedia.org/wiki/X-Forwarded-For). The httpbin.org */ip* endpoint returns the IP addresses in the X-Forwarded-For header plus the final IP address that made the connection to the httpbin.org server.
+
+1. Click **Next**.
+2. Leave the Common policies settings as their defaults, and click **Next**.
+3. On the Summary page, click **eval**.
+4. Click **Create and deploy**.
+5. Click **Edit proxy**.
+6. If a **Switch to Classic** link is in the upper right corner, click that link.
+7. On the **Overview** tab, wait for the deployment status to show that revision 1 is on eval.
+
+![The Deployments page displaying Revision 1 colored in green, indicating that the proxy is deployed](images\pmFbhSRyHzJVY88U8GnwycJrfWPgeFPvgGS%2BaZXXQlA%3D.png)
+
+Click *Check my progress* to verify the objective.
+
+Create and deploy API proxy
+
+
+
+Check my progress
+
+
+
+## Task 4. Test the API proxy
+
+In this task, make calls to the API proxy to see that the instance IP address used for backend services is dynamic.
+
+A virtual machine named **apigeex-test-vm** was automatically created. Use this virtual machine to call the Apigee runtime using a private IP address.
+
+### Make calls to the Apigee runtime
+
+1. In Cloud Shell, open an SSH connection to the VM:
+
+```
+TEST_VM_ZONE=$(gcloud compute instances list --filter="name=('apigeex-test-vm')" --format "value(zone)")
+gcloud compute ssh apigeex-test-vm --zone=${TEST_VM_ZONE} --force-key-file-overwrite
+```
+
+Copied!
+
+1. For each question asked, click **Enter** or **Return** to specify the default input.
+
+Your logged in identity is the *owner* of the project, so SSH to this machine is allowed.
+
+Your Cloud Shell session is now running inside the VM.
+
+1. In the VM's shell, set required shell variables:
+
+```
+export PROJECT_NAME=$(gcloud config get-value project)
+export ORG=${PROJECT_NAME}
+export INSTANCE_NAME=eval-instance
+export INTERNAL_LB_IP=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/instances/${INSTANCE_NAME}" | jq ".host" --raw-output)
+export EVAL_ENVGROUP_HOSTNAME=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/envgroups/eval-group" | jq ".hostnames[0]" --raw-output)
+echo "INTERNAL_LB_IP=${INTERNAL_LB_IP}"
+echo "EVAL_ENVGROUP_HOSTNAME=${EVAL_ENVGROUP_HOSTNAME}"
+```
+
+Copied!
+
+The **EVAL_ENVGROUP_HOSTNAME** contains the hostname that is associated with the eval-group environment group. A DNS entry for this hostname has been automatically created. It specifies the private IP address for an internal load balancer.
+
+**Note:** The DNS entry uses a private DNS zone and a private IP address. The private DNS entry will not resolve outside of the apigeex-vpc network, and the private IP address cannot be accessed from Cloud Shell or from an IP address outside the apigeex-vpc network.
+
+1. Call the deployed **test-nat** API proxy in the **eval** environment:
+
+```
+curl -k "https://${EVAL_ENVGROUP_HOSTNAME}/test-nat"
+```
+
+Copied!
+
+The **`-k`** option tells `curl` to skip verification of the TLS certificate. The internal load balancer is using a self-signed certificate instead of a certificate that has been created by a trusted certificate authority (CA).
+
+**Note:** You should not use the `-k` option to bypass certificate verification for production use cases.
+
+Your `curl` command should return the response generated by the **test-nat** proxy, which should look similar to this:
+
+```
+{
+  "origin": "10.0.0.2,10.0.0.5,10.0.0.7, 34.83.164.141"
+}
+```
+
+The **origin** field response shows multiple IP addresses. The last IP address is from the final server that called the `httpbin.org` server. The first 3 IP addresses shown here are all internal IP addresses, and they document the other hops that the request took from the instance to `httpbin.org`.
+
+If you repeat the call multiple times, you may see the same final IP address each time. However, unless you add a NAT address to your instance, the final IP address may change over time, making it difficult to allow-list.
+
+## Task 5. Create a NAT IP for the instance
+
+In this task, [create a NAT IP](https://cloud.google.com/apigee/docs/api-platform/security/nat-provisioning) for use by the runtime instance when calling backend services.
+
+A NAT IP is used to provide a predictable IP address for calls from the Apigee instance to a backend service.
+
+1. Return to the [Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest) browser tab.
+2. In the left pane, expand the **organizations.instances.natAddresses** section.
+3. Under **organizations.instances.natAddresses**, click **create**.
+
+This page describes the **create NAT address** method of the Apigee API.
+
+1. In the **Try this API** pane, set the **parent** to:
+
+```
+organizations/qwiklabs-gcp-03-9772ebfc0ec4/instances/eval-instance
+```
+
+Copied!
+
+1. Click **Add request body parameters**, and then click **name**.
+2. Between the double quotes, set the string to:
+
+```
+eval-instance-ip
+```
+
+Copied!
+
+1. Click **Execute**.
+
+If a window pops up and asks you to choose an account to continue to the Google API Explorer, select your lab username, and then click **Allow**.
+
+The API response should resemble this:
+
+```
+{
+  "name": "organizations/qwiklabs-gcp-01-f24706170325/operations/c79a19c8-ae9f-49de-978e-7f4873b06e51",
+  "metadata": {
+    "@type": "type.googleapis.com/google.cloud.apigee.v1.OperationMetadata",
+    "operationType": "INSERT",
+    "targetResourceName": "organizations/qwiklabs-gcp-01-f24706170325/instances/eval-instance/natAddresses/eval-instance-ip",
+    "state": "IN_PROGRESS"
+  }
+}
+```
+
+The operation is asynchronous but should complete quickly.
+
+1. In the left pane, under **organizations.instances.natAddresses**, click **get**.
+
+This page describes the **get NAT address** method of the Apigee API.
+
+1. In the **Try this API** pane, set the **parent** to:
+
+```
+organizations/qwiklabs-gcp-03-9772ebfc0ec4/instances/eval-instance/natAddresses/eval-instance-ip
+```
+
+Copied!
+
+1. Click **Execute**.
+
+If a window pops up and asks you to choose an account to continue to the Google API Explorer, select your lab user, and then click **Allow**.
+
+The API response should resemble this:
+
+```
+{
+  "name": "eval-instance-ip",
+  "ipAddress": "104.198.6.224",
+  "state": "RESERVED"
+}
+```
+
+The NAT address is reserved, but not yet active.
+
+Click *Check my progress* to verify the objective.
+
+Create a NAT IP for the instance
+
+
+
+Check my progress
+
+
+
+## Task 6. Activate the NAT IP
+
+In this task, activate the NAT IP you created during the previous task.
+
+1. Under **organizations.instances.natAddresses**, click **activate**.
+
+This page describes the **activate NAT address** method of the Apigee API.
+
+1. In the **Try this API** pane, set the **parent** to:
+
+```
+organizations/qwiklabs-gcp-03-9772ebfc0ec4/instances/eval-instance/natAddresses/eval-instance-ip
+```
+
+Copied!
+
+1. Click **Execute**.
+
+If a window pops up and asks you to choose an account to continue to the Google API Explorer, select your lab user, and then click **Allow**.
+
+The API response should resemble this:
+
+```
+{
+  "name": "organizations/qwiklabs-gcp-01-f24706170325/operations/4b96ee01-55a5-4824-859a-04c2e034d1d4",
+  "metadata": {
+    "@type": "type.googleapis.com/google.cloud.apigee.v1.OperationMetadata",
+    "operationType": "INSERT",
+    "targetResourceName": "organizations/qwiklabs-gcp-01-f24706170325/instances/eval-instance/natAddresses/eval-instance-ip",
+    "state": "IN_PROGRESS"
+  }
+}
+```
+
+The operation is asynchronous but should complete quickly.
+
+1. In the left pane, under **organizations.instances.natAddresses**, click **get**.
+
+This page describes the **get NAT address** method of the Apigee API.
+
+1. In the **Try this API** pane, set the **parent** to:
+
+```
+organizations/qwiklabs-gcp-03-9772ebfc0ec4/instances/eval-instance/natAddresses/eval-instance-ip
+```
+
+Copied!
+
+1. Click **Execute**.
+2. If a window pops up and asks you to choose an account to continue to the Google API Explorer, select your lab username, and then click **Allow**.
+
+The API response should resemble this:
+
+```
+{
+  "name": "eval-instance-ip",
+  "ipAddress": "104.198.6.224",
+  "state": "ACTIVE"
+}
+```
+
+**Note:** If the state of the NAT IP is still RESERVED, continue to click Execute until the activation completes and the returned state is ACTIVE.
+
+The NAT address is now active.
+
+Click *Check my progress* to verify the objective.
+
+Activate the NAT IP
+
+
+
+Check my progress
+
+
+
+## Task 7. Test the NAT address
+
+In this task, make calls to the API proxy to verify that the NAT address is used for calls to a backend service.
+
+### Make calls to the Apigee runtime
+
+1. In Cloud Shell, if the SSH connection to the VM has dropped, open a new SSH connection to the VM:
+
+```
+TEST_VM_ZONE=$(gcloud compute instances list --filter="name=('apigeex-test-vm')" --format "value(zone)")
+gcloud compute ssh apigeex-test-vm --zone=${TEST_VM_ZONE} --force-key-file-overwrite
+```
+
+Copied!
+
+1. If necessary, click **Enter** or **Return** to specify the default input for each question.
+
+Your Cloud Shell session is now running inside the VM.
+
+1. In the VM's shell, set required shell variables:
+
+```
+export PROJECT_NAME=$(gcloud config get-value project)
+export ORG=${PROJECT_NAME}
+export INSTANCE_NAME=eval-instance
+export NAT_ADDR_NAME=eval-instance-ip
+export INTERNAL_LB_IP=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/instances/${INSTANCE_NAME}" | jq ".host" --raw-output)
+export EVAL_ENVGROUP_HOSTNAME=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/envgroups/eval-group" | jq ".hostnames[0]" --raw-output)
+export NAT_IP_ADDRESS=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/instances/${INSTANCE_NAME}/natAddresses/${NAT_ADDR_NAME}" | jq ".ipAddress" --raw-output)
+echo "INTERNAL_LB_IP=${INTERNAL_LB_IP}"
+echo "EVAL_ENVGROUP_HOSTNAME=${EVAL_ENVGROUP_HOSTNAME}"
+echo "NAT_IP_ADDRESS=${NAT_IP_ADDRESS}"
+```
+
+Copied!
+
+Note the **NAT_IP_ADDRESS** value.
+
+The **NAT_IP_ADDRESS** is the NAT public IP address that is now used by the runtime instance when calling backend services. A backend service could allow-list this known IP address.
+
+**Note:** The DNS entry uses a private DNS zone and a private IP address. The private DNS entry will not resolve outside the apigeex-vpc network, and the private IP address cannot be accessed from Cloud Shell or from an IP address outside the apigeex-vpc network.
+
+1. Call the deployed **test-nat** API proxy in the **eval** environment:
+
+```
+curl -k "https://${EVAL_ENVGROUP_HOSTNAME}/test-nat"
+```
+
+Copied!
+
+The **`-k`** option tells `curl` to skip verification of the TLS certificate. The internal load balancer is using a self-signed certificate instead of a certificate that has been created by a trusted certificate authority (CA).
+
+**Note:** You should not use the `-k` option to bypass certificate verification for production use cases.
+
+Your curl command should return the response generated by the **test-nat** proxy, which should look similar to this:
+
+```
+{
+  "origin": "10.0.0.2,10.0.0.5,10.0.0.6, 104.198.6.224"
+}
+```
+
+The **origin** field still shows multiple IP addresses. The last IP address is now the NAT address that was dedicated to your runtime instance.
+
+1. Confirm the NAT IP address matches by using the following command to retrieve the NAT address using the Apigee API:
+
+```
+curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${ORG}/instances/${INSTANCE_NAME}/natAddresses/${NAT_ADDR_NAME}"
+```
+
+Copied!
+
+## Congratulations!
+
+You learned how to call the Apigee API from the API documentation. You used the Apigee API to create and activate a NAT IP address for your runtime instance. You created an API proxy that called the [httpbin](https://httpbin.org/) IP address service. Finally, you verified that the IP address visible to the backend was the configured NAT IP address.
+
+
+
+## Lab - Protecting APIs with Apigee X and Cloud Armor
+
+## Overview
+
+In this lab, you use an [Apigee X threat protection policy](https://cloud.google.com/apigee/docs/api-platform/security/content-based-security) to protect APIs against content-based threats. You also add [Cloud Armor](https://cloud.google.com/armor) to a [global external HTTPS load balancer](https://cloud.google.com/load-balancing/docs/https) to provide [web application firewall](https://en.wikipedia.org/wiki/Web_application_firewall) features like [distributed denial-of-service (DDoS)](https://en.wikipedia.org/wiki/Denial-of-service_attack#Distributed_attack) protection, [OWASP Top 10 risks](https://owasp.org/www-project-top-ten/) mitigation, and IP-based and geo-based access control.
+
+A load balancer and managed instance group of bridge VMs have been created to provide access to your runtime instance. The architecture for this configuration is shown here:
+
+![Flow diagram displaying the configuration architecture](images\OgvhjLznRlpo50UK7OouAz3NRP9dDaXEWPhwp200xrQ%3D.png)
+
+Incoming API calls enter the Customer project through a global external HTTPS load balancer. The external HTTPS load balancer cannot forward calls to the tenant project. Instead, the load balancer forwards the request to a [managed instance group](https://cloud.google.com/compute/docs/instance-groups) of bridge VMs in the customer project. These bridge VMs are in the peered network connected to the Apigee runtime instance, allowing the VMs to forward API calls to the runtime instance.
+
+Any HTTP traffic sent to the load balancer will be forwarded on to the bridge VMs and then the Apigee runtime instance. You will add Cloud Armor security policies to block specific traffic from being sent through to the runtime.
+
+JSON and XML attacks use payloads constructed to overwhelm JSON and XML parsers and induce application-level denial-of-service attacks. Cloud Armor does not detect these types of attacks, but Apigee can. The [JSONThreatProtection](https://cloud.google.com/apigee/docs/api-platform/reference/policies/json-threat-protection-policy) and [XMLThreatProtection](https://cloud.google.com/apigee/docs/api-platform/reference/policies/xml-threat-protection-policy) policies can detect these malicious payloads without loading the payload into a parser. You will use the *JSONThreatProtection* policy to protect against malformed JSON payloads.
+
+The instructions in this lab are applicable for both paid and evaluation orgs.
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Use Apigee threat protection policies to block malicious JSON and XML payloads
+- Create a Cloud Armor policy
+- Create Cloud Armor rule for blocking and allowing requests
+- Apply a Cloud Armor policy to a load balancer
+- Test a Cloud Armor policy using HTTP traffic
+
+## Setup
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+**Note:** It is recommended that you use a new Incognito window to complete this lab.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is the **Lab Details** panel with the following:
+
+   - The **Open Google Cloud console** button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-00-11b385477611@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the **Username** in the **Lab Details** panel.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   v19T8nI3OXmr
+   ```
+
+   Copied!
+
+   You can also find the **Password** in the **Lab Details** panel.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To view a menu with a list of Google Cloud products and services, click the **Navigation menu** at the top-left. ![Navigation menu icon](images\nUxFb6oRFr435O3t6V7WYJAjeDFcrFb16G9wHWp5BzU%3D.png)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-00-511b3b94d704`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-00-511b3b94d704
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-00-11b385477611@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-00-511b3b94d704
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+### Open the Apigee UI
+
+The Apigee UI is accessed on a page separate from the Google Cloud Console. This lab has automatically created an Apigee organization that has the same name as the Google Cloud project.
+
+- Click to open the [Apigee UI](https://apigee.google.com/).
+
+  You may also open the Apigee UI from the Google Cloud Console by opening the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) click **View All Products** under **Integration Services** select **Apigee**.
+
+If you see an error indicating that the project does not have an organization provisioned, the tab might be trying to load the organization for a previous lab.
+
+If you get this error:
+
+- Click on the organization dropdown.
+
+  ![Not provisioned error message](images\a0d5TSC4OOYQe%2FdgKoHBEnFq%2FVeW%2BhTpkXnCwV1KfNM%3D.png)
+
+  The organization dropdown should show an organization that has the same name as the Google Cloud project.
+
+  ![Apigee UI organization dropdown](images\oKdJQNWhJve9sTrlVC1l%2FfAJ%2FKqy%2BuVtMXtGmQWpaSk%3D.png)
+
+  The organizations listed are those that are accessible by the logged-in user. For this lab, you should be logged in with the lab credentials provided in the **Lab Details** panel when you started the lab.
+
+  You can navigate the Apigee UI using its **left navigation menu**. The landing page also shows **quick links** for navigating to commonly used locations.
+
+## Task 1. Create JSON threat protection shared flow
+
+In this task, you create a shared flow with a JSONThreatProtection policy, and then use a flow hook to enable it for all Apigee APIs.
+
+The [JSONThreatProtection policy](https://cloud.google.com/apigee/docs/api-platform/reference/policies/json-threat-protection-policy) will reject incoming JSON requests that exceed the specified limits. By placing the policy in a [shared flow](https://cloud.google.com/apigee/docs/api-platform/fundamentals/shared-flows), and attaching the shared flow with a [flow hook](https://cloud.google.com/apigee/docs/api-platform/fundamentals/flow-hooks), the policy can protect any request for all of the proxies deployed to an environment.
+
+### Create the shared flow
+
+1. Select the [Apigee Console](https://apigee.google.com/) tab in your browser window.
+
+2. Navigate to **Develop > Shared Flows**.
+
+3. Click **Create**.
+
+   A **shared flow** can contain a set of policies and conditions, and can be executed in API proxies or other shared flows by using a [FlowCallout policy](https://cloud.google.com/apigee/docs/api-platform/reference/policies/flow-callout-policy). In this lab, you will use the shared flow in a **flow hook**, which attaches it to every proxy deployed in the eval org.
+
+4. Name the shared flow `protect-json`, and then click **Create**.
+
+5. If a **Switch to Classic** link is in the upper right corner, click that link.
+
+6. Click the **Develop** tab.
+
+7. To add a policy to the shared flow, click **+Step**.
+
+8. Select **JSON Threat Protection**, and then set the **Display Name** and **Name** to `JTP-Protect`.
+
+9. Click **Add**.
+
+   The **JSONThreatProtection** policy contains several elements that provide limits to incoming JSON requests. You typically set these limits based upon the maximum values of your APIs. In this case, keep the default configuration for the policy.
+
+   This policy will only execute if the **Content-Type** header of the request is set to **application/json**, indicating that the incoming request has a JSON payload.
+
+10. Click **Save**.
+
+11. Click **Deploy to eval**, and then click **Deploy**.
+
+### Attach the shared flow to a flow hook
+
+The shared flow will be attached to the Pre-proxy flow hook so that it is executed before the proxy executes.
+
+1. Navigate to **Admin > Environments > Flow Hooks**.
+
+2. Hold the pointer over the **Pre-proxy** row, and then click the edit (pencil) icon (![pencil icon](https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D)) on the right side of the row.
+
+3. Select the **protect-json** shared flow, and then click **OK**.
+
+   You will test this flow hook in a later task.
+
+Click *Check my progress* to verify the objective.
+
+Create shared flow and flow hook
+
+
+
+Check my progress
+
+
+
+## Task 2. Add a Cloud Armor security policy
+
+In this task, you add a Cloud Armor security policy to protect your load balancer and control access to your APIs.
+
+[Cloud Armor](https://cloud.google.com/armor) is Google Cloud's web application firewall. A single Cloud Armor policy can be specified for a load balancer. In this lab, you will use a Cloud Armor security policy to reject specific traffic before it reaches the Apigee runtime instance, protecting your API.
+
+![Flow diagram displaying the configuration architecture with Cloud Armor highlighted](images\H4OgS48D40TzE6C%2BEeBUOG8f1DkY4JfcfZJ4YZ4bnDc%3D.png)
+
+**Note:** The load balancer cannot be fully configured until after the Apigee runtime instance IP address is known, so you may see the load balancer with unhealthy instances until the load balancer's configuration is complete.
+
+### Create a new security policy
+
+1. In the Cloud Console tab, on the Navigation menu (![navigation menu button](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View all Products**, then select **Network security** in the **Networking Section**, and then nevigate to **Cloud Armor policies**.
+
+2. Click **Create policy**.
+
+3. For **Name**, specify `protect-apis`.
+
+   This security policy will use rules to block specific traffic intended for our Apigee APIs.
+
+4. For **Default rule action**, select **Deny**.
+
+   Users will be denied access to the APIs unless they match a rule that specifically allows the traffic.
+
+5. For the **Deny status** dropdown, select **403 (Forbidden)**.
+
+   If a request does not match a rule that allows the traffic, a status code of 403 Forbidden will be returned to the user.
+
+6. Click **Next Step**.
+
+### Add a security policy rule to allow requests by origin country code
+
+This rule will allow only requests coming from specified countries.
+
+1. Click **Add a Rule**.
+
+2. Click **Advanced mode**.
+
+   A Basic mode rule can only specify IP addresses or IP address ranges to match. In this case, you want to specify allowed country codes.
+
+3. For **Match**, specify the following expression:
+
+   ```
+   origin.region_code == 'US'
+   ```
+
+   Copied!
+
+   For Cloud Armor, **region_code** is specified as an [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) region. This rule matches requests coming from the United States.
+
+4. For **Action**, specify **Allow**.
+
+5. Set **Priority** to `1000`, and then click **Done**.
+
+### Add a rule to block SQL injection attacks
+
+This rule will block requests that have SQL inputs that may result in [SQL injection](https://en.wikipedia.org/wiki/SQL_injection).
+
+1. Click **Add a Rule**.
+
+2. Click **Advanced mode**.
+
+3. For **Match**, specify the following expression:
+
+   ```
+   evaluatePreconfiguredExpr('sqli-stable', ['owasp-crs-v030001-id942251-sqli', 'owasp-crs-v030001-id942420-sqli', 'owasp-crs-v030001-id942431-sqli', 'owasp-crs-v030001-id942460-sqli', 'owasp-crs-v030001-id942421-sqli', 'owasp-crs-v030001-id942432-sqli'])
+   ```
+
+   Copied!
+
+   This expression specifies a [preconfigured Cloud Armor rule](https://cloud.google.com/armor/docs/rule-tuning#preconfigured_rules). The preconfigured rules use open source industry standard signatures to detect malicious requests. Specific signatures can be disabled by providing signature names to be turned off.
+
+   In this case, signatures at sensitivity level 3 and 4 are turned off. A signature's sensitivity level, also known as its [paranoia level](https://coreruleset.org/faq/#paranoialevel), specifies a tradeoff of a higher level of security at the expense of a higher number of false positives.
+
+   Level 1 is the default level of security which should rarely, if ever, have false positives. Level 2 adds extra protection against advanced and obfuscated attacks. Signatures at levels 3 and 4 are more aggressive and are significantly more likely to cause false positives. For example, POST requests with simple JSON payloads may be flagged by level 3 or 4 signatures.
+
+4. Leave **Action** set to **Deny**, and leave **Deny status** set to **403 (Forbidden)**.
+
+5. Set **Priority** to `500`.
+
+   When Cloud Armor policy rules are evaluated, the first encountered rule that matches the request specifies the action that will be taken. The check for SQL injection needs to occur before the check for region, because we want to reject requests that come from an allowed region but also contain SQL injection patterns. By choosing a smaller priority number, the SQL injection check will be done before the region check.
+
+6. Click **Done**.
+
+   Look at the summary on the right. The policy contains 3 rules. The rules are evaluated in order of lowest priority number to highest priority number, and the first matching rule will be used.
+
+   The first rule denies access if SQL injection patterns are detected.
+
+   The second rule allows access if the origin is the United States.
+
+   The final rule denies access for all traffic.
+
+7. Click **Create policy**.
+
+   The **Policies tab** shows that the new **protect-apis** policy has 0 targets because you haven't attached it to your load balancer yet.
+
+### Attach the policy to the load balancer
+
+1. Next to **protect-apis**, click the policy menu button (![policy menu button](https://cdn.qwiklabs.com/2ufrDePg5inKfodUoT2Kib4oE7II7emYn%2BypCC85FjQ%3D)), and then click **Apply policy to target**.
+
+2. For the **Backend Service target 1** dropdown, select **apigee-proxy-backend**, and then click **Add**.
+
+   The **protect-apis** policy details page should soon show that the policy applies to 1 target.
+
+   **Note:** It may take a few minutes for Cloud Armor changes to propagate to the target.
+
+Click *Check my progress* to verify the objective.
+
+Add a Cloud Armor security policy
+
+
+
+Check my progress
+
+
+
+## Task 3. Wait for Apigee instance provisioning to complete
+
+In this task, you wait for the Apigee evaluation org provisioning to complete.
+
+The Apigee organization provisioning may take quite a while to complete. The org provisioning progress can be monitored by using the [Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest).
+
+### Start monitoring script
+
+1. In the Cloud Shell, verify that the *GOOGLE_CLOUD_PROJECT* variable contains your project name by using the following command:
+
+   ```
+   echo ${GOOGLE_CLOUD_PROJECT}
+   ```
+
+   Copied!
+
+   The variable **GOOGLE_CLOUD_PROJECT** should contain the name of your project, which is the same as your Apigee organization name.
+
+2. **If the GOOGLE_CLOUD_PROJECT variable is not set**, set the variable manually using a command that looks like this, replacing *{project}* with your project name:
+
+   ```
+   export GOOGLE_CLOUD_PROJECT={project}
+   ```
+
+   Copied!
+
+   **Note:** The curly braces should be removed during this step.
+
+3. Paste the following command into the Cloud Shell:
+
+   ```
+   export INSTANCE_NAME=eval-instance; export ENV_NAME=eval; export PREV_INSTANCE_STATE=; echo "waiting for runtime instance ${INSTANCE_NAME} to be active"; while : ; do export INSTANCE_STATE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}" | jq "select(.state != null) | .state" --raw-output); [[ "${INSTANCE_STATE}" == "${PREV_INSTANCE_STATE}" ]] || (echo; echo "INSTANCE_STATE=${INSTANCE_STATE}"); export PREV_INSTANCE_STATE=${INSTANCE_STATE}; [[ "${INSTANCE_STATE}" != "ACTIVE" ]] || break; echo -n "."; sleep 5; done; echo; echo "instance created, waiting for environment ${ENV_NAME} to be attached to instance"; while : ; do export ATTACHMENT_DONE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}/attachments" | jq "select(.attachments != null) | .attachments[] | select(.environment == \"${ENV_NAME}\") | .environment" --join-output); [[ "${ATTACHMENT_DONE}" != "${ENV_NAME}" ]] || break; echo -n "."; sleep 5; done; echo; echo "${ENV_NAME} environment attached, waiting for hello-world to be deployed"; while : ; do export ATTACHMENT_DONE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}/attachments" | jq "select(.attachments != null) | .attachments[] | select(.environment == \"${ENV_NAME}\") | .environment" --join-output); [[ "${ATTACHMENT_DONE}" != "${ENV_NAME}" ]] || break; echo -n "."; sleep 5; done; echo "***ORG IS READY TO USE***";
+   ```
+
+   Copied!
+
+   This series of commands uses the Apigee API to determine when the runtime instance has been created and the eval environment has been attached.
+
+4. Wait until the instance is ready.
+
+   When the text `***ORG IS READY TO USE***` is printed, the instance is ready.
+
+   **Note:** If the command immediately indicates that the org is ready to use, the lab may have been prewarmed before you entered the lab.
+
+   While you are waiting for the org to be ready, you can explore a Cloud Armor [overview](https://cloud.google.com/armor/docs/cloud-armor-overview), [custom rules](https://cloud.google.com/armor/docs/rules-language-reference), and [preconfigured rules](https://cloud.google.com/armor/docs/rule-tuning).
+
+Click *Check my progress* to verify the objective.
+
+Wait for instance to be ready
+
+
+
+Check my progress
+
+
+
+## Task 4. Test from an allowed region
+
+In this task, you verify that the Cloud Armor security policy is protecting your APIs but allows acceptable traffic from the allowed region, and that the flow hook protects against JSON threats.
+
+A virtual machine named **apigeex-test-vm** was automatically created for you. You can use this machine to call the API from the United States.
+
+1. In Cloud Shell, open an ssh connection to your test VM in the United States:
+
+   ```
+   TEST_VM_ZONE=$(gcloud compute instances list --filter="name=('apigeex-test-vm')" --format "value(zone)")
+   gcloud compute ssh apigeex-test-vm --zone=${TEST_VM_ZONE} --force-key-file-overwrite
+   ```
+
+   Copied!
+
+2. If asked to authorize, click **Authorize**.
+
+3. For each question asked in the Cloud Shell, click **Enter** or **Return** to specify the default input.
+
+   Your logged in identity is the owner of the project, so SSH to this machine is allowed.
+
+   Your Cloud Shell session is now running inside the VM.
+
+4. Verify that the hello-world API proxy is now accessible:
+
+   ```
+   export PREV_STATUS_CODE=; echo "waiting for hello-world to be accessible"; while : ; do export STATUS_CODE=$(curl -k -s -o /dev/null -w "%{http_code}" --max-time 5 -X GET "https://eval.example.com/hello-world"); [[ "${STATUS_CODE}" == "${PREV_STATUS_CODE}" ]] || (echo; echo "STATUS_CODE=${STATUS_CODE}"); export PREV_STATUS_CODE=${STATUS_CODE}; [[ "${STATUS_CODE}" != "200" ]] || break; echo -n "."; sleep 5; done; echo; echo "***HELLO-WORLD IS ACCESSIBLE***";
+   ```
+
+   Copied!
+
+   It may take a short period of time before the hello-world proxy is deployed and the proxy is available through the external load balancer. When these commands return `***HELLO-WORLD IS ACCESSIBLE***`, the hello-world proxy is available.
+
+5. Call the deployed **hello-world** API proxy in the **eval** environment:
+
+   ```
+   curl -i -k "https://eval.example.com/hello-world"
+   ```
+
+   Copied!
+
+   A DNS entry for the hostname *eval.example.com* has been created with the incoming IP address for your load balancer.
+
+   The **-i** option displays the status code and header for the response.
+
+   The **-k** option skips verification of the TLS certificate of the load balancer, because the TLS certificate used for the load balancer is a self-signed certificate, not a certificate verified by a known certificate authority.
+
+   **Note:** Using the -k option to bypass certificate validation should not be used in a production environment.
+
+   The VM is located in the United States, so your curl command should successfully return the `Hello, Guest!` response generated by the **hello-world** proxy:
+
+   ```
+   HTTP/2 200
+   x-powered-by: Apigee
+   access-control-allow-origin: *
+   x-frame-options: ALLOW-FROM RESOURCE-URL
+   x-xss-protection: 1
+   x-content-type-options: nosniff
+   content-type: text/plain; charset=utf-8
+   content-length: 13
+   etag: W/"d-GHB1ZrJKk/wdVTdB/jgBsw"
+   date: Mon, 30 Aug 2021 19:14:45 GMT
+   alt-svc: clear
+   alt-svc: clear
+   x-request-id: b5532b95-c051-4f21-a131-07da1574edc3
+   server: apigee
+   via: 1.1 google, 1.1 google
+   
+   Hello, Guest!
+   ```
+
+6. Call the **hello-world** proxy using this command:
+
+   ```
+   curl -i -k -X POST "https://eval.example.com/hello-world" -H "Content-Type: application/json" -d '{ "ThisIsAReallyLongElementNameIMeanReallyReallyReallyLong": 42 }'
+   ```
+
+   Copied!
+
+   This request exceeds the *ObjectEntryNameLength* limit specified in the JSONThreatProtection policy included in the shared flow. The shared flow is attached to all API proxies using the pre-proxy flow hook.
+
+   The response should look similar to this:
+
+   ```
+   HTTP/2 500
+   content-type: application/json
+   x-request-id: 5360a9fb-b0b9-4fce-968c-22c2d3fd57dd
+   content-length: 235
+   date: Mon, 30 Aug 2021 19:16:17 GMT
+   server: apigee
+   via: 1.1 google
+   alt-svc: clear
+   
+   {"fault":{"faultstring":"JSONThreatProtection[JTP-Protect]: Execution failed. reason: JSONThreatProtection[JTP-Protect]: Exceeded object entry name length at line 1","detail":{"errorcode":"steps.jsonthreatprotection.ExecutionFailed"}}}
+   ```
+
+   **Note:** The default status code returned is 500, indicating a server error. In a production use of this policy, it makes more sense rewrite the error indicating an issue with the request (like 400 Bad Request), not a server error.
+
+7. Attempt to call the **hello-world** API proxy using this command:
+
+   ```
+   curl -i -k "https://eval.example.com/hello-world?item=name'%20OR%20'a'='a"
+   ```
+
+   Copied!
+
+   The *item* query parameter uses a [SQL injection pattern](https://owasp.org/www-community/attacks/SQL_Injection) that can have unintended consequences if a SQL query is built by concatenating strings.
+
+   The SQL injection pattern is successfully detected by Cloud Armor and the request is blocked, returning a 403 Forbidden response:
+
+   ```
+   HTTP/2 403
+   content-length: 134
+   content-type: text/html; charset=UTF-8
+   date: Thu, 22 Jul 2021 18:50:03 GMT
+   alt-svc: clear
+   
+   <!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>403</title>403 Forbidden
+   ```
+
+   **Note:** It can take a few minutes for Cloud Armor rules to propagate. If the request is not blocked, retry the call until the request is blocked.
+
+8. Type `exit` to close the SSH connection to your United States virtual machine.
+
+## Task 5. Test the security policy from a disallowed region
+
+In this task, you verify that the Cloud Armor security policy does not allow traffic for a region that has not been allow-listed.
+
+A virtual machine named **apigeex-outside-us** was automatically created in zone **`europe-west4-a`**. You can use this machine to call the API from outside of the United States.
+
+1. In Cloud Shell, open an ssh connection to your test VM outside the United States:
+
+```
+  export SECOND_VM_NAME=apigeex-outside-us
+  export SECOND_VM_ZONE=europe-west4-a
+  gcloud compute ssh ${SECOND_VM_NAME} --zone=${SECOND_VM_ZONE} --force-key-file-overwrite
+```
+
+Copied!
+
+1. If asked to authorize, click **Authorize**.
+
+2. For each question asked in the Cloud Shell, click **Enter** or **Return** to specify the default input.
+
+   Your logged in identity is the owner of the project, so SSH to this machine is allowed.
+
+   Your Cloud Shell session is now running inside the VM.
+
+3. Call the deployed **hello-world** API proxy in the **eval** environment:
+
+   ```
+   curl -i -k "https://eval.example.com/hello-world"
+   ```
+
+   Copied!
+
+   The VM is not located in the United States, so Cloud Armor should block the request, returning a 403:
+
+   ```
+   HTTP/2 403
+   content-length: 134
+   content-type: text/html; charset=UTF-8
+   date: Thu, 22 Jul 2021 22:47:06 GMT
+   alt-svc: clear
+   
+   <!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>403</title>403 Forbidden
+   ```
+
+## Task 6. Explore policy monitoring for Cloud Armor
+
+In this task, you check the Cloud Armor policy dashboard in [Cloud Monitoring](https://cloud.google.com/monitoring).
+
+1. In the **Cloud Console** tab, navigate to **Monitoring > Dashboards**.
+
+2. Click **Network Security Policies**.
+
+   This dashboard shows you the rate of allowed and blocked requests for all Cloud Armor policies. You currently have only one policy.
+
+3. In the **Policies** pane, click **protect-apis**.
+
+   This dashboard shows you the rate of allowed and blocked requests for the **protect-apis** policy.
+
+   To log individual request details, you would need to [turn on request logging for the load balancer](https://cloud.google.com/armor/docs/request-logging).
+
+## Congratulations!
+
+In this lab, you created a Cloud Armor policy and used the policy to reject or allow incoming traffic based on your Cloud Armor rules.
+
+## Deploy and Manage Apigee X: Challenge Lab
+
+## Overview
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students who have completed the labs in the [Deploy and Manage Apigee X](https://www.cloudskillsboost.google/course_templates/661) quest. Are you ready for the challenge?
+
+Topics tested:
+
+- Creating an Apigee X evaluation org
+- Adding an environment and environment group to the org
+- Configuring a NAT IP address for backend services
+- Protecting APIs with Cloud Armor
+
+## Setup
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+**Note:** It is recommended that you use a new Incognito window to complete this lab.
+
+## Challenge scenario
+
+You are a Cloud Engineer for Cymbal Shops, a national retailer. Cymbal Shop's API team is planning to use Apigee to integrate with its various partners and provide a merchandise catalog, and you are responsible for setting up and securing the Apigee X evaluation org.
+
+You are expected to have the skills and knowledge for these tasks, so step-by-step guides are not provided.
+
+Some Cymbal Shops standards you should follow:
+
+1. Create all resources in the default region (`us-east1`) or default zone (`us-east1-d`) unless otherwise directed.
+2. Naming normally uses the format *team-resource*; for example, an instance could be named **api-portal**.
+3. Allocate cost-effective resource sizes. Projects are monitored, and excessive resource use will result in the containing project's termination (and possibly yours), so plan carefully. This is the guidance the monitoring team is willing to share: unless directed, use **f1-micro** for small Linux VMs, and use **n1-standard-1** for other applications.
+
+### Your challenge
+
+A Cymbal Shops colleague has already used the [Apigee X provisioning wizard](https://apigee.google.com/setup) to enable the required APIs, create the VPC network (**api-vpc**), and create the network's required subnet (**api-subnet**). They also started step 3 of the wizard to create the Apigee evaluation organization in the `us-east1` region. The organization provisioning may not have finished yet.
+
+You have received an email asking you to finish the configuration of the Apigee X evaluation org. Read through each task description, and then create the required resources.
+
+## Task 1. Modify the environments and environment groups
+
+The Cymbal Shops development team wants to use two separate environments and environment groups. In addition to the **eval** environment and **eval-group** group, the development team wants an additional environment named **staging** that is contained in an additional environment group named **staging-group**.
+
+- Add this environment and environment group to your Apigee X org.
+
+**Requirements:**
+
+- To create the **staging** environment and the **staging-group** environment group, use the [Apigee UI](https://apigee.google.com/).
+- Leave the default hostname that is created for the new environment group.
+- The staging environment will be attached to the instance in a later task.
+- The staging environment should use the programmable proxy type and the proxy deployment type.
+
+Click **Check my progress** to verify the objective.
+
+Add staging environment and environment group
+
+**Add staging environment:**
+
+- Navigate to Admin > Environments > Overview.
+
+- In the upper right corner, click +Environment.
+- Specify [ staging ] for Display name and Environment name. Other fields should remain unchanged.
+- Click Create.
+
+**Add staging environment group:** 
+
+- Navigate to Admin > Environments > Groups.
+- In the upper right corner, click +Environment Group.
+- Name the environment group [ staging-group ], and then click Add.
+- In the [ staging-group ] environment group box, click the edit (pencil) button (pencil icon).
+- In the Environments box, click the + button.
+- Select the [ staging ] environment, and then click Add.
+- Leave the default hostname that is created for the new environment group.
+
+Check my progress
+
+
+
+**Note:** If a green check mark isn't displayed, click the score fly-out on the upper-right, and then click **Check my progress** on the relevant step. A pop-up box will give you advice.
+
+## Task 2. Use the provisioning wizard to set up access routing
+
+The development team needs the evaluation org to be accessible from the internet.
+
+- Use step 4 of the provisioning wizard to enable internet access.
+
+**Note:** If step 3 of the provisioning wizard is still running, you will need to wait for it to complete before completing this task.
+
+**Requirements:**
+
+- To complete the access routing step, use the [Apigee X provisioning wizard](https://apigee.google.com/setup).
+- Use the **api-subnet** subnet for the access routing subnetwork.
+- Use the default wildcard DNS service, **nip.io**. The provisioning wizard will automatically add the nip.io address as a hostname for the eval-group environment group. If the runtime's IP address is 1.2.3.4, the eval-group hostname will be set to *1.2.3.4.nip.io*.
+- **Be sure to select the wildcard DNS and subnet settings correctly in the wizard.** If you make a mistake, you will need to go **Network services > Load balancing** to [delete the load balancer](https://cloud.google.com/load-balancing/docs/cleaning-up-lb-setup) and refresh the wizard page to try the access routing step again.
+
+When access routing has been set up successfully, the **hello-world** API deployed to the eval environment can be called with a request similar to this:
+
+```
+curl -i https://1.2.3.4.nip.io/hello-world
+```
+
+Copied!
+
+Click **Check my progress** to verify the objective.
+
+**Set up access routing**
+
+-  Next to Access routing, click Edit.
+- Select Enable internet access.
+- Select Use wildcard DNS service.
+- For Subnetwork, select [ api-subnet ].
+- Click Set Access.
+
+Check my progress
+
+
+
+**Note:** If a green check mark isn't displayed, click the score fly-out on the upper-right, and then click **Check my progress** on the relevant step. A pop-up box will give you advice.
+
+## Task 3. Create and activate a NAT address for the instance
+
+The development team would like to allow-list the IP address of the runtime instance. Use Apigee X's NAT IP address feature to provide a static IP address.
+
+**Requirements:**
+
+- To **create and activate** a NAT address for the **eval-instance** runtime instance, use the [Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest).
+- Use **apigee-nat-ip** as the name of the NAT IP address.
+
+Click **Check my progress** to verify the objective.
+
+Create and activate NAT address
+
+**Create NAT address**
+
+- Open the Apigee API.
+- find organizations.instances.natAddresses.
+- Under organizations.instances.natAddresses, click create.
+- In the Try this API pane, set the parent to:
+  - organizations/{YOUR PROJECTID}/instances/eval-instance
+
+- Change {YOUR PROJECTID} to your [ Google Cloud Project ID ].
+- Click Add request body parameters, and then click name.
+- Between the double quotes, set the string to: [ apigee-nat-ip ].
+- Click Execute.
+
+**Activate NAT address**
+
+-  In the left pane, under organizations.instances.natAddresses, click activate.
+-  In the Try this API pane, set the parent to:
+  - organizations/{YOUR PROJECTID}/instances/eval-instance/natAddresses/apigee-nat-ip
+
+- Change {YOUR PROJECTID} to your [ Google Cloud Project ID ].
+- Click Execute.
+
+Check my progress
+
+
+
+**Note:** If a green check mark isn't displayed, click the score fly-out on the upper-right, and then click **Check my progress** on the relevant step. A pop-up box will give you advice.
+
+## Task 4. Create a Cloud Armor security policy and attach it to the global load balancer
+
+The development team wants to protect their backend services from remote code execution.
+
+- Use Cloud Armor to provide this protection.
+
+**Requirements:**
+
+- Name the policy **protect-apigee**.
+- To find the rule name for remote code execution detection, use the list of [Cloud Armor rules](https://cloud.google.com/armor/docs/waf-rules).
+- Use the stable version of the rule.
+- Return a 403 Forbidden status code if a remote code execution pattern is detected.
+- Use a priority of **1000**.
+- Allow all traffic through your load balancer, except for traffic matching the remote code execution detection rule.
+- You can find the eval-group nip.io hostname using the **Admin > Groups** menu in the [Apigee UI](https://apigee.google.com/). The hostname should look similar to *1.2.3.4.nip.io*, using the IP address of the runtime instance.
+
+An example of a request that would be detected by the remote code execution rule is:
+
+```
+curl -i https://1.2.3.4.nip.io/hello-world?doc=/bin/ls
+```
+
+Copied!
+
+**Note:** It can take a few minutes for Cloud Armor rules to propagate. If the request is not blocked, you may retry the call until the request is blocked. You do not need to block a request for this progress check to be successful.
+
+Click **Check my progress** to verify the objective.
+
+Create and attach the Cloud Armor policy
+
+**Create the Cloud Armor policy**
+
+- In the Cloud Console tab, on the Navigation menu (navigation menu button), navigate to Network security > Cloud Armor.
+- Click Create policy.
+- For Name, specify [ protect-apigee ].
+- Default rule action choose Allow.
+- Click Next step > + Add rule > Advanced mode.
+- For Match, specify the following expression:
+  - evaluatePreconfiguredExpr('rce-stable')
+
+- Leave Action set to Deny, and leave Deny status set to 403 (Forbidden).
+- Set Priority to 1000.
+- Click Done.
+- Click Create policy.
+
+**Attach the Cloud Armor policy**
+
+- Next to protect-apigee, click the policy menu button (three dots), and then click Apply policy to target.
+- Click + Add target.
+- For the Target dropdown, select apigee-proxy-backend, and then click Add.
+
+Check my progress
+
+
+
+**Note:** If a green check mark isn't displayed, click the score fly-out on the upper-right, and then click **Check my progress** on the relevant step. A pop-up box will give you advice.
+
+## Task 5. Attach the staging environment to the runtime instance
+
+The staging environment cannot take traffic until it is attached to the runtime instance.
+
+**Requirements:**
+
+- To attach the **staging** environment to the runtime instance, use the [Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest).
+
+**Note:** It can take several minutes before an environment attachment completes.
+
+Click **Check my progress** to verify the objective.
+
+**Attach the environment to the runtime instance**
+
+- Return to the Cloud Console tab.
+- On the top-right toolbar, click the Activate Cloud Shell button.
+- In the Cloud Shell, verify the variable with your Apigee org name.
+- Run the following command:
+
+```
+echo ${GOOGLE_CLOUD_PROJECT}
+```
+
+```
+export INSTANCE_NAME=eval-instance; curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "Content-Type: application/json" -X POST "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}/attachments" -d '{ "environment": "staging" }' | jq
+```
+
+```
+export ATTACHING_ENV=staging; export INSTANCE_NAME=eval-instance; echo "waiting for ${ATTACHING_ENV} attachment"; while : ; do export ATTACHMENT_DONE=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" -X GET "https://apigee.googleapis.com/v1/organizations/${GOOGLE_CLOUD_PROJECT}/instances/${INSTANCE_NAME}/attachments" | jq "select(.attachments != null) | .attachments[] | select(.environment == \"${ATTACHING_ENV}\") | .environment" --join-output); [[ "${ATTACHMENT_DONE}" != "${ATTACHING_ENV}" ]] || break; echo -n "."; sleep 5; done; echo; echo "***${ATTACHING_ENV} ENVIRONMENT ATTACHED***";
+```
+
+
+
+
+
+**Note:** If a green check mark isn't displayed, click the score fly-out on the upper-right, and then click **Check my progress** on the relevant step. A pop-up box will give you advice.
+
+## Congratulations!
+
+Over the course of this challenge lab you have demonstrated your knowledge of Apigee X deployment and management.
