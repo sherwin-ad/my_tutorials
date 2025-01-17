@@ -1576,9 +1576,15 @@ The Missing Content Security Policy (CSP) Header vulnerability occurs when a web
 
 **OPTION 1**
 
+```
+curl -sI https://pagibigfund.gov.ph/ | grep -i content-security=policy
+```
+
+**OPTION 2**
+
 - https://securityheaders.com/
 
-**OPTION 2: Use developer tools to find a CSP in a response header**
+**OPTION 3: Use developer tools to find a CSP in a response header**
 
 1. Using a browser, open developer tools (we used Chrome’s DevTools) and then go to the website of choice. Open up the Network tab.
 2. Look for the file that builds the page. It should have the same domain as the website you’re on (e.g., www.twitter.com), and will usually be the first item on the Network tab.
@@ -1587,7 +1593,7 @@ The Missing Content Security Policy (CSP) Header vulnerability occurs when a web
 
 ###### <img src="https://bluetriangle.com/hs-fs/hubfs/Image%20%231%20CSP%20Header.jpg?width=574&name=Image%20%231%20CSP%20Header.jpg" alt="Image #1 CSP Header" style="zoom: 150%;" />
 
-**Option #2 - Use a 3rd party browser extension to find a CSP in the response header**
+**Option #4 - Use a 3rd party browser extension to find a CSP in the response header**
 
 There is a browser extension available in Chrome called “CSP Evaluator” that will automatically pull any CSP from the response header for the page, but not a CSP in a meta tag.
 
@@ -1600,7 +1606,7 @@ The tool can be found under the Chrome Extension Store: [CSP Evaluator](https://
 
 
 
-# Set HTTP Security Headers Apache WHM
+## Set HTTP Security Headers Apache WHM
 
 By Raddy in [Other](https://raddy.dev/blog/category/other/) · July 25, 2022
 
@@ -1818,7 +1824,7 @@ Header set X-Frame-Options DENY
 
 
 
-# Missing 'X-Frame-Options' Header
+# Missing 'X-Frame-Options' HeaderCookie Without HttpOnly Flag Detected
 
 - To enhance the security of your web server, you can configure it to include the `X-Frame-Options` header. This header helps protect your website from clickjacking attacks by specifying whether your site's content can be embedded in an iframe on other sites.
 
@@ -1935,8 +1941,6 @@ If you're using Cloudflare, you can set the `X-Frame-Options` header using Cloud
 To verify that the `X-Frame-Options` header is being set correctly, you can use browser developer tools or an online tool like `cURL` to inspect the response headers:
 
 ```
-sh
-Copy code
 curl -I https://www.example.com
 ```
 
