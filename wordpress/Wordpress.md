@@ -104,6 +104,80 @@ EXIT;
 
 
 
+# Exporting a MySQL or MariaDB Database
+
+Use `mysqldump` to export your database:
+
+```bash
+mysqldump -u username -p database_name > data-dump.sql
+```
+
+Copy
+
+- `username` is the username you can log in to the database with
+- `database_name` is the name of the database to export
+- `data-dump.sql` is the file in the current directory that stores the output.
+
+The command will produce no visual output, but you can inspect the contents of `data-dump.sql` to check if it’s a legitimate SQL dump file.
+
+Run the following command:
+
+```bash
+head -n 5 data-dump.sql
+```
+
+Copy
+
+The top of the file should look similar to this, showing a MySQL dump for a database named `database_name`.
+
+```
+SQL dump fragment-- MySQL dump 10.13  Distrib 5.7.16, for Linux (x86_64)
+--
+-- Host: localhost    Database: database_name
+-- ------------------------------------------------------
+-- Server version       5.7.16-0ubuntu0.16.04.1
+```
+
+# Importing a MySQL or MariaDB Database
+
+To import an existing dump file into MySQL or MariaDB, you will have to create a new database. This database will hold the imported data.
+
+First, log in to MySQL as **root** or another user with sufficient privileges to create new databases:
+
+```bash
+mysql -u root -p
+```
+
+Copy
+
+This command will bring you into the MySQL shell prompt. Next, create a new database with the following command. In this example, the new database is called `new_database`:
+
+```bash
+CREATE DATABASE new_database;
+```
+
+Copy
+
+You’ll see this output confirming the database creation.
+
+```
+OutputQuery OK, 1 row affected (0.00 sec)
+```
+
+Then exit the MySQL shell by pressing `CTRL+D`. From the normal command line, you can import the dump file with the following command:
+
+```bash
+mysql -u username -p new_database < data-dump.sql
+```
+
+Copy
+
+- `username` is the username you can log in to the database with
+- `newdatabase` is the name of the freshly created database
+- `data-dump.sql` is the data dump file to be imported, located in the current directory
+
+
+
 # Configuring the WordPress Directory
 
 Update the ownership with the `chown` command which allows you to modify file ownership. Be sure to point to your server’s relevant directory:
@@ -124,9 +198,90 @@ This one finds each file within the directory and sets their permissions to `640
 sudo find /var/www/wordpress/ -type f -exec chmod 640 {} \;
 ```
 
+# To Generate a Certificate Signing Request for Apache 2.x
+
+1. Log in to your server's terminal (SSH).
+
+2. At the prompt, type the following command:
+   openssl req -new -newkey rsa:2048 -nodes -keyout yourdomain.key -out yourdomain.csr
+
+   Note: Replace yourdomain with the domain name you're securing. For example, if your domain name is coolexample.com, you would type coolexample.key and coolexample.csr.
+
+3. Enter the requested information:
+   - Common Name: The fully-qualified domain name, or URL, you're securing.
+     If you are requesting a Wildcard certificate, add an asterisk (*) to the left of the common name where you want the wildcard, for example *.coolexample.com.
+   - Organization: The legally-registered name for your business. If you are enrolling as an individual, enter the certificate requestor's name.
+   - Organizational Unit: If applicable, enter the DBA (doing business as) name. It is not necessary to specify an organizational unit when generating a CSR.
+   - City or Locality: Name of the city where your organization is registered/located. Do not abbreviate.
+     State or Province: Name of the state or province where your organization is located. Do not abbreviate.
+   - Country: The two-letter International Organization for Standardization (ISO) format country code for where your organization is legally registered.
+      Note: If you do not want to enter a password for this SSL, you can leave the Passphrase field blank. However, please understand there might be additional risks.
+
+4. Open the CSR in a text editor and copy all of the text.
+5. Paste the full CSR into the SSL enrollment form in your account.
 
 
-### Apache configuration
+
+# Manually install an SSL certificate on my Apache server (Ubuntu)
+
+1. Find the directory on your server where certificate and key files are stored, then upload your intermediate certificate (`gd_bundle.crt` or similar) and primary certificate (`.crt` file with randomized name) into that folder.
+
+   - For security, you should make these files readable by root only.
+
+2. Find your Apache configuration file.
+
+   - On default configurations, you can find a file named `apache2.conf` in the `/etc/apache2` folder.
+
+   - If you have configured your server differently, you may be able to find the file with the following command:
+
+     - grep -i -r "SSLCertificateFile" /etc/apache2/
+
+     - `/etc/apache2/` may be replaced with the base directory of your Apache installation.
+
+3. Open this file with your favorite text editor.
+
+4. Inside your `apache2.conf` file, find the < VirtualHost > block.
+
+5. To have your site available on both secure (https) and non-secure (http) connections, make a copy of this block and paste it directly below the existing < VirtualHost > block.
+
+6. You can now customize this copy of the < VirtualHost > block for secure connections. Here is an example configuration:
+
+   ```
+   <VirtualHost xxx.xxx.x.x:443> 
+   	DocumentRoot /var/www/coolexample \
+   	ServerName coolexample.com www.coolexample.com 	
+   		SSLEngine on 	
+   		SSLCertificateFile /path/to/coolexample.crt 	
+   		SSLCertificateKeyFile /path/to/privatekey.key 	
+   		SSLCertificateChainFile /path/to/intermediate.crt 
+   </VirtualHost> 
+   ```
+
+   
+
+   - Don't forget the added `443` port at the end of your server IP.
+   - **DocumentRoot** and **ServerName** should match your original < VirtualHost > block.
+   - The remaining`/path/to/...` file locations can be replaced with your custom directory and file names.
+
+7. First, run the following command to check your Apache configuration file for errors:
+
+   ```
+   apache2ctl configtest
+   ```
+
+   
+
+8. Confirm that the test returns a **Syntax OK** response. If it does not, review your configuration files.
+
+   - **Warning:** The Apache service will not start again if your config files have syntax errors.
+
+9. After confirming a **Syntax OK** response, run the following command to restart Apache:
+
+   ```
+   apache2ctl restart
+   ```
+
+# Apache configuration
 
 ```vhdl
 sudo a2enmod rewrite
