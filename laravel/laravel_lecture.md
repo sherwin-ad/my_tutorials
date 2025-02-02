@@ -24,7 +24,7 @@ sudo apt update
 Now run the following command to install Laravel's dependencies, including the LAMP Stack (Linux, Apache, MySQL/MariaDB, and PHP), Composer, and Git.
 
 ```
-sudo apt install apache2 mariadb-server php php-curl php-bcmath php-json php-mysql php-mbstring php-xml php-tokenizer php-zip composer git
+sudo apt install apache2 mysql-server php php-curl php-bcmath php-json php-mysql php-mbstring php-xml php-tokenizer php-zip composer git
 ```
 
 Type **Y** to proceed with the installation.
@@ -43,8 +43,8 @@ sudo systemctl status apache2
 Now check the MariaDB service using the command below. The MariaDB server should be enabled and running on your Ubuntu system.
 
 ```
-sudo systemctl is-enabled mariadb
-sudo systemctl status mariadb
+sudo systemctl is-enabled mysql.service
+sudo systemctl status mysql.service
 ```
 
 Lastly, check the PHP and Composer versions using the command below. You will see the PHP 8.3 and Composer 2.7.1 installed on your system.
@@ -148,6 +148,12 @@ Log in to the MariaDB server using the command below. Input your MariaDB root pa
 sudo mariadb -u root -p
 ```
 
+Update  root password
+
+```
+alter user 'root'@'localhost' identified with mysql_native_password by 'new_password';
+```
+
 Now run the following queries to create a new database and user '**laravelapp**', with the password '**password**'.
 
 ```
@@ -216,6 +222,12 @@ DB_PASSWORD=password
 ```
 
 Save and exit the file.
+
+```
+sudo composer install
+```
+
+
 
 Lastly, run the command below to migrate the database for your Laravel project.
 
