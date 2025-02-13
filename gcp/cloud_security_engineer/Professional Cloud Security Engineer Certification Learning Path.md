@@ -3739,3 +3739,461 @@ Correct. This is the primary benefit of packet mirroring. It allows  security to
 
 # 07 Networking in Google Cloud: Load Balancing
 
+## Hybrid Load Balancing and Traffic Management
+
+### LAB - Configuring Traffic Management with a Load Balancer
+
+#### Overview
+
+Google Cloud load balancers offer traffic management capabilities that vary by load balancer.
+
+In this lab, you create a regional internal Application Load Balancer with two backends. Each backend will be an instance group. You will configure the load balancer to create a blue-green deployment.
+
+The blue deployment refers to the current version of your application, and the green deployment refers to a new application version. You configure the load balancer to send 70% of the traffic to the blue deployment and 30% to the green deployment. When you’re finished, the environment will look like this:
+
+![The image shows a VPC network with two subnets, each with a managed instance group. One subnet is used for the blue deployment, and the other is used for the green deploynment. Client traffic to the subnets is handled by the load balancer.](https://cdn.qwiklabs.com/FgrZkcSEqghVxKV14KPVgNzTUMo0lQfmqTgpG45%2BTYA%3D)
+
+#### Objectives
+
+In this lab, you perform the following tasks:
+
+- View the Google Cloud infrastructure that the load balancer will use.
+- Create a regional internal Application Load Balancer with two backends.
+- Implement traffic management on the load balancer.
+- Test the load balancer.
+
+#### Setup
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 1. View the Google Cloud infrastructure that the load balancer will use
+
+##### **View the network, firewall rules, and Cloud Router**
+
+The network *my-internal-app*, with *subnet-a* and *subnet-b* and firewall rules for RDP, SSH, and ICMP traffic, has been configured for you. Additional firewall rules have been configured to allow communication between the load balancer and the backends. Later, you create a regional internal Application Load Balancer in the my-internal-app network.
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **VPC network > VPC networks**.
+
+   Each Google Cloud project starts with the *default* network. In addition, the *my-internal-app* network was created for you as part of your network diagram.
+
+   Note the *my-internal-app* network with its subnets: *subnet-a* and *subnet-b*. Both subnets are in the `Region` region.
+
+   Managed instance groups in *subnet-a* and *subnet-b* were also created for you.
+
+2. (Optional) Click **subnet-a** and observe its configuration.
+
+3. (Optional) Click **subnet-b** and observe its configuration.
+
+4. In the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **VPC network > Firewall**.
+   Note the following firewall rules that were created for you:
+
+   | Firewall rule          | Purpose                                       |
+   | :--------------------- | :-------------------------------------------- |
+   | app-allow-icmp         | Allows ICMP communication                     |
+   | app-allow-ssh-rdp      | Allows SSH and RDP over TCP ports 22 and 3389 |
+   | fw-allow-health-checks | Allow health checks over TCP port 80          |
+   | fw-allow-lb-access     | Allow traffic in the 10.10.0.0/16 subnet      |
+
+5. (Optional) View the contents of each firewall rule.
+
+6. In the Google Cloud console, on the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products**. In the left hand pane, select **Networking > Network Connectivity > Cloud Routers**.
+   Note the *nat-router* Cloud Router that was created for the *my-internal-app* network. The load balancer will use this Cloud Router.
+
+##### **View the instance groups**
+
+The instance groups were created for you. Next, you will observe the configuration details.
+
+1. On the **Navigation menu**, click **Compute Engine > VM instances**.
+   Note the two VM instances that start with *instance-group-1* and *instance-group-2*.
+2. Click **instance-group-1**.
+3. Scroll to **Network interfaces**.
+   Note that the instance group is in *subnet-a*, and its internal IP address is *10.10.20.2*.
+4. Return to the **VM instances** page, and repeat steps 2 and 3 for **instance-group-2**.
+   Note that this instance group is in *subnet-b*, and its internal IP address is *10.10.30.2*.
+
+##### **Create a VM for testing**
+
+You create a VM called *utility-vm* in *subnet-a* of the *my-internal-app* network and use it to test the load balancer.
+
+1. Return to the **VM instances** page, and click **Create instance**.
+
+2. Specify the following, and leave the remaining settings as their defaults:
+
+   | Property     | Value (type value or select option as specified) |
+   | :----------- | :----------------------------------------------- |
+   | Name         | utility-vm                                       |
+   | Region       | `<REGION>`                                       |
+   | Zone         | `<ZONE 1>`                                       |
+   | Series       | E2                                               |
+   | Machine type | e2-medium (2vCPU, 4 GB memory)                   |
+
+3. Click **OS and storage**.
+
+   Click **Change** to begin configuring your boot disk and select the following values:
+
+   - **Operating system**: `Debian`
+   - **Version**: `Debian GNU/Linux 12 (bookworm) x86/64, amd64`
+
+4. Click **Networking**.
+
+5. For **Network interfaces**, click **default**.
+
+6. Set the network interface properties and values as shown in the following table, and leave the remaining properties as their default values:
+
+   | Property                      | Value (type value or select option as specified) |
+   | :---------------------------- | :----------------------------------------------- |
+   | Network                       | my-internal-app                                  |
+   | Subnetwork                    | subnet-a                                         |
+   | Primary internal IPv4 address | Ephemeral (Custom)                               |
+   | Custom ephemeral IP address   | 10.10.20.50                                      |
+   | External IPv4 address         | None                                             |
+
+7. Click **Done**.
+
+8. Click **Create**.
+   Wait for the new VM to be created.
+
+##### Verify the backends
+
+1. For **utility-vm**, click **SSH** to launch a terminal and connect.
+   If you see the **Allow SSH-in-browser to connect to VMs** pop-up, click **Authorize**.
+2. To verify the welcome page for **instance-group-1-xxxx**, run the following command:
+
+```
+curl 10.10.20.2
+```
+
+Copied!
+
+The output is shown below. Note that the server location is set to `Zone 1`.
+
+```
+<h1>Internal Load Balancing Lab</h1><h2>Client IP</h2>Your IP address : 10.10.20.50<h2>Hostname</h2>Server Hostname:
+ instance-group-1-1zn8<h2>Server Location</h2>Region and Zone: Zone 1
+```
+
+1. To verify the welcome page for **instance-group-2-xxxx**, run the following command:
+
+```
+curl 10.10.30.2
+```
+
+Copied!
+
+The output is shown below. Note that the server location is set to `Zone 2`.
+
+```
+<h1>Internal Load Balancing Lab</h1><h2>Client IP</h2>Your IP address : 10.10.20.50<h2>Hostname</h2>Server Hostname:
+ instance-group-2-q5wp<h2>Server Location</h2>Region and Zone: Zone 2
+```
+
+
+
+Which of these fields identifies the location of the backend?
+
+
+
+Server Location
+
+
+
+Client IP
+
+
+
+Server Hostname
+
+
+
+Submit
+
+
+
+**Note:** This will be useful when verifying that the load balancer sends traffic to both backends.
+
+1. Close the SSH terminal to **utility-vm**:
+
+```
+exit
+```
+
+Copied!
+
+Click **Check my progress** to verify the objective.
+
+Finish setting up the network infrastructure.
+
+
+
+Check my progress
+
+
+
+#### Task 2. Configure the load balancer
+
+Configure a regional internal Application Load Balancer to balance traffic between the two backends (*instance-group-1* in `Zone 1` and *instance-group-2* in `Zone 2`), as shown (the region and zones may vary as per the lab requirement):
+
+![The image shows a VPC network with two subnets, each with a managed instance group. One subnet is used for the blue deployment, and the other is used for the green deploynment. Client traffic to the subnets is handled by the load balancer.](images/FgrZkcSEqghVxKV14KPVgNzTUMo0lQfmqTgpG45%2BTYA%3D.png)
+
+##### **Start the configuration**
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products**. In the left hand pane, select **Networking > Network Services > Load balancing**.
+2. Click **Create load balancer**.
+3. Under **Application Load Balancer (HTTP/HTTPS)**, click **next**.
+4. For **Public facing or internal**, select **internal** and click **next**. This selection creates a regional internal Application Load Balancer. This choice requires the backends to be in a single region `Region`.
+5. For **Cross-region or single region deployment**, select **Best for regional workloads** and click **next**.
+6. Click **Configure**.
+7. For **Name**, type **my-ilb**
+8. For **Region**, select **`Region`**
+9. For **Network**, select **my-internal-app**.
+
+The proxy servers that implement the regional internal Application Load Balancer require IP addresses. These IP addresses are allocated automatically from a subnet that you specify.
+
+1. Under **Proxy-only subnet required**, click **Reserve subnet**.
+2. For **Name**, type **my-proxy-subnet**
+3. For **IP address range**, type **10.10.40.0/24**
+4. Click **Add**.
+   Wait for the proxy-only subnet to be created. When that is successful, the console displays the name of the proxy-only subnet followed by the IP address range that you specified.
+
+##### **Configure the blue-service backend**
+
+This backend service refers to the present ("blue") version of your application.
+
+1. Click **Backend configuration**.
+
+2. For **Backend configuration**, for **Create or select backend service**, select **Create a backend service**.
+
+3. For **Name**, type **blue-service**.
+
+4. In **Backends**, specify the following, and leave the remaining settings as their defaults:
+
+   | Property       | Value (type value or select option as specified) |
+   | :------------- | :----------------------------------------------- |
+   | Instance group | instance-group-1                                 |
+   | Port numbers   | 80                                               |
+
+5. Click **Done**.
+
+6. For **Health check**, select **Create a health check**.
+
+7. Specify the following, and leave the remaining settings as their defaults:
+
+   | Property            | Value (select option as specified) |
+   | :------------------ | :--------------------------------- |
+   | Name                | blue-health-check                  |
+   | Protocol            | TCP                                |
+   | Port                | 80                                 |
+   | Check interval      | 10 seconds                         |
+   | Timeout             | 5 seconds                          |
+   | Healthy threshold   | 2                                  |
+   | Unhealthy threshold | 3                                  |
+
+**Note:** Health checks determine which instances can receive new connections. This HTTP health check polls instances every ten seconds and waits up to five seconds for a response. After two successful probe attempts, the backend is considered to be healthy. After three failed attempts, the backend is considered to be unhealthy.
+
+1. Click **Save**.
+2. Click **Create**.
+3. Verify that there is a blue check mark next to **Backend configuration** in the Google Cloud console. If there isn't, double-check that you have completed all the steps above.
+
+##### **Configure the green-service backend**
+
+This backend service refers to the new ("green") version of your application.
+
+1. For **Backend configuration**, for **Create or select backend service**, select **Create a backend service**.
+
+2. For **Name**, type **green-service**.
+
+3. In **Backends**, specify the following, and leave the remaining settings as their defaults:
+
+   | Property       | Value (type value or select option as specified) |
+   | :------------- | :----------------------------------------------- |
+   | Instance group | instance-group-2                                 |
+   | Port numbers   | 80                                               |
+
+4. Click **Done**.
+
+5. For **Health check**, select **Create a health check**.
+
+6. Specify the following, and leave the remaining settings as their defaults:
+
+   | Property            | Value (select option as specified) |
+   | :------------------ | :--------------------------------- |
+   | Name                | green-health-check                 |
+   | Protocol            | TCP                                |
+   | Port                | 80                                 |
+   | Check interval      | 10 seconds                         |
+   | Timeout             | 5 seconds                          |
+   | Healthy threshold   | 2                                  |
+   | Unhealthy threshold | 3                                  |
+
+7. Click **Save**.
+
+8. Click **Create**.
+
+Under **Backend services**, you should now see two entries: one for the blue-service and another for the green-service. If you do not see the green-service, you will need to re-do the task *Configure the green-service backend*.
+
+1. Click **Ok**.
+
+##### **Configure the "blue-green" routing rule**
+
+Create a routing rule that routes 70% of traffic to the blue-service and 30% of traffic to the green service.
+
+1. Click **Routing rules**.
+2. In the **Routing rules** panel, for **Mode**, select **Advanded host and path rule**.
+3. Click **Add host and path rule**.
+4. For **Hosts**, type *****. The * (asterisk) matches all hosts.
+5. Traffic management is configured using YAML format. Examine the following YAML code, and then copy and paste it into line 1 of the multi-line field **Path matcher (matches, actions, and services)**.
+
+```
+defaultService: regions/Region/backendServices/blue-service
+name: matcher1
+routeRules:
+ - matchRules:
+     - prefixMatch: /
+   priority: 0
+   routeAction:
+     weightedBackendServices:
+       - backendService: regions/Region/backendServices/blue-service
+         weight: 70
+       - backendService: regions/Region/backendServices/green-service
+         weight: 30
+```
+
+Copied!
+
+1. Click **Done**.
+
+##### **Configure the default routing rule**
+
+When traffic does not match any of the other routing rules, the load balancer uses the default routing rule. Even though the rule you configured is designed to match all traffic, the default routing rule is required. You will configure the default routing rule to use the blue-service backend.
+
+1. Click **(Default) Route traffic to backend "" for any unmatched hosts**.
+2. In the **Edit host and path rule** panel, for **Service**, select **blue-service**, and then click **Done**.
+
+##### **Configure the frontend**
+
+The frontend forwards traffic to the backends.
+
+1. Click **Frontend configuration**.
+
+2. Specify the following, and leave the remaining settings as their defaults:
+
+   | Property                    | Value (type value or select option as specified) |
+   | :-------------------------- | :----------------------------------------------- |
+   | Subnetwork                  | subnet-b                                         |
+   | IP address                  | Ephemeral (Custom)                               |
+   | Custom ephemeral IP address | 10.10.30.5                                       |
+
+3. Click **Done**.
+
+##### **Review and create the load balancer**
+
+1. (Optional) Click **Review and finalize**. Review the **Backend** and **Frontend**.
+2. Click **Create**.
+   Wait for the load balancer to be created before starting the next task.
+
+Click **Check my progress** to verify the objective.
+
+Configure the load balancer.
+
+
+
+Check my progress
+
+
+
+#### Task 3. Test the load balancer
+
+Verify that the *my-ilb* IP address forwards most of the traffic to the *blue-service* running on *instance-group-1* in *`Zone 1`*.
+
+##### **Access the load balancer**
+
+1. In the **Navigation menu**, click **Compute Engine > VM instances**.
+2. For **utility-vm**, click **SSH** to launch a terminal and connect.
+3. To verify that the load balancer forwards traffic, run the following command:
+
+```
+curl 10.10.30.5
+```
+
+Copied!
+
+The output should look like this:
+
+```
+<h1>Internal Load Balancing Lab</h1><h2>Client IP</h2>Your IP address : 10.10.20.50<h2>Hostname</h2>Server Hostname:
+ instance-group-2-1zn8<h2>Server Location</h2>Region and Zone: YOUR_LAB_ZONE
+```
+
+As expected, traffic is forwarded from the load balancer (10.10.30.5) to either the blue-service backend or the green-service backend.
+
+1. Run the same command a few times:
+
+```
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+curl 10.10.30.5
+```
+
+Copied!
+
+Most responses should come from *instance-group-1* in `Zone 1`, which is the blue-service. Fewer responses come from *instance-group-2* in `Zone 2`, which is the green-service. (Recall that you configured the load balancer to route 70% of the traffic to the blue-service.) If you do not see that most responses come from *instance-group-1*, run the commands again.
+
+#### Task 4. Review
+
+In this lab, you created two managed instance groups in the `Region` region. You also created some firewall rules. The firewall rules allow traffic from clients and the health checkers to the managed instance groups. You configured a regional internal Application Load Balancer, using the managed instance groups as backends. Finally, you tested the load balancer to ensure that it works as expected.
+
+
+
+### Quiz
+
+1. Where would you configure traffic management for a load balancer?
+
+- In the load balancer frontend
+- In the load descriptor
+- In the load balancer backend
+- **In the URL map**
+
+Correct. The URL map contains rules that define the criteria to use to route incoming traffic to a backend service.
+
+2. You can use hybrid load balancing to connect these environments:
+
+- **Google Cloud, other public clouds, and on-premises**
+- Google Cloud, AWS, and on-premises
+- Google Cloud and on-premises
+- Google Cloud and AWS
+
+Correct. You can connect any destination that you can reach by using a  Google hybrid connectivity product and that can be reached with a valid  IP:Port combination.
+
+3. When you use the internal IP address of the forwarding rule to specify an internal Network Load Balancer next hop, the load balancer can only be:
+
+- In the same subnet as the next hop route or a Shared VPC network.
+- In the same subnet as the next hop route.
+- In the same VPC network as the next hop route.
+- **In the same VPC network as the next hop route or in a peered VPC network.**
+
+Correct. When you use an internal IP address to specify the next hop,  the load balancer can be in the same VPC network or a peered VPC  network.
+
+
+
+
+
+## Caching and Optimizing Load Balancing
