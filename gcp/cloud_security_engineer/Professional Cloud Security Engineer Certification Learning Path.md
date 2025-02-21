@@ -9416,6 +9416,2794 @@ You successfully implemented bot management with Cloud Armor. You configured an 
 
 
 
+## LAB - Rate Limiting with Cloud Armor
+
+### Overview
+
+Google Cloud HTTP(S) load balancing is implemented at the edge of Google's network in Google's points of presence (POP) around the world. User traffic directed to an HTTP(S) load balancer enters the POP closest to the user and is then load balanced over Google's global network to the closest backend that has sufficient capacity available.
+
+Cloud Armor IP allowlist/denylist enable you to restrict or allow access to your HTTP(S) load balancer at the edge of the Google Cloud, as close as possible to the user and to malicious traffic. This prevents malicious users or traffic from consuming resources or entering your virtual private cloud (VPC) networks.
+
+In this lab, you configure an HTTP Load Balancer with global backends, as shown in the diagram below. Then, you'll stress test the Load Balancer and add a Cloud Armor rate limiting policy to restrict based on IP.
+
+![Network diagram](images\7wJtCqbfTFLwKCpOMzUSyPjVKBjUouWHbduOqMpfRiM%3D)
+
+#### What you'll learn
+
+In this lab, you learn how to perform the following tasks:
+
+- Create HTTP and health check firewall rules
+- Configure two instance templates
+- Create two managed instance groups
+- Configure an HTTP Load Balancer with IPv4 and IPv6
+- Stress test an HTTP Load Balancer
+- Add a Cloud Armor rate limiting policy to restrict based on IP
+- Verify that traffic is getting blocked when running a stress test from a VM
+
+### Setup and requirements
+
+#### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+#### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-228103688975@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   7kFwx0bs7ZSo
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+#### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-03-7acbbdef9b9d`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-03-7acbbdef9b9d
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-228103688975@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-03-7acbbdef9b9d
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+### Task 1. Configure HTTP and health check firewall rules
+
+Configure firewall rules to allow HTTP traffic to the backends and TCP traffic from the Google Cloud health checker.
+
+#### **Create the HTTP firewall rule**
+
+Create a firewall rule to allow HTTP traffic to the backends.
+
+1. In the Cloud Console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **VPC network** > **Firewall**.
+
+2. Notice the existing **ICMP**, **internal**, **RDP**, and **SSH** firewall rules.
+
+   Each Google Cloud project starts with the **default** network and these firewall rules.
+
+3. Click **Create Firewall Rule**.
+
+4. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified)             |
+   | :------------------ | :----------------------------------------------------------- |
+   | Name                | default-allow-http                                           |
+   | Network             | default                                                      |
+   | Targets             | Specified target tags                                        |
+   | Target tags         | http-server                                                  |
+   | Source filter       | IPv4 Ranges                                                  |
+   | Source IP ranges    | 0.0.0.0/0                                                    |
+   | Protocols and ports | Specified protocols and ports, and then *check* tcp, *type:* 80 |
+
+   **Note:** Make sure to include the **/0** in the **Source IP ranges** to specify all networks.
+
+5. Click **Create**.
+
+#### **Create the health check firewall rules**
+
+Health checks determine which instances of a load balancer can receive new connections. For HTTP load balancing, the health check probes to your load balanced instances come from addresses in the ranges `130.211.0.0/22` and `35.191.0.0/16`. Your firewall rules must allow these connections.
+
+1. Still in the **Firewall rules** page, click **Create Firewall Rule**.
+
+2. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified)    |
+   | :------------------ | :-------------------------------------------------- |
+   | Name                | default-allow-health-check                          |
+   | Network             | default                                             |
+   | Targets             | Specified target tags                               |
+   | Target tags         | http-server                                         |
+   | Source filter       | IPv4 Ranges                                         |
+   | Source IP ranges    | `130.211.0.0/22`, `35.191.0.0/16`                   |
+   | Protocols and ports | Specified protocols and ports, and then *check* tcp |
+
+   **Note:** Make sure to enter the two **Source IP ranges** one-by-one and press SPACE in between them.
+
+3. Click **Create**.
+
+Click **Check my progress** to verify the objective.
+
+Configure HTTP and health check firewall rules
+
+
+
+Check my progress
+
+
+
+### Task 2. Configure instance templates and create instance groups
+
+A managed instance group uses an instance template to create a group of identical instances. Use these to create the backends of the HTTP Load Balancer.
+
+#### Configure the instance templates
+
+An instance template is an API resource that you use to create VM instances and managed instance groups. Instance templates define the machine type, boot disk image, subnet, labels, and other instance properties. Create one instance template for **`us-east4`** and one for **`europe-west1`**.
+
+1. In the Cloud Console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **Instance templates**, and then click **Create instance template**.
+2. For **Name**, type **`us-east4`-template**.
+3. For **Location**, Select **Global**.
+4. For **Series**, select **E2**.
+5. Click **Networking, disks, security, management, sole-tenancy**.
+
+![Identity and API access page](images\yugx7DIYL4xTkUrJUKrUidZyGVIU4nqNc2%2BeurZRrbg%3D)
+
+1. Click the **Management** tab.
+
+![Management tab](images\pYVGB%2FFz65FDcnP2J2bZG%2FnoIkAHpTaNwvNm2KkKYRQ%3D)
+
+1. Under **Metadata**, click **+ADD ITEM** specify the following:
+
+   | Key                | Value                                        |
+   | :----------------- | :------------------------------------------- |
+   | startup-script-url | gs://cloud-training/gcpnet/httplb/startup.sh |
+
+**Note:** The `startup-script-url` specifies a script that executes when instances are started. This script installs Apache and changes the welcome page to include the client IP and the name, region, and zone of the VM instance. Feel free to explore [this script](https://storage.googleapis.com/cloud-training/gcpnet/httplb/startup.sh).
+
+1. Click **Networking**, for **Network tags**, type `http-server`.
+
+2. For **Network interfaces** expand default network and set the following values.
+
+   | Property | Value (type value or select option as specified) |
+   | :------- | :----------------------------------------------- |
+   | Network  | default                                          |
+   | Subnet   | default (`us-east4`)                             |
+
+**Note:** The network tag **http-server** ensures that the **HTTP** and **Health Check** firewall rules apply to these instances.
+
+1. Click **Create**.
+2. Wait for the instance template to be created.
+
+Now create another instance template for **subnet-b** by copying **`us-east4`-template**:
+
+1. Click on **`us-east4`-template** and then click on the **CREATE SIMILAR** option from the top.
+2. For **Name**, type **`europe-west1`-template**.
+3. For **Location**, Select **Global**.
+4. Click **Networking, disks, security, management, sole-tenancy**.
+5. Click **Networking**, expand `default` network.
+6. For **Subnet**, select **default (`europe-west1`)**.
+7. Click **Create**.
+
+#### Create the managed instance groups
+
+Create a managed instance group in **`us-east4`** and one in **`europe-west1`**.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) click **Compute Engine > Instance groups** in the left menu.
+
+2. Click **Create instance group**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property                                                     | Value (type value or select option as specified) |
+   | :----------------------------------------------------------- | :----------------------------------------------- |
+   | Name                                                         | `us-east4`-mig                                   |
+   | Location                                                     | Multiple zones                                   |
+   | Region                                                       | `us-east4`                                       |
+   | Instance template                                            | `us-east4`-template                              |
+   | Autoscaling > Autoscaling signals (click the dropdown icon to edit) > Signal type | CPU utilization                                  |
+   | Target CPU utilization                                       | 80, click **Done**.                              |
+   | Initialization period                                        | 45                                               |
+   | Minimum number of instances                                  | 1                                                |
+   | Maximum number of instances                                  | 5                                                |
+
+   **Note:** Managed instance groups offer **autoscaling** capabilities that allow you to automatically add or remove instances from a managed instance group based on increases or decreases in load. Autoscaling helps your applications gracefully handle increases in traffic and reduces cost when the need for resources is lower. You just define the autoscaling policy and the autoscaler performs automatic scaling based on the measured load.
+
+4. Click **Create**.
+
+Now repeat the same procedure for create a second instance group for **`europe-west1`-mig** in **`europe-west1`**:
+
+1. Click **Create Instance group**.
+
+2. Set the following values, leave all other values at their defaults:
+
+   | Property                                                     | Value (type value or select option as specified) |
+   | :----------------------------------------------------------- | :----------------------------------------------- |
+   | Name                                                         | `europe-west1`-mig                               |
+   | Location                                                     | Multiple zones                                   |
+   | Region                                                       | `europe-west1`                                   |
+   | Instance template                                            | `europe-west1`-template                          |
+   | Autoscaling > Autoscaling signals (click the dropdown icon to edit) > Signal type | CPU utilization                                  |
+   | Target CPU utilization                                       | 80, click **Done**.                              |
+   | Initialization period                                        | 45                                               |
+   | Minimum number of instances                                  | 1                                                |
+   | Maximum number of instances                                  | 5                                                |
+
+3. Click **Create**.
+
+Click **Check my progress** to verify the objective.
+
+Configure instance templates and instance group
+
+
+
+Check my progress
+
+
+
+#### Verify the backends
+
+Verify that VM instances are being created in both regions and access their HTTP sites.
+
+1. Still in **Compute Engine**, click **VM instances** in the left menu.
+
+2. Notice the instances that start with `us-east4-mig` and `europe-west1-mig`.
+
+   These instances are part of the managed instance groups.
+
+3. Click on the **External IP** of an instance of `us-east4-mig`.
+
+   You should see the **Client IP** (your IP address), the **Hostname** (starts with `us-east4-mig`) and the **Server Location** (a zone in `us-east4`).
+
+4. Click on the **External IP** of an instance of `europe-west1-mig`.
+
+   You should see the **Client IP** (your IP address), the **Hostname** (starts with `europe-west1-mig`) and the **Server Location** (a zone in `europe-west1`).
+
+**Note:** The **Hostname** and **Server Location** identifies where the HTTP Load Balancer sends traffic.
+
+
+
+Which of these fields identify the region of the backend?
+
+
+
+Hostname
+
+
+
+Server Location
+
+
+
+Client IP
+
+
+
+Submit
+
+
+
+### Task 3. Configure the HTTP Load Balancer
+
+Configure the HTTP Load Balancer to balance traffic between the two backends (**`us-east4`-mig** in `us-east4` and **`europe-west1`-mig** in `europe-west1`), as illustrated in the network diagram:
+
+![Network diagram](images\7wJtCqbfTFLwKCpOMzUSyPjVKBjUouWHbduOqMpfRiM%3D)
+
+#### Start the configuration
+
+1. In the Cloud Console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > click **Network Services** > **Load balancing**, and then click **Create load balancer**.
+2. Under **Application Load Balancer (HTTP/S)**, click **Next**.
+3. Under **Under Public facing or internal only**, select **Public facing (external)**, click **Next**.
+4. Under **Global or single region deployment**, select **Best for global workloads**, click **Next**.
+5. Under **Load balancer generation**, select **Global external Application Load Balancer**, click **Next**.
+6. Click **Configure**.
+7. For **Load Balancer Name**, type **http-lb**.
+
+#### Configure the backend
+
+Backend services direct incoming traffic to one or more attached backends. Each backend is composed of an instance group and additional serving capacity metadata.
+
+1. Click on **Backend configuration**.
+
+2. Click **Backend services & backend buckets** dropdown, click **Create a backend service**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property       | Value (select option as specified) |
+   | :------------- | :--------------------------------- |
+   | Name           | http-backend                       |
+   | Instance group | `us-east4`-mig                     |
+   | Port numbers   | 80                                 |
+   | Balancing mode | Rate                               |
+   | Maximum RPS    | 50                                 |
+   | Capacity       | 100                                |
+
+   **Note:** This configuration means that the load balancer attempts to keep each instance of **`us-east4`-mig** at or below 50 requests per second (RPS).
+
+4. Click **Done**.
+
+5. Click **Add a backend**.
+
+6. Set the following values, leave all other values at their defaults:
+
+   | Property                    | Value (select option as specified) |
+   | :-------------------------- | :--------------------------------- |
+   | Instance group              | `europe-west1`-mig                 |
+   | Port numbers                | 80                                 |
+   | Balancing mode              | Utilization                        |
+   | Maximum backend utilization | 80                                 |
+   | Capacity                    | 100                                |
+
+   **Note:** This configuration means that the load balancer attempts to keep each instance of **`europe-west1`-mig** at or below 80% CPU utilization.
+
+7. Click **Done**.
+
+8. For **Health Check**, select **Create a health check**.
+
+9. Set the following values, leave all other values at their defaults:
+
+   | Property | Value (select option as specified) |
+   | :------- | :--------------------------------- |
+   | Name     | http-health-check                  |
+   | Protocol | TCP                                |
+   | Port     | 80                                 |
+
+   **Note:** Health checks determine which instances receive new connections. This HTTP health check polls instances every 5 seconds, waits up to 5 seconds for a response and treats 2 successful or 2 failed attempts as healthy or unhealthy, respectively.
+
+10. Click **Save**.
+
+11. Check the **Enable Logging** box.
+
+12. Set the **Sample Rate** to `1`:
+
+13. Click **Create** to create the backend service, click **OK**.
+
+#### Configure the frontend
+
+The host and path rules determine how your traffic will be directed. For example, you could direct video traffic to one backend and static traffic to another backend. However, you are not configuring the Host and path rules in this lab.
+
+1. Click on **Frontend configuration**.
+
+2. Specify the following, leaving all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Protocol   | HTTP                                             |
+   | IP version | IPv4                                             |
+   | IP address | Ephemeral                                        |
+   | Port       | 80                                               |
+
+3. Click **Done**.
+
+4. Click **Add Frontend IP and port**.
+
+5. Specify the following, leaving all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Protocol   | HTTP                                             |
+   | IP version | IPv6                                             |
+   | IP address | Auto-allocate                                    |
+   | Port       | 80                                               |
+
+6. Click **Done**.
+
+**Note:** HTTP(S) load balancing supports both IPv4 and IPv6 addresses for client traffic. Client IPv6 requests are terminated at the global load balancing layer, then proxied over IPv4 to your backends.
+
+#### Review and create the HTTP Load Balancer
+
+1. Click **Review and finalize**.
+
+   ![Review and finalize option](images\IBhiqd5LWxFUFCPGyXQpotAd4KwchPVrm2pRPzOHJyA%3D)
+
+2. Review the **Backend services** and **Frontend**.
+
+   ![Frontend and Backend sections](images\8WLBOukmVzs8XkDjjHBroztYRDVekN2JTS4s%2BuHQk5o%3D)
+
+3. Click **Create**.
+
+4. Wait for the load balancer to be created.
+
+5. Click on the name of the load balancer (**http-lb**).
+
+6. Note the IPv4 and IPv6 addresses of the load balancer for the next task. They will be referred to as `[LB_IP_v4]` and `[LB_IP_v6]`, respectively.
+
+**Note:** The IPv6 address is the one in hexadecimal format.
+
+Click **Check my progress** to verify the objective.
+
+Configure the HTTP Load Balancer
+
+
+
+Check my progress
+
+
+
+### Task 4. Test the HTTP Load Balancer
+
+Now that you created the HTTP Load Balancer for your backends, verify that traffic is forwarded to the backend service.
+
+
+
+The HTTP load balancer should forward traffic to the region that is closest to you.
+
+
+
+True
+
+
+
+False
+
+
+
+#### Access the HTTP Load Balancer
+
+- To test IPv4 access to the HTTP Load Balancer, open a new tab in your browser and navigate to `http://[LB_IP_v4]`. Make sure to replace `[LB_IP_v4]` with the IPv4 address of the load balancer.
+
+**Note:** It might take up to 5 minutes to access the HTTP Load Balancer. In the meantime, you might get a 404 or 502 error. Keep trying until you see the page of one of the backends.
+
+**Note:** Depending on your proximity to **`us-east4`** and **`europe-west1`**, your traffic is either forwarded to a **`us-east4`-mig** or **`europe-west1`-mig** instance.
+
+If you have a local IPv6 address, try the IPv6 address of the HTTP Load Balancer by navigating to `http://[LB_IP_v6]`. Make sure to replace `[LB_IP_v6]` with the IPv6 address of the load balancer.
+
+#### Stress test the HTTP Load Balancer
+
+Create a new VM to simulate a load on the HTTP Load Balancer using `siege`. Then, determine if traffic is balanced across both backends when the load is high.
+
+1. In the Console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **VM instances**.
+
+2. Click **Create instance**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property | Value (type value or select option as specified) |
+   | :------- | :----------------------------------------------- |
+   | Name     | siege-vm                                         |
+   | Region   | `us-central1`                                    |
+   | Zone     | `us-central1-b`                                  |
+   | Series   | E2                                               |
+
+**Note:** Given that **`us-central1`** is closer to **`us-east4`** than to **`europe-west1`**, traffic should be forwarded only to **`us-east4`-mig** (unless the load is too high).
+
+1. Click **Create**.
+2. Wait for the **siege-vm** instance to be created.
+3. For **siege-vm**, click **SSH** to launch a terminal and connect.
+4. Run the following command, to install siege:
+
+```
+sudo apt-get -y install siege
+```
+
+Copied!
+
+Click **Check my progress** to verify the objective.
+
+Test the HTTP Load Balancer
+
+
+
+Check my progress
+
+
+
+1. To store the IPv4 address of the HTTP Load Balancer in an environment variable, run the following command, replacing `[LB_IP_v4]` with the IPv4 address:
+
+```
+export LB_IP=[LB_IP_v4]
+```
+
+Copied!
+
+1. To simulate a load, run the following command:
+
+```
+siege -c 250 http://$LB_IP
+```
+
+Copied!
+
+The output should look like this:
+
+```
+New configuration template added to /home/cloudcurriculumdeveloper/.siege
+Run siege -C to view the current settings in that file
+```
+
+1. In the Cloud Console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Network Services > Load balancing**.
+2. Click **Backends**.
+3. Click **http-backend**.
+4. Navigate to `http-lb`.
+5. Click on the **Monitoring** tab.
+6. Monitor the **Frontend Location (Total inbound traffic)** between North America and the two backends for 2 to 3 minutes.
+
+At first, traffic should just be directed to **`us-east4`-mig** but as the RPS increases, traffic is also directed to **`europe-west1`-mig**.
+
+![Monitoring graph](images\CgaFQi0mn2Z4HMrK%2BCXyhmAGrlKunLMBNpXKrHaYPhs%3D)
+
+This demonstrates that by default traffic is forwarded to the closest backend but if the load is very high, traffic can be distributed across the backends.
+
+1. Return to the **SSH** terminal of **siege-vm**.
+2. Press CTRL+C to stop the siege.
+
+### Task 5. Create Cloud Armor rate limiting policy
+
+In this section you will use Cloud Armor to denylist the **siege-vm** from accessing the HTTP Load Balancer by setting a rate limiting policy.
+
+1. In Cloud Shell, create security policy via gcloud:
+
+```
+gcloud compute security-policies create rate-limit-siege \
+    --description "policy for rate limiting"
+```
+
+Copied!
+
+1. Next, add a rate limiting rule:
+
+```
+gcloud beta compute security-policies rules create 100 \
+    --security-policy=rate-limit-siege     \
+    --expression="true" \
+    --action=rate-based-ban                   \
+    --rate-limit-threshold-count=50           \
+    --rate-limit-threshold-interval-sec=120   \
+    --ban-duration-sec=300           \
+    --conform-action=allow           \
+    --exceed-action=deny-404         \
+    --enforce-on-key=IP
+```
+
+Copied!
+
+1. Attach the security policy to the backend service http-backend:
+
+```
+gcloud compute backend-services update http-backend \
+    --security-policy rate-limit-siege --global
+```
+
+Copied!
+
+1. In the Console, navigate to **Navigation menu** > **Network Security** > **Cloud Armor**.
+2. Click `rate-limit-siege`. Your policy should resemble the following:
+
+![rate-limit-security-policy page](C:\Users\sherwinowen\Documents\my_tutorials\gcp\professional_cloud_architect\images\HtTzcdhWHT6ScuCL5MyKkBFXJyUjKcq92aUzLSxdz1U%3D.png)
+
+Click **Check my progress** to verify the objective.
+
+Create Cloud Armor Rate Limiting Policy
+
+
+
+Check my progress
+
+
+
+### Task 6. Verify the security policy
+
+1. Return to the SSH terminal of siege-vm.
+2. Run a curl against the LB IP to verify you can still connect to it, should receive a 200 response:
+
+```
+curl http://$LB_IP
+```
+
+Copied!
+
+1. In the SSH terminal of siege-vm, to simulate a load, run the following command:
+
+```
+siege -c 250 http://$LB_IP
+```
+
+Copied!
+
+The command will not generate any output.
+
+1. Explore the security policy logs to determine if this traffic is also blocked.
+
+2. In the Console, navigate to **Navigation menu > Network Security > Cloud Armor policies**.
+
+3. Click **rate-limit-siege**.
+
+4. Click **Logs**.
+
+5. Click **View policy logs**.
+
+6. On the Logging page, make sure to clear all the text in the Query preview.
+
+7. Select resource to **Application Load Balancer > http-lb-forwarding-rule > http-lb** then click **Apply**.
+
+8. Now click **Run Query**.
+
+9. Expand a log entry in Query results.
+
+   ![Query results page](images\SdiXJXvrIjBZPJZMSd9Y2ZhRbokm2bwRoEH3I01TZdE%3D)
+
+10. Expand **httpRequest**.
+
+The request should be from the **siege-vm** IP address. If not, expand another log entry.
+
+1. Expand `jsonPayload`.
+
+2. Expand `enforcedSecurityPolicy`.
+
+   ![Query results page](images\6Tg8NeDNW1atHww0aGfo4j90xzYQxpmuPovo11xb9Co%3D)
+
+Notice that the `configuredAction` is to **DENY** with the name **rate-limit-siege**.
+
+**Note:** Cloud Armor security policies create logs that can be explored to determine when traffic is denied and when it is allowed, along with the source of the traffic.
+
+### Congratulations!
+
+You configured an HTTP Load Balancer with backends in `us-east4` and `europe-west1`. Then, you stress tested the Load Balancer with a VM and denylisted the IP address via rate limiting with Cloud Armor. You were able to explore the security policy logs to identify why the traffic was blocked.
+
+
+
+## LAB - Application Load Balancer with Cloud Armor
+
+### Overview
+
+Google Cloud Application Load Balancing is implemented at the edge of Google's network in Google's points of presence (POP) around the world. User traffic directed to an Application Load Balancer enters the POP closest to the user and is then load balanced over Google's global network to the closest backend that has sufficient capacity available.
+
+Cloud Armor IP allowlist/denylist enable you to restrict or allow access to your Application Load Balancer at the edge of the Google Cloud, as close as possible to the user and to malicious traffic. This prevents malicious users or traffic from consuming resources or entering your Virtual Private Cloud (VPC) networks.
+
+In this lab, you configure an Application Load Balancer with global backends, as shown in the diagram below. Then, you stress test the Load Balancer and denylist the stress test IP with Cloud Armor.
+
+![Network diagram that illustrates load balancing](images\7wJtCqbfTFLwKCpOMzUSyPjVKBjUouWHbduOqMpfRiM%3D)
+
+#### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Create HTTP and health check firewall rules
+- Configure two instance templates
+- Create two managed instance groups
+- Configure an Application Load Balancer with IPv4 and IPv6
+- Stress test an Application Load Balancer
+- Denylist an IP address to restrict access to an Application Load Balancer
+
+### Setup and requirements
+
+#### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+#### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   "Username"
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   "Password"
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Task 1. Configure HTTP and health check firewall rules
+
+Configure firewall rules to allow HTTP traffic to the backends and TCP traffic from the Google Cloud health checker.
+
+#### Create the HTTP firewall rule
+
+Create a firewall rule to allow HTTP traffic to the backends.
+
+1. In the Cloud console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **VPC network** > **Firewall**.
+
+2. Notice the existing **ICMP**, **internal**, **RDP**, and **SSH** firewall rules.
+
+   Each Google Cloud project starts with the **default** network and these firewall rules.
+
+3. Click **Create Firewall Rule**.
+
+4. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified)             |
+   | :------------------ | :----------------------------------------------------------- |
+   | Name                | default-allow-http                                           |
+   | Network             | default                                                      |
+   | Targets             | Specified target tags                                        |
+   | Target tags         | http-server                                                  |
+   | Source filter       | IPv4 Ranges                                                  |
+   | Source IPv4 ranges  | 0.0.0.0/0                                                    |
+   | Protocols and ports | Specified protocols and ports, and then *check* TCP, *type:* 80 |
+
+Make sure to include the **/0** in the **Source IPv4 ranges** to specify all networks.
+
+1. Click **Create**.
+
+#### Create the health check firewall rules
+
+Health checks determine which instances of a load balancer can receive new connections. For Application Load Balancing, the health check probes to your load balanced instances come from addresses in the ranges `130.211.0.0/22` and `35.191.0.0/16`. Your firewall rules must allow these connections.
+
+1. Still in the **Firewall policies** page, click **Create Firewall Rule**.
+
+2. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified)    |
+   | :------------------ | :-------------------------------------------------- |
+   | Name                | default-allow-health-check                          |
+   | Network             | default                                             |
+   | Targets             | Specified target tags                               |
+   | Target tags         | http-server                                         |
+   | Source filter       | IPv4 Ranges                                         |
+   | Source IPv4 ranges  | `130.211.0.0/22`, `35.191.0.0/16`                   |
+   | Protocols and ports | Specified protocols and ports, and then *check* TCP |
+
+   **Note:** Make sure to enter the two **Source IPv4 ranges** one-by-one and press SPACE in between them.
+
+3. Click **Create**.
+
+Click *Check my progress* to verify the objective.
+
+Configure HTTP and health check firewall rules
+
+
+
+Check my progress
+
+
+
+### Task 2. Configure instance templates and create instance groups
+
+A managed instance group uses an instance template to create a group of identical instances. Use these to create the backends of the Application Load Balancer.
+
+#### Configure the instance templates
+
+An instance template is an API resource that you use to create VM instances and managed instance groups. Instance templates define the machine type, boot disk image, subnet, labels, and other instance properties.
+
+Create one instance template for `Region 1` and one for `Region 2`.
+
+1. In the Cloud console, go to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **Instance templates**, and then click **Create instance template**.
+
+2. For **Name**, type **`Region 1`-template**.
+
+3. For **Location**, Select **Global**.
+
+4. For **Series**, select **E2**.
+
+5. For **Machine Type**, select **e2-micro**.
+
+6. Click **Advanced Options**.
+
+7. Click **Networking**. Set the following value and leave all other values at their defaults:
+
+   | Property     | Value (type value or select option as specified) |
+   | :----------- | :----------------------------------------------- |
+   | Network tags | http-server                                      |
+
+8. Click **default** under **Network interfaces**. Set the following values and leave all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Network    | default                                          |
+   | Subnetwork | default `Region 1`                               |
+
+   Click **Done**.
+
+The network tag **http-server** ensures that the **HTTP** and **Health Check** firewall rules apply to these instances.
+
+1. Click the **Management** tab.
+
+2. Under **Metadata**, click **+ ADD ITEM** and specify the following:
+
+   | Key                | Value                                        |
+   | :----------------- | :------------------------------------------- |
+   | startup-script-url | gs://cloud-training/gcpnet/httplb/startup.sh |
+
+The `startup-script-url` specifies a script that executes when instances are started. This script installs Apache and changes the welcome page to include the client IP and the name, region, and zone of the VM instance. Feel free to explore [this script](https://storage.googleapis.com/cloud-training/gcpnet/httplb/startup.sh).
+
+1. Click **Create**.
+2. Wait for the instance template to be created.
+
+Now create another instance template for **subnet-b** by copying **`Region 1`-template**:
+
+1. Click on **`Region 1`-template** and then click on the **+CREATE SIMILAR** option from the top.
+2. For **Name**, type **`Region 2`-template**.
+3. Ensure **Location** is selected **Global**.
+4. Click **Advanced Options**.
+5. Click **Networking**.
+6. Ensure **http-server** is added as a **network tag**.
+7. In **Network interfaces**, for **Subnetwork**, select **default (`Region 2`)**.
+8. Click **Done**.
+9. Click **Create**.
+
+#### Create the managed instance groups
+
+Create a managed instance group in **`Region 1`** and one in **`Region 2`**.
+
+1. Still in **Compute Engine**, click **Instance groups** in the left menu.
+
+2. Click **Create instance group**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property                                           | Value (type value or select option as specified)             |
+   | :------------------------------------------------- | :----------------------------------------------------------- |
+   | Name                                               | `Region 1`-mig (if required, remove extra space from the name) |
+   | Instance template                                  | `Region 1`-template                                          |
+   | Location                                           | Multiple zones                                               |
+   | Region                                             | `Region 1`                                                   |
+   | Minimum number of instances                        | 1                                                            |
+   | Maximum number of instances                        | 2                                                            |
+   | Autoscaling signals > Click dropdown > Signal type | CPU utilization                                              |
+   | Target CPU utilization                             | 80, click **Done**.                                          |
+   | Initialization period                              | 45                                                           |
+
+Managed instance groups offer **autoscaling** capabilities that allow you to automatically add or remove instances from a managed instance group based on increases or decreases in load. Autoscaling helps your applications gracefully handle increases in traffic and reduces cost when the need for resources is lower. You just define the autoscaling policy and the autoscaler performs automatic scaling based on the measured load.
+
+1. Click **Create**.
+
+Now repeat the same procedure to create a second instance group for **`Region 2`-mig** in **`Region 2`**:
+
+1. Click **Create Instance group**.
+
+2. Set the following values, leave all other values at their defaults:
+
+   | Property                                           | Value (type value or select option as specified) |
+   | :------------------------------------------------- | :----------------------------------------------- |
+   | Name                                               | `Region 2`-mig                                   |
+   | Instance template                                  | `Region 2`-template                              |
+   | Location                                           | Multiple zones                                   |
+   | Region                                             | `Region 2`                                       |
+   | Minimum number of instances                        | 1                                                |
+   | Maximum number of instances                        | 2                                                |
+   | Autoscaling signals > Click dropdown > Signal type | CPU utilization                                  |
+   | Target CPU utilization                             | 80, click **Done**.                              |
+   | Initialization period                              | 45                                               |
+
+3. Click **Create**.
+
+Click *Check my progress* to verify the objective.
+
+Configure instance templates and instance group
+
+
+
+Check my progress
+
+
+
+#### Verify the backends
+
+Verify that VM instances are being created in both regions and access their HTTP sites.
+
+1. Still in **Compute Engine**, click **VM instances** in the left menu.
+
+2. Notice the instances that start with `Region 1`-mig and `Region 2`-mig.
+
+   These instances are part of the managed instance groups.
+
+3. Click on the **External IP** of an instance of `Region 1`-mig.
+
+   You should see the **Client IP** (your IP address), the **Hostname** (starts with `Region 1`-mig) and the **Server Location** (a zone in `Region 1`).
+
+4. Click on the **External IP** of an instance of `Region 2`-mig.
+
+   You should see the **Client IP** (your IP address), the **Hostname** (starts with `Region 2`-mig) and the **Server Location** (a zone in `Region 2`).
+
+**Note:** The **Hostname** and **Server Location** identifies where the Application Load Balancer sends traffic.
+
+
+
+Which of these fields identify the region of the backend?
+
+
+
+Server Location
+
+
+
+Client IP
+
+
+
+Hostname
+
+
+
+Submit
+
+
+
+### Task 3. Configure the Application Load Balancer
+
+Configure the Application Load Balancer to balance traffic between the two backends (**`Region 1`-mig** in `Region 1` and **`Region 2`-mig** in `Region 2`), as illustrated in the network diagram:
+
+![Network diagram that illustrates load balancing](images\7wJtCqbfTFLwKCpOMzUSyPjVKBjUouWHbduOqMpfRiM%3D)
+
+#### Start the configuration
+
+1. In the Cloud console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > click **VIEW ALL PRODUCTS** > **Networking** > **Network Services** > **Load balancing**.
+2. click **Create load balancer**.
+3. Under **Application Load Balancer HTTP(S)**, click Next.
+4. For **Public facing or internal**, select **Public facing (external)** and click Next.
+5. For **Global or single region deployment**, select **Best for global workloads** and click Next.
+6. For **Create load balancer**, click **Configure**.
+7. Set **Load Balancer Name** to `http-lb`.
+
+#### Configure the frontend
+
+The host and path rules determine how your traffic will be directed. For example, you could direct video traffic to one backend and static traffic to another backend. However, you are not configuring the Host and path rules in this lab.
+
+1. Click on **Frontend configuration**.
+
+2. Specify the following, leaving all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Protocol   | HTTP                                             |
+   | IP version | IPv4                                             |
+   | IP address | Ephemeral                                        |
+   | Port       | 80                                               |
+
+3. Click **Done**.
+
+4. Click **Add Frontend IP and port**.
+
+5. Specify the following, leaving all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Protocol   | HTTP                                             |
+   | IP version | IPv6                                             |
+   | IP address | Auto-allocate                                    |
+   | Port       | 80                                               |
+
+6. Click **Done**.
+
+Application Load Balancing supports both IPv4 and IPv6 addresses for client traffic. Client IPv6 requests are terminated at the global load balancing layer, then proxied over IPv4 to your backends.
+
+#### Configure the backend
+
+Backend services direct incoming traffic to one or more attached backends. Each backend is composed of an instance group and additional serving capacity metadata.
+
+1. Click on **Backend configuration**.
+
+2. For **Backend services & backend buckets**, click **Create a backend service**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property       | Value (select option as specified) |
+   | :------------- | :--------------------------------- |
+   | Name           | http-backend                       |
+   | Instance group | `Region 1`-mig                     |
+   | Port numbers   | 80                                 |
+   | Balancing mode | Rate                               |
+   | Maximum RPS    | 50                                 |
+   | Capacity       | 100                                |
+
+This configuration means that the load balancer attempts to keep each instance of **`Region 1`-mig** at or below 50 requests per second (RPS).
+
+1. Click **Done**.
+
+2. Click **Add a backend**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property                    | Value (select option as specified) |
+   | :-------------------------- | :--------------------------------- |
+   | Instance group              | `Region 2`-mig                     |
+   | Port numbers                | 80                                 |
+   | Balancing mode              | Utilization                        |
+   | Maximum backend utilization | 80                                 |
+   | Capacity                    | 100                                |
+
+This configuration means that the load balancer attempts to keep each instance of **`Region 2`-mig** at or below 80% CPU utilization.
+
+1. Click **Done**.
+
+2. For **Health Check**, select **Create a health check**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property | Value (select option as specified) |
+   | :------- | :--------------------------------- |
+   | Name     | http-health-check                  |
+   | Protocol | TCP                                |
+   | Port     | 80                                 |
+
+Health checks determine which instances receive new connections. This HTTP health check polls instances every 5 seconds, waits up to 5 seconds for a response and treats 2 successful or 2 failed attempts as healthy or unhealthy, respectively.
+
+1. Click **Save**.
+2. Check the **Enable Logging** box.
+3. Set the **Sample Rate** to `1`.
+4. Click **Create** to create the backend service.
+5. Click **Ok**.
+
+#### Review and create the Application Load Balancer
+
+1. Click on **Review and finalize**.
+2. Review the **Backend** and **Frontend** services.
+3. Click on **Create**.
+4. Wait for the load balancer to be created.
+5. Click on the name of the load balancer (**http-lb**).
+6. Note the IPv4 and IPv6 addresses of the load balancer for the next task. They will be referred to as `[LB_IP_v4]` and `[LB_IP_v6]`, respectively.
+
+**Note:** The IPv6 address is the one in hexadecimal format.
+
+Click *Check my progress* to verify the objective.
+
+Configure the Application Load Balancer
+
+
+
+Check my progress
+
+
+
+### Task 4. Test the Application Load Balancer
+
+Now that you created the Application Load Balancer for your backends, verify that traffic is forwarded to the backend service.
+
+
+
+The Application Load Balancer should forward traffic to the region that is closest to you.
+
+
+
+True
+
+
+
+False
+
+
+
+#### Access the Application Load Balancer
+
+To test IPv4 access to the Application Load Balancer, open a new tab in your browser and navigate to `http://[LB_IP_v4]`. Make sure to replace `[LB_IP_v4]` with the IPv4 address of the load balancer.
+
+**Note:** It might take up to 5 minutes to access the Application Load Balancer. In the meantime, you might get a 404 or 502 error. Keep trying until you see the page of one of the backends.
+
+**Note:** Depending on your proximity to **`Region 1`** and **`Region 2`**, your traffic is either forwarded to a **`Region 1`-mig** or **`Region 2`-mig** instance.
+
+If you have a local IPv6 address, try the IPv6 address of the Application Load Balancer by navigating to `http://[LB_IP_v6]`. Make sure to replace `[LB_IP_v6]` with the IPv6 address of the load balancer.
+
+#### Stress test the Application Load Balancer
+
+Create a new VM to simulate a load on the Application Load Balancer using `siege`. Then, determine if traffic is balanced across both backends when the load is high.
+
+1. In the console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **VM instances**.
+
+2. Click **Create instance**.
+
+3. In the **Machine configuration**:
+
+   Select the following values:
+
+   | Property | Value (type value or select option as specified) |
+   | :------- | :----------------------------------------------- |
+   | Name     | siege-vm                                         |
+   | Region   | `Region 3`                                       |
+   | Zone     | `Zone 3`                                         |
+   | Series   | `E2`                                             |
+
+Given that **`Region 3`** is closer to **`Region 1`** than to **`Region 2`**, traffic should be forwarded only to **`Region 1`-mig** (unless the load is too high).
+
+1. Click **Create**.
+2. Wait for the **siege-vm** instance to be created.
+3. For **siege-vm**, click **SSH** to launch a terminal and connect.
+4. Run the following command, to install siege:
+
+```
+sudo apt-get -y install siege
+```
+
+Copied!
+
+1. To store the IPv4 address of the Application Load Balancer in an environment variable, run the following command, replacing `[LB_IP_v4]` with the IPv4 address:
+
+```
+export LB_IP=[LB_IP_v4]
+```
+
+Copied!
+
+1. To simulate a load, run the following command:
+
+```
+siege -c 150 -t120s http://$LB_IP
+```
+
+Copied!
+
+1. In the Cloud console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > click **VIEW ALL PRODUCTS** > **Networking** > **Network Services** > **Load balancing**.
+2. Click **Backends**.
+3. Click **http-backend**.
+4. Navigate to **http-lb**.
+5. Click on the **Monitoring** tab.
+6. Monitor the **Frontend Location (Total inbound traffic)** between North America and the two backends for 2 to 3 minutes.
+
+At first, traffic should just be directed to **`Region 1`-mig** but as the RPS increases, traffic is also directed to **`Region 2`**.
+
+This demonstrates that by default traffic is forwarded to the closest backend but if the load is very high, traffic can be distributed across the backends.
+
+1. Return to the **SSH** terminal of **siege-vm**.
+2. Press **CTRL+C** to stop siege if it's still running.
+
+The output should look like this:
+
+```
+New configuration template added to /home/student-02-dd02c94b8808/.siege
+Run siege -C to view the current settings in that file
+{       "transactions":                        24729,
+        "availability":                       100.00,
+        "elapsed_time":                       119.07,
+        "data_transferred":                     3.77,
+        "response_time":                        0.66,
+        "transaction_rate":                   207.68,
+        "throughput":                           0.03,
+        "concurrency":                        137.64,
+        "successful_transactions":             24729,
+        "failed_transactions":                     0,
+        "longest_transaction":                 10.45,
+        "shortest_transaction":                 0.03
+}
+```
+
+### Task 5. Denylist the siege-vm
+
+Use Cloud Armor to denylist the **siege-vm** from accessing the Application Load Balancer.
+
+#### Create the security policy
+
+Create a Cloud Armor security policy with a denylist rule for the **siege-vm**.
+
+1. In the console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **VM instances**.
+2. Note the **External IP** of the **siege-vm**. This will be referred to as `[SIEGE_IP]`.
+
+**Note:** There are ways to identify the external IP address of a client trying to access your Application Load Balancer. For example, you could examine traffic captured by [VPC Flow Logs in BigQuery](https://cloud.google.com/vpc/docs/using-flow-logs#exporting_logs_to_bigquery_name_short_pubsub_name_short_and_custom_targets) to determine a high volume of incoming requests.
+
+1. In the Cloud console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > click **VIEW ALL PRODUCTS** > **Networking** > **Network Security** > **Cloud Armor policies**.
+
+2. Click **Create policy**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified) |
+   | :------------------ | :----------------------------------------------- |
+   | Name                | denylist-siege                                   |
+   | Default rule action | Allow                                            |
+
+4. Click **Next step**.
+
+5. Click **Add a rule**.
+
+6. Set the following values, leave all other values at their defaults:
+
+   | Property          | Value (type value or select option as specified) |
+   | :---------------- | :----------------------------------------------- |
+   | Condition > Match | *Enter the SIEGE_IP*                             |
+   | Action            | Deny                                             |
+   | Response code     | 403 (Forbidden)                                  |
+   | Priority          | 1000                                             |
+
+7. Click **Save Change to Rule**.
+
+8. Click **Next step**.
+
+9. Click **Add Target**.
+
+10. For **Type**, select **Backend service (external application load balancer)**.
+
+11. For **Target**, select **http-backend** and if prompted confirm **Replace**.
+
+12. Click **Create policy**.
+
+**Note:** Alternatively, you could set the default rule to **Deny** and only allowlist or allow traffic from authorized users/IP addresses.
+
+1. Wait for the policy to be created before moving to the next step.
+
+Click *Check my progress* to verify the objective.
+
+Denylist the siege-vm
+
+
+
+Check my progress
+
+
+
+#### Verify the security policy
+
+Verify that the **siege-vm** cannot access the Application Load Balancer.
+
+1. Return to the **SSH** terminal of **siege-vm**.
+2. To access the load balancer, run the following:
+
+```
+curl http://$LB_IP
+```
+
+Copied!
+
+The output should look like this:
+
+```
+<!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>403</title>403 Forbidden
+```
+
+**Note:** It might take a couple of minutes for the security policy to take effect. If you are able to access the backends, keep trying until you get the **403 Forbidden error**.
+
+1. Open a new tab in your browser and navigate to `http://[LB_IP_v4]`. Make sure to replace `[LB_IP_v4]` with the IPv4 address of the load balancer.
+
+**Note:** You can access the Application Load Balancer from your browser because of the default rule to **allow** traffic; however, you cannot access it from the **siege-vm** because of the **deny** rule that you implemented.
+
+1. Back in the SSH terminal of siege-vm, to simulate a load, run the following command:
+
+```
+siege -c 150 -t120s http://$LB_IP
+```
+
+Copied!
+
+The command will not generate any output.
+
+Explore the security policy logs to determine if this traffic is also blocked.
+
+1. In the console, navigate to **Navigation menu** > **Network Security** > **Cloud Armor Policies**.
+2. Click **denylist-siege**.
+3. Click **Logs**.
+4. Click **View policy logs**.
+5. On the Logging page, make sure to clear all the text in the **Query preview**. Select resource to **Application Load Balancer** > **http-lb-forwarding-rule** > **http-lb** then click **Apply**.
+6. Now click **Run Query**.
+7. Expand a log entry in **Query results**.
+8. Expand **httpRequest**.
+
+The request should be from the **siege-vm** IP address. If not, expand another log entry.
+
+1. Expand **jsonPayload**.
+2. Expand **enforcedSecurityPolicy**.
+3. Notice that the **configuredAction** is to `DENY` with the **name** `denylist-siege`.
+
+![Query results page](images\kf8dX3SIyN706oBbZhyrAEC%2B9goZrVR%2BzWKqn0is0OM%3D)
+
+Cloud Armor security policies create logs that can be explored to determine when traffic is denied and when it is allowed, along with the source of the traffic.
+
+### Congratulations!
+
+You configured an Application Load Balancer with backends in `Region 1` and `Region 2`. Then, you stress tested the Load Balancer with a VM and denylisted the IP address of that VM with Cloud Armor. You were able to explore the security policy logs to identify why the traffic was blocked.
+
+
+
+## LAB - Defending Edge Cache with Cloud Armor
+
+### Overview
+
+[Google Cloud Armor](https://cloud.google.com/armor) [edge security policies](https://cloud.google.com/armor/docs/security-policy-overview#edge-policies) allow you to restrict access to cached objects on [Cloud CDN](https://cloud.google.com/cdn) (Content Delivery Network) and Cloud Storage. Edge security policies are deployed and enforced at the outermost perimeter of Google's network, upstream of where the Cloud CDN cache resides. Reasons to do this include ensuring that your users do not access objects in storage buckets from restricted geographies, or ensuring that your media distribution is filtering on the geographies that you have a license to do so.
+
+In this lab you create a Google Cloud Storage bucket, upload an image to it, bind it to a load balancer, and then enable Cloud CDN and Cloud Armor edge security policies on it.
+
+#### What you'll learn
+
+In this lab, you learn how to:
+
+- Set up a Cloud Storage Bucket with cacheable content
+- Create an edge security policy to protect the content
+- Validate that the edge security policy is working as expected
+
+### Setup and requirements
+
+#### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+#### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   "Username"
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   "Password"
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+#### Before you begin
+
+- In Cloud Shell, set your Project ID and create an environment variable for it:
+
+```
+export PROJECT_ID=$(gcloud config get-value project)
+echo $PROJECT_ID
+gcloud config set project $PROJECT_ID
+```
+
+Copied!
+
+### Task 1. Create a Cloud Storage bucket and upload an object
+
+The Cloud Storage bucket will be the origin source for Cloud CDN.
+
+1. In the console, go to **Navigation menu (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D))** > **Cloud Storage** > **Buckets**.
+2. To create a new Cloud Storage bucket, click **CREATE**.
+3. Set the bucket name as `Bucket Name`
+4. Click **Continue**.
+5. For **Location type**, select `Region`, and choose `Bucket Region`
+6. Click **Continue**.
+7. The default storage class for your bucket is `Standard`. Click **Continue**.
+8. Uncheck `Enforce public access prevention on this bucket` checkbox under **Prevent public access**.
+9. Choose **Fine-grained** under **Access Control**.
+10. Click **Continue**.
+11. Click **Create**.
+
+That's it — you've just created a Cloud Storage bucket!
+
+#### Upload an Object to the bucket
+
+Now upload an object into the bucket, which you will use later. By default, Cloud Storage buckets are private. As part of this lab, you will make the object available to the Internet.
+
+1. Run the following command in Cloud Shell, to download an image to Cloud Shell. A Google image from the Google homepage is used for this lab.
+
+```
+wget --output-document google.png https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+```
+
+Copied!
+
+1. Use the `gsutil cp` command to upload the image from the Cloud Shell to the bucket you created:
+
+```
+gsutil cp google.png gs://Bucket Name
+```
+
+Copied!
+
+1. Remove the downloaded image from Cloud Shell:
+
+```
+rm google.png
+```
+
+Copied!
+
+1. Locate the object you have uploaded to the bucket by navigating to **Cloud Storage > Buckets > `Bucket Name`**.
+2. Now, click on the three dots on the right side of the object you uploaded and click **Edit access**.
+3. Click on **Add Entry** and set the entity as **Public** from the drop-down list.
+4. Click **Save**.
+
+![Edit access page, which lists the entities and includes the Save and Cancel buttons](images\b7J%2FDa%2FQs1ii9RJbtLB9PEBijeY9rdhukZsgf0V76Y0%3D)
+
+Click **Check my progress** to verify the objective.
+
+Create a Cloud Storage Bucket and upload an object
+
+
+
+Check my progress
+
+
+
+### Task 2. Create a Load Balancer
+
+Cloud CDN and Cloud Armor are components that can be tied to Google's global [Cloud Load Balancing](https://cloud.google.com/load-balancing). In this section, you create an HTTP Load balancer.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products > Network services** > **Load Balancing**.
+2. Click **+CREATE LOAD BALANCER**.
+3. Under Type of **load balancer**, select **Application Load Balancer (HTTP/HTTPS)** and click **NEXT**.
+4. Under **Public facing or internal**, select **Public facing (external)** and click **NEXT**.
+5. For **Global or single region deployment**, select **Best for global workloads** and click **NEXT**.
+6. For **Load balancer generation**, select **Global external Application Load Balancer** and click **NEXT**.
+7. Click **CONFIGURE** button.
+8. Name the load balancer as `edge-cache-lb`.
+
+#### Create frontend configuration
+
+To create the frontend configuration:
+
+1. Click on **Frontend configuration**.
+2. For the frontend configuration use HTTP (though HTTPS also works if you have a certificate) and an ephemeral IP address and ensure that you have selected the premium tier network. This is by default.
+3. Click **Done**.
+
+![Frontend configuration page, which includes the load balancer's description](images\W%2Ftq7MRoTnPDw%2Bvl3uNSZwxbwFEE1txmCee%2FHTIZ8yM%3D)
+
+#### Create backend configuration
+
+To create the backend configuration:
+
+1. Click on **Backend configuration**.
+2. For **Backend services & backend buckets**, click **Create a backend bucket**.
+3. Set the **Backend bucket name** to `lb-backend-bucket`.
+4. In the next field, select the Cloud Storage bucket created earlier by clicking the **Browse** button.
+5. Leave all other values at their defaults.
+6. Click **Create**.
+
+#### Create host and path rules
+
+To create host and path rules:
+
+1. Click on **Routing rules** on the left.
+2. Select **simple host and path rule** under Mode to send any request to the bucket. This is the default option.
+
+#### Review and create the HTTP Load Balancer
+
+To review and create the HTTP Load Balancer:
+
+1. Click on **Review and finalize**.
+2. Review the **Backend services** and **Frontend**.
+3. Click on **Create**.
+
+#### Get Load Balancer IP
+
+To get the Load Balancer IP from the console:
+
+- Click the load balancer name in the list of load balancers for the project. Note the IPv4 address of the load balancer for the next task. Refer to it as `[LOAD_BALANCER_IP]`.
+
+![The Details page, which includes the highlighted IP:Port address](images\gEIAdRhQ0Wllm2LutPBRlMAcAgXNbrZH%2FUMny9AgaGI%3D)
+
+#### Query the Load Balancer
+
+After a couple minutes, query the load balancer for the object you uploaded. You will need the load balancer IP address and the name of the image.
+
+1. Run the following from CloudShell and replace the LOAD_BALANCER_IP with the IPv4 address of the load balancer:
+
+```
+curl -svo /dev/null http://LOAD_BALANCER_IP/google.png
+```
+
+Copied!
+
+**Note:** It might take up to 5 minutes to access the HTTP Load Balancer.
+
+**Output:**
+
+```
+student-cloudshell% curl -svo /dev/null http://34.98.81.123/google.png
+*   Trying 34.98.81.123...
+* TCP_NODELAY set
+* Connected to 34.98.81.123 (34.98.81.123) port 80 (#0)
+> GET /google.png HTTP/1.1
+> Host: YOUR_IP
+> User-Agent: curl/7.64.1
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< X-GUploader-UploadID: ADPycdtoILI76KVsvBvdVGvSfzaxys1m3zYqCepBrmJxAI48ni24cWCRIdNu-53PX3DS6iycxp6xwFbMpwtcHHZQUQmEBxAgng
+< Expires: Mon, 13 Dec 2021 22:58:26 GMT
+< Date: Mon, 13 Dec 2021 21:58:26 GMT
+< Cache-Control: public, max-age=3600
+< Last-Modified: Mon, 13 Dec 2021 21:45:57 GMT
+< ETag: "8f9327db2597fa57d2f42b4a6c5a9855"
+< x-goog-generation: 1639431957957903
+< x-goog-metageneration: 2
+< x-goog-stored-content-encoding: identity
+< x-goog-stored-content-length: 5969
+< Content-Type: image/png
+< x-goog-hash: crc32c=TeiHTA==
+< x-goog-hash: md5=j5Mn2yWX+lfS9CtKbFqYVQ==
+< x-goog-storage-class: STANDARD
+< Accept-Ranges: bytes
+< Content-Length: 5969
+< Server: UploadServer
+```
+
+1. Run a few queries with this command:
+
+```
+for i in `seq 1 50`; do curl http://LOAD_BALANCER_IP/google.png; done
+```
+
+Copied!
+
+#### Confirm content served by Cloud CDN
+
+- Validate that your content is being served from the CDN via CDN or Load Balancing Monitoring by navigating to **Network Services > Cloud CDN**.
+
+![Cloud CDN overview page, with one result populated](images\7UEDVoyLD6cXCvf7GPS11Wg9EXVz0WD57IqpPKT3ocM%3D)
+
+You should be able to get close to a 100% hit ratio.
+
+Click **Check my progress** to verify the objective.
+
+Create a Load Balancer
+
+
+
+Check my progress
+
+
+
+### Task 3. Delete the object from Cloud Storage bucket
+
+Now that the cache is populated, delete the object from the bucket. This will reinfore that you are applying the policy to the cache and not the backend.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Cloud Storage > Buckets > `Bucket Name`**.
+2. Select the object and delete it by clicking the **Delete** button at the top.
+3. Click **Delete** at the prompt.
+
+Click **Check my progress** to verify the objective.
+
+Delete the object from Cloud Storage bucket
+
+
+
+Check my progress
+
+
+
+### Task 4. Create an edge security policy
+
+Cloud Armor policies are substantiated outside of the HTTP Load Balancer. Once the Cloud Armor policy is deployed, you can then associate it with one or more HTTP Load Balancer Backend Service or Bucket resources, referred to as a Target.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products > Network Security > Cloud Armor policies** and click **Create Policy**.
+
+1. Set the following values, leave all other values at their defaults and click **Next Step**:
+
+| Property            | Value (type value or select option as specified) |
+| :------------------ | :----------------------------------------------- |
+| Name                | edge-security-policy                             |
+| Policy type         | Edge security policy                             |
+| Default rule action | Deny                                             |
+
+1. In **Apply policy to targets** section, click **Add Target** and set the following values:
+
+| Property                | Value                                               |
+| :---------------------- | :-------------------------------------------------- |
+| Type 1                  | Backend bucket (external application load balancer) |
+| Backend Bucket target 1 | lb-backend-bucket                                   |
+
+1. Click **Done**.
+2. Click **Create Policy**.
+
+#### Validate Edge Security Policy
+
+Now that you've created an edge security policy in front of the back-end bucket, validate that it works as expected.
+
+##### Check the security policy
+
+After a few minutes have passed, you can check that the Cloud Armor policy is running.
+
+From the command line, run the following command, which gives you a 403:
+
+```
+curl -svo /dev/null http://LOAD_BALANCER_IP/google.png
+```
+
+Copied!
+
+A 403 error occurs when you do not have permission to accessing a web page or something on a web server.
+
+**Output:**
+
+```
+curl -svo /dev/null http://34.98.81.123/google.png
+*   Trying 34.98.81.123...
+* TCP_NODELAY set
+* Connected to 34.98.81.123 (34.98.81.123) port 80 (#0)
+> GET /google.png HTTP/1.1
+> Host: YOUR_IP
+> User-Agent: curl/7.64.1
+> Accept: */*
+>
+< HTTP/1.1 403 Forbidden
+< X-GUploader-UploadID: ADPycdtS6FtJOGIsiWYDrAAE8VFeQuNutcvbGoQe2t8EZxsuspVtmCjyiTv_P3CNktroHMOGFXkTCfG-Jj-rUO60ZGPpEbpqcw
+< Content-Type: application/xml; charset=UTF-8
+< Content-Length: 111
+< Date: Mon, 13 Dec 2021 23:09:35 GMT
+< Expires: Mon, 13 Dec 2021 23:09:35 GMT
+< Cache-Control: private, max-age=0
+< Server: UploadServer
+```
+
+##### Investigate the logs
+
+Next, you check the logs to see the enforced edge security policy.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products > Observability > Logging > Logs Explorer**.
+2. Enter the below snippet into the query box and click **Run Query**:
+
+```
+resource.type:(http_load_balancer) AND jsonPayload.@type="type.googleapis.com/google.cloud.loadbalancing.type.LoadBalancerLogEntry" AND severity>=WARNING
+```
+
+Copied!
+
+1. Note the `403 response` and the enforced security policy.
+
+![The Query page, which includes the highlighted 403 response message and its security policy](images\6oLMK5C%2FszEFTgZb1VOEtFb4z%2BQr%2FFb470LXgCZ5Y8c%3D)
+
+Click **Check my progress** to verify the objective.
+
+Create edge security policy for cloud Armor
+
+
+
+Check my progress
+
+
+
+#### Remove the security policy
+
+To prove that the object is getting delivered from the CDN cache, remove the Cloud Armor security policy and query the object. The origin object has been removed from Cloud Storage, thus illustrating that the object is getting served from the edge cache.
+
+1. In the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **View All Products > Network Security > Cloud Armor policies > edge-security-policy > Targets**.
+2. Select the `lb-backend-bucket` target and click **Remove** to remove the target bucket. Confirm **Remove**.
+
+1. Wait a few minutes, then send another `curl` to the resource in the Cloud Storage bucket:
+
+```
+curl -svo /dev/null http://LOAD_BALANCER_IP/google.png
+```
+
+Copied!
+
+You get a `200` response this time. The web page is acting as it is supposed to.
+
+**Output:**
+
+```
+student-cloudshell% curl -svo /dev/null http://34.98.81.123/google.png
+
+ Trying 34.98.81.123...
+ TCP_NODELAY set
+ Connected to 34.98.81.123 (34.98.81.123) port 80 (#0)
+ GET /google.png HTTP/1.1
+ Host: YOUR_IP
+ User-Agent: curl/7.64.1
+ Accept: */*
+
+  HTTP/1.1 200 OK
+  X-GUploader-UploadID: ADPycdtI7f49P3MSuZSZ8vl6RwfwmnIDJ59EeSKp7UPvLPawdaiRHXiNWLtseQTxUxceWOvSLvpYmT3pWVkV4qeIP7M
+  Date: Mon, 13 Dec 2021 23:06:46 GMT
+  Last-Modified: Mon, 13 Dec 2021 21:45:57 GMT
+  ETag: "8f9327db2597fa57d2f42b4a6c5a9855"
+  x-goog-generation: 1639431957957903
+  x-goog-metageneration: 2
+  x-goog-stored-content-encoding: identity
+  x-goog-stored-content-length: 5969
+  Content-Type: image/png
+  x-goog-hash: crc32c=TeiHTA==
+  x-goog-hash: md5=j5Mn2yWX+lfS9CtKbFqYVQ==
+  x-goog-storage-class: STANDARD
+  Accept-Ranges: bytes
+  Content-Length: 5969
+  Server: UploadServer
+  Age: 1621
+  Cache-Control: public,max-age=3600
+ { [775 bytes data]
+ Connection #0 to host 34.98.81.123 left intact
+ Closing connection 0
+```
+
+Try it a couple of times and see if you get a 403 status code.
+
+### Congratulations!
+
+You have successfully created a Cloud Storage bucket, uploaded an image to it, bound it to a load balancer, and then enabled Cloud CDN and edge security policies on it.
+
+**Manual Last Updated December 10, 2024**
+
+**Lab Last Tested December 10, 2024**
+
+## LAB - Cloud Armor Preconfigured WAF Rules
+
+## Overview
+
+Google Cloud Armor is Google's enterprise edge network security solution providing DDOS protection, WAF rule enforcement, and adaptive manageability at scale.
+
+Cloud Armor has extended the preconfigured WAF rule sets to mitigate against the [OWASP Top 10](https://owasp.org/www-project-top-ten/) web application security vulnerabilities. The rule sets are based on the [OWASP Modsecurity core rule set](https://github.com/coreruleset/coreruleset/) version 3.0.2 to protect against some of the most common web application security risks including local file inclusion (lfi), remote file inclusion (rfi), remote code execution (rce), and many more.
+
+In this lab, you learn how to mitigate some of the common vulnerabilities by using Google Cloud Armor WAF rules.
+
+### What you'll learn
+
+In this lab, you learn how to:
+
+- Set up an Instance Group and a Global Load Balancer to support a service
+- Configure Cloud Armor security policies with preconfigured WAF rules to protect against lfi, rce, scanners, protocol attacks, and session fixation
+- Validate that Cloud Armor mitigated an attack by observing logs
+
+![Cloud Armor WAF rules topology](images\o0nzl9C1wJu%2BsjiNEXZ3Knl7hCB2cDCI%2BsYq56mGIGM%3D)
+
+The [OWASP Juice Shop application](https://owasp.org/www-project-juice-shop/) is useful for security training and awareness, because it contains instances of each of the OWASP Top 10 security vulnerabilities—by design. An attacker can exploit it for testing purposes. In this lab, you use it to demonstrate some application attacks followed by protecting the application with Cloud Armor WAF rules. The application is fronted by a Google Cloud Load Balancer, onto which the Cloud Armor security policy and rules are be applied. It is served on the public internet thus reachable from almost anywhere and protected using Cloud Armor and VPC firewall rules.
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   "Username"
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   "Password"
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `PROJECT_ID`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to "PROJECT_ID"
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: "ACCOUNT"
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = "PROJECT_ID"
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+### Before you begin
+
+- In Cloud Shell, set up your project ID:
+
+```
+gcloud config list project
+export PROJECT_ID=$(gcloud config get-value project)
+echo $PROJECT_ID
+gcloud config set project $PROJECT_ID
+```
+
+Copied!
+
+## Task 1. Create the VPC network
+
+- In Cloud Shell, enter the following command to create a VPC network:
+
+```
+gcloud compute networks create Network Name --subnet-mode custom
+```
+
+Copied!
+
+```
+Created
+NAME        SUBNET_MODE  BGP_ROUTING_MODE
+Network Name  CUSTOM       REGIONAL
+```
+
+### Create a subnet
+
+- In Cloud Shell, enter the following command to create a subnet:
+
+```
+gcloud compute networks subnets create Subnet Name \
+        --network Network Name --range 10.0.0.0/24 --region Region
+```
+
+Copied!
+
+```
+Created
+NAME           REGION       NETWORK       RANGE
+Subnet Name Region  Network Name    10.0.0.0/24
+```
+
+### Create VPC firewall rules
+
+After creating the VPC and subnet, set up a few firewall rules.
+
+- The first firewall rule named `allow-js-site` allows all IPs to access the external IP of the test application's website on port `3000`.
+- The second firewall rule named `allow-health-check` allows health-checks from source IP of the load balancers.
+
+1. In Cloud Shell, enter the following command to create a firewall rule to allow all IPs to access the application:
+
+```
+gcloud compute firewall-rules create Firewall Name --allow tcp:3000 --network Network Name
+```
+
+Copied!
+
+Output:
+
+```
+Creating firewall...done.
+NAME           NETWORK     DIRECTION  PRIORITY  ALLOW     DENY  DISABLED
+Firewall Name Network Name INGRESS    1000      tcp:3000        False
+```
+
+1. In Cloud Shell, enter the following command to create firewall rule to allow health-checks from the Google health-check ranges:
+
+```
+gcloud compute firewall-rules create Firewall Name1 \
+    --network=Network Name \
+    --action=allow \
+    --direction=ingress \
+    --source-ranges=130.211.0.0/22,35.191.0.0/16 \
+    --target-tags=allow-healthcheck \
+    --rules=tcp
+```
+
+Copied!
+
+Output:
+
+```
+Creating firewall...done.
+NAME                NETWORK     DIRECTION  PRIORITY  ALLOW  DENY  DISABLED
+Firewall_Name1  Network Name  INGRESS    1000      tcp          False
+```
+
+Click **Check my progress** to verify the objective.
+
+Create the VPC network
+
+
+
+Check my progress
+
+
+
+## Task 2. Set up the test application
+
+Create the test application, in this case, the OWASP Juice Shop web server. When you create the compute instance, you use a container image to ensure the server has the appropriate services. You deploy this server in the `Zone` and has a network tag that allows health checks.
+
+### Create the OWASP Juice Shop application
+
+- Use the open source well-known OWASP Juice Shop application to serve as the vulnerable application. You can also use this application to do OWASP security challenges through the [OWASP website](https://owasp.org/www-project-juice-shop/).
+
+```
+gcloud compute instances create-with-container vm_instance --container-image bkimminich/juice-shop \
+     --network Network Name \
+     --subnet Subnet Name \
+     --private-network-ip=10.0.0.3 \
+     --machine-type n1-standard-2 \
+     --zone Zone \
+     --tags allow-healthcheck
+```
+
+Copied!
+
+Output:
+
+```
+NAME                  ZONE           MACHINE_TYPE   PREEMPTIBLE  
+vm_instance  Zone  n1-standard-2               
+
+INTERNAL_IP  EXTERNAL_IP     STATUS
+10.0.0.3     <public ip="">     RUNNING
+</public>
+```
+
+Click **Check my progress** to verify the objective.
+
+Set up the test application
+
+
+
+Check my progress
+
+
+
+### Set up the Cloud load balancer component: instance group
+
+1. In Cloud Shell, enter the following command to create the unmanaged instance group:
+
+```
+gcloud compute instance-groups unmanaged create Instance Group \
+    --zone=Zone
+```
+
+Copied!
+
+Output:
+
+```
+NAME        LOCATION       SCOPE  NETWORK  MANAGED  INSTANCES
+Instance Group  Zone  zone                     0
+```
+
+1. Add the Juice Shop Google Compute Engine (GCE) instance to the unmanaged instance group:
+
+```
+gcloud compute instance-groups unmanaged add-instances Instance Group \
+    --zone=Zone \
+    --instances=VM Instance
+```
+
+Copied!
+
+Output:
+
+```
+Updated [https://www.googleapis.com/compute/v1/projects/<project name="">/zones/Zone/instanceGroups/Instance_Group].
+</project>
+```
+
+1. Set the named port to that of the Juice Shop application:
+
+```
+gcloud compute instance-groups unmanaged set-named-ports \
+Instance Group \
+   --named-ports=http:3000 \
+   --zone=Zone
+```
+
+Copied!
+
+Output:
+
+```
+Updated [https://www.googleapis.com/compute/v1/projects/<project name="">/zones/Zone/instanceGroups/Instance Group].
+</project>
+```
+
+Click **Check my progress** to verify the objective.
+
+Set up the Cloud load balancer component- instance group
+
+
+
+Check my progress
+
+
+
+### Set up the Cloud load balancer component: health check
+
+Now that you've created the unmanaged instance group, create a health check, backend service, URL map, target proxy, and forwarding rule.
+
+- In Cloud Shell, enter the following command to create the health-check for the Juice Shop service port:
+
+```
+gcloud compute health-checks create tcp tcp-port-3000 \
+        --port 3000
+```
+
+Copied!
+
+Output:
+
+```
+Created
+NAME           PROTOCOL
+tcp-port-3000  TCP
+```
+
+### Set up the Cloud load balancer component: backend service
+
+1. In Cloud Shell, enter the following command to create the backend service parameters:
+
+```
+gcloud compute backend-services create juice-shop-backend \
+        --protocol HTTP \
+        --port-name http \
+        --health-checks tcp-port-3000 \
+        --enable-logging \
+        --global
+```
+
+Copied!
+
+Output:
+
+```
+NAME                BACKENDS  PROTOCOL
+juice-shop-backend            HTTP
+```
+
+1. Add the Juice Shop instance group to the backend service:
+
+```
+ gcloud compute backend-services add-backend juice-shop-backend \
+        --instance-group=Instance Group \
+        --instance-group-zone=Zone \
+        --global
+```
+
+Copied!
+
+Output:
+
+```
+Updated [https://www.googleapis.com/compute/v1/projects/cythom-host1/global/backendServices/juice-shop-backend].
+```
+
+### Set up the Cloud load balancer component: URL map
+
+- In Cloud Shell, enter the following command to create the URL map to send incoming requests to the backend:
+
+```
+gcloud compute url-maps create juice-shop-loadbalancer \
+        --default-service juice-shop-backend
+```
+
+Copied!
+
+Output:
+
+```
+NAME                     DEFAULT_SERVICE
+juice-shop-loadbalancer  backendServices/juice-shop-backend
+```
+
+### Set up the Cloud load balancer component: target proxy
+
+- In Cloud Shell, enter the following command to create the Target Proxy to route incoming requests the URL map:
+
+```
+gcloud compute target-http-proxies create juice-shop-proxy \
+        --url-map juice-shop-loadbalancer
+```
+
+Copied!
+
+Output:
+
+```
+NAME              URL_MAP
+juice-shop-proxy  juice-shop-loadbalancer
+```
+
+### Set up the Cloud load balancer component: forwarding rule
+
+- In Cloud Shell, enter the following command to create the forwarding rule for the Load Balancer:
+
+```
+gcloud compute forwarding-rules create juice-shop-rule \
+        --global \
+        --target-http-proxy=juice-shop-proxy \
+        --ports=80
+```
+
+Copied!
+
+Output:
+
+```
+Created [https://www.googleapis.com/compute/v1/projects/cythom-host1/global/forwardingRules/juice-shop-rule].
+```
+
+### Verify the Juice Shop service is online
+
+1. From Cloud Shell:
+
+```
+PUBLIC_SVC_IP="$(gcloud compute forwarding-rules describe juice-shop-rule  --global --format="value(IPAddress)")"
+echo $PUBLIC_SVC_IP
+```
+
+Copied!
+
+Output:
+
+```
+<public VIP of service>
+```
+
+Wait a few minutes before continuing on, else you may retrieve a HTTP/1.1 404 Not Found response.
+
+1. From Cloud Shell:
+
+```
+curl -Ii http://$PUBLIC_SVC_IP
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 200 OK
+<...>
+```
+
+You can also go to the browser to view the Juice Shop!
+
+![The Welcome to OWASP Juice Shop page](images\xMu5EUJ8kCR2UPq%2BZ84gkf9d9p5o7wpNOY1mgjU8ijU%3D)
+
+You're now ready to explore the Juice Shop vulnerabilities and protect against them with Cloud Armor WAF rule sets.
+
+Click **Check my progress** to verify the objective.
+
+Set up the Cloud load balancer component- health check
+
+
+
+Check my progress
+
+
+
+## Task 3. Demonstrate known vulnerabilities
+
+In this lab, you demonstrate the states before and after Cloud Armor WAF rules are propagated in condensed steps.
+
+### Observe an LFI vulnerability: path traversal
+
+Local File Inclusion is the process of observing files present on the server by exploiting lack of input validation in the request to potentially expose sensitive data. The following shows a path traversal is possible. In your browser or with curl, observe an existing path served by the application.
+
+1. From Cloud Shell:
+
+```
+curl -Ii http://$PUBLIC_SVC_IP/ftp
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 200 OK
+<...>
+```
+
+Observe that path traversal works too.
+
+1. From Cloud Shell:
+
+```
+curl -Ii http://$PUBLIC_SVC_IP/ftp/../
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 200 OK
+<...>
+```
+
+### Observe an RCE vulnerability
+
+Remote Code Execution includes various UNIX and Windows command injection scenarios allowing attackers to execute OS commands usually restricted to privileged users. The following shows a simple `ls` command execution passed in.
+
+- From Cloud Shell:
+
+```
+curl -Ii http://$PUBLIC_SVC_IP/ftp?doc=/bin/ls
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 200 OK
+<...>
+```
+
+Remove the curl flags to observe the full output.
+
+### Observe a well-known scanner's access
+
+Both commercial and open source scan applications for various purposes, including to find vulnerabilities. These tools use well-known User-Agent and other Headers. Observe curl works with a well-known User-Agent Header.
+
+- In Cloud Shell:
+
+```
+curl -Ii http://$PUBLIC_SVC_IP -H "User-Agent: blackwidow"
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 200 OK
+<...>
+```
+
+### Observe a protocol attack: HTTP splitting
+
+Some web applications use input from the user to generate the headers in the responses. If the application doesn't properly filter the input, an attacker can potentially poison the input parameter with the sequence `%0d%0a` (the CRLF sequence that is used to separate different lines).
+
+The response could then be interpreted as two responses by anything that happens to parse it, like an intermediary proxy server, potentially serving false content in subsequent requests. Insert the sequence `%0d%0a` into the input parameter, which can lead to serving a misleading page.
+
+- From Cloud Shell:
+
+```
+curl -Ii "http://$PUBLIC_SVC_IP/index.html?foo=advanced%0d%0aContent-Length:%200%0d%0a%0d%0aHTTP/1.1%20200%20OK%0d%0aContent-Type:%20text/html%0d%0aContent-Length:%2035%0d%0a%0d%0a<html>Sorry,%20System%20Down</html>"
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 200 OK
+<...>
+```
+
+### Observe session fixation
+
+- In Cloud Shell:
+
+```
+curl -Ii http://$PUBLIC_SVC_IP -H session_id=X
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 200 OK
+<...>
+```
+
+## Task 4. Define Cloud Armor WAF rules
+
+1. List the preconfigured WAF rules, using the following command in Cloud Shell:
+
+```
+gcloud compute security-policies list-preconfigured-expression-sets
+```
+
+Copied!
+
+```
+EXPRESSION_SET
+Sqli-canary
+RULE_ID
+    owasp-crs-v030001-id942110-sqli
+    owasp-crs-v030001-id942120-sqli
+<...>
+```
+
+1. Create the Cloud Armor security policy using the following command in Cloud Shell:
+
+```
+gcloud compute security-policies create Policy Name \
+    --description "Block with OWASP ModSecurity CRS"
+```
+
+Copied!
+
+1. In Cloud Shell, update the security policy default rule.
+
+**Note:** The default rule priority has a numerical value of 2147483647.
+
+```
+gcloud compute security-policies rules update 2147483647 \
+    --security-policy Policy Name \
+    --action "deny-403"
+```
+
+Copied!
+
+1. Since the default rule is configured with action deny, you must allow access from your IP. Please find your public IP (curl, ipmonkey, whatismyip, etc):
+
+```
+MY_IP=$(curl ifconfig.me)
+```
+
+Copied!
+
+1. Add the first rule to allow access from your IP (INSERT YOUR IP BELOW):
+
+```
+gcloud compute security-policies rules create 10000 \
+    --security-policy Policy Name  \
+    --description "allow traffic from my IP" \
+    --src-ip-ranges "$MY_IP/32" \
+    --action "allow"
+```
+
+Copied!
+
+1. In Cloud Shell, update the security policy to block LFI attacks.
+
+Apply the OWASP ModSecurity Core Rule Set that prevents path traversal for local file inclusions.
+
+```
+gcloud compute security-policies rules create 9000 \
+    --security-policy Policy Name  \
+    --description "block local file inclusion" \
+     --expression "evaluatePreconfiguredExpr('lfi-stable')" \
+    --action deny-403
+```
+
+Copied!
+
+1. In Cloud Shell, update the security policy to block Remote Code Execution (rce).
+
+Per the OWASP ModSecurity Core Rule Set, apply rules that look for rce, including command injection. Typical OS commands are detected and blocked.
+
+```
+gcloud compute security-policies rules create 9001 \
+    --security-policy Policy Name  \
+    --description "block rce attacks" \
+     --expression "evaluatePreconfiguredExpr('rce-stable')" \
+    --action deny-403
+```
+
+Copied!
+
+1. Update the security policy to block security scanners.
+
+Apply the OWASP ModSecurity Core Rule Set to block well-known security scanners, scripting HTTP clients, and web crawlers.
+
+```
+gcloud compute security-policies rules create 9002 \
+    --security-policy Policy Name  \
+    --description "block scanners" \
+     --expression "evaluatePreconfiguredExpr('scannerdetection-stable')" \
+    --action deny-403
+```
+
+Copied!
+
+1. In Cloud Shell, update the security policy to block protocol attacks.
+
+Per the OWASP ModSecurity Core Rule Set, apply rules that look for Carriage Return (CR) `%0d` and Linefeed (LF)`%0a` characters and other types of protocol attacks like HTTP Request Smuggling.
+
+```
+gcloud compute security-policies rules create 9003 \
+    --security-policy Policy Name  \
+    --description "block protocol attacks" \
+     --expression "evaluatePreconfiguredExpr('protocolattack-stable')" \
+    --action deny-403
+```
+
+Copied!
+
+1. Update the security policy to block session fixation.
+
+Per the OWASP ModSecurity Core Rule Set, apply the following rules using Cloud Shell:
+
+```
+gcloud compute security-policies rules create 9004 \
+    --security-policy Policy Name \
+    --description "block session fixation attacks" \
+     --expression "evaluatePreconfiguredExpr('sessionfixation-stable')" \
+    --action deny-403
+```
+
+Copied!
+
+1. Attach the security policy to the backend service:
+
+```
+gcloud compute backend-services update juice-shop-backend \
+    --security-policy Policy Name \
+    --global
+```
+
+Copied!
+
+Rules may take some time to propagate (but not more than 10 mins).
+
+1. Once sufficient time has passed, test the vulnerabilities previously demonstrated to confirm Cloud Armor WAF rule enforcement in the next step.
+
+Click **Check my progress** to verify the objective.
+
+Create the Cloud Armor security policy
+
+
+
+Check my progress
+
+
+
+### Observe Cloud Armor protection with OWASP ModSecurity Core Rule Set
+
+1. In Cloud Shell, confirm the LFI vulnerability is mitigated:
+
+```
+curl -Ii http://$PUBLIC_SVC_IP/?a=../
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 403 Forbidden
+<...>
+```
+
+1. In Cloud Shell, confirm the RCE attack is mitigated:
+
+```
+curl -Ii http://$PUBLIC_SVC_IP/ftp?doc=/bin/ls
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 403 Forbidden
+<..>
+```
+
+1. In Cloud Shell, confirm well-known scanner detection.
+
+```
+curl -Ii http://$PUBLIC_SVC_IP -H "User-Agent: blackwidow"
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 403 Forbidden
+<..>
+```
+
+1. In Cloud Shell, confirm a protocol attack is mitigated.
+
+Per the OWASP ModSecurity Core Rule Set ver.3.0.2, the protocol attack is mitigated by:
+
+```
+curl -Ii "http://$PUBLIC_SVC_IP/index.html?foo=advanced%0d%0aContent-Length:%200%0d%0a%0d%0aHTTP/1.1%20200%20OK%0d%0aContent-Type:%20text/html%0d%0aContent-Length:%2035%0d%0a%0d%0a<html>Sorry,%20System%20Down</html>"
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 403 Forbidden
+<..>
+```
+
+1. In Cloud Shell, confirm session fixation attempts are blocked:
+
+```
+curl -Ii http://$PUBLIC_SVC_IP/?session_id=a
+```
+
+Copied!
+
+Output:
+
+```
+HTTP/1.1 403 Forbidden
+<..>
+```
+
+## Task 5. Review Cloud Armor Security rules
+
+Now that you've created the security policy, look at what rules have been configured.
+
+![Rules tabbed page, which lists several rules and their descriptions](images\%2FGny3xzxEbID4ucNuzUG2jcI%2B6DdDxw29VEXQzMryTI%3D)
+
+Rules are evaluated by priority: lower numbers are evaluated first and once triggered, processing does not continue for rules with higher priority values.
+
+- Priority `9000` - Block LFI (local file inclusion)
+- Priority `9001` - Block RCE (remote code execution/command injection)
+- Priority `9002` - Block Scanners Detected
+- Priority `9003` - Block Protocol Attacks like HTTP splitting and HTTP smuggling
+- Priority `9004` - Block Session Fixation Attacks
+- Priority `10000` - Allow your IP to access the Website
+- Priority `Default` - Deny.
+
+**Note:** Notice the "allow your IP" rule is configured with the highest priority number to allow access to the site, however blocks any attack.
+
+## Task 6. Observe Cloud Armor security policy logs
+
+From the Cloud Armor console page, view details of the security policy and click the Logs tab followed by the View policy logs link to be directed to the Cloud Logging page. It automatically filters based on the security policy of interest, for example, resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:`Policy Name`. Observe the 403 error response codes and expand the log details to observe the enforced security policy's name, matched field value, and further down the preconfigured expression IDs (or the signature id).
+
+It automatically filters based on the security policy of interest, for example, resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(`Policy Name`).
+
+- Observe the 403 error response codes and expand the log details to observe the enforced security policy's name, matched field value, and further down the preconfigured expression IDs (or the signature id).
+
+The following screenshots show examples of the logs for the enforced security policies configured in this lab.
+
+**LFI log** ![The LFI log](images\l47JxLAvcfCmd%2Fx1wGGps9gDCKx5js0JFJccCMsUhS0%3D)
+
+**RCE log** ![The RCE log](https://cdn.qwiklabs.com/rHCxfTyx7V5UrmgUPg9UAVy1ThHwNtb%2BVx%2BJ3HMCjMY%3D)
+
+**Scanner detection log** ![The Scanner detection  log](images\NWy1aholOYNl20D22l0Cyq0Cvd0oUVPMPJOEpm8Rj1s%3D)
+
+**Protocol attack log** ![The Protocol attack log](images\y9%2FIIte2iC1FfzDQh64bwSNbp08osgbiTu8Pzue9fYA%3D)
+
+**Session fixation log** ![The Session fixation log](images\lg5h%2B4kDSasVLvSLGqnEmh9IxZRZvBP7RYYQwWs%2B7rU%3D)
+
+## Congratulations!
+
+You've successfully mitigated some of the common vulnerabilities by using Google Cloud Armor WAF rules.
+
+**Manual Last Updated November 06, 2024**
+
+**Lab Last Tested November 06, 2024**
+
 
 
 
