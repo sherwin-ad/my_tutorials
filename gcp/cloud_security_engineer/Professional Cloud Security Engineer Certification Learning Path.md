@@ -1,4 +1,4 @@
-## Professional Cloud Security Engineer Certification Learning Path
+# Professional Cloud Security Engineer Certification Learning Path
 
 # 01 Preparing for Your Professional Cloud Security Engineer Journey 
 
@@ -8758,7 +8758,3046 @@ Correct! Perimeters are checked against allowlisted IPv4 or IPv6 ranges, not aga
 
 
 
+## Securing Compute Engine: Techniques and Best Practices
 
+
+
+### LAB - Configuring, Using, and Auditing VM Service Accounts and Scopes
+
+
+
+#### Overview
+
+[Service accounts](https://cloud.google.com/iam/docs/service-accounts) are a special type of Google account that grant permissions to virtual machines instead of end users. Service accounts are primarily used to ensure safe, managed connections to APIs and Google Cloud services. Granting access to trusted connections and rejecting malicious ones is a must-have security feature for any Google Cloud project.
+
+##### Objectives
+
+In this lab, you will learn how to:
+
+- Create and manage service accounts.
+- Create a virtual machine and associate it with a service account.
+- Use client libraries to access BigQuery from a service account.
+- Run a query on a BigQuery public dataset from a Compute Engine instance.
+
+#### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+##### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](https://cdn.qwiklabs.com/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images\hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+**Output:**
+
+```
+Credentialed accounts:
+ - <myaccount>@<mydomain>.com (active)
+</mydomain></myaccount>
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = <project_id>
+</project_id>
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+##### What are service accounts?
+
+A service account is a special Google account that belongs to your application or a [virtual machine](https://cloud.google.com/compute/docs/instances/) (VM) instead of an individual end user. Your application uses the service account to [call the Google API of a service](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#authorizingrequests), so that the users aren't directly involved.
+
+For example, a Compute Engine VM may run as a service account and that account can be given permissions to access the resources it needs. This way the service account is the identity of the service, and the service account's permissions control which resources the service can access.
+
+A service account is identified by its email address, which is unique to the account.
+
+##### Types of service accounts
+
+#### User-managed service accounts
+
+When you create a new Cloud project using the Cloud Console, if the Compute Engine API is enabled for your project, a Compute Engine service account is created for you by default. It is identifiable using the email: `PROJECT_NUMBER-compute@developer.gserviceaccount.com`.
+
+If your project contains an App Engine application, the default App Engine service account is created in your project by default. It is identifiable using the email: `PROJECT_ID@appspot.gserviceaccount.com`.
+
+#### Google-managed service accounts
+
+In addition to the user-managed service accounts, you might see some additional service accounts in your project’s IAM policy or in the Cloud Console. These service accounts are created and owned by Google. These accounts represent different Google services and each account is automatically granted IAM roles to access your Google Cloud project.
+
+#### Google API service accounts
+
+An example of a Google-managed service account is a Google API service account identifiable using the email: `PROJECT_NUMBER@cloudservices.gserviceaccount.com`.
+
+This service account is designed specifically to run internal Google processes on your behalf and is not listed in the **Service Accounts** section of the Cloud Console. By default, the account is automatically granted the project editor role on the project and is listed in the **IAM** section of the Cloud Console.
+
+This service account is deleted only when the project is deleted. Google services rely on the account having access to your project, so you should not remove or change the service account’s role on your project.
+
+#### Task 1. Create and manage service accounts
+
+In this task, you create and manage service accounts.
+
+By default, you can create up to 100 user-managed service accounts in a project. If this quota does not meet your needs, you can use the Cloud console to request a quota increase.
+
+**Note:** The default service accounts described on this page do not count toward this quota.
+
+##### Creating a service account
+
+Creating a service account is similar to adding a member to your project, but the service account belongs to your applications rather than an individual end user.
+
+- To create a service account, run the following command in Cloud Shell:
+
+```
+gcloud iam service-accounts create my-sa-123 --display-name "my service account"
+```
+
+Copied!
+
+The output of this command is the service account, which will look similar to the following.
+
+**Output:**
+
+```
+Created service account [my-sa-123]
+```
+
+##### Granting roles to service accounts
+
+When granting IAM roles, you can treat a service account either as a [resource](https://cloud.google.com/iam/docs/overview#resource) or as an [identity](https://cloud.google.com/iam/docs/overview#concepts_related_to_identity).
+
+Your application uses a service account as an identity to authenticate to Google Cloud services. For example, if you have a Compute Engine Virtual Machine (VM) running as a service account, you can grant the editor role to the service account (the identity) for a project (the resource).
+
+At the same time, you might also want to control who can start the VM. You can do this by granting a user (the identity) the [serviceAccountUser](https://cloud.google.com/iam/docs/service-accounts#the_service_account_user_role) role for the service account (the resource).
+
+##### Granting roles to a service account for specific resources
+
+You grant roles to a service account so that the service account has permission to complete specific actions on the resources in your Google Cloud project. For example, you might grant the `storage.admin` role to a service account so that it has control over objects and buckets in Cloud Storage.
+
+- Run the following in Cloud Shell to grant roles to the service account you just made:
+
+```
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
+    --member serviceAccount:my-sa-123@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --role roles/editor
+```
+
+Copied!
+
+The output will display a list of roles the service account now has.
+
+**Output:**
+
+```
+bindings:
+- members:
+  - user:email1@gmail.com
+    role: roles/owner
+- members:
+  - serviceAccount:our-project-123@appspot.gserviceaccount.com
+  - serviceAccount:123456789012-compute@developer.gserviceaccount.com
+  - serviceAccount:my-sa-123@my-project-123.iam.gserviceaccount.com
+  - user:email3@gmail.com
+    role: roles/editor
+- members:
+  - user:email2@gmail.com
+role: roles/viewer
+etag: BwUm38GGAQk=
+version: 1
+```
+
+Click *Check my progress* to verify the objective.
+
+Creating and Managing Service Account
+
+
+
+Check my progress
+
+
+
+##### Understanding roles
+
+When an identity calls a Google Cloud API, Cloud Identity and Access Management (Cloud IAM) requires that the identity has the appropriate permissions to use the resource. You can grant permissions by granting roles to a user, a group, or a service account.
+
+##### Types of roles
+
+There are three types of roles in Cloud IAM:
+
+- **Basic roles**, which include the Owner, Editor, and Viewer roles that existed prior to the introduction of Cloud IAM.
+- **Predefined roles**, which provide granular access for a specific service and are managed by Google Cloud.
+- **Custom roles**, which provide granular access according to a user-specified list of permissions.
+
+For more details, please refer to the [IAM Roles](https://cloud.google.com/iam/docs/understanding-roles) reference documentation.
+
+#### Task 2. Use the client libraries to access BigQuery from a service account
+
+In this task, you query the BigQuery public datasets from an instance with the help of a service account which has the necessary roles.
+
+##### Create a service account
+
+You will first create a new service account using the Cloud Console.
+
+1. In the Cloud Console, from the navigation menu, click **IAM & Admin > Service accounts**.
+2. Click **Create service account**.
+3. Specify the Service account name as `bigquery-qwiklab`.
+
+![Create service account configuration dialog](images\bFhspDPOVq%2Fom%2BcPEgwU%2BG6ynXYyr18mJp%2BP0QjbpwU%3D.png)
+
+1. Click **Create and Continue**.
+2. Specify the Role as **BigQuery > BigQuery Data Viewer**.
+3. Click **Add Another Role**.
+4. Specify the other Role as **BigQuery > BigQuery User**.
+
+![Create service account optional role access permission](images\Sz9fRNxS0FZVHl1RWHOuRZScilM3gYc82jie0ecDU%2Fs%3D)
+
+1. Click **Continue**.
+
+Your Cloud Console should resemble the following.
+
+![Grant users access to service_account step 3](images\h%2BqSWGIekBJqByhXJexm3JRwD6abb0swD2SEfCcFhqw%3D)
+
+1. Click **Done**.
+
+##### Create a VM instance
+
+1. In the Cloud Console, from the navigation menu, click **Compute Engine > VM Instances**, and click **Create instance**.
+2. Create your VM with the following information:
+
+| **Configuration**   | **Value**                             |
+| ------------------- | ------------------------------------- |
+| **Name**            | `bigquery-instance`                   |
+| **Region**          | `us-east4`                            |
+| **Zone**            | `us-east4-b`                          |
+| **Series**          | `E2`                                  |
+| **Machine Type**    | `e2-standard-2 (2 vCPU)`              |
+| **Boot Disk**       | `Debian GNU/Linux 11 (bulleye)`       |
+| **Service Account** | `bigquery-qwiklab`                    |
+| **Access scopes**   | `Allow full access to all Cloud APIs` |
+
+**Note:** If the `bigquery-qwiklab` service account doesn't appear in the drop-down list, try typing the name in to the *Filter* section.
+
+Next, you will look at the options that were added when you selected a boot disk that supports shielded VMs.
+
+1. Click the **Security** tab. At the top of the tab, the Shielded VM options appear. If you had not selected a boot disk with shielded VM features, these options would not have appeared. Some of these options are selected by default.
+2. Click the **Turn on Secure Boot** checkbox.
+
+![Security dialog turn on secure boot enabled](images\cmd9g48jzGdo%2Ba%2FAOKeAztsF0Y6dyAzaiqwe9ZDYkUI%3D)
+
+Compute Engine does not enable this option by default, because unsigned drivers and other low-level software might not be compatible. Even so, if possible, Google recommends enabling Secure Boot.
+
+1. Click **Create**.
+
+##### Put the example code on a Compute Engine instance
+
+1. In the Cloud Console, go to **Compute Engine > VM Instances**.
+2. SSH into `bigquery-instance` by clicking on the **SSH** button. Click **Connect**.
+3. In the SSH window, install the necessary dependencies by running the following commands:
+
+```
+sudo apt-get update -y
+```
+
+Copied!
+
+```
+sudo apt-get install -y git python3-pip
+```
+
+Copied!
+
+```
+sudo pip3 install six==1.13.0
+```
+
+Copied!
+
+```
+sudo pip3 install --upgrade pip
+```
+
+Copied!
+
+```
+sudo pip3 install --upgrade google-cloud-bigquery
+```
+
+Copied!
+
+```
+sudo pip3 install pandas
+```
+
+Copied!
+
+1. Using the `echo` command, create `query.py`. You will use this file, written in Python, to run the query.
+
+```
+echo "
+from google.auth import compute_engine
+from google.cloud import bigquery
+
+credentials = compute_engine.Credentials(
+    service_account_email='YOUR_SERVICE_ACCOUNT')
+
+query = '''
+SELECT
+  year,
+  COUNT(1) as num_babies
+FROM
+  publicdata.samples.natality
+WHERE
+  year > 2000
+GROUP BY
+  year
+'''
+
+client = bigquery.Client(
+    project='YOUR_PROJECT_ID',
+    credentials=credentials)
+print(client.query(query).to_dataframe())
+" > query.py
+```
+
+Copied!
+
+1. Add the Project ID to `query.py` with:
+
+```
+sed -i -e "s/YOUR_PROJECT_ID/$(gcloud config get-value project)/g" query.py
+```
+
+Copied!
+
+1. Run the following to make sure that the `sed` command has successfully changed the Project ID in the file:
+
+```
+cat query.py
+```
+
+Copied!
+
+**Example output** (yours will differ):
+
+```
+from google.auth import compute_engine
+from google.cloud import bigquery
+
+credentials = compute_engine.Credentials(
+    service_account_email='YOUR_SERVICE_ACCOUNT')
+
+query = '''
+SELECT
+  year,
+  COUNT(1) as num_babies
+FROM
+  publicdata.samples.natality
+WHERE
+  year > 2000
+GROUP BY
+  year
+'''
+
+client = bigquery.Client(
+    project='qwiklabs-gcp-186de687ef87f911',
+    credentials=credentials)
+print(client.query(query).to_dataframe())
+```
+
+1. Add the service account email to `query.py` with:
+
+```
+sed -i -e "s/YOUR_SERVICE_ACCOUNT/bigquery-qwiklab@$(gcloud config get-value project).iam.gserviceaccount.com/g" query.py
+```
+
+Copied!
+
+1. Run the following to make sure that the `sed` command has successfully changed the service account email in the file:
+
+```
+cat query.py
+```
+
+Copied!
+
+**Example output** (yours will differ):
+
+```
+from google.auth import compute_engine
+from google.cloud import bigquery
+credentials = compute_engine.Credentials(
+    service_account_email='bigquery-qwiklab@qwiklabs-gcp-186de687ef87f911.iam.gserviceaccount.com')
+
+query = '''
+SELECT
+  year,
+  COUNT(1) as num_babies
+FROM
+  publicdata.samples.natality
+WHERE
+  year > 2000
+GROUP BY
+  year
+'''
+
+client = bigquery.Client(
+    project='qwiklabs-gcp-186de687ef87f911',
+    credentials=credentials)
+print(client.query(query).to_dataframe())
+```
+
+The application will now use the permissions that are associated with this service account.
+
+1. Install the `pyarrow` library using this command:
+
+```
+sudo pip3 install pyarrow==16.1.0
+```
+
+Copied!
+
+1. Install the `db-dtypes` library using this command:
+
+```
+sudo pip3 install db-dtypes
+```
+
+Copied!
+
+1. Run the `query.py` using this command:
+
+```
+python3 query.py
+```
+
+Copied!
+
+You should be returned with a similar output as the following.
+
+**Output:**
+
+```
+   year  num_babies
+0  2008     4255156
+1  2002     4027376
+2  2005     4145619
+3  2006     4273225
+4  2001     4031531
+5  2007     4324008
+6  2003     4096092
+7  2004     4118907
+```
+
+**Note:** Your row values might not map to the years in the above output. However, make sure that the babies per year are the same.
+
+You made a request to a BigQuery public dataset with a `bigquery-qwiklab` service account.
+
+Click *Check my progress* to verify the objective.
+
+Use the Client Libraries to access BigQuery from a service account
+
+
+
+Check my progress
+
+
+
+#### Congratulations!
+
+In this lab, you have learned how to do the following:
+
+- Create and manage service accounts.
+- Create a virtual machine and associate it with a service account.
+- Use client libraries to access BigQuery from a service account.
+- Run a query on a BigQuery public dataset from a Compute Engine instance.
+
+
+
+### Quiz
+
+1. Which TWO recommendations below ARE considered to be Compute Engine "best practices?"
+
+- **Cloud Interconnect or Cloud VPN can be used to securely extend your data center network into Google Cloud projects.**
+
+  Correct! Using these services to extend your on-prem resources into the cloud helps to make your hybrid network more secure and reliable.
+
+- Always run critical VMs with default, scope-based service accounts.
+
+- Hardened custom images, once added to your Organization's resources, are then maintained by Google with automatic security patches and other updates.
+
+- **Utilize projects and IAM roles to control access to your VMs.**
+  Correct! Projects form the basis for creating, enabling, and using all Google Cloud services including managing permissions for Google Cloud resources.
+
+2. Which TWO of the following statements is TRUE when discussing the Organization Policy Service?
+
+- Descendants of a targeted resource do not inherit the parent's Organization Policy.
+
+- **Organization Policy Services allow centralized control for how your organization’s resources can be used.**
+
+  Correct! Organization Policy Service gives you both centralized and programmatic control over your organization's cloud resources.
+
+- **To define an Organization Policy, you will choose and then define a constraint against either a Google Cloud service or a group of Google Cloud services.**
+  Correct! Organization Policy Service allows you to set constraints that apply to all resources in your organization's hierarchy.
+
+3. Which of the following TWO statements about Google Cloud service accounts are TRUE?
+
+- **Virtual Machine (VM) instances use service accounts to run API requests on your behalf.**
+
+  Correct! When launching a virtual machine in Compute Engine, a service account can be associated directly to that VM.
+
+- VMs without service accounts cannot run APIs.
+
+- Custom service accounts use "scopes" to control API access.
+
+- **Service accounts are a type of identity.**
+
+  Correct! VMs authenticate using the identity of a service account when making calls to the Google APIs.
+
+
+
+## Securing Cloud Data: Techniques and Best Practices
+
+### LAB - Using Customer-Supplied Encryption Keys with Cloud Storage
+
+#### Overview
+
+[Cloud Storage](https://cloud.google.com/storage) always encrypts your data on the server side with a Google-managed encryption key, before it is written to disk, at no additional charge. As an alternative to a Google-managed server-side encryption key, you can choose to provide your own AES-256 key, encoded in standard Base64. This key is known as a customer-supplied encryption key.
+
+In this lab, you will configure customer-supplied encryption keys (CSEK) for Cloud Storage. Files will then be uploaded into a storage bucket. You will then generate a new encryption key and rotate CSEK keys.
+
+Cloud Storage does not permanently store your key on Google's servers or otherwise manage your key. Instead, you provide your key for each Cloud Storage operation, and your key is purged from Google's servers after the operation is complete. Cloud Storage stores only a cryptographic hash of the key so that future requests can be validated against the hash.
+
+Your key cannot be recovered from this hash, and the hash cannot be used to decrypt your data.
+
+##### Objectives
+
+In this lab, you wil learn how to perform the following tasks:
+
+- Configure CSEK for Cloud Storage.
+- Utilize CSEK to encrypt files in Cloud Storage.
+- Delete local files from Cloud Storage and verify encryption.
+- Rotate your encryption keys without downloading and re-uploading data.
+
+#### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 1. Configure required resources
+
+In this task, you configure the required resources that will be used throughout the lab.
+
+##### Create an IAM service account
+
+**Note:** In this lab, you will launch a VM in Compute Engine and perform most of the work on this VM. A service account will first be created to provide the VM with the required permissions to perform the lab.
+
+1. In the Google Cloud Console, select **Navigation menu > IAM & admin > Service accounts**.
+2. Click **Create Service Account**.
+3. Specify the **Service account name** as `cseklab`.
+4. Click **Create and Continue**.
+5. Specify the **Role** as **Cloud Storage > Storage Admin**.
+6. Click **Continue**.
+7. Click **Done**.
+
+##### Create a Compute Engine VM
+
+1. In the Cloud Console, go to **Navigation menu > Compute Engine > VM instances**. Click **Create Instance**.
+2. Specify the following, and leave the remaining settings as their defaults.
+
+- **Name:** `cseklab-vm`
+- **Region:** `us-central1`
+- **Zone:** `us-central1-a`
+- **Series:** `E2`
+- **Machine type:** `e2-micro`
+
+1. Click **Security**, and then specify the following:
+
+- **Service account:** The **cseklab** service account just created
+- **Access scopes:** Select **Set access for each API**, for **Storage** select **Full** from the dropdown.
+
+1. Click **Create**.
+2. Once the VM launches, click the **SSH** button to connect to the VM.
+
+##### Create a Cloud Storage bucket
+
+**Note:** A bucket must have a globally unique name. For this lab you will use your Google Cloud project ID as part of the bucket name to help ensure it will be unique. Your Google Cloud project ID can be copied from the **Connection Details** pane in Qwiklabs.
+
+1. From the **SSH** terminal connected to the **cseklab-vm**, run the following command to create an environment variable to store the name of your bucket:
+
+```
+export BUCKET_NAME=[PUT Google_Cloud_PROJECT_ID HERE]-csek
+```
+
+Copied!
+
+1. Enter the following command to create the bucket:
+
+```
+gsutil mb -l us gs://$BUCKET_NAME
+```
+
+Copied!
+
+Click *Check my progress* to verify the objective.
+
+Configure required resources
+
+
+
+Check my progress
+
+
+
+##### Download a sample file using CURL and make two copies
+
+1. Use the following command to download a sample file (this sample file is a publicly available Hadoop documentation HTML file). This file will be copied into the lab's storage bucket:
+
+```
+curl \
+https://hadoop.apache.org/docs/current/\
+hadoop-project-dist/hadoop-common/\
+ClusterSetup.html > setup.html
+```
+
+Copied!
+
+1. Make two copies of the file:
+
+```
+cp setup.html setup2.html
+cp setup.html setup3.html
+```
+
+Copied!
+
+#### Task 2. Configure customer-supplied encryption keys
+
+In this task, you generate a CESK key, upload the file to the Cloud Console, and then delete the local copy.
+
+##### Generate a CSEK key
+
+**Note:** When using customer-supplied encryption keys, it is up to you to generate and manage your encryption keys. You must provide Cloud Storage a key that is a 256-bit string encoded in [RFC 4648 standard base64](https://tools.ietf.org/html/rfc4648#section-4). For this lab, you will generate a key with a random number.
+
+1. In the **cseklab-vm** SSH terminal, run the following command to create a key:
+
+```
+openssl rand 32 > mykey.txt
+openssl base64 -in mykey.txt
+```
+
+Copied!
+
+**Example output:**
+
+```
+tmxElCaabWvJqR7uXEWQF39DhWTcDvChzuCmpHe6sb0=
+```
+
+1. Copy the value of the generated key. You will require this for a later step.
+
+##### Modify the .boto file
+
+**Note:** The encryption controls are contained in a **gsutil** configuration file named **.boto**.
+
+1. Run the following command in the SSH terminal to verify the **.boto** file exists:
+
+```
+ls -al
+```
+
+Copied!
+
+1. If you do not see a **.boto** file run the following commands to generate and list it:
+
+```
+gsutil config -n
+ls -al
+```
+
+Copied!
+
+1. To edit the **.boto** file, run the following command:
+
+```
+nano .boto
+```
+
+Copied!
+
+1. Within the **.boto** file, locate the line with "**#encryption_key=**". To search in Nano, click the keyboard located in the top right of the **SSH** window, select **Ctrl+W** and type `#encrypt`.
+
+![Ctrl+W on virtual keyboard](images\%2FPcPxjRygAd4QZW7mkKCTeh4rA%2BY9QbLxs%2FHtFVSUFk%3D)
+
+1. Uncomment the encryption_key line by removing the **#** character, and paste the key you generated earlier.
+
+**Example:**
+
+```
+Before:
+# encryption_key=
+After:
+encryption_key=tmxElCaabWvJqR7uXEWQF39DhWTcDvChzuCmpHe6sb0=
+```
+
+1. Press **Ctrl+X** to Exit, **Y** to save the file, then **Enter** to confirm the filename.
+
+##### Upload files (encrypted) and verify in the Cloud Console
+
+1. Run the following commands to upload two files:
+
+```
+gsutil cp setup.html gs://$BUCKET_NAME
+gsutil cp setup2.html gs://$BUCKET_NAME
+```
+
+Copied!
+
+1. Return to the Cloud Console and view the storage bucket contents by selecting **Navigation menu > Cloud Storage**, then click on the bucket.
+
+**Note:** Both the setup.html and setup2.html files show that they are customer-encrypted.
+
+Click *Check my progress* to verify the objective.
+
+Configuring customer-supplied encryption keys
+
+
+
+Check my progress
+
+
+
+##### Delete a local file, copy from Cloud Storage, and verify encryption
+
+1. Delete the local **setup.html** file, run the following command:
+
+```
+rm setup.html
+```
+
+Copied!
+
+1. To copy the file back from the bucket, run the following command:
+
+```
+gsutil cp gs://$BUCKET_NAME/setup.html ./
+```
+
+Copied!
+
+1. View the file to see whether they made it back with the following command:
+
+```
+cat setup.html
+```
+
+Copied!
+
+#### Task 3. Rotate CSEK keys
+
+In this task, you rotate CSEK keys. To rotate CSEKs, you change your encryption_key configuration value to a decryption_key configuration value and then use a new value for the encryption_key.
+
+Then you can use the rewrite command to rotate keys in the cloud without downloading and re-uploading the data.
+
+##### Generate another CSEK key and add to the boto file
+
+1. In the SSH terminal, run the following command to generate a new key:
+
+```
+openssl rand 32 > mykey.txt
+openssl base64 -in mykey.txt
+```
+
+Copied!
+
+1. Copy the value of the generated key from the command output. Key should be in form of `tmxElCaabWvJqR7uXEWQF39DhWTcDvChzuCmpHe6sb0=`.
+2. To open the boto file, run the following command:
+
+```
+nano .boto
+```
+
+Copied!
+
+1. Locate the current **encryption_key** line and comment it out by adding the # character to the beginning of the line.
+2. Add a new line with **encryption_key=** and paste the new key value.
+
+**Output:**
+
+```
+Before:
+encryption_key=2dFWQGnKhjOcz4h0CudPdVHLG2g+OoxP8FQOIKKTzsg=
+
+After:
+
+# encryption_key=2dFWQGnKhjOcz4h0CudPdVHLG2g+OoxP8FQOIKKTzsg=
+
+encryption_key=HbFK4I8CaStcvKKIx6aNpdTse0kTsfZNUjFpM+YUEjY=
+```
+
+1. Uncomment the **decryption_key1=** line by removing the # character.
+2. Copy the value of the original **encryption_key** from the line that was commented out, and paste it for the value of the **decryption_key1** line.
+
+**Output:**
+
+```
+Before:
+# encryption_key=2dFWQGnKhjOcz4h0CudPdVHLG2g+OoxP8FQOIKKTzsg=
+encryption_key=HbFK4I8CaStcvKKIx6aNpdTse0kTsfZNUjFpM+YUEjY==
+# decryption_key1=
+
+After:
+
+# encryption_key=2dFWQGnKhjOcz4h0CudPdVHLG2g+OoxP8FQOIKKTzsg=
+
+encryption_key=HbFK4I8CaStcvKKIx6aNpdTse0kTsfZNUjFpM+YUEjY==
+decryption_key1=2dFWQGnKhjOcz4h0CudPdVHLG2g+OoxP8FQOIKKTzsg=
+```
+
+The original encryption_key line that is commented out can also be completely deleted from the file.
+
+1. Press **Ctrl+X** to Exit, **Y** to save the file, then **Enter** to confirm the filename.
+
+##### Encrypt a file with the new key and decrypt a file with the old key
+
+1. Upload a new file to the bucket. This file will be encrypted with the new key:
+
+```
+gsutil cp setup3.html gs://$BUCKET_NAME
+```
+
+Copied!
+
+**Note:** At this point, setup.html and setup2.html are encrypted with the original key and setup3.html is encrypted with the new key.
+
+1. Delete the local **setup2.html** and **setup3.html** files with the following commands:
+
+```
+rm setup2.html
+rm setup3.html
+```
+
+Copied!
+
+1. To copy the files back from the storage bucket, run the following commands:
+
+```
+gsutil cp gs://$BUCKET_NAME/setup2.html ./
+gsutil cp gs://$BUCKET_NAME/setup3.html ./
+```
+
+Copied!
+
+1. View the encrypted file to see whether they made it back with the following commands:
+
+```
+cat setup2.html
+cat setup3.html
+```
+
+Copied!
+
+**Note:** This lab demonstrates how new keys can be generated for new data, but note that files encrypted with the older keys can still be decrypted.
+
+##### Rewrite the key for file 1 and comment out the old decrypt key
+
+Rewriting an encrypted file causes the file to be decrypted it using the decryption_key1 that you previously set, and encrypts the file with the new encryption_key.
+
+1. Run the following command to rewrite setup.html
+
+```
+gsutil rewrite -k gs://$BUCKET_NAME/setup.html
+```
+
+Copied!
+
+**Note:** At this point, setup.html has been rewritten with the new encryption key and setup3.html is encrypted with the new key as well. The setup2.html file is still encrypted with the original key so that you can see what happens if you don't rotate the keys properly.
+
+1. Open the boto file with the following command:
+
+```
+nano .boto
+```
+
+Copied!
+
+1. Comment out the current **decryption_key1** line by adding the # character back in.
+2. Press **Ctrl+X** to Exit, **Y** to save the file, then **Enter** to confirm the filename.
+3. Delete all three local files with the following command:
+
+```
+rm setup*.html
+```
+
+Copied!
+
+1. Download **setup.html** and **setup3.html** (both encrypted with the new key) with following commands:
+
+```
+gsutil cp gs://$BUCKET_NAME/setup.html ./
+gsutil cp gs://$BUCKET_NAME/setup3.html ./
+```
+
+Copied!
+
+1. View the encrypted files to see whether they made it back through the process using the following commands:
+
+```
+cat setup.html
+cat setup3.html
+```
+
+Copied!
+
+1. Try to download **setup2.html** (encrypted with the original key) using the following command:
+
+```
+gsutil cp gs://$BUCKET_NAME/setup2.html ./
+```
+
+Copied!
+
+**Note:** What happened? **setup2.html** was not rewritten with the new key, so it can no longer be decrypted, and the copy failed.
+
+You have successfully rotated the CSEK keys.
+
+#### Congratulations!
+
+In this lab, you have done the following:
+
+- Configured CSEK for Cloud Storage.
+- Utilized CSEK to encrypt files in Cloud Storage.
+- Deleted local files from Cloud Storage and verified encryption.
+- Rotated your encryption keys without downloading and re-uploading data.
+
+
+
+### LAB - Using Customer-Managed Encryption Keys with Cloud Storage and Cloud KMS
+
+#### Overview
+
+[Cloud Key Management Service](https://cloud.google.com/security-key-management) (Cloud KMS) allows you to manage encryption keys on Google Cloud. Encryption keys are created by Cloud KMS and managed by you in the same manner you would manage them on-premises.
+
+Using Cloud KMS you can generate, use, rotate and destroy AES256 symmetric encryption keys for direct use by all of your cloud services.
+
+In this lab, you will use Cloud KMS to create KeyRings and CryptoKeys and then use those keys with Cloud Storage to set default keys on buckets, and encrypt individual objects with a Cloud KMS key.
+
+Additionally, you will manually perform server-side encryption with your Cloud KMS keys, and upload encrypted data to Cloud Storage.
+
+Cloud KMS permissions will be managed with IAM, and Cloud Audit Logs will be used to view all activity for CryptoKeys and KeyRings.
+
+##### Objectives
+
+In this lab, you will learn how to do the following:
+
+- Manage keys and encrypted data using Cloud KMS.
+- Create KeyRings and CryptoKeys.
+- Set a default encryption key for a storage bucket.
+- Encrypt an object with a Cloud KMS key.
+- Rotate encryption keys.
+- Perform server-side encryption manually with Cloud KMS keys.
+
+#### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 1: Configure required resources
+
+In this task, you configure the required resources for this lab.
+
+##### Create a Cloud Storage bucket
+
+**Note:** A bucket must have a globally unique name. For this lab, you will use your Google Cloud project ID as part of the bucket name to help ensure it will be unique. Your Google Cloud project ID is automatically stored in a Cloud Shell environment variable named `DEVSHELL_PROJECT_ID`.
+
+1. On the Google Cloud Console title bar, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)). If prompted, click **Continue**.
+2. Run the following command to create the bucket:
+
+```
+gsutil mb -l us-west1 gs://$DEVSHELL_PROJECT_ID-kms
+```
+
+Copied!
+
+1. Run the following commands to create a few sample files that will be uploaded to the bucket:
+
+```
+echo "This is sample file 1" > file1.txt
+echo "This is sample file 2" > file2.txt
+echo "This is sample file 3" > file3.txt
+```
+
+Copied!
+
+1. Run the following command to copy **file1.txt** to the bucket:
+
+```
+gsutil cp file1.txt gs://$DEVSHELL_PROJECT_ID-kms
+```
+
+Copied!
+
+##### Enable Cloud KMS
+
+**Note:** Before using Cloud KMS you need to enable it in your project. In the Qwiklab Google Cloud Project you have been provisioned, Cloud KMS should already have been enabled. Just to be safe, you will issue the command to enable it anyway.
+
+- Run the following command in Cloud shell to enable Cloud KMS:
+
+```
+gcloud services enable cloudkms.googleapis.com
+```
+
+Copied!
+
+Click *Check my progress* to verify the objective.
+
+Create a Cloud Storage bucket
+
+
+
+Check my progress
+
+
+
+#### Task 2. Use Cloud KMS
+
+In this task, you use Cloud KMS to create a keyring and a cryptokey.
+
+##### Create a KeyRing and CryptoKey
+
+**Note:** In order to encrypt data, you need to create a KeyRing and a CryptoKey. KeyRings are useful for grouping keys. Keys can be grouped by environment (like test, staging, and prod) or by some other conceptual grouping. For this lab, your KeyRing will be called **test** and your CryptoKey will be called **labkey**.
+
+1. In Cloud Shell, run the following commands to create variables to hold the KeyRing name and CryptoKey name:
+
+```
+KEYRING_NAME=lab-keyring
+CRYPTOKEY_1_NAME=labkey-1
+CRYPTOKEY_2_NAME=labkey-2
+```
+
+Copied!
+
+1. Execute the following command to create the KeyRing.
+
+```
+gcloud kms keyrings create $KEYRING_NAME --location us-west1
+```
+
+Copied!
+
+1. Next, using the new KeyRing, create a CryptoKey named **labkey-1**:
+
+```
+gcloud kms keys create $CRYPTOKEY_1_NAME --location us-west1 \
+--keyring $KEYRING_NAME --purpose encryption
+```
+
+Copied!
+
+1. Create another CryptoKey named **labkey-2**:
+
+```
+gcloud kms keys create $CRYPTOKEY_2_NAME --location us-west1 \
+--keyring $KEYRING_NAME --purpose encryption
+```
+
+Copied!
+
+You can view the KeyRing and keys in the Cloud Console.
+
+1. In the Cloud Console, go to **Navigation menu > Security > Key Management**.
+
+You will see the KeyRing named **lab-keyring**.
+
+1. Click on the KeyRing named **lab-keyring** to view the encryption keys named **labkey-1** and **labkey-2**.
+
+![List of kyes for Key Ring](https://cdn.qwiklabs.com/QsrLAlaH9deTlrxnscrxi%2FkDhfvPA%2Ff6HXZNDYylUWc%3D)
+
+Click *Check my progress* to verify the objective.
+
+Create a Keyring and Cryptokey
+
+
+
+Check my progress
+
+
+
+#### Task 3. Add a default key for a bucket
+
+In this task, you add a default key for your bucket.
+
+##### View the current default key for a bucket
+
+- Run the following command to view the default encryption key for your bucket:
+
+```
+gsutil kms encryption gs://$DEVSHELL_PROJECT_ID-kms
+```
+
+Copied!
+
+**Note:** The bucket should not currently have a default encryption key. This means all data in the bucket will be encrypted by Google-managed encryption keys.
+
+##### Assign Cloud KMS keys to a service account
+
+- Run the following commands to give your Cloud Storage service account permission to use both of your Cloud KMS keys:
+
+```
+gsutil kms authorize -p $DEVSHELL_PROJECT_ID -k \
+projects/$DEVSHELL_PROJECT_ID/locations/us-west1/keyRings\
+/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_1_NAME
+gsutil kms authorize -p $DEVSHELL_PROJECT_ID -k \
+projects/$DEVSHELL_PROJECT_ID/locations/us-west1/keyRings\
+/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_2_NAME
+```
+
+Copied!
+
+The general syntax of the above commands is given below:
+
+```
+gsutil kms authorize -p [PROJECT_STORING_OBJECTS] -k [KEY_RESOURCE]
+```
+
+Where *[KEY_RESOURCE]* is in the format:
+
+```
+projects/[PROJECT_STORING_KEYS]/locations/[LOCATION]/keyRings/[KEY_RING_NAME]/cryptoKeys/[KEY_NAME]
+```
+
+Copied!
+
+##### Set the default key for a bucket
+
+A Cloud KMS key can be set as the default key when objects are written to a bucket.
+
+When setting the default key, the key resource must be specified in the same format as the previous command: `projects/[PROJECT_STORING_KEYS]/locations/[LOCATION]/keyRings/ [KEY_RING_NAME]/cryptoKeys/[KEY_NAME]`.
+
+1. Run the following command to set the default key for your bucket to the first key you generated:
+
+```
+gsutil kms encryption -k \
+projects/$DEVSHELL_PROJECT_ID/locations/us-west1/keyRings\
+/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_1_NAME \
+gs://$DEVSHELL_PROJECT_ID-kms
+```
+
+Copied!
+
+1. Run the following command to view the default key for the bucket to verify the last command was successful:
+
+```
+gsutil kms encryption gs://$DEVSHELL_PROJECT_ID-kms
+```
+
+Copied!
+
+The default encryption key for the bucket should now be your first encryption key.
+
+**Note:** Objects that were written to a bucket prior to adding or changing the default key remain encrypted with the previous encryption method.
+
+1. Run the following command to copy **file2.txt** to the bucket:
+
+```
+gsutil cp file2.txt gs://$DEVSHELL_PROJECT_ID-kms
+```
+
+Copied!
+
+##### View the files in the bucket
+
+- In the Cloud Console, go to **Navigation menu > Cloud Storage > Bucket** and click on your bucket for this lab.
+
+You will see **file 1** was encrypted with a Google-managed key and **file 2** was encrypted with a customer-managed key.
+
+Click *Check my progress* to verify the objective.
+
+Add a default key for the bucket
+
+
+
+Check my progress
+
+
+
+#### Task 4. Encrypt individual objects with a Cloud KMS key
+
+In this task, you encrypt an individual object with a Cloud KMS key. This is useful if you want to use a different key from the default key set on the bucket, or if you don't have a default key set on the bucket. This can be done by passing the key to use in each gsutil command by using the `-o` flag: `-o "GSUtil:encryption_key=[KEY_RESOURCE]"`
+
+1. Run the following command to copy **file3.txt** to the bucket, encrypting it with your second encryption key:
+
+```
+gsutil -o \
+"GSUtil:encryption_key=projects/$DEVSHELL_PROJECT_ID/locations/us-west1/keyRings\
+/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_2_NAME" \
+cp file3.txt gs://$DEVSHELL_PROJECT_ID-kms
+```
+
+Copied!
+
+1. In the Cloud Console, refresh the **Bucket details** screen and you will see **file3.txt** is also encrypted with a customer-managed key.
+
+##### Identify the key used to encrypt an object
+
+In the Cloud Console, look at the encryption column. It shows you what kind of key is used: a Google-managed key or a customer-managed key. If you hover over the key, you can get details about the key. You can also get key details using gsutil, which you will do in the next step.
+
+1. Run the following command to display details about an object (the **-L** option causes **gsutil ls** to display all file details):
+
+```
+gsutil ls -L gs://$DEVSHELL_PROJECT_ID-kms/file3.txt
+```
+
+Copied!
+
+1. In the information returned, locate the KMS key line.
+
+This displays the encryption key being used by that file.
+
+1. Run the previous command again for **file1.txt** and **file2.txt**.
+
+Click *Check my progress* to verify the objective.
+
+Encrypt individual objects with a Cloud KMS key
+
+
+
+Check my progress
+
+
+
+#### Task 5. Perform key rotation
+
+In this task, you perform automatic and manual key rotation.
+
+**Note:** In Cloud KMS, a key rotation is triggered by generating a new version of a key, and marking that version as the primary version. Each key has a designated primary version at any point in time, which Cloud KMS uses to encrypt data. After rotating a key, its previous key versions (which no longer are primary) are neither disabled or destroyed, and remain available for decrypting data.
+
+##### Automatically rotate keys
+
+**Note:** By providing a rotation schedule, Cloud KMS will automatically rotate your keys for you. A key's rotation schedule can be set using the gcloud command-line tool or via the Cloud Console.
+
+1. In the Cloud Console, go to **Navigation menu > Security > Key Management** and click on the KeyRing named **lab-keyring** to view your encryption keys named **labkey-1** and **labkey-2**.
+2. Click on the key named **labkey-1** to view all versions.
+
+Currently you only have one version.
+
+1. Click the **EDIT ROTATION PERIOD** button.
+2. Set the **rotation period** dropdown to **30 days**.
+
+Notice that the rotation period can also be set to a Custom period that allows you to specify any desired period.
+
+1. Click **SAVE**.
+
+The Cloud Console now displays the next rotation date for this key.
+
+##### Manually rotate keys
+
+**Note:** Manually rotating keys can also be done with the gcloud command-line tool or via the Cloud Console.
+
+1. In the Cloud Console, go back to the KeyRing named **lab-keyring** and click on the key named **labkey-2** to view all versions.
+2. Click the **Rotate Key** button and then click **Rotate**.
+
+You now have two versions of this key, `version 2` is the primary one.
+
+**Note:** Using the key rotation commands above, key rotation does NOT re-encrypt already encrypted data with the newly generated key version. If you suspect unauthorized use of a key, you should re-encrypt the data protected by that key and then disable or schedule destruction of the prior key version.
+
+##### Destroy old keys
+
+**Note:** If you destroy a key that encrypts existing objects, you will be unable to recover that data, but you will continue to be charged for storage of your objects until you delete them.
+
+In this part, you will not actually destroy a key, but you will investigate the process for doing so.
+
+1. From the **labkey-2** versions screen, click the three vertical dots on the far right of the line for `version 1` of the key and select **Destroy**.
+2. Read the message in the **Schedule key version 1 for destruction** and click **Cancel** when done.
+
+You have successfully used Cloud KMS keys to encrypt data in Cloud Storage.
+
+Click *Check my progress* to verify the objective.
+
+Key Rotation
+
+
+
+Check my progress
+
+
+
+#### Bonus task. Encrypt data with the REST API
+
+The Cloud KMS service also provides a REST API to perform encryption and decryption. The content to be encrypted is specified as part of a JSON document in the REST request, and this content must be encoded using Base64 encoding. This JSON document has the following form:
+
+`{"plaintext":"Base64 encoded data to encrypt"}`.
+
+In this bonus section to the lab, you will manually invoke the REST api using curl commands to demonstrate the capability of the API.
+
+1. This section assumes you still have the Cloud Shell session open and the following environment variables are defined:
+
+```
+KEYRING_NAME
+CRYPTOKEY_1_NAME
+```
+
+`CRYPTOKEY_2_NAME`.
+
+If these variables are no longer defined, go back to earlier in the lab and run the commands to create these variables.
+
+1. Run the following command to encode some sample text as base64 and store it in a variable named **PLAIN_TEXT**:
+
+```
+PLAIN_TEXT=$(echo -n "Some text to be encrypted" | base64)
+```
+
+Copied!
+
+1. Echo the PLAIN_TEXT variable to verify the text was encoded:
+
+```
+echo $PLAIN_TEXT
+```
+
+Copied!
+
+You should see the base64-encoded text.
+
+1. Use the REST API to encrypt the encoded text by calling the `encrypt` method of your key.
+2. Supply the base64-encoded content in the plaintext field of the JSON for your request:
+
+```
+curl \
+"https://cloudkms.googleapis.com/v1/projects/$DEVSHELL_PROJECT_ID/locations/us-west1/keyRings/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_1_NAME:encrypt" \
+-d "{\"plaintext\":\"$PLAIN_TEXT\"}" \
+-H "Authorization:Bearer $(gcloud auth application-default \
+print-access-token)" \
+-H "Content-Type: application/json"
+```
+
+Copied!
+
+The response will be a JSON payload containing the encrypted text in the ciphertext field.
+
+**Note:** The encrypted text can easily be extracted from the JSON response, and saved to a file by using the command-line utility **jq**. The response from the previous call can be piped into **jq**, which can parse out the **ciphertext** property and save to **data1.encrypted**.
+
+1. Run the following command that repeats the encryption, but this time parses out the **ciphertext** property and saves it to the **data1.encrypted** file:
+
+```
+curl \
+"https://cloudkms.googleapis.com/v1/projects/$DEVSHELL_PROJECT_ID/locations/us-west1/keyRings/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_1_NAME:encrypt" \
+-d "{\"plaintext\":\"$PLAIN_TEXT\"}" \
+-H "Authorization:Bearer $(gcloud auth application-default \
+print-access-token)" \
+-H "Content-Type: application/json" \
+| jq .ciphertext -r > data1.encrypted
+```
+
+Copied!
+
+1. View the contents of the **data1.encrypted** file with the following command:
+
+```
+more data1.encrypted
+```
+
+Copied!
+
+**Note:** The encrypted text can be decrypted by calling the decrypt method of your key. You must use the same key that was used to encrypt the content.
+
+1. Run the following command to decrypt the contents in the **data1.encrypted** file and save it into the file named **data1.decrypted**:
+
+```
+curl -v \
+"https://cloudkms.googleapis.com/v1/projects/$DEVSHELL_PROJECT_ID/locations/us-west1/keyRings/$KEYRING_NAME/cryptoKeys/$CRYPTOKEY_1_NAME:decrypt" \
+-d "{\"ciphertext\":\"$(cat data1.encrypted)\"}" \
+-H "Authorization:Bearer $(gcloud auth application-default \
+print-access-token)" \
+-H "Content-Type:application/json" \
+| jq .plaintext -r | base64 -d > data1.decrypted
+```
+
+Copied!
+
+1. View the contents of the **data1.decrypted** file with the following command:
+
+```
+more data1.decrypted
+```
+
+Copied!
+
+You have successfully used Cloud KMS keys.
+
+#### Congratulations!
+
+In this lab, you have done the following:
+
+1. Managed keys and encrypted data using Cloud KMS.
+2. Created KeyRings and CryptoKeys.
+3. Set a default encryption key for a storage bucket.
+4. Encrypted an object with a Cloud KMS key.
+5. Rotated encryption keys.
+6. Manually performed server-side encryption with Cloud KMS keys.
+
+
+
+### LAB - Creating a BigQuery Authorized View
+
+#### Overview
+
+When using [BigQuery](https://cloud.google.com/bigquery), permissions are configured at the dataset level. Frequently, data engineering teams maintain datasets with many large tables of raw data, but they want to share subsets of these tables with particular analyst audiences.
+
+For example, analysts might have access to a version of a table that excludes columns with user-specific information. Or, perhaps a specific user should be able to see only specific rows from a given BigQuery table or view.
+
+In this lab, you will learn how to create and use Authorized Views in BigQuery. You will also learn how to do row-level filtering using information about the logged-in user.
+
+This lab will provide two Google Cloud users. This is so the BigQuery authorized view permissions can be verified by logging in as a different user.
+
+##### Objectives
+
+In this lab, you will learn how to perform the following tasks:
+
+- Set permissions on BigQuery datasets.
+- Use Authorized Views to provide audiences read-only access to subsets of tables.
+- Use the `SESSION_USER()` function to limit access to specific rows within a table/view.
+
+#### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 1. Create the source dataset
+
+In this task, you create the source dataset in BigQuery that will be used in this lab.
+
+##### Create a new BigQuery dataset
+
+1. In the Cloud Console, open the BigQuery user interface by selecting **Navigation menu > BigQuery**, then click **Done**.
+2. Create a new dataset within your project by clicking the three dots next to your project ID in the **Explorer** section, then click on **Create dataset**.
+3. Enter `source_data` for **Dataset ID**, and click on **Create Dataset** (accepting the other default values).
+
+##### Create a new BigQuery table with source data
+
+1. Click **Activate Cloud Shell** to open Cloud Shell. If prompted, click **Continue**.
+2. Load the source data into a new table in BigQuery by entering the following in Cloud Shell:
+
+```
+bq load --autodetect $DEVSHELL_PROJ:source_data.events gs://cloud-training/gcpsec/labs/bq-authviews-source.csv
+```
+
+Copied!
+
+1. In the BigQuery console, review the loaded data by drilling down to `[your_project_id].source_data.events` in the **Explorer** section and clicking **Preview**.
+
+**Note:** You may need to refresh the browser to see the **events** table.
+
+**Note:** This table has simulated data related to events generated by users of a videoconferencing application. Note that each row has information about the user who generated the event.
+
+1. To ensure a future step will work as intended, enter the following query in the BigQuery **Editor**. Replace `<2nd qwiklabs user>` with `Username 2` in the qwiklabs console.
+
+```
+update source_data.events
+set email='<2nd qwiklabs user>'
+where email='rhonda.burns@example-dev.com'
+```
+
+Copied!
+
+1. Click **RUN** and wait for the 68 rows to be updated with a new email address.
+
+Click *Check my progress* to verify the objective.
+
+Create the source dataset
+
+
+
+Check my progress
+
+
+
+#### Task 2. Create the analyst dataset
+
+In this task, you create the analyst dataset, create a redacted view for the analysts, and create a second view for logged-in users.
+
+##### Create a dataset
+
+1. Create a new dataset within your project by clicking the three dots next to your project ID in the **Explorer** section, then click on **Create dataset**.
+2. Enter `analyst_views` for **Dataset ID**, and click on **Create Dataset** (accepting the other default values).
+
+###### Create a redacted view for analysts
+
+1. In the BigQuery **Editor** area, enter the following SQL to get event data excluding the user-specific information:
+
+```
+SELECT
+  date,
+  type,
+  company,
+  call_duration,
+  call_type,
+  call_num_users,
+  call_os,
+  rating,
+  comment,
+  session_id,
+  dialin_duration,
+  ticket_number,
+  ticket_driver
+FROM
+  `[your_project_id].source_data.events`
+```
+
+Copied!
+
+**Note:** Make sure to replace the `[your_project_id]` with the Qwiklabs-created project id.
+
+1. **Run** the query and review the results. Note that the user information is not included.
+2. Save the entered query as a view by clicking **Save > Save view**.
+3. Select your project, and the **analyst_views** dataset.
+4. Enter a destination table name of `no_user_info` and click **Save**. Note, though the UI says destination table, you are only creating a view, not a table.
+5. Check that the view works by navigating in the **Explorer** section to **[your_project_id].analyst_views.no_user_info**. You should see the schema information for the view, which excludes user information columns.
+6. Click on **no_user_info** view. Click **QUERY > In new tab** and enter `*` into the SELECT statement so that your SQL query looks like this:
+
+```
+SELECT
+  *
+FROM
+  `[your_project_id].analyst_views.no_user_info`
+LIMIT
+  1000
+```
+
+Copied!
+
+1. **Run** the query and you should see results similar to those in above step, but without user data.
+
+##### Create a second view, showing only rows for logged-in user
+
+Next, create a 2nd view using the following information.
+
+1. Enter the Query in the BigQuery **Editor**.
+
+**Note:** Make sure to replace the `[your_project_id]` with the Qwiklabs-created project id.
+
+```
+SELECT
+  *
+FROM
+  `[your_project_id].source_data.events`
+WHERE
+  email = SESSION_USER()
+```
+
+Copied!
+
+1. Click **Run**.
+2. Save the entered query as a view by clicking **Save > Save view**.
+3. Select your project, and the **analyst_views** dataset.
+4. Enter a destination table name of `row_filter_session_user` and click **Save**.
+
+**Note:** This 2nd view allows users to see their own events, but no one else's.
+
+Click *Check my progress* to verify the objective.
+
+Create the analyst dataset
+
+
+
+Check my progress
+
+
+
+#### Task 3. Secure the analyst dataset
+
+In this task you share the analyst dataset with Username 2, and secure it by providing the Viewer role.
+
+##### Share the dataset
+
+1. In the dataset listing to the left of the screen, click on the **analyst_views** dataset.
+2. Then select **Sharing** from the right pane and click on **Permissions**.
+3. Click **Add Principal**. In the **New principals** field, enter the email address of the 2nd lab account (Username 2) shown in the **Connection Details** section of the Qwiklabs lab page.
+4. Select **BigQuery Data Viewer** as the role and click **Save**.
+5. Click **Close**.
+
+#### Task 4. Secure the source dataset
+
+In this task, you secure the source dataset. You don't want analysts and others outside the data engineering team to have access to the raw data available in the source dataset, so you are going to restrict access.
+
+You do want those using the views you've created to be able to see the data the views produce. This will require authorizing not the users, but the views.
+
+##### Share the dataset
+
+1. In the dataset listing to the left of the screen, click on the **source_data** dataset.
+2. Then select **Sharing** from the right pane and click on **Permissions**.
+3. Expand the **BigQuery Data Viewer** principal from the permission list and click on the trash icon next to it and click **Remove** to confirm. Click **Close**.
+4. In **Sharing**, click on **Authorize Views** .
+5. In the **Authorized views**, choose the following settings.
+
+| **Authorized view** | `no_user_info` |
+| ------------------- | -------------- |
+|                     |                |
+
+1. Click **Add Authorization**.
+2. Add another entry with these settings replacing the existing view.
+
+| **Authorized view** | `row_filter_session_user` |
+| ------------------- | ------------------------- |
+|                     |                           |
+
+1. Click **Add Authorization**.
+2. Click **Close**.
+
+Click *Check my progress* to verify the objective.
+
+Secure the datasets
+
+
+
+Check my progress
+
+
+
+#### Task 5. Test your security settings
+
+In this task, you test the security settings that you applied in previous tasks.
+
+##### Sign in to the Cloud Console as the second user
+
+1. Open another tab in your incognito window.
+2. Browse to the [Cloud Console](http://console.cloud.google.com/).
+3. Click on the user icon in the top-right corner of the screen, and then click **Add account**.
+4. Sign in to the Cloud Console with the **Username 2** provided in Qwiklabs.
+
+##### Check access to the analyst views
+
+1. In the Cloud Console, open the BigQuery user interface by selecting **Navigation menu > BigQuery**, then click **Done**.
+2. Verify that you can run queries against the **no_user_info** view by executing the following query:
+
+```
+SELECT
+  *
+FROM
+  `analyst_views.no_user_info`
+WHERE
+  type='register'
+```
+
+Copied!
+
+You should see a result set with all the user registration events within the table.
+
+1. Verify that you can query the `row_filter_session_user` view, only seeing the rows associated with your account, by executing the following query:
+
+```
+SELECT
+  *
+FROM
+  `analyst_views.row_filter_session_user`
+```
+
+Copied!
+
+You should see a result set with 68 rows specific to the second Qwiklabs user.
+
+Check access to the source dataset
+
+1. Try accessing the raw data in the events table directly using the following query:
+
+```
+SELECT
+  *
+FROM
+  `source_data.events`
+```
+
+Copied!
+
+You will see an **Access denied** error message indicating that you don't have permissions.
+
+1. Try navigating to the source_data dataset via the **Explorer** section of the UI. This should also be disallowed.
+
+**Note:** The 2nd Qwiklabs user has permissions to view tables and views in the **analyst_views** dataset, but does not have permissions to view anything in the **source_data** dataset.
+
+
+
+When the user queries the view, the view itself has permissions necessary to operate against the table in the **source_data** dataset, and it then returns that data to the user.
+
+
+
+The row-filtering view gets the user's email address and uses that to filter the rows visible. Every user who queries this view will get different results, specifically the rows with her email in the email column.
+
+#### Congratulations!
+
+In this lab, you have learned how to do the following:
+
+- Set permissions on BigQuery datasets.
+- Authorize Views to provide audiences read-only access to subsets of tables.
+- Use the `SESSION_USER()` function to limit access to specific rows within a table/view.
+
+### QUIZ
+
+1. Which TWO of the following statements is TRUE with regards to security in BigQuery and its datasets?
+
+- Using IAM, you can grant users granular permissions to BigQuery tables, rows and columns.
+
+- **BigQuery has its own list of assignable IAM roles.**
+
+  Correct! BigQuery role names are mapped to job functions, such as BigQuery admin or BigQuery Data Viewer.
+
+- It is always better to assign BigQuery roles to individuals as this will help to lower operational overhead.
+
+- **A BigQuery Authorized View allows administrators to restrict users to viewing only subsets of a dataset.**
+
+  Correct! Views provide row or column level permissions to datasets.
+
+2. Which TWO of the following statements are TRUE when discussing Cloud Storage and IAM permissions?
+
+- Using IAM permissions alone gives you control over your projects, buckets, and individual objects.
+
+- **Access can be granted to Cloud Storage at the organization, folder, project, or bucket levels.**
+
+  Correct! Besides general access, you can also control what level of access members have.
+
+- A user needs permission from both IAM or an ACL to access a bucket or object.
+
+- **Using deny rules prevent certain principals from using certain permissions, regardless of the roles they're granted.**
+
+  Correct! You can define deny rules that prevent certain principals from using certain permissions, regardless of the roles they're granted.
+
+3. Which TWO of the following statements are TRUE when discussing storage and BigQuery best practices?
+
+- In most cases, you should use Access Control Lists (ACLs) instead of IAM permissions.
+
+- BigQuery data can be adequately secured using the default basic roles available in Google Cloud.
+
+- **One option to serve content securely to outside users is to use signed URLs.**
+
+  Correct! Using signed URLs, content can be securely made available to users who do not have Google accounts.
+
+- **Do not use any personally identifiable information as object names.**
+
+  Correct! Storage names often appear in URLs, so any information that is critical to maintaining system or data security should not be used in an object name.
+
+
+
+# Application Security: Techniques and Best Practices
+
+
+
+## LAB - Identify Application Vulnerabilities with Security Command Center
+
+### Overview
+
+Web Security Scanner (WSS) is one of [Security Command Center's](https://cloud.google.com/security-command-center) built-in services that can be used to identify security vulnerabilities in App Engine, Google Kubernetes Engine (GKE), and Compute Engine web applications.
+
+This service crawls your application, following all links within the scope of your starting URLs, and attempts to exercise as many user inputs and event handlers as possible. It can automatically scan and detect four common vulnerabilities, including cross-site-scripting (XSS), flash injection, mixed content (HTTP in HTTPS), and outdated/insecure libraries.
+
+Web Security Scanner enables early identification of vulnerabilities and delivers very low false positive rates. You can easily set up, run, schedule, and manage security scans.
+
+In this lab, you use Web Security Scanner to scan a Python Flask application for vulnerabilities.
+
+#### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Launch a vulnerable Python Flask application on a Compute Engine instance.
+- Use Web Security Scanner to scan the application and find vulnerabilities.
+- Fix the application vulnerability.
+- Scan the application again and verify vulnerabilities no longer exist.
+
+### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+### Scenario
+
+​     ![Cymbal Bank logo](images\7HNsRbL5DC5fTizZUhMXIP9PpTe%2F03j3kzaLp2KOqmI%3D)
+
+
+
+Cymbal Bank is an American retail bank with over 2,000 branches in all 50 states. It offers comprehensive debit and credit services that are built on top of a robust payments platform. Cymbal Bank is a digitally transforming legacy financial services institution.
+
+Cymbal Bank was founded in 1920 under the name Troxler. Cymbal Group acquired the company in 1975 after it had been investing heavily in Cymbal Group's proprietary ATMs. As the bank grew into a national leader, they put strategic emphasis on modernizing the customer experience both in-person at their branches and digitally through an app they released in 2014. Cymbal Bank employs 42,000 people nationwide and, in 2019, reported $24 billion in revenue.
+
+Cymbal Bank is interested in developing a new banking application for their corporate clients using Google Cloud technology. Application security is critical, and the CTO wants to see how Google Cloud can identify and mitigate application security vulnerabilities. As a Cloud Security Engineer, you are tasked with demonstrating Security Command Center's cutting-edge application vulnerability scanning features.
+
+### Task 1. Launch a virtual machine and create a firewall rule for WSS
+
+In this task, you set up the infrastructure to demonstrate an application vulnerability to Cymbal Bank's CTO. More specifically, you deploy a virtual machine and open a firewall rule for Web Security Scanner to be able to access the vulnerable application that you intend to deploy.
+
+1. On the Google Cloud console title bar, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)). If prompted, click **Continue**.
+2. Create a static IP address that can be used for scanning a vulnerable web application by running the following command:
+
+```
+gcloud compute addresses create xss-test-ip-address --region=europe-west4
+```
+
+Copied!
+
+1. Run the following command to output the static IP address you just generated:
+
+```
+gcloud compute addresses describe xss-test-ip-address \
+--region=europe-west4 --format="value(address)"
+```
+
+Copied!
+
+1. Copy the IP address (a single line of the output) and save it in a notepad.
+2. Run the following command to create a VM instance to run the vulnerable application:
+
+```
+gcloud compute instances create xss-test-vm-instance \
+--address=xss-test-ip-address --no-service-account \
+--no-scopes --machine-type=e2-micro --zone=europe-west4-a \
+--metadata=startup-script='apt-get update; apt-get install -y python3-flask'
+```
+
+Copied!
+
+The startup script installs python-flask, a Web Application Framework, which is used for running a simple Python application demonstrating cross-site scripting (XSS) vulnerability, which is a common web application security vulnerability.
+
+1. Run the following command to open a firewall rule for Web Security Scanner to access a vulnerable application. Note the source ranges from which Web Security Scanner scans applications.
+
+```
+gcloud compute firewall-rules create enable-wss-scan \
+--direction=INGRESS --priority=1000 \
+--network=default --action=ALLOW \
+--rules=tcp:8080 --source-ranges=0.0.0.0/0
+```
+
+Copied!
+
+Click **Check my progress** to verify the objective.
+
+Create the VM with desired configurations
+
+
+
+Check my progress
+
+
+
+### Task 2. Deploy a vulnerable application to trigger an XSS vulnerability
+
+In this task, you obtain the application code and introduce a vulnerability for Web Security Scanner to detect. This is in the form of an application, which is a simple form that receives a user's input and outputs it without any changes.
+
+1. In the Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** **>** **VM Instances**.
+
+   This may take a minute to initialize for the first time.
+
+2. Then click on the **SSH** button next to your instance:
+
+![SSH button in Cloud console](https://cdn.qwiklabs.com/18AiGcc4NgZ78wIbJX3fPQOk4aECAx2liEiwXEEvhiQ%3D)
+
+1. A pop-up may appear, asking you to allow SSH in-browser to connect to VMs. Click **Authorize**.
+
+This opens an SSH connection to your VM instance in a new window.
+
+1. In this SSH window (***Not in Cloud Shell\***), run the following command to download and extract the vulnerable web application files:
+
+```
+gsutil cp gs://cloud-training/GCPSEC-ScannerAppEngine/flask_code.tar  . && tar xvf flask_code.tar
+```
+
+Copied!
+
+1. Now run the following command to deploy your application:
+
+```
+python3 app.py
+```
+
+Copied!
+
+1. Soon after, you should receive a message that indicates your application is up and running.
+
+**Output:**
+
+```
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
+```
+
+1. Find the static IP address of the VM you copied into your notepad earlier.
+2. Replace `YOUR_EXTERNAL_IP` in the URL field below with that IP address, and open the URL in a new browser tab:
+
+```
+http://<YOUR_EXTERNAL_IP>:8080
+```
+
+Copied!
+
+**Note:** You can also find the external IP address in the Google Cloud console, where it's listed as a field associated with your VM instance.
+
+A Cymbal Bank corporate banking portal with a web form should appear.
+
+1. In the web form, enter the following string:
+
+```
+<script>alert('This is an XSS Injection')</script>
+```
+
+Copied!
+
+1. Now click the **POST** button.
+
+You should receive the following alert window.
+
+![Alert window in browser](images\2JDmvcyzlCfFS71m72VCY%2BEXkNpwbZbxGUnWSWIHnCo%3D)
+
+This is a common vulnerability in web applications: a cross-site scripting vulnerability. Cross-site scripting (XSS) is a vulnerability that enables attackers to run malicious scripts in users' browsers in the context of your application. Your browser interprets a string as a legitimate Javascript and executes it.
+
+An attacker who uses an XSS bug to inject JavaScript into an HTML page gains virtually unlimited access to the logged-in sessions of the victims who visit the page: they may steal user data, tamper with it, change privacy or security settings, or even completely alter the way the product looks and operates. Even more, an XSS vulnerability in one application, no matter how inconsequential, may jeopardize other content within the same domain.
+
+This is one of many application vulnerabilities that Web Security Scanner can help you identify.
+
+Click **Check my progress** to verify the objective.
+
+Download vulnerable web application files on the VM
+
+
+
+Check my progress
+
+
+
+### Task 3. Enable the Web Security Scanner API
+
+Now that the vulnerable application is launched, it's time to demonstrate Web Security Scanner's abilities to the CTO. But first, you need to configure the API that WSS uses to run.
+
+1. Switch back to the Cloud console browser tab.
+2. From the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **APIs & Services** **>** **Library**.
+3. In the Search for APIs and services field, type `Web Security Scanner` and press **Enter**.
+4. Select the **Web Security Scanner API**.
+5. Click **Enable** to enable the Web Security Scanner API.
+
+Click **Check my progress** to verify the objective.
+
+Enable the Web Security Scanner API
+
+
+
+Check my progress
+
+
+
+### Task 4. Scan the deployed application with WSS
+
+In this task, you configure and set up a scan of the application to check if it finds security vulnerabilities.
+
+1. Open the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), and select **Security** **>** **Web Security Scanner**.
+2. Click **+ New Scan**.
+3. In the **Starting URLs** section, the **Starting URL 1** field should be pre-populated with your static IP address.
+4. Add the port number **8080**, so that the Starting URL resembles the following:
+
+```
+  http://<EXTERNAL_IP>:8080
+```
+
+Copied!
+
+1. If present, delete **Starting URL 2**.
+2. Take a minute to review the remaining fields on the **Create a new scan** screen:
+
+- **Authentication:** a property that can be used to provide application credentials to allow the scanner to authenticate to an app while scanning.
+- **Schedule:** a property that can be used to schedule scans to run automatically.
+- **Export to Security Command Center:** a property that allows you to automatically export scan configurations and scan results to Cloud Security Command Center after scans are finished.
+
+1. Verify the **Authentication** is still set to **None** and that **Schedule** is set to **Never**.
+2. Click **Show More** to investigate the remaining settings.
+3. Click **Save** to create the scan.
+
+**Note:** This creates the scan, but do not run it yet. It must currently be run manually since you did not create a schedule yet.
+
+1. Click **Run** to start the scan
+
+**Note:** Given the number of possible tests, this can take a little over **10 minutes** to scan.
+
+1. Return to your SSH session in your separate browser window.
+
+If the session timed out, run the following command to restart your application:
+
+```
+python3 app.py
+```
+
+Copied!
+
+In your SSH Window, you should start to see logs generated similar to the example below—this is Web Security Scanner testing all possible URLs for potential vulnerabilities.
+
+**Output:**
+
+```
+34.29.3.21 - - [23/Mar/2023 23:30:41] "GET /output HTTP/1.1" 200 -
+35.184.129.44 - - [23/Mar/2023 23:31:06] "GET /output HTTP/1.1" 200 -
+35.184.129.44 - - [23/Mar/2023 23:31:07] "GET /favicon.ico HTTP/1.1" 404 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "POST / HTTP/1.1" 302 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "GET /output HTTP/1.1" 200 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "GET /favicon.ico HTTP/1.1" 404 -
+35.184.129.44 - - [23/Mar/2023 23:31:17] "POST / HTTP/1.1" 302 -
+35.184.129.44 - - [23/Mar/2023 23:31:17] "GET /output HTTP/1.1" 200 -
+```
+
+You may see log statements with the following HTTP status codes:
+
+- **200:** A successful request, where the HTTP server answered with an OK response.
+- **302:** Indicates a resource is temporarily located elsewhere according to the Location header.
+- **404:** indicates that one or more resources were not found.
+
+Check out the [HTTP Status and Error Codes](https://cloud.google.com/storage/docs/json_api/v1/status-codes#standardcodes) documentation for more information.
+
+While the scan is running, feel free to explore the **Results**, **URLs Crawled**, and **Details** tabs. You can also check out this [getting started video](https://www.youtube.com/watch?v=1BengAd2_cI), or this [vulnerability scanning video](https://www.youtube.com/watch?v=ai5Hr5zkn50) to learn more about Web Security Scanner.
+
+1. When the scan is done running, the **Results** tab should indicate the cross-site vulnerabilities.
+
+![Web Security Scanner results with vulnerabilities](images\zNjWH7Ajz8Vkduyrzuzfqd2sWL7fMuUdx%2BKGyE9zHNg%3D)
+
+The Web Security Scanner was able to scan all starting URLs and detect the XSS vulnerabilities in Cymbal Bank's application. The ability to automate the detection of these critical vulnerabilities is a major benefit for security-minded organizations like Cymbal Bank.
+
+Click **Check my progress** to verify the objective.
+
+Run a Web Security Scanner scan and detect application vulnerabilities
+
+
+
+Check my progress
+
+
+
+### Task 5. Correct the vulnerability and scan again
+
+Now that you have demonstrated Web Security Scanner can detect a XSS vulnerability, you remediate the vulnerability and run the application scan again.
+
+1. Return to your SSH window that's connected to your VM instance.
+2. Stop the running application by pressing **CTRL + C**.
+3. Edit the **app.py** file using the nano editor by running the following command:
+
+```
+nano app.py
+```
+
+Copied!
+
+1. Locate the two lines that set the output string:
+
+```
+#  output_string = "".join([html_escape_table.get(c, c) for c in input_string])
+  output_string = input_string
+```
+
+Copied!
+
+1. Remove the `#` symbol from the first line and add it to the beginning of the next line (*ensure that you indent your code properly!*)
+
+Your final lines must resemble the following:
+
+```
+@app.route('/output')
+def output():
+  output_string = "".join([html_escape_table.get(c, c) for c in input_string])
+  # output_string = input_string
+  return flask.render_template("output.html", output=output_string)
+```
+
+Copied!
+
+**Note:** `html_escape_table` is a dictionary that contains one-to-one pairings of special HTML characters like "<" to their text representation. You use this table to escape special HTML characters so your form ingests and interprets submissions as raw text only. You can refer to this [What is HTML Escape?](https://www.lambdatest.com/free-online-tools/html-escape#:~:text=What is HTML Escape%3F,HTML entities to plain text) documentation for more information.
+
+1. Now type **CTRL+X**, **Y**, and **Enter** to save your changes.
+2. Re-run the application:
+
+```
+python3 app.py
+```
+
+Copied!
+
+1. Return to the Google Cloud console browser tab (you should still have the Web Security Scanner page open):
+2. Click **Run** at the top of the page.
+
+In your SSH Window, you should start to see logs where Web Security Scanner tests application URLs for potential vulnerabilities.
+
+**Output:**
+
+```
+34.29.3.21 - - [23/Mar/2023 23:30:41] "GET /output HTTP/1.1" 200 -
+35.184.129.44 - - [23/Mar/2023 23:31:06] "GET /output HTTP/1.1" 200 -
+35.184.129.44 - - [23/Mar/2023 23:31:07] "GET /favicon.ico HTTP/1.1" 404 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "POST / HTTP/1.1" 302 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "GET /output HTTP/1.1" 200 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "GET /favicon.ico HTTP/1.1" 404 -
+35.184.129.44 - - [23/Mar/2023 23:31:17] "POST / HTTP/1.1" 302 -
+35.184.129.44 - - [23/Mar/2023 23:31:17] "GET /output HTTP/1.1" 200 -
+```
+
+1. While you are waiting for the results of the scan, login to the URL `http://<EXTERNAL_IP>:8080` using your browser in a separate tab.
+
+   The web form displays once again.
+
+2. In the web form, enter the same string that you entered in before:
+
+```
+<script>alert('This is an XSS Injection')</script>
+```
+
+Copied!
+
+1. Now click the **POST** button.
+2. Verify that this time you receive the following string in the browser:
+
+![Input displayed as text string](images\UuSnBBO%2BKVOGv47KPpzEBSOoa%2F%2FghXxJ8znqMt9TzL0%3D)
+
+**Note:** Although this technique works in this simple scenario, for proper protection of your web application you need to use more advanced techniques and frameworks which are out of scope of this lab.
+
+
+
+Explore the links below for more resources:
+
+- [Angular Security](https://angular.io/guide/security)
+- [Google XSS Game](https://xss-game.appspot.com/)
+- [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/)
+
+1. Return to the Google Cloud console, where you left off on the Web Security Scanner page.
+2. Click **Run** at the top of the page to re-scan your application.
+3. Soon after, you should notice that the results yield no more XSS vulnerabilities.
+
+![Web Security Scanner output with no vulnerabilities](images\nfsc%2B30HZrnOWepWCagx3F5tZlFOWKm03XuwQDa2kzQ%3D)
+
+Click **Check my progress** to verify the objective.
+
+Correct vulnerabilities and rescan your application using Web Security Scanner
+
+
+
+Check my progress
+
+
+
+### Congratulations!
+
+You have successfully demonstrated to the Cymbal Bank CTO how to identify and remediate XSS vulnerabilities with Google Cloud's powerful Web Security Scanner solution.
+
+
+
+## LAB - Securing Compute Engine Applications with BeyondCorp Enterprise
+
+
+
+## Overview
+
+In this lab, you secure Compute Engine workloads using [BeyondCorp Enterprise’s Identity-Aware Proxy (IAP)](https://cloud.google.com/iap) to restrict traffic based on identity.
+
+IAP is a feature of [BeyondCorp Enterprise](https://cloud.google.com/beyondcorp-enterprise), Google Cloud's zero-trust solution that enables an organization's workforce to access web applications securely from anywhere, without the need for VPN and without fear of malware, phishing, and data loss.
+
+This lab provisions a web-based integrated development environment (IDE) that you will restrict access to by enabling zero-trust configuration.
+
+## Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Configure OAuth Consent.
+- Set up OAuth access credentials.
+- Set up IAP access for the deployed application.
+- Use IAP to restrict access to the application.
+
+## Setup and requirements
+
+#### Before you click the Start Lab button
+
+**Note: Read these instructions.**
+
+
+
+Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This Qwiklabs hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+#### What you need
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+- Time to complete the lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab.
+
+**Note:** If you are using a Pixelbook, open an Incognito window to run this lab.
+
+#### How to start your lab and sign in to the Console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is a panel populated with the temporary credentials that you must use for this lab.
+
+   ![Credentials panel](https://cdn.qwiklabs.com/%2FtHp4GI5VSDyTtdqi3qDFtevuY014F88%2BFow%2FadnRgE%3D)
+
+2. Copy the username, and then click **Open Google Console**. The lab spins up resources, and then opens another tab that shows the **Choose an account** page.
+
+   **Note:** Open the tabs in separate windows, side-by-side.
+
+3. On the Choose an account page, click **Use Another Account**. The Sign in page opens.
+
+   ![Choose an account dialog box with Use Another Account option highlighted ](https://cdn.qwiklabs.com/eQ6xPnPn13GjiJP3RWlHWwiMjhooHxTNvzfg1AL2WPw%3D)
+
+4. Paste the username that you copied from the Connection Details panel. Then copy and paste the password.
+
+**Note:** You must use the credentials from the Connection Details panel. Do not use your Google Cloud Skills Boost credentials. If you have your own Google Cloud account, do not use it for this lab (avoids incurring charges).
+
+1. Click through the subsequent pages:
+
+- Accept the terms and conditions.
+- Do not add recovery options or two-factor authentication (because this is a temporary account).
+- Do not sign up for free trials.
+
+After a few moments, the Cloud console opens in this tab.
+
+**Note:** You can view the menu with a list of Google Cloud Products and Services by clicking the **Navigation menu** at the top-left. ![Cloud Console Menu](https://cdn.qwiklabs.com/9vT7xPlxoNP%2FPsK0J8j0ZPFB4HnnpaIJVCDByaBrSHg%3D)
+
+### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](https://cdn.qwiklabs.com/WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](https://cdn.qwiklabs.com/hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+**Output:**
+
+```
+Credentialed accounts:
+ - <myaccount>@<mydomain>.com (active)
+</mydomain></myaccount>
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = <project_id>
+</project_id>
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+## Task 1. Create a Compute Engine template
+
+In this task you create an instance template. This is a resource that you use to create virtual machine (VM) instances and managed instance groups (MIGs).
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine > Instance templates**.
+2. Click **Create Instance Template**.
+3. On the **Create an instance template** page, specify the following, and leave the remaining settings as their defaults:
+
+| Property                       | Value                       |
+| :----------------------------- | :-------------------------- |
+| Location                       | **Global**                  |
+| Series                         | **E2**                      |
+| Machine type                   | **e2-micro (2 vCPU)**       |
+| Access scopes                  | **Set access for each API** |
+| Access scopes > Compute Engine | **Read Only**               |
+| Firewall                       | **Allow HTTP traffic**      |
+
+1. Click **Advanced options**.
+2. Click **Management**.
+3. In **Automation > Startup script**, copy and paste the following script:
+
+```
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+sudo apt-get -y update
+sudo apt-get -y install git
+sudo apt-get -y install virtualenv
+git clone https://github.com/GoogleCloudPlatform/python-docs-samples
+cd python-docs-samples/iap
+virtualenv venv -p python3
+source venv/bin/activate
+pip install -r requirements.txt
+cat example_gce_backend.py |
+sed -e "s/YOUR_BACKEND_SERVICE_ID/$(gcloud compute backend-services describe my-backend-service --global --format="value(id)")/g" |
+    sed -e "s/YOUR_PROJECT_ID/$(gcloud config get-value account | tr -cd "[0-9]")/g" > real_backend.py
+gunicorn real_backend:app -b 0.0.0.0:80
+```
+
+Copied!
+
+1. Click **Create**.
+
+It takes a few moments to create your instance template.
+
+## Task 2. Create a managed instance group
+
+In this task you create a managed instance group (MIG), a collection of virtual machine (VM) instances that you manage as a single entity.
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine > Instance groups**.
+2. Click **Create Instance Group**.
+3. Click **New managed instance group (stateless)** from the left-hand menu.
+4. On the **New managed instance group (stateless)** page, specify the following, and leave the remaining settings as their defaults:
+
+| Property                       | Value                                                        |
+| :----------------------------- | :----------------------------------------------------------- |
+| Name                           | **my-managed-instance-group**                                |
+| Instance template              | Select the instance template you created in Task 1.          |
+| Location                       | **Multiple zones**                                           |
+| Region                         | **us-central1 (Iowa)**                                       |
+| Autoscaling > Autoscaling mode | **Off: do not autoscale**                                    |
+| Number of instances            | To change the number of instances, you must first turn off autoscaling; see below. When this is done, set the maximum number value to **3**. |
+
+**Note:** Do not forget to set the number of instances after you change the autoscaling mode.
+
+1. Click **Create**.
+
+It will take a few minutes to create the MIG.
+
+## Task 3. Create a Google Cloud self-managed SSL certificate resource
+
+In this task you create a private key, a certificate, and then a self-managed SSL certificate resource. Before you can create a Google Cloud SSL certificate resource, you must have a private key and certificate.
+
+A [Google Cloud SSL certificate](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs) includes both a private key and the certificate itself, both in PEM format.
+
+Self-managed SSL certificates are certificates that you obtain, provision, and renew yourself. You use this resource to secure communication between clients and your load balancer, which you create in the next task.
+
+### Create a private key and certificate
+
+1. On the Google Cloud console title bar, click **Activate Cloud Shell** (![Cloud Shell](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)). If prompted, click **Continue**.
+2. To create a new private key with RSA-2048 encryption in the PEM format [OpenSSL](https://www.openssl.org/docs/), run the following command:
+
+```
+openssl genrsa -out PRIVATE_KEY_FILE 2048
+```
+
+Copied!
+
+#### Create a CSR
+
+Generate a certificate signing request (CSR) in the PEM format using [OpenSSL](https://www.openssl.org/source/).
+
+1. Click **Open Editor**. If prompted, click **Open in a new window**.
+2. In Cloud Shell Editor, click the menu and select **File > New File**.
+3. For the filename, type **ssl_config**, and press enter.
+4. Ensure the create file location is shown as /home > student-XX-XXXXXXXXX/ssl_config and then click **OK**.
+5. Copy and paste the following configuration into the **Cloud Editor** window:
+
+```
+[req]
+default_bits = 2048
+req_extensions = extension_requirements
+distinguished_name = dn_requirements
+prompt = no
+
+[extension_requirements]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+[dn_requirements]
+countryName = US
+stateOrProvinceName = CA
+localityName = Mountain View
+0.organizationName = Cloud
+organizationalUnitName = Example
+commonName = Test
+```
+
+Copied!
+
+1. Click the menu and select **File > Save**.
+2. Return to the previous tab. You may have to click **Open Terminal** to resume your **Cloud Shell** session.
+3. To create a certificate signing request (CSR) file, run the following OpenSSL command:
+
+```
+openssl req -new -key PRIVATE_KEY_FILE \
+ -out CSR_FILE \
+ -config ssl_config
+```
+
+Copied!
+
+#### Sign the CSR
+
+When a Certificate Authority (CA) signs your CSR, it uses its own private key to create a certificate.
+
+- To create a self-signed certificate for testing, run the following OpenSSL command:
+
+```
+openssl x509 -req \
+ -signkey PRIVATE_KEY_FILE \
+ -in CSR_FILE \
+ -out CERTIFICATE_FILE.pem \
+ -extfile ssl_config \
+ -extensions extension_requirements \
+ -days 365
+```
+
+Copied!
+
+### Create a self-managed SSL certificate resource
+
+Before you can create a Google Cloud SSL certificate resource, you must have a private key and certificate.
+
+1. To create a global SSL certificate, use the [`gcloud compute ssl-certificates create`](https://cloud.google.com/sdk/gcloud/reference/compute/ssl-certificates/create) command with the `--global` flag:
+
+```
+gcloud compute ssl-certificates create my-cert \
+ --certificate=CERTIFICATE_FILE.pem \
+ --private-key=PRIVATE_KEY_FILE \
+ --global
+```
+
+Copied!
+
+1. In the **Authorize Cloud Shell** prompt, click **Authorize**.
+
+## Task 4. Create a load balancer
+
+In this task you create a load balancer. HTTP(S) Load Balancing is implemented on Google Front End (GFE). GFEs are distributed globally and operate together using Google's global network and control plane.
+
+To set up a load balancer, your VMs must be in an instance group, which you created in the previous tasks.
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click on **View All Products** and click **Network services > Load balancing**.
+2. Click **Create Load Balancer**.
+3. Under **Application Load Balancer (HTTP/S)**, click **Next**.
+4. Under **Under Public facing or internal only**, select **Public facing (external)**, click **Next**.
+5. Under **Global or single region deployment**, select **Best for global workloads**, click **Next**.
+6. Under **Load balancer generation**, select **Global external Application Load Balancer**, click **Next**.
+7. Click **Configure**.
+8. For **Load Balancer Name**, type **my-load-balancer**.
+9. Click **Backend Configuration** > **Backend services & backend buckets > Create a Backend Service**.
+10. On the **Create backend service** panel, for **Name**, type **my-backend-service**.
+    You must use the exact name *my-backend-service*. If you use a different name, the startup script on your VMs won't be able to find the correct Backend Service ID to authenticate requests.
+11. In **New backend**, specify the following, and leave the remaining settings as their defaults:
+
+| Property       | Value                         |
+| :------------- | :---------------------------- |
+| Instance group | **my-managed-instance-group** |
+| Port Numbers   | **80**                        |
+
+1. Uncheck **Enable Cloud CDN**.
+2. In **Health check**, click **Create a Health Check**.
+3. For **Name**, type **my-health-check**.
+4. For **Protocol**, select **HTTP**.
+5. Click **Save**.
+6. Click **Create**.
+
+The Create global external Application Load balancer pane reappears.
+
+1. Click **Frontend configuration**. Specify the following, and leave the remaining settings as their defaults:
+
+| Property    | Value                                                      |
+| :---------- | :--------------------------------------------------------- |
+| Protocol    | **Https (includes HTTP/2 and HTTP/3)**                     |
+| IP address  | Click **Ephemeral**, and then select **Create IP address** |
+| Name        | Type **static-ip**, and then click **Reserve**.            |
+| Certificate | **my-cert**                                                |
+
+1. Click **Done**.
+
+The Create global external Application Load balancer pane reappears.
+
+1. In **Create global external Application Load Balancer**, click **Create**.
+
+The **Load balancing** page appears and your new load balancer will be created in the list of load balancers.
+
+1. When the Cloud console finishes creating the new load balancer, click the name of the load balancer and note the external IP address under **Details > Frontend**. You will need it in task 7.
+
+## Task 5. Restart your VMs
+
+In this task you restart the VMs in your MIG so that they can correctly authenticate requests from IAP.
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine > Instance groups**.
+2. Click **my-managed-instance-group**.
+3. Click **Restart/Replace VMs**.
+4. For **Operation**, click **Restart**.
+5. For **Instances**, type **3**
+6. For **Minimum wait time**, type **0**
+7. Click **Restart VMs**.
+
+## Task 6. Set up IAP
+
+### Configure your firewall
+
+In this task you configure your firewall to block access to the underlying VMs and only allow access through IAP.
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **VPC network > Firewall**.
+2. Select the **default-allow-internal** checkbox.
+3. Click **Delete**, and then select **Delete** to confirm it.
+4. Click **Create Firewall Rule**. Specify the following, and leave the remaining settings as their defaults:
+
+| Property            | Value                                                        |
+| :------------------ | :----------------------------------------------------------- |
+| Name                | **allow-iap-traffic**                                        |
+| Targets             | **All instances in the network**                             |
+| Source IPv4 ranges  | **130.211.0.0/22, 35.191.0.0/16** (Press **Enter** after you paste each value in the box) |
+| Protocols and ports | **Specified protocols and ports**                            |
+| TCP                 | **80**                                                       |
+
+1. Click **Create**.
+
+### Set up IAP
+
+In this step you set up IAP for your project.
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Security > Identity-Aware Proxy**.
+2. Click **Enable API**.
+3. Click **Go to Identity Aware Proxy**.
+4. Click **Configure Consent Screen**.
+
+**Caution:** Don't enter any confidential information on the OAuth consent screen. Any information you save to the OAuth consent screen may be publicly visible for anyone who accesses your URL. Email and product details are displayed on the login screen and when someone tries to access a resource for which they don't have permission.
+
+1. In **User Type**, select **External** , and then click **Create**.
+2. In **App name** , type **IAP**.
+3. In **User support email**, select the student account. This has the value of **student-00-\*********@qwiklabs.net**.
+4. For **Developer contact information**, copy and paste the student account **Username** from the lab window. This matches the value in the previous step.
+5. Click **Save and Continue** three times, and then select **Back to Dashboard**.
+
+To change information on the OAuth consent screen later, such as the product name or email address, repeat the preceding steps to configure the consent screen.
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Security > Identity-Aware Proxy**.
+2. Next to **my-backend-service**, toggle the **on/off** switch in the **IAP** column.
+3. In the **Turn on IAP** dialog, select the checkbox to confirm you have read the configuration requirements.
+4. Click **Turn On**.
+
+**Note:** If you see an error, click on the error. If you are then prompted to add a firewall rule, edit the rule you created previously to include the port number mentioned in the error.
+
+![IAP Status Error](images\CnuKGBfAR0ciG6Y8%2FIiBtIqq4%2F9VIZULJ4OPfkugcXI%3D)
+
+Confirm that OAuth Consent has been set up.
+
+
+
+Check my progress
+
+
+
+### Add principals to the access list
+
+In this step you add principals to the IAP access list for your project.
+
+1. In **Identity-Aware Proxy**, select the **my backend-service** checkbox.
+2. Click **Add Principal**.
+3. To grant access to yourself, in **New Principals**, copy and paste your qwiklabs **Username** from the lab credentials pane.
+4. Select the Role of **Cloud IAP > IAP-secured Web App User**.
+5. Click **Save**.
+
+Confirm principal to access the application by configuring IAM.
+
+
+
+Check my progress
+
+
+
+## Task 7. Test IAP
+
+In the task, you run a curl command to test access your external load balancer, and then verify that it is protected by IAP.
+
+1. In the Google Cloud console, in the **Navigation menu** (![Navigation menu](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click on **View All Products** and click **Network services > Load balancing**.
+2. Click **Frontends**.
+3. On the Google Cloud console title bar, click **Activate Cloud Shell** (![Cloud Shell](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)). If prompted, click **Continue**.
+4. Run the following curl command, replacing **Load Balancer External IP address** with the External IP address of your load balancer:
+
+```
+curl -kvi https://<Load Balancer External IP address>
+```
+
+Copied!
+
+**Note:** If an IAP generated response that is true is displayed, you have successfully configured IAP for your Compute Engine instance.
+
+![Successfully Configured Message](images\%2B8BGFlQ0poDBDVFYybNtKLNKeZ750MBulj7A62K8szE%3D)
+
+1. Scroll up the console page and locate the **Http/2 302** redirection to accounts.google.com.
+2. Click on the **location** link.
+
+The link opens to the **Google account integrated authentication** page.
+
+![Google account integrated authentication dialog](images\%2Fk6O4TB5nHs5ZbW15%2Bt8U2DkUQUAYmLGGMpUVekbuTw%3D)
+
+**Note:** Because you used a self-signed cert, you cannot access the application itself. However, this confirms that IAP is configured and is protecting traffic.
+
+Confirm restrict access with IAP.
+
+
+
+Check my progress
+
+
+
+## Congratulations!
+
+You have successfully used IAP to secure a web application running on a Compute Engine instance.
+
+In this lab, you learned how to:
+
+- Create an instance template.
+- Create an instance group.
+- Create a self-signed certificate.
+- Create a load balancer.
+- Configure an Oauth consent screen.
+- Grant access to the application using IAP.
+
+
+
+## LAB - Configuring and Using Credentials with Secret Manager
+
+## Overview
+
+In this lab, you use [Secret Manager](https://cloud.google.com/secret-manager/docs/quickstart) from Cloud Console and the Command Line Interface (CLI) to create and use a secret, replace a secret, and finally, reinstate an older version of a secret.
+
+Secret Manager is available in Cloud Console. It is also available from the command line using the CLI or from a program, using the REST API or one of the supported Software Development Kits (SDKs). Supported SDKs include C#, Go, Node.js, Java, etc. A complete list of available [SDKs](https://cloud.google.com/secret-manager/docs/reference/libraries). Information regarding the [REST API](https://cloud.google.com/secret-manager/docs/reference/rest).
+
+## Objectives
+
+In this lab, you learn to:
+
+- Enable the Secret Manager API.
+- Create and use a new secret.
+- Create a new version of a secret, and disable the old version(s).
+- Reinstate and verify an older version of a secret.
+
+## Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+## Task 1. Enable the Secret Manager API
+
+In this task, you enable the Secret Manager API.
+
+Before you access Secret Manager, you must first enable its API. If you fail to do so, when you attempt to access its features, you will receive an error.
+
+1. In the **Navigation menu**, Select **API & Services**.
+2. At the top of the page, click **+ Enable API and Services**.
+3. In the search box, enter `Secret Manager`. You should see one result - the Secret Manager API.
+4. Click **Secret Manager API**. On the resulting page, click **Enable**. If no error occurs - and you see a page with information about this API, you were successful.
+
+Click *Check my progress* to verify the objective.
+
+Enable the Secret Manager API
+
+
+
+Check my progress
+
+
+
+## Task 2. Create a secret
+
+In this task, you create a secret and add the secret value to the password.
+
+1. In the **Navigation menu**, select **Security > Secret Manager**.
+2. On the Secret Manager main page, click **+ Create Secret**.
+3. For the **Name**, enter `password`.
+4. For the **Secret value**, enter `xyzpdq`.
+5. Click **+ Add Label**.
+6. For the **Key**, enter `team`.
+7. For the **Value**, enter `acme`.
+8. Leave all other values at their default setting, and click **Create Secret**.
+
+Click *Check my progress* to verify the objective.
+
+Create a secret
+
+
+
+Check my progress
+
+
+
+## Task 3. Use a secret
+
+In this task, you use the secrets command to verify the value of the password secret.
+
+1. On the Google Cloud Console title bar, click **Activate Cloud Shell** (![Activate cloud shell icon](https://cdn.qwiklabs.com/qhDJ0%2BK1c11zEtHLRFXqsSZQIzDeh4AaNQ7qlalvLt4%3D)) to open Cloud Shell.
+2. At the bottom of the page, click **Continue**. Wait for the Google Cloud Shell machine to provision.
+3. At the Cloud Shell Terminal command line, enter:
+
+```
+gcloud secrets versions access 1 --secret="password"
+```
+
+Copied!
+
+If successful, you should see that the value of the password secret (`xyzpdq`) is returned at the beginning of the next line, immediately before the command line prompt, similar to what is shown below:
+
+```
+student_00_7413964b6ab0@cloudshell:~ (qwiklabs-gcp-00-f575f732b85b)$ gcloud secrets versions access 1 --secret="
+password"
+xyzpdqstudent_00_7413964b6ab0@cloudshell:~ (qwiklabs-gcp-00-f575f732b85b)$
+```
+
+## Task 4. Create and use a new secret version
+
+In this task, you create a new version 2 secret and use the secrets command to verify the version 2 value of the password secret.
+
+1. In the **Navigation menu** of Google Cloud Console, select **Security > Secret Manager**. The Secret Manager page shows information about the password secret that you created earlier.
+2. Under **Actions**, click the More actions menu (i.e., the “three dots” menu) and then click **Add New Version**.
+3. For the **Secret value**, enter `abc123`.
+4. Leave all other values at their default setting, and click **Add New Version**.
+
+Now, let's use the new secret.
+
+1. At the Cloud Shell Terminal command line, enter:
+
+```
+gcloud secrets versions access 2 --secret="password"
+```
+
+Copied!
+
+1. If successful, you should see that the value of the password secret (`abc123`) is returned at the beginning of the next line, immediately before the command line prompt, similar to what is shown in the screenshot below:
+
+```
+student_04_ceff8bd49e59@cloudshell:~ (qwiklabs-gcp-04-60caced57c66)$ gcloud secrets versions access 1 --secret="password"
+abc123student_04_ceff8bd49e59@cloudshell:~ (qwiklabs-gcp-04-60caced57c66)$
+```
+
+1. At the command line, try the command again - except this time, for the version, use the latest alias, as shown below:
+
+```
+gcloud secrets versions access latest --secret="password"
+```
+
+Copied!
+
+If successful, you should see that the version 2 value of the password secret (`abc123`) is returned at the beginning of the next line, immediately before the command line prompt, similar to what is shown in the screenshot below:
+
+```
+student_04_ceff8bd49e59@cloudshell:~ (qwiklabs-gcp-04-60caced57c66)$ gcloud secrets versions access latest --secret="password"
+abc123student_04_ceff8bd49e59@cloudshell:~ (qwiklabs-gcp-04-60caced57c66)$
+```
+
+Click *Check my progress* to verify the objective.
+
+Create and use a new secret version
+
+
+
+Check my progress
+
+
+
+## Task 5. Create a new secret version (and invalidate previous versions)
+
+In this task, you create a new secret version and disable all the past versions. You also verify that only the latest version is accessible.
+
+1. In the **Navigation menu** of Google Cloud Console, select **Security > Secret Manager**. The Secret Manager page shows information about the password secret that you created earlier.
+2. Under **Actions**, click the More actions menu, and then click **Add New Version**.
+3. For the **Secret value**, enter `def123`.
+4. Select the **Disable all past versions** checkbox.
+5. Leave all other values at their default setting, and click **Add New Version**.
+6. Verify that only the latest version is accessible. To do so, at the Cloud Shell Terminal command line, enter:
+
+```
+gcloud secrets versions access latest --secret="password"
+```
+
+Copied!
+
+1. If successful, you should see that the value of the password secret (`def123`) is returned at the beginning of the next line, immediately before the command line prompt, similar to what is shown in the screenshot below:
+
+```
+student_04_ceff8bd49e59@cloudshell:~ (qwiklabs-gcp-04-60caced57c66)$ gcloud secrets versions access latest --secret="password"
+def123student_04_ceff8bd49e59@cloudshell:~ (qwiklabs-gcp-04-60caced57c66)$
+```
+
+1. At the command line, try the command again - except this time, for the version, use the latest alias, as shown below:
+
+```
+gcloud secrets versions access 2 --secret="password"
+```
+
+Copied!
+
+This should produce a FAILED PRECONDITION error, informing you that version 2 is in the DISABLED state. (If you tried to access version 1, the same error would be produced.)
+
+Click *Check my progress* to verify the objective.
+
+Create a new secret version (and invalidate previous versions)
+
+
+
+Check my progress
+
+
+
+## Task 6. Reinstate and verify a previous secret version
+
+In this task, you re-enable the version 2 password secret and verify that the version 2 password secret is accessible.
+
+1. In the **Navigation menu** of Google Cloud Console, select **Security > Secret Manager**. The Secret Manager page shows information about the password secret that you created earlier.
+2. Click the **password** secret. The Details page for the password secret appears.
+3. On the Details page, note that all three versions are shown. In the Status column, you see that version 3 is enabled and versions 1 and 2 are disabled.
+4. For the version 2, under **Actions**, click the More actions menu, and then select **Enable**.
+5. Click **Enable Selected Versions**. In the Status column, version 2 should now appear as enabled.
+6. At the Cloud Shell Terminal command line, enter:
+
+```
+gcloud secrets versions access 2 --secret="password"
+```
+
+Copied!
+
+If successful, you should see that the version 2 value of the password secret (`abc123`) is returned at the beginning of the next line, immediately before the command line prompt, similar to what is shown below:
+
+```
+student_04_ceff8bd49e59@cloudshell:~ (qwiklabs-gcp-04-60caced57c66)$ gcloud secrets versions access 2 --secret="password"
+abc123student_04_ceff8bd49e59@cloudshell:~ (qwiklabs-gcp-04-60caced57c66)$
+```
+
+1. In the upper right corner of Google Console Manager, find and click on the user icon.
+2. Click **Sign out**.
+
+
+
+## QUIZ
+
+1. Which TWO of the following vulnerabilities are scanned for when you use Web Security Scanner?
+
+- **Mixed content.**
+
+  Correct! Web Security Scanner will find instances in your applications where HTTP and HTTPS calls are mixed.
+
+- **Outdated or insecure libraries.**
+
+  Correct! Web Security Scanner will check your code libraries to make sure they are current and secure.
+
+- User data in images.
+
+- Insecure logins.
+
+- Personalized data in object names.
+
+
+
+2. Which TWO of the following statements are TRUE when discussing the threat of OAuth and Identity Phishing?
+
+- Look-alike phishing sites are generally pretty easy to spot.
+
+- **Even small, unimportant pieces of personal data need to be secured from phishing attacks.**
+
+  Correct! While a small piece of personal data may not be enough on its own to allow a phisher to obtain access to a user's more sensitive data, over time these small bits can often be combined to allow user accounts to be compromised.
+
+- Credit card data is the only information that is useful to cyber hackers.
+
+- **Being "hacked" on a social site can lead to being "hacked" on more critical websites, depending on your social site's account settings.**
+
+  Correct! Some social sites allow users to "link" their accounts on other sites - for example, gaming sites - and that link can often be exploited.
+
+
+
+3. Which TWO of the following statements about Application Security are TRUE?
+
+- "Injection Flaws" are the least frequently found application security issue.
+
+- **Applications are the most common target of cyberattack.**
+
+  Correct! Attackers know that the security of an application is often undefined and remains untested.
+
+- Developers are commonly given a requirements document that clearly defines security requirements for the application.
+
+- **Applications in general, including many web applications, do not properly protect sensitive user data.**
+
+  Correct! Attackers will target web applications in order to steal or modify weakly-protected data to facilitate credit card fraud, identity theft, or other data and identity crimes.
+
+  
+
+## Securing Google Kubernetes Engine: Techniques and Best Practices
+
+### Quiz
+
+1. Which ONE of the following is NOT a security best practice on Kubernetes.
+
+- Use shielded GKE nodes.
+
+- Upgrade your GKE infrastructure.
+
+- **Disable Workload Identity.**
+
+- Restrict access between pods.
+
+  Correct! Using Workload Identity IS a security best practice for Kubernetes.
+
+
+
+2. "Kubernetes service account" and "Google service account" are different names for the same type of service account.
+
+- True
+
+- **False**
+
+  Correct! Kubernetes and Google service accounts are different types of accounts with different scopes.
+
+3. GKE has logging and monitoring functions built in.
+
+- **True**
+
+- False
+
+  Correct! In the Kubernetes dashboard summary pane, you can view a  cluster's key performance metrics, such as CPU utilization, memory  utilization, and the number of open incidents.
+
+  
+
+# 11 - Mitigating Security Vulnerabilities on Google Cloud
+
+## Protecting against Distributed Denial of Service Attacks (DDoS)
 
 
 
@@ -12460,6 +15499,3426 @@ In this lab, you have configured a new Kubernetes Engine private cluster that is
 
 
 
+
+# Google Kubernetes Engine Best Practices: Security
+
+
+
+## LAB - How to Use a Network Policy on Google Kubernetes Engine
+
+### Overview
+
+This lab will show you how to improve the security of your Kubernetes Engine by applying fine-grained restrictions to network communication.
+
+The [Principle of Least Privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege) is widely recognized as an important design consideration in enhancing the protection of critical systems from faults and malicious behavior. It suggests that every component must be able to access **only** the information and resources that are necessary for its legitimate purpose. This document demonstrates how the Principle of Least Privilege can be implemented within the Kubernetes Engine network layer.
+
+Network connections can be restricted at two tiers of your Kubernetes Engine infrastructure. The first, and coarser grained, mechanism is the application of Firewall Rules at the Network, Subnetwork, and Host levels. These rules are applied outside of the Kubernetes Engine at the VPC level.
+
+While Firewall Rules are a powerful security measure, and Kubernetes enables you to define even finer grained rules via Network Policies. [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) are used to limit intra-cluster communication. Network policies do not apply to pods attached to the host's network namespace.
+
+For this lab you will provision a private Kubernetes Engine cluster and a bastion host with which to access it. A bastion host provides a single host that has access to the cluster, which, when combined with a private Kubernetes network, ensures that the cluster isn't exposed to malicious behavior from the internet at large. Bastions are particularly useful when you do not have VPN access to the cloud network.
+
+Within the cluster, a simple HTTP server and two client pods will be provisioned. You will learn how to use a Network Policy and labeling to only allow connections from one of the client pods.
+
+This lab was created by GKE Helmsman engineers to give you a better understanding of GKE Binary Authorization. You can view this demo by running `gsutil cp -r gs://spls/gke-binary-auth/* .` and `cd gke-binary-auth-demo` command in cloud shell. We encourage any and all to contribute to our assets!
+
+### Architecture
+
+You will define a private, standard mode Kubernetes cluster that uses Dataplane V2. Dataplane V2 has network policies enabled by default.
+
+Since the cluster is private, neither the API nor the worker nodes will be accessible from the internet. Instead, you will define a bastion host and use a firewall rule to enable access to it. The bastion's IP address is defined as an authorized network for the cluster, which grants it access to the API.
+
+Within the cluster, provision three workloads:
+
+1. hello-server: this is a simple HTTP server with an internally-accessible endpoint
+2. hello-client-allowed: this is a single pod that repeatedly attempts to access hello-server. The pod is labeled such that the Network Policy will allow it to connect to hello-server.
+3. hello-client-blocked: this runs the same code as hello-client-allowed but the pod is labeled such that the Network Policy will **not** allow it to connect to hello-server.
+
+![Kubernetes cluster diagram](images\hk%2FxJLR97fdUVv6wUeXrNnsWxUr7OaAbdS8uCBFOUX4%3D)
+
+### Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+#### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-1aeeb3e9ea9b@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   lmTNItcHGI0e
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+#### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-02-ede9e9aa3015`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-02-ede9e9aa3015
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-1aeeb3e9ea9b@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-02-ede9e9aa3015
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+#### Clone demo
+
+1. Copy the resources needed for this lab exercise from a Cloud Storage bucket:
+
+```
+gsutil cp -r gs://spls/gsp480/gke-network-policy-demo .
+```
+
+Copied!
+
+1. Go into the directory for the demo:
+
+```
+cd gke-network-policy-demo
+```
+
+Copied!
+
+1. Make the demo files executable:
+
+```
+chmod -R 755 *
+```
+
+Copied!
+
+### Task 1. Lab setup
+
+First, set the Google Cloud region and zone.
+
+1. Set the Google Cloud region.
+
+```
+gcloud config set compute/region "europe-west1"
+```
+
+Copied!
+
+1. Set the Google Cloud zone.
+
+   ```
+   gcloud config set compute/zone "europe-west1-b"
+   ```
+
+   Copied!
+
+This lab will use the following Google Cloud Service APIs, and have been enabled for you:
+
+- `compute.googleapis.com`
+- `container.googleapis.com`
+- `cloudbuild.googleapis.com`
+
+In addition, the Terraform configuration takes three parameters to determine where the Kubernetes Engine cluster should be created:
+
+- `project ID`
+- `region`
+- `zone`
+
+For simplicity, these parameters are specified in a file named `terraform.tfvars`, in the `terraform` directory.
+
+1. To ensure the appropriate APIs are enabled and to generate the `terraform/terraform.tfvars` file based on your gcloud defaults, run:
+
+```
+make setup-project
+```
+
+Copied!
+
+1. Type `y` when asked to confirm.
+
+This will enable the necessary Service APIs, and it will also generate a `terraform/terraform.tfvars` file with the following keys.
+
+1. Verify the values themselves will match the output of `gcloud config list` by running:
+
+```
+cat terraform/terraform.tfvars
+```
+
+Copied!
+
+### Provisioning the Kubernetes Engine cluster
+
+1. Next, apply the Terraform configuration within the project root:
+
+```
+make tf-apply
+```
+
+Copied!
+
+1. When prompted, review the generated plan and enter `yes` to deploy the environment.
+
+This will take several minutes to deploy.
+
+### Task 2. Validation
+
+Terraform outputs a message when the cluster's been successfully created.
+
+```
+...snip...
+google_container_cluster.primary: Still creating... (3m0s elapsed)
+google_container_cluster.primary: Still creating... (3m10s elapsed)
+google_container_cluster.primary: Still creating... (3m20s elapsed)
+google_container_cluster.primary: Still creating... (3m30s elapsed)
+google_container_cluster.primary: Creation complete after 3m34s (ID: gke-demo-cluster)
+
+Apply complete! Resources: 5 added, 0 changed, 0 destroyed.
+```
+
+**Test completed task**
+
+Click **Check my progress** to verify your performed task. If you have successfully deployed necessary infrastructure with Terraform, you will see an assessment score.
+
+Use Terraform to set up the necessary infrastructure (Lab setup)
+
+
+
+Check my progress
+
+
+
+1. Now ssh into the bastion for the remaining steps:
+
+```
+gcloud compute ssh gke-demo-bastion
+```
+
+Copied!
+
+Existing versions of kubectl and custom Kubernetes clients contain provider-specific code to manage authentication between the client and Google Kubernetes Engine. Starting with v1.26, this code will no longer be included as part of the OSS kubectl. GKE users will need to download and use a separate authentication plugin to generate GKE-specific tokens. This new binary, `gke-gcloud-auth-plugin`, uses the [Kubernetes Client-go Credential Plugin](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins) mechanism to extend kubectl’s authentication to support GKE. For more information, you can check out the following [documentation](https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke).
+
+To have kubectl use the new binary plugin for authentication instead of using the default provider-specific code, use the following steps.
+
+1. Once connected, run the following command to install the `gke-gcloud-auth-plugin` on the VM.
+
+```
+sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+```
+
+Copied!
+
+1. Set `export USE_GKE_GCLOUD_AUTH_PLUGIN=True` in `~/.bashrc`:
+
+```
+echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> ~/.bashrc
+```
+
+Copied!
+
+1. Run the following command:
+
+```
+source ~/.bashrc
+```
+
+Copied!
+
+1. Run the following command to force the config for this cluster to be updated to the Client-go Credential Plugin configuration.
+
+```
+gcloud container clusters get-credentials gke-demo-cluster --zone europe-west1-b
+```
+
+Copied!
+
+On success, you should see this message:
+
+```
+kubeconfig entry generated for gke-demo-cluster.
+```
+
+The newly-created cluster will now be available for the standard `kubectl` commands on the bastion.
+
+### Task 3. Installing the hello server
+
+The test application consists of one simple HTTP server, deployed as `hello-server`, and two clients, one of which will be labeled `app=hello` and the other `app=not-hello`.
+
+All three services can be deployed by applying the hello-app manifests.
+
+1. On the bastion, run:
+
+```
+kubectl apply -f ./manifests/hello-app/
+```
+
+Copied!
+
+Output:
+
+```
+deployment.apps/hello-client-allowed created
+deployment.apps/hello-client-blocked created
+service/hello-server created
+deployment.apps/hello-server created
+```
+
+1. Verify all three pods have been successfully deployed:
+
+```
+kubectl get pods
+```
+
+Copied!
+
+You will see one running pod for each of *hello-client-allowed*, *hello-client-blocked*, and *hello-server* deployments.
+
+```
+NAME                                      READY     STATUS    RESTARTS   AGE
+hello-client-allowed-7d95fcd5d9-t8fsk   |  1/1      Running   0          14m
+hello-client-blocked-6497db465d-ckbn8   |  1/1      Running   0          14m
+hello-server-7df58f7fb5-nvcvd           |  1/1      Running   0          14m
+```
+
+**Test completed task**
+
+Click **Check my progress** to verify your performed task. If you have successfully deployed a simple HTTP hello server, you will see an assessment score.
+
+Installing the hello server
+
+
+
+Check my progress
+
+
+
+### Task 4. Confirming default access to the hello server
+
+1. First, tail the "allowed" client:
+
+```
+kubectl logs --tail 10 -f $(kubectl get pods -oname -l app=hello)
+```
+
+Copied!
+
+Press CTRL+C to exit.
+
+1. Second, tail the logs of the "blocked" client:
+
+```
+kubectl logs --tail 10 -f $(kubectl get pods -oname -l app=not-hello)
+```
+
+Copied!
+
+1. Press CTRL+C to exit.
+
+You will notice that both pods are successfully able to connect to the `hello-server` service. This is because you have not yet defined a Network Policy to restrict access. In each of these windows you should see successful responses from the server.
+
+```
+Hostname: hello-server-7df58f7fb5-nvcvd
+Hello, world!
+Version: 1.0.0
+Hostname: hello-server-7df58f7fb5-nvcvd
+Hello, world!
+Version: 1.0.0
+Hostname: hello-server-7df58f7fb5-nvcvd
+...
+```
+
+### Task 5. Restricting access with a Network Policy
+
+Now you will block access to the `hello-server` pod from all pods that are not labeled with `app=hello`.
+
+The policy definition you'll use is contained in `manifests/network-policy.yaml`
+
+1. Apply the policy with the following command:
+
+```
+kubectl apply -f ./manifests/network-policy.yaml
+```
+
+Copied!
+
+Output:
+
+```
+networkpolicy.networking.k8s.io/hello-server-allow-from-hello-client created
+```
+
+1. Tail the logs of the "blocked" client again:
+
+```
+kubectl logs --tail 10 -f $(kubectl get pods -oname -l app=not-hello)
+```
+
+Copied!
+
+You'll now see that the output looks like this in the window tailing the "blocked" client:
+
+```
+wget: download timed out
+wget: download timed out
+wget: download timed out
+wget: download timed out
+wget: download timed out
+wget: download timed out
+wget: download timed out
+wget: download timed out
+wget: download timed out
+...
+```
+
+The network policy has now prevented communication to the `hello-server` from the unlabeled pod.
+
+1. Press CTRL+C to exit.
+
+### Task 6. Restricting namespaces with Network Policies
+
+In the previous example, you defined a network policy that restricts connections based on pod labels. It is often useful to instead label entire namespaces, particularly when teams or applications are granted their own namespaces.
+
+You'll now modify the network policy to only allow traffic from a designated namespace, then you'll move the `hello-allowed` pod into that new namespace.
+
+1. First, delete the existing network policy:
+
+```
+kubectl delete -f ./manifests/network-policy.yaml
+```
+
+Copied!
+
+Output:
+
+```
+networkpolicy.networking.k8s.io "hello-server-allow-from-hello-client" deleted
+```
+
+1. Create the namespaced version:
+
+```
+kubectl create -f ./manifests/network-policy-namespaced.yaml
+```
+
+Copied!
+
+Output:
+
+```
+networkpolicy.networking.k8s.io/hello-server-allow-from-hello-client created
+```
+
+1. Now observe the logs of the `hello-allowed-client` pod in the default namespace:
+
+```
+kubectl logs --tail 10 -f $(kubectl get pods -oname -l app=hello)
+```
+
+Copied!
+
+You will notice it is no longer able to connect to the `hello-server`.
+
+1. Press CTRL+C to exit.
+2. Finally, deploy a second copy of the hello-clients app into the new namespace.
+
+```
+kubectl -n hello-apps apply -f ./manifests/hello-app/hello-client.yaml
+```
+
+Copied!
+
+Output:
+
+```
+deployment.apps/hello-client-allowed created
+deployment.apps/hello-client-blocked created
+```
+
+**Test completed task**
+
+Click **Check my progress** to verify your performed task. If you have successfully deployed a second copy of the hello-clients app into the new namespace, you will see an assessment score.
+
+Deploy a second copy of the hello-clients app into the new namespace
+
+
+
+Check my progress
+
+
+
+### Task 7. Validation
+
+Next, check the logs for the two new `hello-app` clients.
+
+1. View the logs for the "hello"-labeled app in the app in the `hello-apps` namespace by running:
+
+```
+kubectl logs --tail 10 -f -n hello-apps $(kubectl get pods -oname -l app=hello -n hello-apps)
+```
+
+Copied!
+
+Output:
+
+```
+Hostname: hello-server-6c6fd59cc9-7fvgp
+Hello, world!
+Version: 1.0.0
+Hostname: hello-server-6c6fd59cc9-7fvgp
+Hello, world!
+Version: 1.0.0
+Hostname: hello-server-6c6fd59cc9-7fvgp
+Hello, world!
+Version: 1.0.0
+Hostname: hello-server-6c6fd59cc9-7fvgp
+Hello, world!
+Version: 1.0.0
+Hostname: hello-server-6c6fd59cc9-7fvgp
+```
+
+Both clients are able to connect successfully because *as of Kubernetes 1.10.x NetworkPolicies do not support restricting access to pods within a given namespace*. You can allowlist by pod label, namespace label, or allowlist the union (i.e. OR) of both. But you cannot yet allowlist the intersection (i.e. AND) of pod labels and namespace labels.
+
+1. Press CTRL+C to exit.
+
+### Task 8. Teardown
+
+Qwiklabs will take care of shutting down all the resources used for this lab, but here’s what you would need to do to clean up your own environment to save on cost and to be a good cloud citizen:
+
+1. Log out of the bastion host:
+
+```
+exit
+```
+
+Copied!
+
+1. Run the following to destroy the environment:
+
+```
+make teardown
+```
+
+Copied!
+
+Output:
+
+```
+...snip...
+google_compute_subnetwork.cluster-subnet: Still destroying... (ID: us-east1/kube-net-subnet, 20s elapsed)
+google_compute_subnetwork.cluster-subnet: Destruction complete after 25s
+google_compute_network.gke-network: Destroying... (ID: kube-net)
+google_compute_network.gke-network: Still destroying... (ID: kube-net, 10s elapsed)
+google_compute_network.gke-network: Still destroying... (ID: kube-net, 20s elapsed)
+google_compute_network.gke-network: Destruction complete after 26s
+
+Destroy complete! Resources: 5 destroyed.
+```
+
+### Task 9. Troubleshooting in your own environment
+
+#### The install script fails with a "permission denied" error when running Terraform
+
+The credentials that Terraform is using do not provide the necessary permissions to create resources in the selected projects. Ensure that the account listed in `gcloud config list` has necessary permissions to create resources. If it does, regenerate the application default credentials using `gcloud auth application-default login`.
+
+#### Invalid fingerprint error during Terraform operations
+
+Terraform occasionally complains about an invalid fingerprint, when updating certain resources.
+
+If you see the error below, simply re-run the command. ![terraform fingerprint error](images\MovqAAg0Chnh9QY%2BsrRn5WUzsqrVNSRw6sB2lF46U1w%3D)
+
+### Congratulations!
+
+You improved the security of your Kubernetes Engine by applying fine-grained restrictions to network communication.
+
+## LAB - Using Role-based Access Control in Kubernetes Engine
+
+## Overview
+
+This lab covers the usage and debugging of [role-based access control (RBAC)](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) in a Kubernetes Engine cluster.
+
+While RBAC resource definitions are standard across all Kubernetes platforms, their interaction with underlying authentication and authorization providers needs to be understood when building on any cloud provider.
+
+RBAC is a powerful security mechanism that provides great flexibility in how you restrict operations within a cluster. This lab will cover two use cases for RBAC:
+
+1. Assigning different permissions to user personas, namely owners and auditors.
+2. Granting limited API access to an application running within your cluster.
+
+Since RBAC's flexibility can occasionally result in complex rules, common steps for troubleshooting RBAC are included as part of scenario 2.
+
+## Architecture
+
+This lab focuses on the use of RBAC within a Kubernetes Engine cluster. It demonstrates how varying levels of cluster privilege can be granted to different user personas. You will provision two service accounts to represent user personas and three namespaces: dev, test, and prod. The "owner" persona will have read-write access to all three namespaces, while the "auditor" persona will have read-only access and be restricted to the dev namespace.
+
+This lab was created by GKE Helmsman engineers to help you grasp a better understanding of Using role-based access controls in GKE. You can [view this demo on Github](https://github.com/GoogleCloudPlatform/gke-rbac-demo.git). We encourage any and all to contribute to our assets!
+
+![Architecture Diagram](images\s7ZjmSO2Z2fvTB1Dw4GAXuGlJQkmii7Jyvd12Wzcsu4%3D)
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-d79e7215c92b@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   rDBeNJgZxCDO
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-03-e21f4fbacbec`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-03-e21f4fbacbec
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-d79e7215c92b@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-03-e21f4fbacbec
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Set your region and zone
+
+Certain Compute Engine resources live in regions and zones. A region is a specific geographical location where you can run your resources. Each region has one or more zones.
+
+Learn more about regions and zones and see a complete list in [Regions & Zones documentation](https://cloud.google.com/compute/docs/regions-zones/).
+
+Run the following to set a region and zone for your lab (you can use the region/zone that's best for you):
+
+```
+gcloud config set compute/region europe-west4
+gcloud config set compute/zone europe-west4-a
+```
+
+Copied!
+
+## Task 1. Verify the cluster
+
+Confirm the pre created cluster in the Console. Go to **Navigation menu** > **Kubernetes Engine** > **Clusters** and click on the 'rbac-demo-cluster' cluster. Ensure that Legacy Authorization is disabled for the new cluster.
+
+![Cluster settings in console](images\HMekjKZOqJ2Gw9B%2FPaimNfnE3C1geKfjUeWwWSUJqM0%3D)
+
+## Task 2. Scenario 1: Assigning permissions by user persona
+
+### IAM - role
+
+A role named `kube-api-ro-xxxxxxxx` (where `xxxxxxxx` is a random string) has been created with the permissions below as part of the Terraform configuration in `iam.tf`. These permissions are the minimum required for any user that requires access to the Kubernetes API.
+
+- container.apiServices.get
+- container.apiServices.list
+- container.clusters.get
+- container.clusters.getCredentials
+
+### Simulating users
+
+Three service accounts have been created to act as Test Users:
+
+- **admin:** has admin permissions over the cluster and all resources
+- **owner:** has read-write permissions over common cluster resources
+- **auditor:** has read-only permissions within the dev namespace only
+
+1. Run the following:
+
+```
+gcloud iam service-accounts list
+```
+
+Copied!
+
+Three test hosts have been provisioned by the Terraform script. Each node has `kubectl` and `gcloud` installed and configured to simulate a different user persona.
+
+- **gke-tutorial-admin**: kubectl and gcloud are authenticated as a cluster administrator.
+- **gke-tutorial-owner**: simulates the `owner` account
+- **gke-tutorial-auditor**: simulates the `auditor` account
+
+1. Run the following:
+
+```
+gcloud compute instances list
+```
+
+Copied!
+
+Output:
+
+```
+NAME                                             ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
+rbac-demo-cluster-default-pool-a9cd3468-4vpc    europe-west4-a  n1-standard-1                10.0.96.5                    RUNNING
+rbac-demo-cluster-default-pool-a9cd3468-b47f    europe-west4-a  n1-standard-1                10.0.96.6                    RUNNING
+rbac-demo-cluster-default-pool-a9cd3468-rt5p    europe-west4-a  n1-standard-1                10.0.96.7                    RUNNING
+gke-tutorial-auditor                            europe-west4-a  f1-micro                     10.0.96.4    35.224.148.28    RUNNING
+gke-tutorial-admin                              europe-west4-a  f1-micro                     10.0.96.3    35.226.237.142   RUNNING
+gke-tutorial-owner                              europe-west4-a  f1-micro                     10.0.96.2    35.194.58.130    RUNNING
+```
+
+### Creating the RBAC rules
+
+Create the Namespaces, Roles, and RoleBindings by logging into the admin instance and applying the `rbac.yaml` manifest.
+
+1. SSH to the admin:
+
+```
+gcloud compute ssh gke-tutorial-admin
+```
+
+Copied!
+
+**Note:** Ignore the error which relates to gcp auth plugin.
+
+Existing versions of kubectl and custom Kubernetes clients contain provider-specific code to manage authentication between the client and Google Kubernetes Engine. Starting with v1.26, this code will no longer be included as part of the OSS kubectl. GKE users will need to download and use a separate authentication plugin to generate GKE-specific tokens. This new binary, `gke-gcloud-auth-plugin`, uses the [Kubernetes Client-go Credential Plugin](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins) mechanism to extend kubectl’s authentication to support GKE. For more information, you can check out the following [documentation](https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke).
+
+To have kubectl use the new binary plugin for authentication instead of using the default provider-specific code, use the following steps.
+
+1. Once connected, run the following command to install the `gke-gcloud-auth-plugin` on the VM.
+
+```
+sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+```
+
+Copied!
+
+1. Set `export USE_GKE_GCLOUD_AUTH_PLUGIN=True` in `~/.bashrc`:
+
+```
+echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> ~/.bashrc
+```
+
+Copied!
+
+1. Run the following command:
+
+```
+source ~/.bashrc
+```
+
+Copied!
+
+1. Run the following command to force the config for this cluster to be updated to the Client-go Credential Plugin configuration.
+
+```
+gcloud container clusters get-credentials rbac-demo-cluster --zone europe-west4-a
+```
+
+Copied!
+
+On success, you should see this message pop up:
+
+```
+Kubeconfig entry generated for dev-cluster.
+```
+
+The newly-created cluster will now be available for the standard `kubectl` commands on the bastion.
+
+1. Create the namespaces, roles, and bindings:
+
+```
+kubectl apply -f ./manifests/rbac.yaml
+```
+
+Copied!
+
+Output:
+
+```
+namespace/dev created
+namespace/prod created
+namespace/test created
+role.rbac.authorization.k8s.io/dev-ro created
+clusterrole.rbac.authorization.k8s.io/all-rw created
+clusterrolebinding.rbac.authorization.k8s.io/owner-binding created
+rolebinding.rbac.authorization.k8s.io/auditor-binding created
+```
+
+Click *Check my progress* to verify the objective.
+
+Creating the RBAC rules
+
+
+
+Check my progress
+
+
+
+### Managing resources as the owner
+
+1. Open a new Cloud Shell terminal by clicking the **+** at the top of the terminal window.
+
+You will now SSH into the owner instance and create a simple deployment in each namespace.
+
+1. SSH to the "owner" instance:
+
+```
+gcloud compute ssh gke-tutorial-owner
+```
+
+Copied!
+
+**Note:** Ignore the error which relates to gcp auth plugin.
+
+1. When prompted about the zone, enter `n`, so the default zone is used.
+2. Install gke-gcloud-auth-plugin:
+
+```
+sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> ~/.bashrc
+source ~/.bashrc
+gcloud container clusters get-credentials rbac-demo-cluster --zone europe-west4-a
+```
+
+Copied!
+
+1. Create a server in each namespace, first `dev`:
+
+```
+kubectl create -n dev -f ./manifests/hello-server.yaml
+```
+
+Copied!
+
+Output:
+
+```
+service/hello-server created
+deployment.apps/hello-server created
+```
+
+1. And then `prod`:
+
+```
+kubectl create -n prod -f ./manifests/hello-server.yaml
+```
+
+Copied!
+
+Output:
+
+```
+service/hello-server created
+deployment.apps/hello-server created
+```
+
+1. Then `test`:
+
+```
+kubectl create -n test -f ./manifests/hello-server.yaml
+```
+
+Copied!
+
+Output:
+
+```
+service/hello-server created
+deployment.apps/hello-server created
+```
+
+Click *Check my progress* to verify the objective.
+
+Create a server in each namespace
+
+
+
+Check my progress
+
+
+
+As the owner, you will also be able to view all pods.
+
+- On the "owner" instance list all `hello-server` pods in all namespaces by running:
+
+```
+kubectl get pods -l app=hello-server --all-namespaces
+```
+
+Copied!
+
+Output:
+
+```
+NAMESPACE   NAME                            READY     STATUS    RESTARTS   AGE
+dev         hello-server-6c6fd59cc9-h6zg9   1/1       Running   0          6m
+prod        hello-server-6c6fd59cc9-mw2zt   1/1       Running   0          44s
+test        hello-server-6c6fd59cc9-sm6bs   1/1       Running   0          39s
+```
+
+### Viewing resources as the auditor
+
+Now you will open a new terminal, SSH into the auditor instance, and try to view all namespaces.
+
+1. Open a new Cloud Shell terminal by clicking the **+** at the top of the terminal window.
+2. SSH to the "auditor" instance:
+
+```
+gcloud compute ssh gke-tutorial-auditor
+```
+
+Copied!
+
+**Note:** Ignore the error which relates to gcp auth plugin.
+
+1. When prompted about the zone, enter `n`, so the default zone is used.
+2. Install gke-gcloud-auth-plugin:
+
+```
+sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> ~/.bashrc
+source ~/.bashrc
+gcloud container clusters get-credentials rbac-demo-cluster --zone europe-west4-a
+```
+
+Copied!
+
+1. On the "auditor" instance, list all `hello-server` pods in all namespaces with the following:
+
+```
+kubectl get pods -l app=hello-server --all-namespaces
+```
+
+Copied!
+
+You should see an error like the following:
+
+```
+Error from server (Forbidden): pods is forbidden: User "gke-tutorial-auditor@myproject.iam.gserviceaccount.com" cannot list pods at the cluster scope: Required "container.pods.list" permission
+```
+
+The error indicates that you don't have sufficient permissions. The auditor role is restricted to viewing only the resources in the dev namespace, so you'll need to specify the namespace when viewing resources.
+
+Now attempt to view pods in the dev namespace.
+
+1. On the "auditor" instance run the following:
+
+```
+kubectl get pods -l app=hello-server --namespace=dev
+```
+
+Copied!
+
+Output:
+
+```
+NAME                            READY     STATUS    RESTARTS   AGE
+hello-server-6c6fd59cc9-h6zg9   1/1       Running   0          13m
+```
+
+1. Try to view pods in the test namespace:
+
+```
+kubectl get pods -l app=hello-server --namespace=test
+```
+
+Copied!
+
+Output:
+
+```
+Error from server (Forbidden): pods is forbidden: User "gke-tutorial-auditor@myproject.iam.gserviceaccount.com" cannot list pods in the namespace "test": Required "container.pods.list" permission.
+```
+
+1. Attempt to view pods in the prod namespace:
+
+```
+kubectl get pods -l app=hello-server --namespace=prod
+```
+
+Copied!
+
+Output:
+
+```
+Error from server (Forbidden): pods is forbidden: User "gke-tutorial-auditor@myproject.iam.gserviceaccount.com" cannot list pods in the namespace "prod": Required "container.pods.list" permission.
+```
+
+Finally, verify that the auditor has read-only access by trying to create and delete a deployment in the dev namespace.
+
+1. On the "auditor" instance attempt to create a deployment:
+
+```
+kubectl create -n dev -f manifests/hello-server.yaml
+```
+
+Copied!
+
+Output:
+
+```
+Error from server (Forbidden): error when creating "manifests/hello-server.yaml": services is forbidden: User "gke-tutorial-auditor@myproject.iam.gserviceaccount.com" cannot create services in the namespace "dev": Required "container.services.create" permission.
+Error from server (Forbidden): error when creating "manifests/hello-server.yaml": deployments.extensions is forbidden: User "gke-tutorial-auditor@myproject.iam.gserviceaccount.com" cannot create deployments.extensions in the namespace "dev": Required "container.deployments.create" permission.
+```
+
+1. On the "auditor" instance, attempt to delete the deployment:
+
+```
+kubectl delete deployment -n dev -l app=hello-server
+```
+
+Copied!
+
+Output:
+
+```
+Error from server (Forbidden): deployments.extensions "hello-server" is forbidden: User "gke-tutorial-auditor@myproject.iam.gserviceaccount.com" cannot update deployments.extensions in the namespace "dev": Required "container.deployments.update" permission.
+```
+
+## Task 3. Scenario 2: Assigning API permissions to a cluster application
+
+In this scenario you'll go through the process of deploying an application that requires access to the Kubernetes API as well as configure RBAC rules while troubleshooting some common use cases.
+
+### Deploying the sample application
+
+The sample application will run as a single pod that periodically retrieves all pods in the default namespace from the API server and then applies a timestamp label to each one.
+
+1. From the **admin** instance (this should be your first Cloud Shell tab), deploy the `pod-labeler` application. This will also deploy a Role, ServiceAccount, and RoleBinding for the pod:
+
+```
+kubectl apply -f manifests/pod-labeler.yaml
+```
+
+Copied!
+
+Output:
+
+```
+role.rbac.authorization.k8s.io/pod-labeler created
+serviceaccount/pod-labeler created
+rolebinding.rbac.authorization.k8s.io/pod-labeler created
+deployment.apps/pod-labeler created
+```
+
+Click *Check my progress* to verify the objective.
+
+Deploying the sample application
+
+
+
+Check my progress
+
+
+
+### Diagnosing an RBAC misconfiguration
+
+Now check the status of the pod. Once the container has finished creating, you'll see it error out. Investigate the error by inspecting the pods' events and logs.
+
+1. On the **admin** instance check the pod status:
+
+```
+kubectl get pods -l app=pod-labeler
+```
+
+Copied!
+
+Output:
+
+```
+NAME                           READY     STATUS    RESTARTS   AGE
+pod-labeler-6d9757c488-tk6sp   0/1       Error     1          1m
+```
+
+1. On the **admin** instance, view the pod event stream by running:
+
+```
+kubectl describe pod -l app=pod-labeler | tail -n 20
+```
+
+Copied!
+
+You should see:
+
+```
+Events:
+  Type     Reason     Age                     From                                                       Message
+  ----     ------     ----                    ----                                                       -------
+  Normal   Scheduled  7m35s                   default-scheduler                                          Successfully assigned default/pod-labeler-5b4bd6cf9-w66jd to gke-rbac-demo-cluster-default-pool-3d348201-x0pk
+  Normal   Pulling    7m34s                   kubelet, gke-rbac-demo-cluster-default-pool-3d348201-x0pk  pulling image "gcr.io/pso-examples/pod-labeler:0.1.5"
+  Normal   Pulled     6m56s                   kubelet, gke-rbac-demo-cluster-default-pool-3d348201-x0pk  Successfully pulled image "gcr.io/pso-examples/pod-labeler:0.1.5"
+  Normal   Created    5m29s (x5 over 6m56s)   kubelet, gke-rbac-demo-cluster-default-pool-3d348201-x0pk  Created container
+  Normal   Pulled     5m29s (x4 over 6m54s)   kubelet, gke-rbac-demo-cluster-default-pool-3d348201-x0pk  Container image "gcr.io/pso-examples/pod-labeler:0.1.5" already present on machine
+  Normal   Started    5m28s (x5 over 6m56s)   kubelet, gke-rbac-demo-cluster-default-pool-3d348201-x0pk  Started container
+  Warning  BackOff    2m25s (x23 over 6m52s)  kubelet, gke-rbac-demo-cluster-default-pool-3d348201-x0pk  Back-off restarting failed container
+```
+
+1. On the **admin** instance, run the following to check the pod's logs:
+
+```
+kubectl logs -l app=pod-labeler
+```
+
+Copied!
+
+Output:
+
+```
+Attempting to list pods
+Traceback (most recent call last):
+  File "label_pods.py", line 13, in <module>
+    ret = v1.list_namespaced_pod("default",watch=False)
+  File "build/bdist.linux-x86_64/egg/kubernetes/client/apis/core_v1_api.py", line 12310, in list_namespaced_pod
+  File "build/bdist.linux-x86_64/egg/kubernetes/client/apis/core_v1_api.py", line 12413, in list_namespaced_pod_with_http_info
+  File "build/bdist.linux-x86_64/egg/kubernetes/client/api_client.py", line 321, in call_api
+  File "build/bdist.linux-x86_64/egg/kubernetes/client/api_client.py", line 155, in __call_api
+  File "build/bdist.linux-x86_64/egg/kubernetes/client/api_client.py", line 342, in request
+  File "build/bdist.linux-x86_64/egg/kubernetes/client/rest.py", line 231, in GET
+  File "build/bdist.linux-x86_64/egg/kubernetes/client/rest.py", line 222, in request
+kubernetes.client.rest.ApiException: (403)
+Reason: Forbidden
+HTTP response headers: HTTPHeaderDict({'Date': 'Fri, 25 May 2018 15:33:15 GMT', 'Audit-Id': 'ae2a0d7c-2ab0-4f1f-bd0f-24107d3c144e', 'Content-Length': '307', 'Content-Type': 'application/json', 'X-Content-Type-Options': 'nosniff'})
+HTTP response body: {"kind":"Status","apiVersion":"v1","metadata":{},"status":"Failure","message":"pods is forbidden: User \"system:serviceaccount:default:default\" cannot list pods in the namespace \"default\": Unknown user \"system:serviceaccount:default:default\"","reason":"Forbidden","details":{"kind":"pods"},"code":403}
+</module>
+```
+
+Based on this error, you can see a permissions error when trying to list pods via the API.
+
+1. The next step is to confirm you are using the correct ServiceAccount.
+
+### Fixing the serviceAccountName
+
+By inspecting the pod's configuration, you can see it is using the default ServiceAccount rather than the custom Service Account.
+
+1. On the **admin** instance, run:
+
+```
+kubectl get pod -oyaml -l app=pod-labeler
+```
+
+Copied!
+
+Output:
+
+```
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 9999
+      runAsGroup: 9999
+      runAsUser: 9999
+    serviceAccount: default
+```
+
+The `pod-labeler-fix-1.yaml` file contains the fix in the deployment's template spec:
+
+```
+      # Fix 1, set the serviceAccount so RBAC rules apply
+      serviceAccount: pod-labeler
+```
+
+Next you'll apply the fix and view the resulting change.
+
+1. On the **admin** instance, apply the fix 1 by running:
+
+```
+kubectl apply -f manifests/pod-labeler-fix-1.yaml
+```
+
+Copied!
+
+Output:
+
+```
+role.rbac.authorization.k8s.io/pod-labeler unchanged
+serviceaccount/pod-labeler unchanged
+rolebinding.rbac.authorization.k8s.io/pod-labeler unchanged
+deployment.apps/pod-labeler configured
+```
+
+1. View the change in the deployment configuration:
+
+```
+kubectl get deployment pod-labeler -oyaml
+```
+
+Copied!
+
+Changes in the output:
+
+```
+  ...
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: pod-labeler
+  ...
+```
+
+Click *Check my progress* to verify the objective.
+
+Fixing the service account name
+
+
+
+Check my progress
+
+
+
+### Diagnosing insufficient privileges
+
+Once again, check the status of your pod and you'll notice it is still erring out, but with a different message this time.
+
+1. On the **admin** instance check the status of your pod:
+
+```
+kubectl get pods -l app=pod-labeler
+```
+
+Copied!
+
+Output:
+
+```
+NAME                          READY     STATUS             RESTARTS   AGE
+pod-labeler-c7b4fd44d-mr8qh   0/1       CrashLoopBackOff   3          1m
+```
+
+You may need to run the previous command again to see this output.
+
+1. On the **admin** instance, check the pod's logs:
+
+```
+kubectl logs -l app=pod-labeler
+```
+
+Copied!
+
+Output:
+
+```
+  File "/usr/local/lib/python3.8/site-packages/kubernetes/client/rest.py", line 292, in PATCH
+    return self.request("PATCH", url,
+  File "/usr/local/lib/python3.8/site-packages/kubernetes/client/rest.py", line 231, in request
+    raise ApiException(http_resp=r)
+kubernetes.client.rest.ApiException: (403)
+Reason: Forbidden
+HTTP response headers: HTTPHeaderDict({'Audit-Id': 'f6c67c34-171f-42f3-b1c9-833e00cedd5e', 'Content-Type': 'application/json', 'X-Content-Type-Options': 'nosniff', 'Date': 'Mon, 23 Mar 2020 16:35:18 GMT', 'Content-Length': '358'})
+HTTP response body: {"kind":"Status","apiVersion":"v1","metadata":{},"status":"Failure","message":"pods \"pod-labeler-659c8c99d5-t96pw\" is forbidden: User \"system:serviceaccount:default:pod-labeler\" cannot patch resource \"pods\" in API group \"\" in the namespace \"default\"","reason":"Forbidden","details":{"name":"pod-labeler-659c8c99d5-t96pw","kind":"pods"},"code":403}
+```
+
+Since this is failing on a PATCH operation, you can also see the error in Stackdriver. This is useful if the application logs are not sufficiently verbose.
+
+1. In the Console, select **Navigation menu**, and in the Operations section, click on **Logging**.
+2. In the **Query builder** dialog box, paste the following code and click **Run Query**:
+
+```
+protoPayload.methodName="io.k8s.core.v1.pods.patch"
+```
+
+Copied!
+
+1. Click on a down arrow next to a log record and explore the details.
+
+### Identifying the application's role and permissions
+
+Use the ClusterRoleBinding to find the ServiceAccount's role and permissions.
+
+1. On the **admin** instance, inspect the `rolebinding` definition:
+
+```
+kubectl get rolebinding pod-labeler -oyaml
+```
+
+Copied!
+
+Output:
+
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"RoleBinding","metadata":{"annotations":{},"name":"pod-labeler","namespace":"default"},"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"Role","name":"pod-labeler"},"subjects":[{"kind":"ServiceAccount","name":"pod-labeler"}]}
+  creationTimestamp: "2020-03-23T16:29:05Z"
+  name: pod-labeler
+  namespace: default
+  resourceVersion: "2886"
+  selfLink: /apis/rbac.authorization.k8s.io/v1/namespaces/default/rolebindings/pod-labeler
+  uid: 0e4d5be7-d986-40d0-af1d-a660f9aa4336
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-labeler
+subjects:
+- kind: ServiceAccount
+  name: pod-labeler
+```
+
+The `RoleBinding` shows you need to inspect the `pod-labeler` role in the default namespace. Here you can see the role is only granted permission to list pods.
+
+1. On the **admin** instance, inspect the `pod-labeler` role definition:
+
+```
+kubectl get role pod-labeler -oyaml
+```
+
+Copied!
+
+Output:
+
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"Role","metadata":{"annotations":{},"name":"pod-labeler","namespace":"default"},"rules":[{"apiGroups":[""],"resources":["pods"],"verbs":["list"]}]}
+  creationTimestamp: "2020-03-23T16:29:05Z"
+  name: pod-labeler
+  namespace: default
+  resourceVersion: "2883"
+  selfLink: /apis/rbac.authorization.k8s.io/v1/namespaces/default/roles/pod-labeler
+  uid: c8191869-c7de-42c6-98fc-79a91d9b02a1
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+```
+
+Since the application requires PATCH permissions, you can add it to the "verbs" list of the role, which you will do now.
+
+The `pod-labeler-fix-2.yaml` file contains the fix in it's rules/verbs section:
+
+```
+rules:
+- apiGroups: [""] # "" refers to the core API group
+  resources: ["pods"]
+  verbs: ["list","patch"] # Fix 2: adding permission to patch (update) pods
+```
+
+Apply the fix and view the resulting configuration.
+
+1. On the **admin** instance, apply `fix-2`:
+
+```
+kubectl apply -f manifests/pod-labeler-fix-2.yaml
+```
+
+Copied!
+
+Output:
+
+```
+role.rbac.authorization.k8s.io/pod-labeler configured
+serviceaccount/pod-labeler unchanged
+rolebinding.rbac.authorization.k8s.io/pod-labeler unchanged
+deployment.apps/pod-labeler unchanged
+```
+
+Click *Check my progress* to verify the objective.
+
+Identifying the application's role and permissions
+
+
+
+Check my progress
+
+
+
+1. On the **admin** instance, view the resulting change:
+
+```
+kubectl get role pod-labeler -oyaml
+```
+
+Copied!
+
+Output:
+
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"Role","metadata":{"annotations":{},"name":"pod-labeler","namespace":"default"},"rules":[{"apiGroups":[""],"resources":["pods"],"verbs":["list","patch"]}]}
+  creationTimestamp: "2020-03-23T16:29:05Z"
+  name: pod-labeler
+  namespace: default
+  resourceVersion: "8802"
+  selfLink: /apis/rbac.authorization.k8s.io/v1/namespaces/default/roles/pod-labeler
+  uid: c8191869-c7de-42c6-98fc-79a91d9b02a1
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+  - patch
+```
+
+Because the `pod-labeler` may be in a back-off loop, the quickest way to test the fix is to kill the existing pod and let a new one take its place.
+
+1. On the **admin** instance, run the following to kill the existing pod and let the deployment controller replace it:
+
+```
+kubectl delete pod -l app=pod-labeler
+```
+
+Copied!
+
+Output:
+
+```
+pod "pod-labeler-659c8c99d5-t96pw" deleted
+```
+
+### Verifying successful configuration
+
+Finally, verify the new `pod-labeler` is running and check that the "updated" label has been applied.
+
+1. On the **admin** instance, list all pods and show their labels:
+
+```
+kubectl get pods --show-labels
+```
+
+Copied!
+
+Output:
+
+```
+NAME                          READY     STATUS    RESTARTS   NAME                           READY   STATUS    RESTARTS   AGE   LABELS
+pod-labeler-659c8c99d5-5qsmw   1/1     Running   0          31s   app=pod-labeler,pod-template-hash=659c8c99d5,updated=1584982487.6428008
+```
+
+1. View the pod's logs to verify there are no longer any errors:
+
+```
+kubectl logs -l app=pod-labeler
+```
+
+Copied!
+
+Output:
+
+```
+Attempting to list pods
+labeling pod pod-labeler-659c8c99d5-5qsmw
+labeling pod pod-labeler-659c8c99d5-t96pw
+...
+```
+
+### Key take-aways
+
+- Container and API server logs will be your best source of clues for diagnosing RBAC issues.
+- Use RoleBindings or ClusterRoleBindings to determine which role is specifying the permissions for a pod.
+- API server logs can be found in Stackdriver under the Kubernetes resource.
+- Not all API calls will be logged to Stackdriver. Frequent, or verbose payloads are omitted by the Kubernetes' audit policy used in Kubernetes Engine. The exact policy will vary by Kubernetes version, but can be found in the [open source codebase](https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/gci/configure-helper.sh#L740).
+
+## Congratulations!
+
+You've explored role-based access (RBAC) control by assigning different permissions to user personas and granting limited API access to an application running in your cluster.
+
+
+
+## LAB - Google Kubernetes Engine Security: Binary Authorization
+
+## Overview
+
+One of the key security concerns for running Kubernetes clusters is knowing what container images are running inside each pod and being able to account for their origin. Establishing "container provenance" means having the ability to trace the source of a container to a trusted point of origin and ensuring your organization follows the desired processes during artifact (container) creation.
+
+Some of the key concerns are:
+
+- **Safe Origin** - How do you ensure that all container images running in the cluster come from an approved source?
+- **Consistency and Validation** - How do you ensure that all desired validation steps were completed successfully for every container build and every deployment?
+- **Integrity** - How do you ensure that containers were not modified before running after their provenance was proven?
+
+From a security standpoint, not enforcing where images originate from presents several risks:
+
+- A malicious actor that has compromised a container may be able to obtain sufficient cluster privileges to launch other containers from an unknown source without enforcement.
+- An authorized user with the permissions to create pods may be able to accidentally or maliciously run an undesired container directly inside a cluster.
+- An authorized user may accidentally or maliciously overwrite a docker image tag with a functional container that has undesired code silently added to it, and Kubernetes will pull and deploy that container as a part of a deployment automatically.
+
+To help system operators address these concerns, Google Cloud offers a capability called [Binary Authorization](https://cloud.google.com/binary-authorization/). Binary Authorization is a Google Cloud managed service that works closely with GKE to enforce deploy-time security controls to ensure that only trusted container images are deployed. With Binary Authorization you can allowlist container registries, require images to be signed by trusted authorities, and centrally enforce those policies. By enforcing this policy, you can gain tighter control over your container environment by ensuring only approved and/or verified images are integrated into the build-and-release process.
+
+This lab deploys a [Kubernetes Engine](https://cloud.google.com/kubernetes-engine/) Cluster with the Binary Authorization feature enabled demonstrates how to allowlist approved container registries, and walks you through the process of creating and running a signed container.
+
+This lab was created by GKE Helmsman engineers to give you a better understanding of GKE Binary Authorization. We encourage any one to contribute to our assets!
+
+## Architecture
+
+The Binary Authorization and Container Analysis APIs are based upon the open-source projects Grafeas and Kritis.
+
+- Grafeas defines an API spec for managing metadata about software resources, such as container images, Virtual Machine (VM) images, JAR files, and scripts. You can use Grafeas to define and aggregate information about your project’s components.
+- Kritis defines an API for ensuring a deployment is prevented unless the artifact (container image) is conformant to central policy and optionally has the necessary attestations present.
+
+In a simplified container deployment pipeline such as this:
+
+![Deployment pipeline](images\%2F23XvJfZJKvYRYkgWMwl8JHpZKz6d52x4%2B%2Fi%2BxZ3cOE%3D)
+
+The container goes through at least 4 steps:
+
+1. The source code for creating the container is stored in source control.
+2. Upon committing a change to source control, the container is built and tested.
+3. If the build and test steps are completed, the container image artifact is then placed in a central container registry, ready for deployment.
+4. When a deployment of that container version is submitted to the Kubernetes API, the container runtime will pull that container image from the container registry and run it as a pod.
+
+In a container build pipeline, there are opportunities to inject additional processes to signify or "attest" that each step was completed successfully. Examples include running unit tests, source control analysis checks, licensing verification, vulnerability analysis, and more. Each step could be given the power or "attestation authority" to sign for that step being completed. An "attestation authority" is a human or system with the correct PGP key and the ability to register that "attestation" with the Container Analysis API.
+
+By using separate PGP keys for each step, each attestation step could be performed by different humans, systems, or build steps in the pipeline (a). Each PGP key is associated with an "attestation note" which is stored in the Container Analysis API. When a build step "signs" an image, a snippet of JSON metadata about that image is signed via PGP and that signed snippet is submitted to the API as a "note occurrence".
+
+![Attestation diagram](images\RXPfaDeQ1Mv%2Bs2RYXmRFIDD%2Be1AoKAf9qEOD9m5t%2F80%3D)
+
+(b).Once the container image has been built and the necessary attestations have been stored centrally, they are available for being queried as a part of a policy decision process. In this case, a [Kubernetes Admission Controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/), upon receiving an API request to `create` or `update` a Pod:
+
+1. Send a WebHook to the Binary Authorization API for a policy decision.
+2. The Binary Authorization policy is then consulted.
+3. If necessary, the Container Analysis API is also queried for the necessary attestation occurrences.
+4. If the container image conforms to the policy, it is allowed to run.
+5. If the container image fails to meet the policy, an error is presented to the API client with a message describing why it was prevented.
+
+![Enfore diagram](images\2eczz6ago2COUKvuw9adq64v0g1SFqVaRTar7mLyTSc%3D)
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-e164b91bf60d@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   7ZUIm6rpni18
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-03-c7ed025791a3`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-03-c7ed025791a3
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-e164b91bf60d@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-03-c7ed025791a3
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Task 1. Copy resources
+
+1. Now, you will copy the resources needed for this lab by running:
+
+```
+gsutil -m cp -r gs://spls/gke-binary-auth/* .
+```
+
+Copied!
+
+1. Go into the directory for this demo:
+
+```
+cd gke-binary-auth-demo
+```
+
+Copied!
+
+### Set your region and zone
+
+Certain Compute Engine resources live in regions and zones. A region is a specific geographical location where you can run your resources. Each region has one or more zones.
+
+**Note**: Learn more about regions and zones and see a complete list in [Regions & Zones documentation](https://cloud.google.com/compute/docs/regions-zones/).
+
+Run the following to set a region and zone for your lab (you can use the region/zone that's best for you):
+
+```
+gcloud config set compute/region europe-west4
+gcloud config set compute/zone europe-west4-c
+```
+
+Copied!
+
+### Updating files permissions
+
+- Now, make some files readable, writable, and executable for resources needed for this lab:
+
+```
+chmod +x create.sh
+chmod +x delete.sh
+chmod 777 validate.sh
+```
+
+Copied!
+
+## Task 2. Set default cluster version
+
+- Change the `create.sh`'s **GKE_VERSION** variable to `defaultClusterVersion`:
+
+```
+sed -i 's/validMasterVersions\[0\]/defaultClusterVersion/g' ./create.sh
+```
+
+Copied!
+
+**Note:** The default cluster version will be compatible with other dependencies in this lab.
+
+## Task 3. Deployment steps
+
+**Note:** The following instructions are applicable for deployments performed both with and without Cloud Shell.
+
+- To deploy the cluster, execute the following command. Feel free to replace the text `my-cluster-1` with the name of the cluster that you would like to create.
+
+```
+./create.sh -c my-cluster-1
+```
+
+Copied!
+
+The `create` script will output the following message when complete:
+
+```
+kubeconfig entry generated for my-cluster-1.
+NAME          LOCATION       MASTER_VERSION  MASTER_IP        MACHINE_TYPE   NODE_VERSION   NUM_NODES  STATUS
+my-cluster-1  europe-west4-c  1.14.8-gke.17   104.154.181.211  n1-standard-1  1.14.8-gke.17  2          RUNNING
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for my-cluster-1.
+```
+
+The script will:
+
+1. Enable the necessary APIs in your project. Specifically, `container`, `containerregistry`, `containeranalysis`, and `binaryauthorization`.
+2. Create a new Kubernetes Engine cluster in your default ZONE, VPC and network.
+3. Retrieve your cluster credentials to enable `kubectl` usage.
+
+It is safe to ignore warnings.
+
+## Task 4. Validation
+
+- The following script will validate that the demo is deployed correctly:
+
+```
+./validate.sh -c my-cluster-1
+```
+
+Copied!
+
+If the script fails, it will output:
+
+```
+Validation Failed: the BinAuthZ policy was NOT available
+```
+
+And / Or
+
+```
+Validation Failed: the Container Analysis API was NOT available
+```
+
+If the script passes, it will output:
+
+```
+Validation Passed: the BinAuthZ policy was available
+Validation Passed: the Container Analysis API was available
+```
+
+### Test completed task
+
+Click **Check my progress** to verify your performed task. If you have successfully created a Kubernetes cluster with Binary Authorization, you will see an assessment score.
+
+Create a Kubernetes Cluster with Binary Authorization
+
+
+
+Check my progress
+
+## Task 5. Using Binary Authorization
+
+### Managing the Binary Authorization Policy
+
+To access the Binary Authorization Policy configuration UI, perform the following steps:
+
+1. In the Google Cloud console, navigate to the **Security** > **Binary Authorization**.
+
+![Expanded Navigation menu with Binary Authorization option highlighted](images\cQrrp%2B6bsJKEXu39TVLLUdvYCdfqP9Gnt48eAvj2IkM%3D)
+
+1. Click **Edit Policy**.
+
+![Welcome to Binary Authorization page](images\wl5ZMPyosClr7wP49wNtjd5MhFfDSFKMX7eD8fwGJ1Y%3D)
+
+**Note:** To access the Binary Authorization Policy configuration via `gcloud`:
+
+
+
+Run `gcloud beta container binauthz policy export > policy.yaml`
+
+Make the necessary edits to `policy.yaml`
+
+Run `gcloud beta container binauthz policy import policy.yaml`
+
+The policy you are editing is the "default" policy, and it applies to *all GKE clusters in the Google Cloud project* unless a cluster-specific policy is in place.
+
+The recommendation is to create policies specific to each cluster and achieve successful operation (allowlisting registries as needed), and then set the default project-level policy to "Deny All Images". Any new cluster in this project will then need its own cluster-specific policy.
+
+1. After clicking **Edit Policy**, the following will appear. Click the down arrow next to **Custom Exemption Rules** to display them:
+
+![Edit policy page](images\CmRacBbcv%2F71DhcVphuzjRJbiukvrRLKhTdeTW2zosU%3D)
+
+The default policy rule is to `Allow all images`. This mimics the behavior as if Binary Authorization wasn't enabled on the cluster.
+
+If the default rule is changed to `Disallow all images` or `Allow only images that have been approved by all of the following attestors`, then images that do not match the exempted registry image paths or do not have the required attestations will be blocked, respectively.
+
+Next, you will make some edits to the policy:
+
+1. Change your **Default rule** to `Disallow all images`
+2. In Additional settings for GKE and Anthos deployments, click **Create Specific Rules**.
+3. Select **GKE Cluster** from the dropdown and click **Change**.
+4. Under **GKE Cluster-specific rules**, Click **Add Specific Rule**.
+5. In the **Add GKE Cluster-specific rule** field, enter your location and cluster name in the form `location.clustername`. e.g. `europe-west4-c`.my-cluster-1 which corresponds to the zone `europe-west4-c` and the cluster name `my-cluster-1`.
+6. Select the default rule of `Allow all images` for your cluster.
+7. Click **ADD**.
+
+![Add GKE cluster specific rule dialog box](images\BYn8k8jI2f9%2F31X1iPUbrOfNrudtD7rT5MQAxRqxkDI%3D)
+
+1. Click **Save Policy**.
+
+### Test completed task
+
+Click **Check my progress** to verify your performed task. If you have successfully updated Binary Authorization Policy to add Disallow all images rule at project level and allow all images at cluster level, you will see an assessment score.
+
+Update Binary Authorization Policy to add Disallow all images rule at project level and allow at cluster level
+
+
+
+Check my progress
+
+## Task 6. Creating a private GCR image
+
+1. To simulate a real-world configuration, create a private GCR container image in your project.
+2. You will pull down the `nginx` container from `nginx` project and push it to your own GCR repository without modification.
+3. In Cloud Shell, pull down the `latest` `nginx` container:
+
+```
+docker pull nginx:latest
+```
+
+Copied!
+
+1. Authenticate docker to the project:
+
+```
+gcloud auth configure-docker
+```
+
+Copied!
+
+When prompted, `Do you want to continue (Y/n)?` Enter `Y`.
+
+1. Set the PROJECT_ID shell variable:
+
+```
+PROJECT_ID="$(gcloud config get-value project)"
+```
+
+Copied!
+
+1. Tag and push it to the current project's GCR:
+
+```
+docker tag nginx "gcr.io/${PROJECT_ID}/nginx:latest"
+docker push "gcr.io/${PROJECT_ID}/nginx:latest"
+```
+
+Copied!
+
+1. List the "private" nginx image in your own GCR repository:
+
+```
+gcloud container images list-tags "gcr.io/${PROJECT_ID}/nginx"
+```
+
+Copied!
+
+## Task 7. Denying all images
+
+To prove that image denial by policy will eventually work as intended, first verify that the cluster-specific `allow` rule is in place and allows all containers to run.
+
+1. To do this, launch a single `nginx` pod:
+
+```
+cat << EOF | kubectl create -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: "gcr.io/${PROJECT_ID}/nginx:latest"
+    ports:
+    - containerPort: 80
+EOF
+```
+
+Copied!
+
+You should see a message stating that `pod/nginx created`.
+
+1. List the pods:
+
+```
+kubectl get pods
+```
+
+Copied!
+
+Output:
+
+```
+NAME    READY     STATUS    RESTARTS   AGE
+nginx   1/1       Running   0          1m
+```
+
+If this fails recheck your cluster-specific region and name and try again.
+
+1. Now, delete this pod:
+
+```
+kubectl delete pod nginx
+```
+
+Copied!
+
+1. Next, prove that the Binary Authorization policy can block undesired images from running in the cluster.
+
+On the Binary Authorization page, click **Edit Policy**,
+
+1. Click on the three vertical dots to the right of your GKE Cluster specific rule, and click **edit**.
+2. Then, select `Disallow all images`, click **Submit**.
+
+Your policy should look similar to the following:
+
+![Edit GKE cluster-specific rule for us-central1-a.mycluster-1 dialog box with Disallow all images option selected](images\15FLpP5Fg122n4o0jNBmPYiynTMKl0XUYyrIlDeVflQ%3D)
+
+1. Finally, click **Save Policy** to apply those changes.
+
+**Note:** Wait at least 30 seconds before proceeding to allow the policy to take effect.
+
+### Test completed task
+
+Click **Check my progress** to verify your performed task. If you have successfully updated Binary Authorization Policy to Disallow all images rule at cluster level, you will see an assessment score.
+
+Update cluster specific policy to Disallow all images
+
+
+
+Check my progress
+
+1. Now, run the same command as before to create the static `nginx` pod:
+
+```
+cat << EOF | kubectl create -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: "gcr.io/${PROJECT_ID}/nginx:latest"
+    ports:
+    - containerPort: 80
+EOF
+```
+
+Copied!
+
+This time, though, you should receive a message from the API server indicating that the policy prevented this pod from being successfully run:
+
+```
+Error from server (VIOLATES_POLICY): error when creating "STDIN": admission webhook "imagepolicywebhook.image-policy.k8s.io" denied the request: Image gcr.io/qwiklabs-gcp-00-ce851250686b/nginx:latest denied by Binary Authorization cluster admission rule for europe-west4-c.my-cluster-1. Denied by always_deny admission rule
+```
+
+To be able to see when any and all images are blocked by the Binary Authorization Policy, navigate to the GKE Audit Logs in Stackdriver and filter on those error messages related to this activity.
+
+1. In the Google Cloud console, navigate to the **Navigation menu** > **Logging** > **Logs Explorer**.
+2. Populate the **Query builder** box with:
+
+```
+resource.type="k8s_cluster" protoPayload.response.reason="VIOLATES_POLICY"
+```
+
+Copied!
+
+![Query builder box with populated code](images\CuB3tuWp04fgeKzw0axcGm3yu4x0X29NGzmMlCO0IRI%3D)
+
+1. Click **Run Query**.
+2. You should see errors corresponding to the blocking of the `nginx` pod from running.
+
+### Test completed task
+
+Click **Check my progress** to verify your performed task. If you have successfully verified cluster admission rule, you will see an assessment score.
+
+Create a Nginx pod to verify cluster admission rule is applied for disallow all images (denies to create)
+
+
+
+Check my progress
+
+## Task 8. Denying images except from allowlisted container registries
+
+1. Let's say that you actually want to allow *just* that nginx container to run. The quickest step to enable this is to *allowlist* the registry that it comes from.
+2. You will use the output of the following command as your image path:
+
+```
+echo "gcr.io/${PROJECT_ID}/nginx*"
+```
+
+Copied!
+
+1. Copy the image path output to your buffer.
+2. Navigate to the **Navigation menu** > **Security** > **Binary Authorization**.
+3. Edit the Binary Authorization Policy, under **Custom exemption rules** display the image paths, then click **Add an Image Pattern**.
+4. Paste in the image path you copied earlier. The image below shows an example path.
+
+![Binary Authorization screen with image path populated in the new image pattern field](images\oVBBEQuWzsLCxLZKG8BU0V0ttpzpeVP%2FM9BC%2FZZ0YPA%3D)
+
+1. Click **Save Policy**, then run:
+
+```
+cat << EOF | kubectl create -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: "gcr.io/${PROJECT_ID}/nginx:latest"
+    ports:
+    - containerPort: 80
+EOF
+```
+
+Copied!
+
+You should now be able to launch this pod and prove that registry allowlisting is working correctly.
+
+1. Run the following to clean up and prepare for the next steps:
+
+```
+kubectl delete pod nginx
+```
+
+Copied!
+
+### Test completed task
+
+Click **Check my progress** to verify your performed task. If you have successfully updated Binary Authorization policy to allowlist the container registry, you will see an assessment score.
+
+Update BA policy to denying images except from allowlisted container registries (your project container registry)
+
+
+
+Check my progress
+
+## Task 9. Enforcing attestations
+
+Allowlisting container image registries is a great first step in preventing undesired container images from being run inside a cluster, but there is more you can do to ensure the container was built correctly.
+
+You want to cryptographically verify that a given container image was approved for deployment. This is done by an "attestation authority" which states or *attests* to the fact that a certain step was completed. The attestation authority does this by using a PGP key to *sign* a snippet of metadata describing the SHA256 hash of a container image and submitting it to a central metadata repository--the Container Analysis API.
+
+Later, when the Admission Controller goes to validate if a container image is allowed to run by consulting a Binary Authorization policy that requires attestations to be present on an image, it will check to see if the Container Analysis API holds the signed snippet(s) of metadata saying which steps were completed. With that information, the Admission Controller will know whether to allow or deny that pod from running.
+
+Next, perform a manual attestation of a container image. You will take on the role of a human attestation authority and will perform all the steps to sign a container image, create a policy to require that attestation to be present on images running inside your cluster, and then successfully run that image in a pod.
+
+### Setting up the necessary variables
+
+1. Attestor name/email details:
+
+```
+ATTESTOR="manually-verified" # No spaces allowed
+ATTESTOR_NAME="Manual Attestor"
+ATTESTOR_EMAIL="$(gcloud config get-value core/account)" # This uses your current user/email
+```
+
+Copied!
+
+1. Container Analysis Note ID/description of your attestation authority:
+
+```
+NOTE_ID="Human-Attestor-Note" # No spaces
+NOTE_DESC="Human Attestation Note Demo"
+```
+
+Copied!
+
+1. Names for files to create payloads/requests:
+
+```
+NOTE_PAYLOAD_PATH="note_payload.json"
+IAM_REQUEST_JSON="iam_request.json"
+```
+
+Copied!
+
+### Creating an attestation note
+
+The first step is to register the attestation authority as a [Container Analysis note](https://cloud.google.com/binary-authorization/docs/key-concepts#analysis_notes) with the Container Analysis API. To do this, you'll create an `ATTESTATION` note and submit it to the API.
+
+1. Create the `ATTESTATION` note payload:
+
+```
+cat > ${NOTE_PAYLOAD_PATH} << EOF
+{
+  "name": "projects/${PROJECT_ID}/notes/${NOTE_ID}",
+  "attestation_authority": {
+    "hint": {
+      "human_readable_name": "${NOTE_DESC}"
+    }
+  }
+}
+EOF
+```
+
+Copied!
+
+1. Submit the `ATTESTATION` note to the Container Analysis API:
+
+```
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)"  \
+    --data-binary @${NOTE_PAYLOAD_PATH}  \
+    "https://containeranalysis.googleapis.com/v1beta1/projects/${PROJECT_ID}/notes/?noteId=${NOTE_ID}"
+```
+
+Copied!
+
+You should see the output from the prior command display the created note, but the following command will also list the created note:
+
+```
+curl -H "Authorization: Bearer $(gcloud auth print-access-token)"  \
+    "https://containeranalysis.googleapis.com/v1beta1/projects/${PROJECT_ID}/notes/${NOTE_ID}"
+```
+
+Copied!
+
+### Creating a PGP signing key
+
+As your attestation authority uses a PGP key to perform the cryptographic signing of the image metadata, create a new PGP key and export the public PGP key.
+
+**Note:** This error messages related to this activity. PGP key is not password protected for this exercise. In a production system, be sure to properly safeguard your private PGP keys.
+
+1. Set another shell variable:
+
+```
+PGP_PUB_KEY="generated-key.pgp"
+```
+
+Copied!
+
+1. Create the PGP key:
+
+```
+sudo apt-get install rng-tools
+```
+
+Copied!
+
+```
+sudo rngd -r /dev/urandom
+```
+
+Copied!
+
+```
+gpg --quick-generate-key --yes ${ATTESTOR_EMAIL}
+```
+
+Copied!
+
+1. Press **Enter** to use an empty passphrase and acknowledge warnings.
+2. Extract the public PGP key:
+
+```
+gpg --armor --export "${ATTESTOR_EMAIL}" > ${PGP_PUB_KEY}
+```
+
+Copied!
+
+### Registering the Attestor in the Binary Authorization API
+
+The next step is to create the "attestor" in the Binary Authorization API and add the public PGP key to it.
+
+1. Create the Attestor in the Binary Authorization API:
+
+```
+gcloud --project="${PROJECT_ID}" \
+    beta container binauthz attestors create "${ATTESTOR}" \
+    --attestation-authority-note="${NOTE_ID}" \
+    --attestation-authority-note-project="${PROJECT_ID}"
+```
+
+Copied!
+
+1. Add the PGP Key to the Attestor:
+
+```
+gcloud --project="${PROJECT_ID}" \
+    beta container binauthz attestors public-keys add \
+    --attestor="${ATTESTOR}" \
+    --pgp-public-key-file="${PGP_PUB_KEY}"
+```
+
+Copied!
+
+1. List the newly created Attestor:
+
+```
+gcloud --project="${PROJECT_ID}" \
+    beta container binauthz attestors list
+```
+
+Copied!
+
+The output should look similar to the following:
+
+```
+NAME: manually-verified
+NOTE: projects/<project_id>/notes/Human-Attestor-Note
+NUM_PUBLIC_KEYS: 1
+</project_id>
+```
+
+## Task 10. "Signing" a container image
+
+The preceeding steps only need to be performed once. From this point on, this step is the only step that needs repeating for every new container image.
+
+The `nginx` image at `nginx:latest` is already built and available for use. Perform the manual attestations on it as if it were your own image built by your own processes and save the step of having to build it.
+
+1. Set a few shell variables:
+
+```
+GENERATED_PAYLOAD="generated_payload.json"
+GENERATED_SIGNATURE="generated_signature.pgp"
+```
+
+Copied!
+
+1. Get the PGP fingerprint:
+
+```
+PGP_FINGERPRINT="$(gpg --list-keys ${ATTESTOR_EMAIL} | head -2 | tail -1 | awk '{print $1}')"
+```
+
+Copied!
+
+1. Obtain the SHA256 Digest of the container image:
+
+```
+IMAGE_PATH="gcr.io/${PROJECT_ID}/nginx"
+IMAGE_DIGEST="$(gcloud container images list-tags --format='get(digest)' $IMAGE_PATH | head -1)"
+```
+
+Copied!
+
+1. Create a JSON-formatted signature payload:
+
+```
+gcloud beta container binauthz create-signature-payload \
+    --artifact-url="${IMAGE_PATH}@${IMAGE_DIGEST}" > ${GENERATED_PAYLOAD}
+```
+
+Copied!
+
+1. View the generated signature payload:
+
+```
+cat "${GENERATED_PAYLOAD}"
+```
+
+Copied!
+
+1. "Sign" the payload with the PGP key:
+
+```
+gpg --local-user "${ATTESTOR_EMAIL}" \
+    --armor \
+    --output ${GENERATED_SIGNATURE} \
+    --sign ${GENERATED_PAYLOAD}
+```
+
+Copied!
+
+1. View the generated signature (PGP message):
+
+```
+cat "${GENERATED_SIGNATURE}"
+```
+
+Copied!
+
+1. Create the attestation:
+
+```
+gcloud beta container binauthz attestations create \
+    --artifact-url="${IMAGE_PATH}@${IMAGE_DIGEST}" \
+    --attestor="projects/${PROJECT_ID}/attestors/${ATTESTOR}" \
+    --signature-file=${GENERATED_SIGNATURE} \
+    --public-key-id="${PGP_FINGERPRINT}"
+```
+
+Copied!
+
+1. View the newly created attestation:
+
+```
+gcloud beta container binauthz attestations list \
+    --attestor="projects/${PROJECT_ID}/attestors/${ATTESTOR}"
+```
+
+Copied!
+
+## Task 11. Running an image with attestation enforcement enabled
+
+The next step is to change the Binary Authorization policy to enforce that attestation is to be present on all images that do not match the allowlist pattern(s).
+
+1. To change the policy to require attestation, run the following and then copy the full path/name of the attestation authority:
+
+```
+echo "projects/${PROJECT_ID}/attestors/${ATTESTOR}" # Copy this output to your copy/paste buffer
+```
+
+Copied!
+
+1. Next, edit the Binary Authorization policy to `edit` the GKE Cluster specific rule.
+
+Click the three dots by your cluster name to **Edit** your cluster-specific rules.
+
+1. Select `Require attestations (Allow only images that have been verified by all of the following attestors)` instead of `Disallow all images` in the pop-up window.:
+
+![Edit Policy page with Disallow all images option selected](images\HXkk8WbGxIy16NT5N3n6%2BeDpiKBY8SrL6BmsIgBBGMQ%3D)
+
+1. Next, click on `Add Attestors` followed by `Add by attestor resource ID`. Enter the contents of your copy/paste buffer in the format of `projects/${PROJECT_ID}/attestors/${ATTESTOR}`, then click **Add 1 Attestor**, and then click **Submit**, and finally click **Save Policy**.
+
+![Edit GKE cluster-specific rule for us-central1-a.my-cluster-1 dialog box](images\Rpc6MdPXwJEl9tWyuUTzCc2opzI8vjY6j0F%2FWocOqxA%3D)
+
+The default policy should still show `Disallow all images`, but the cluster-specific rule should be requiring attestation.
+
+1. Now, obtain the most recent SHA256 Digest of the signed image from the previous steps:
+
+```
+IMAGE_PATH="gcr.io/${PROJECT_ID}/nginx"
+IMAGE_DIGEST="$(gcloud container images list-tags --format='get(digest)' $IMAGE_PATH | head -1)"
+```
+
+Copied!
+
+1. After waiting at least 30 seconds from the time the Binary Authorization policy was updated, run the pod and verify success:
+
+```
+cat << EOF | kubectl create -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: "${IMAGE_PATH}@${IMAGE_DIGEST}"
+    ports:
+    - containerPort: 80
+EOF
+```
+
+Copied!
+
+Congratulations! You have now manually attested to a container image and enforced a policy for that image inside your GKE cluster.
+
+### Test completed task
+
+Click **Check my progress** to verify your performed task. If you have successfully updated Binary Authorization policy to modify cluster specific rule to allow only images that have been approved by attestors, you will see an assessment score.
+
+Update BA policy to modify cluster specific rule to allow only images that have been approved by attestors
+
+
+
+Check my progress
+
+## Task 12. Handling emergency situations
+
+From a user's perspective, the Binary Authorization policy may incorrectly block an image or there may be another issue with the successful operation of the admission controller webhook.
+
+In this "emergency" case, there is a "break glass" capability that leverages a specific annotation to signal to the admission controller to run the pod and skip policy enforcement.
+
+**Note:** You will want to notify a security team when this occurs as this can be leveraged by malicious users if they have the ability to create a pod.
+
+In this case, though, your response procedures can be started within seconds of the activity occurring. The logs are available in Stackdriver:
+
+1. To run an unsigned `nginx` container with the "break glass" annotation, run:
+
+```
+cat << EOF | kubectl create -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-alpha
+  annotations:
+    alpha.image-policy.k8s.io/break-glass: "true"
+spec:
+  containers:
+  - name: nginx
+    image: "nginx:latest"
+    ports:
+    - containerPort: 80
+EOF
+```
+
+Copied!
+
+1. In the Google Cloud console, navigate to the **Navigation menu** > **Logging** > **Logs Explorer** page.
+
+2. Populate the **Query builder** box with below and then Click **Run Query**:
+
+   ```
+   resource.type="k8s_cluster" protoPayload.request.metadata.annotations."alpha.image-policy.k8s.io/break-glass"="true"
+   ```
+
+   Copied!
+
+3. You should see events when the admission controller allowed a pod due to the annotation being present. From this filter, you can create a `Sink` which sends logs that match this filter to an external destination.
+
+![Query builder text box with populated code](images\uluTLrI3yZVnyVhBZaRFFmubQbJDW38Nfp2Bii0RgMM%3D)
+
+**Note:** Wait for atleast 5 to 10 minutes for the logs to appear.
+
+## Task 13. Tear down
+
+Qwiklabs will remove all resources you created for this lab, but it's good to know how to clean up your own environment.
+
+1. The following script will destroy the Kubernetes Engine cluster:
+
+```
+./delete.sh -c my-cluster-1
+```
+
+Copied!
+
+If you created your own cluster name at the beginning of the lab, use that name. In this example the name `my-cluster-1` was used.
+
+The last lines of the output will be:
+
+```
+Deleting cluster
+```
+
+**Note:** Cluster delete command is being run asynchronously and will take a few moments to be removed. Use the **Cloud Console UI** or `gcloud container clusters list` command to track the progress if desired. Wait until cluster get removed.
+
+### Test completed task
+
+Click **Check my progress** to verify your performed task. If you have successfully deleted your cluster, you will see an assessment score.
+
+Tear Down (delete cluster)
+
+
+
+Check my progress
+
+The following commands will remove the remaining resources.
+
+1. Delete the container image that was pushed to GCR:
+
+```
+gcloud container images delete "${IMAGE_PATH}@${IMAGE_DIGEST}" --force-delete-tags
+```
+
+Copied!
+
+1. If prompted, `Do you want to continue (Y/n)?` enter `Y`.
+2. Delete the Attestor:
+
+```
+gcloud --project="${PROJECT_ID}" \
+    beta container binauthz attestors delete "${ATTESTOR}"
+```
+
+Copied!
+
+1. Delete the Container Analysis note:
+
+```
+curl -X DELETE \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    "https://containeranalysis.googleapis.com/v1beta1/projects/${PROJECT_ID}/notes/${NOTE_ID}"
+```
+
+Copied!
+
+## Troubleshooting in your own environment
+
+1. If you update the Binary Authorization policy and very quickly attempt to launch a new pod/container, the policy might not have time to take effect. You may need to wait 30 seconds or more for the policy change to become active. To retry, delete your pod using `kubectl delete <podname>` and resubmit the pod creation command.
+2. Run `gcloud container clusters list` command to check the cluster status.
+3. If you enable additional features like `--enable-network-policy`, `--accelerator`, `--enable-tpu`, or `--enable-metadata-concealment`, you may need to add additional registries to your Binary Authorization policy allowlist for those pods to be able to run. Use `kubectl describe pod <podname>` to find the registry path from the image specification and add it to the allowlist in the form of `gcr.io/example-registry/*` and save the policy.
+4. If you get errors about quotas, please increase your quota in the project. Learn more about resource quotas from the [Resource quotas documentation](https://cloud.google.com/compute/quotas).
+
+## Relevant materials
+
+1. [Google Cloud Quotas](https://cloud.google.com/compute/quotas)
+2. [Signup for Google Cloud](https://cloud.google.com/)
+3. [Google Cloud Shell](https://cloud.google.com/shell/docs/)
+4. [Binary Authorization in GKE](https://cloud.google.com/binary-authorization/)
+5. [Container Analysis notes](https://cloud.google.com/binary-authorization/docs/key-concepts#analysis_notes)
+6. [Kubernetes Admission Controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/)
+7. [Launch Stages](https://cloud.google.com/terms/launch-stages)
+
+## Congratulations!
+
+**Manual Last Updated October 4, 2024**
+
+**Lab Last Tested April 4, 2024**
+
+Copyright 2024 Google LLC. This software is provided as-is, without warranty or representation for any use or purpose. Your use of it is subject to your agreement with Google.
+
+
+
+## LAB - Hardening Default GKE Cluster Configurations
+
+## Overview
+
+This lab demonstrates some of the security concerns of a default GKE cluster configuration and the corresponding hardening measures to prevent multiple paths of pod escape and cluster privilege escalation. These attack paths are relevant in the following scenarios:
+
+1. An application flaw in an external facing pod that allows for Server-Side Request Forgery (SSRF) attacks.
+2. A fully compromised container inside a pod allowing for Remote Command Execution (RCE).
+3. A malicious internal user or an attacker with a set of compromised internal user credentials with the ability to create/update a pod in a given namespace.
+
+This lab was created by GKE Helmsman engineers to help you grasp a better understanding of hardening default GKE cluster configurations.
+
+*The example code for this lab is provided as-is without warranty or guarantee*
+
+### Objectives
+
+Upon completion of this lab you will understand the need for protecting the GKE Instance Metadata and defining appropriate PodSecurityPolicy policies for your environment.
+
+You will:
+
+1. Create a small GKE cluster using the default settings.
+2. Validate the most common paths of pod escape and cluster privilege escalation from the perspective of a malicious internal user.
+3. Harden the GKE cluster for these issues.
+4. Validate the cluster so that those actions are no longer allowed.
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-e164b91bf60d@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   7ZUIm6rpni18
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](https://cdn.qwiklabs.com/9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-01-8af92117868a`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-01-8af92117868a
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-e164b91bf60d@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-01-8af92117868a
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Task 1. Create a simple GKE cluster
+
+1. Set a zone into an environment variable called MY_ZONE. This lab is using "`us-east1-b`", you can select a [zone](https://cloud.google.com/compute/docs/regions-zones/) if you prefer:
+
+```
+export MY_ZONE=us-east1-b
+```
+
+Copied!
+
+1. Run this to start a Kubernetes cluster managed by Kubernetes Engine named `simplecluster` and configure it to run 2 nodes:
+
+```
+gcloud container clusters create simplecluster --zone $MY_ZONE --num-nodes 2 --metadata=disable-legacy-endpoints=false
+```
+
+Copied!
+
+It takes several minutes to create a cluster as Kubernetes Engine provisions virtual machines for you. The warnings about features available in new versions can be safely ignored for this lab.
+
+1. After the cluster is created, check your installed version of Kubernetes using the `kubectl version` command:
+
+```
+kubectl version
+```
+
+Copied!
+
+The `gcloud container clusters create` command automatically authenticated `kubectl` for you.
+
+1. View your running nodes in the Cloud Console. On the **Navigation menu**, click **Compute Engine** > **VM Instances**.
+
+Your Kubernetes cluster is now ready for use.
+
+Click *Check my progress* to verify the objective.
+
+Create a simple GKE cluster
+
+
+
+Check my progress
+
+
+
+## Task 2. Run a Google Cloud-SDK pod
+
+1. From your Cloud Shell prompt, launch a single instance of the Google Cloud-SDK container:
+
+```
+kubectl run -it --rm gcloud --image=google/cloud-sdk:latest --restart=Never -- bash
+```
+
+Copied!
+
+This will take a few minutes to complete.
+
+**Note:** If you get a timed out error, run the command again.
+
+1. You should now have a bash shell inside the pod's container:
+
+```
+root@gcloud:/#
+```
+
+It may take a few seconds for the container to be started and the command prompt to be displayed. If you don't see a command prompt, try pressing **Enter**.
+
+### Explore the Compute Metadata endpoint
+
+1. Run the following command to access the `v1` Compute Metadata endpoint:
+
+```
+curl -s http://metadata.google.internal/computeMetadata/v1/instance/name
+```
+
+Copied!
+
+Output looks like:
+
+```
+...snip...
+Your client does not have permission to get URL <code>/computeMetadata/v1/instance/name</code> from this server. Missing Metadata-Flavor:Google header.
+...snip...
+```
+
+Notice how it returns an error stating that it requires the custom HTTP header to be present.
+
+1. Add the custom header on the next run and retrieve the Compute Engine instance name that is running this pod:
+
+```
+curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/name
+```
+
+Copied!
+
+Output looks like:
+
+```
+gke-simplecluster-default-pool-b57a043a-6z5v
+```
+
+**Note:** If a custom HTTP header is not required to access a Compute Engine Instance Metadata endpoint, an attacker would need only an application flaw to trick a web URL to provide user credentials. By requiring a custom HTTP header, an attack is more difficult as the attacker would need both an application flaw and the custom header to be successful.
+
+Keep this shell inside the pod available for the next step.
+
+1. If you accidentally exit from the pod, simply re-run:
+
+```
+kubectl run -it --rm gcloud --image=google/cloud-sdk:latest --restart=Never -- bash
+```
+
+Copied!
+
+### Explore the GKE node bootstrapping credentials
+
+1. From inside the same pod shell, run the following command to list the attributes associated with the underlying Compute Engine instances. Be sure to include the trailing slash:
+
+```
+curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/attributes/
+```
+
+Copied!
+
+Perhaps the most sensitive data in this listing is `kube-env`. It contains several variables which the `kubelet` uses as initial credentials when attaching the node to the GKE cluster. The variables `CA_CERT`, `KUBELET_CERT`, and `KUBELET_KEY` contain this information and are therefore considered sensitive to non-cluster administrators.
+
+1. To see the potentially sensitive variables and data, run the following command:
+
+```
+curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/attributes/kube-env
+```
+
+Copied!
+
+Therefore, in any of the following situations:
+
+- A flaw that allows for SSRF in a pod application
+- An application or library flaw that allow for RCE in a pod
+- An internal user with the ability to create or exec into a pod
+
+There exists a high likelihood for compromise and exfiltration of sensitive `kubelet` bootstrapping credentials via the Compute Metadata endpoint. With the `kubelet` credentials, it is possible to leverage them in certain circumstances to escalate privileges to that of `cluster-admin` and therefore have full control of the GKE Cluster including all data, applications, and access to the underlying nodes.
+
+### Leverage the Permissions assigned to this Node Pool's service account
+
+By default, Google Cloud projects with the Compute API enabled have a default service account in the format of `NNNNNNNNNN-compute@developer.gserviceaccount.com` in the project and the `Editor` role attached to it. Also by default, GKE clusters created without specifying a service account will utilize the default Compute service account and attach it to all worker nodes.
+
+1. Run the following `curl` command to list the OAuth scopes associated with the service account attached to the underlying Compute Engine instance:
+
+```
+curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/scopes
+```
+
+Copied!
+
+(output)
+
+```
+ https://www.googleapis.com/auth/devstorage.read_only https://www.googleapis.com/auth/logging.write https://www.googleapis.com/auth/monitoring https://www.googleapis.com/auth/service.management.readonly https://www.googleapis.com/auth/servicecontrol https://www.googleapis.com/auth/trace.append 
+```
+
+
+
+The combination of authentication scopes and the permissions of the service account dictates what applications on this node can access. The above list is the minimum scopes needed for most GKE clusters, but some use cases require increased scopes.
+
+**Warning:** If, during cluster creation, you configured the authentication scope to include `https://www.googleapis.com/auth/cloud-platform`, any Google Cloud API would be in scope and only IAM permissions assigned to the service account would determine access.
+
+Further, if the default service account with the default IAM Role of `Editor` is in use, any pod on this node pool has `Editor` permissions to the Google Cloud project where the GKE cluster is deployed. As the `Editor` IAM Role has a wide range of read/write permissions to interact with project resources such as Compute instances, Cloud Storage buckets, GCR registries, and more, this is a significant security risk.
+
+1. Exit out of this pod by typing:
+
+```
+exit
+```
+
+Copied!
+
+**Note:** If did not return to cloud shell press ctrl+c
+
+## Task 3. Deploy a pod that mounts the host filesystem
+
+One of the simplest paths for "escaping" to the underlying host is by mounting the host's filesystem into the pod's filesystem using standard Kubernetes `volumes` and `volumeMounts` in a `Pod` specification.
+
+1. To demonstrate this, run the following to create a Pod that mounts the underlying host filesystem `/` at the folder named `/rootfs` inside the container:
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath
+spec:
+  containers:
+  - name: hostpath
+    image: google/cloud-sdk:latest
+    command: ["/bin/bash"]
+    args: ["-c", "tail -f /dev/null"]
+    volumeMounts:
+    - mountPath: /rootfs
+      name: rootfs
+  volumes:
+  - name: rootfs
+    hostPath:
+      path: /
+EOF
+```
+
+Copied!
+
+1. Run `kubectl get pod` and re-run until it's in the "Running" state:
+
+```
+kubectl get pod
+```
+
+Copied!
+
+(Output)
+
+```
+NAME       READY   STATUS    RESTARTS   AGE
+hostpath   1/1     Running   0          30s
+```
+
+Click *Check my progress* to verify the objective.
+
+Deploy a pod that mounts the host filesystem
+
+
+
+Check my progress
+
+
+
+## Task 4. Explore and compromise the underlying host
+
+1. Run the following to obtain a shell inside the pod you just created:
+
+```
+kubectl exec -it hostpath -- bash
+```
+
+Copied!
+
+1. Switch to the pod shell's root filesystem point to that of the underlying host:
+
+```
+chroot /rootfs /bin/bash
+```
+
+Copied!
+
+With those simple commands, the pod is now effectively a `root` shell on the node. You are now able to do the following:
+
+| run the standard docker command with full permissions        | `docker ps`                                          |
+| ------------------------------------------------------------ | ---------------------------------------------------- |
+| list docker images                                           | `docker images`                                      |
+| `docker run` a privileged container of your choosing         | `docker run --privileged <imagename>:<imageversion>` |
+| examine the Kubernetes secrets mounted                       | `mount | grep volumes | awk '{print $3}' | xargs ls` |
+| `exec` into any running container (even into another pod in another namespace) | `docker exec -it <docker container ID> sh`           |
+
+Nearly every operation that the `root` user can perform is available to this pod shell. This includes persistence mechanisms like adding SSH users/keys, running privileged docker containers on the host outside the view of Kubernetes, and much more.
+
+1. To exit the pod shell, run `exit` twice - once to leave the `chroot` and another to leave the pod's shell:
+
+```
+exit
+```
+
+Copied!
+
+```
+exit
+```
+
+Copied!
+
+**Note:** If did not return to cloud shell press ctrl+c
+
+1. Now you can delete the `hostpath` pod:
+
+```
+kubectl delete pod hostpath
+```
+
+Copied!
+
+### Understand the available controls
+
+The next steps of this demo will cover:
+
+- **Disabling the Legacy Compute Engine Metadata API Endpoint** - By specifying a custom metadata key and value, the `v1beta1` metadata endpoint will no longer be available from the instance.
+- **Enable Metadata Concealment** - Passing an additional configuration during cluster and/or node pool creation, a lightweight proxy will be installed on each node that proxies all requests to the Metadata API and prevents access to sensitive endpoints.
+- **Enable and Utilize Pod Security Admission** - Enable the Pod Security Admission (PSA) controller in your GKE cluster. This provides the ability to enforce pod security standards that enhance your cluster's security posture.
+
+## Task 5. Deploy a second node pool
+
+To enable you to experiment with and without the Metadata endpoint protections in place, you'll create a second node pool that includes two additional settings. Pods that are scheduled to the generic node pool will not have the protections, and Pods scheduled to the second node pool will have them enabled.
+
+**Note:** Legacy endpoints were deprecated on September 30, 2020. In GKE versions 1.12 and newer, the `--metadata=disable-legacy-endpoints=true` setting is automatically enabled. The next command below explicitly defines it for clarity.
+
+- Create the second node pool:
+
+```
+gcloud beta container node-pools create second-pool --cluster=simplecluster --zone=$MY_ZONE --num-nodes=1 --metadata=disable-legacy-endpoints=true --workload-metadata-from-node=SECURE
+```
+
+Copied!
+
+Click *Check my progress* to verify the objective.
+
+Deploy a second node pool
+
+
+
+Check my progress
+
+
+
+## Task 6. Run a Google Cloud-SDK pod
+
+1. In Cloud Shell, launch a single instance of the Google Cloud-SDK container that will be run only on the second node pool with the protections enabled and not run as the root user:
+
+```
+kubectl run -it --rm gcloud --image=google/cloud-sdk:latest --restart=Never --overrides='{ "apiVersion": "v1", "spec": { "securityContext": { "runAsUser": 65534, "fsGroup": 65534 }, "nodeSelector": { "cloud.google.com/gke-nodepool": "second-pool" } } }' -- bash
+```
+
+Copied!
+
+**Note:** If you get a timed out error, run the command again.
+
+1. You should now have a bash shell inside the pod's container running on the node pool named `second-pool`. You should see the following:
+
+```
+nobody@gcloud:/$
+```
+
+It may take a few seconds for the container to start and the command prompt to open.
+
+If you don't see a command prompt, press **Enter**.
+
+### Explore various blocked endpoints
+
+1. With the configuration of the second node pool set to `--workload-metadata-from-node=SECURE` , the following command to retrieve the sensitive file, `kube-env`, will now fail:
+
+```
+curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/attributes/kube-env
+```
+
+Copied!
+
+(Output)
+
+```
+This metadata endpoint is concealed.
+```
+
+1. But other commands to non-sensitive endpoints will still succeed if the proper HTTP header is passed:
+
+```
+curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/name
+```
+
+Copied!
+
+(Example Output)
+
+```
+gke-simplecluster-second-pool-8fbd68c5-gzzp
+```
+
+1. Exit out of the pod:
+
+```
+exit
+```
+
+Copied!
+
+You should now be back in Cloud Shell.
+
+## Task 7. Enforce Pod Security Standards
+
+1. In order to have the necessary permissions to proceed, grant explicit permissions to your own user account to become `cluster-admin:`
+
+```
+kubectl create clusterrolebinding clusteradmin --clusterrole=cluster-admin --user="$(gcloud config list account --format 'value(core.account)')"
+```
+
+Copied!
+
+(Output)
+
+```
+clusterrolebinding.rbac.authorization.k8s.io/clusteradmin created
+```
+
+1. Now you will enforce a pod security standard. Choose the most appropriate security standard for your 'default' namespace. The 'restricted' profile offers stronger security:
+
+```
+kubectl label namespace default pod-security.kubernetes.io/enforce=restricted
+```
+
+Copied!
+
+1. Next you will create a ClusterRole. If you want to control who can modify Pod Security Admission levels on namespaces, create a ClusterRole called `pod-security-manager`:
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+   name: pod-security-manager
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  resourceNames: ['privileged', 'baseline', 'restricted']
+  verbs: ['use']
+- apiGroups: ['']
+  resources: ['namespaces']
+  verbs: ['get', 'list', 'watch', 'label']
+EOF
+```
+
+Copied!
+
+1. Next, you will create a RoleBinding. To restrict who can change namespace labels related to Pod Security Admission, create a RoleBinding in the 'default' namespace:
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+   name: pod-security-modifier
+   namespace: default
+subjects:
+- kind: Group
+  apiGroup: rbac.authorization.k8s.io
+  name: system:authenticated
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pod-security-manager
+EOF
+```
+
+Copied!
+
+**Note:** For highly customized and dynamic pod security enforcement, consider tools like OPA Gatekeeper or Kyverno.
+
+Click *Check my progress* to verify the objective.
+
+Deploy PodSecurityPolicy objects
+
+
+
+Check my progress
+
+
+
+## Task 8. Deploy a blocked pod that mounts the host filesystem
+
+Because the account used to deploy the GKE cluster was granted cluster-admin permissions in a previous step, it's necessary to create another separate "user" account to interact with the cluster and validate the PodSecurityPolicy enforcement.
+
+1. To do this, run:
+
+```
+gcloud iam service-accounts create demo-developer
+```
+
+Copied!
+
+(Output)
+
+```
+Created service account [demo-developer].
+```
+
+1. Next, run these commands to grant these permissions to the service account - the ability to interact with the cluster and attempt to create pods:
+
+```
+MYPROJECT=$(gcloud config list --format 'value(core.project)')
+```
+
+Copied!
+
+```
+gcloud projects add-iam-policy-binding "${MYPROJECT}" --role=roles/container.developer --member="serviceAccount:demo-developer@${MYPROJECT}.iam.gserviceaccount.com"
+```
+
+Copied!
+
+1. Obtain the service account credentials file by running:
+
+```
+gcloud iam service-accounts keys create key.json --iam-account "demo-developer@${MYPROJECT}.iam.gserviceaccount.com"
+```
+
+Copied!
+
+1. Configure `kubectl` to authenticate as this service account:
+
+```
+gcloud auth activate-service-account --key-file=key.json
+```
+
+Copied!
+
+1. To configure `kubectl` to use these credentials when communicating with the cluster, run:
+
+```
+gcloud container clusters get-credentials simplecluster --zone $MY_ZONE
+```
+
+Copied!
+
+1. Now, try to create another pod that mounts the underlying host filesystem `/` at the folder named `/rootfs` inside the container:
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath
+spec:
+  containers:
+  - name: hostpath
+    image: google/cloud-sdk:latest
+    command: ["/bin/bash"]
+    args: ["-c", "tail -f /dev/null"]
+    volumeMounts:
+    - mountPath: /rootfs
+      name: rootfs
+  volumes:
+  - name: rootfs
+    hostPath:
+      path: /
+EOF
+```
+
+Copied!
+
+1. This output validatates that it's blocked by the pod security standard:
+
+```
+Error from server (Forbidden): error when creating "STDIN": pods "hostpath" is forbidden: violates PodSecurity "restricted:latest": allowPrivilegeEscalation != false (container "hostpath" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (container "hostpath" must set securityContext.capabilities.drop=["ALL"]), restricted volume types (volume "rootfs" uses restricted volume type "hostPath"), runAsNonRoot != true (pod or container "hostpath" must set securityContext.runAsNonRoot=true), seccompProfile (pod or container "hostpath" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost")
+```
+
+1. Deploy another pod that meets the criteria of the `restrictive-psp`:
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath
+spec:
+  securityContext:
+    runAsNonRoot: true  # Ensure a non-root user
+    runAsUser: 1000
+    fsGroup: 2000
+    seccompProfile:  # Add a seccomp profile
+      type: RuntimeDefault
+  containers:
+  - name: hostpath
+    image: google/cloud-sdk:latest
+    command: ["/bin/bash"]
+    args: ["-c", "tail -f /dev/null"]
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+EOF
+```
+
+Copied!
+
+(Output)
+
+```
+pod/hostpath created
+```
+
+Click *Check my progress* to verify the objective.
+
+Deploy a blocked pod that mounts the host filesystem
+
+
+
+Check my progress
+
+
+
+## Congratulations!
+
+In this lab you configured a default Kubernetes cluster in Google Kubernetes Engine. You then probed and exploited the access available to your pod, hardened the cluster, and validated those malicious actions were no longer possible.
+
+### Next steps / Learn more
 
 
 
