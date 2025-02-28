@@ -708,7 +708,7 @@ Correct! VPC Flow Logs can be used for network monitoring, forensics, real-time 
 
 
 
-# 04 Networking in Google Cloud: Routing and Addressing
+# 04 Networking in Google Cloud: Routing and Addressing 
 
 ## Network Routing and Addressing in Google Cloud
 
@@ -11799,9 +11799,1595 @@ abc123student_04_ceff8bd49e59@cloudshell:~ (qwiklabs-gcp-04-60caced57c66)$
 
 ## Protecting against Distributed Denial of Service Attacks (DDoS)
 
+### LAB - Configuring Traffic Blocklisting with Google Cloud Armor
+
+#### Overview
+
+HTTP(S) Load balancing is implemented at the edge of Google's network in Google's points of presence (POP) around the world. User traffic directed to an HTTP(S) load balancer enters the POP closest to the user and is then load balanced over Google's global network to the closest backend that has sufficient capacity available.
+
+[Google Cloud Armor](https://cloud.google.com/armor) IP blocklists/allowlists enable you to restrict or allow access to your HTTP(S) load balancer at the edge of the Google Cloud, as close as possible to the user and to malicious traffic. This prevents malicious users or traffic from consuming resources or entering your virtual private cloud (VPC) networks.
+
+In this lab, you will verify that the HTTP load balancer with global backends is deployed. This load balancer is automatically provisioned for you during startup. You will then create a VM to test access to the load balancer. Finally, you will stress test the load balancer and blocklist the stress test IP with Google Cloud Armor.
+
+#### Objectives
+
+In this lab, you will learn how to perform the following tasks:
+
+- Verify that the HTTP load balancer is deployed.
+- Create a VM to test access to the HTTP load balancer.
+- Use Google Cloud Armor to blocklist an IP address and restrict access to an HTTP load balancer.
+
+##### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is the **Lab Details** panel with the following:
+
+   - The **Open Google Cloud console** button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-254cd7d05b81@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the **Username** in the **Lab Details** panel.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   nnUTWuVBX22y
+   ```
+
+   Copied!
+
+   You can also find the **Password** in the **Lab Details** panel.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To view a menu with a list of Google Cloud products and services, click the **Navigation menu** at the top-left, or type the service or product name in the **Search** field. ![Navigation menu icon](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+#### Task 1. Verify the HTTP load balancer is deployed
+
+In this task, you verify that the global HTTP load balancer is deployed. The HTTP load balancer is automatically created when you start the lab. This will be used for a simple web application. This application is deployed to demonstrate the capabilities of Google Cloud Armor.
+
+1. On the Google Cloud console title bar, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)). If prompted, click **Continue**.
+2. Verify that the load balancer is deployed and registered by executing the following command:
+
+```
+gcloud compute backend-services get-health web-backend --global
+```
+
+Copied!
+
+**Note:** Rerun this command and wait until this command returns that three instances are HEALTHY. You can also monitor it in the console (**Navigation menu > View All Products > Network services > Load balancing**).
+
+1. Retrieve the load balancer IP address by executing the following command:
+
+```
+gcloud compute forwarding-rules describe web-rule --global
+```
+
+Copied!
+
+1. Copy the value for the **IPAddress** property.
+
+Keep track of this IP address. It will also be used in a later section.
+
+1. Open a new browser tab and try to visit that IP address `http://{IP_ADDRESS}`.
+
+Replace `{IP_ADDRESS}` with the IP address of the load balancer. Do not include the curly braces when you are asked to provide the IP address.
+
+If you get a message that the IP address doesn't support a secure connection, click **Continue to site**.
+
+Keep refreshing the page until you see a page with a message similar to this:
+
+![Web server notification; the server is in zone X](images\TejCgv4DW0Lq%2FQg5JjVV6H4dNY%2FEeZPTWo03qa3reCk%3D)
+
+**Note:** It might take a couple of minutes to access the HTTP load balancer. In the meantime, you might get 404 or 502 errors. Keep trying until you see the page of one of the backends.
+
+1. In Cloud shell, use the following `curl` command to access the IP address:
+
+```
+while true; do curl -m1 {IP_ADDRESS}; done
+```
+
+Copied!
+
+The responses will be from backends that have been created in different zones.
+
+1. Press **CTRL+C** to stop the previous command.
+
+#### Task 2. Create a VM to test access to the load balancer
+
+1. Go to **Navigation menu > Compute Engine**.
+
+2. Click **Create Instance**.
+
+3. On the **Machine configuration** page, enter the following values:
+
+   | **Field** | **Value** (type or select) |
+   | :-------- | :------------------------- |
+   | Name      | access-test                |
+   | Region    | `europe-west4`             |
+   | Zone      | `europe-west4-c`           |
+
+4. Leave everything else at the default and click **Create**.
+
+5. Once launched, click the **SSH** button to connect to the instance.
+
+6. Run the following command on the instance to access the load balancer:
+
+```
+curl -m1 {IP_ADDRESS}
+```
+
+Copied!
+
+The output should look similar to:
+
+```
+<!doctype html><html><body><h1>Web server</h1><h2>This server is in zone: projects/104716457480/zones/europe-west4-c</h2> </body></html>
+```
+
+Click *Check my progress* to verify the objective.
+
+Create a VM to test access to the load balancer.
 
 
 
+Check my progress
+
+
+
+#### Task 3. Create a security policy with Google Cloud Armor
+
+##### Blocklist the access-test VM
+
+**Note:** You will now create a security policy to blocklist access to the load balancer from the access-test VM. This policy can be used to block access from a malicious client. There are ways to identify the external IP address of a client trying to access your HTTP load balancer. For example, you could examine traffic captured by VPC Flow Logs in BigQuery to determine a high volume of incoming requests.
+
+1. Go to **Navigation menu > Compute engine**, click **access-test** VM and scroll down to **Network interface** and then copy the **External IP address**.
+2. From the **Navigation menu** > **View All Products**. Go to **Networking** section, click **Network Security** > **Cloud Armor policies**.
+3. Click **Create policy**.
+4. Provide a name as **blocklist-access-test** and set the **Default rule action** to **Allow**.
+5. Click **Next step**.
+6. Click **Add rule**.
+7. Set the following values, leave all other values at their defaults:
+
+| **Property**  | **Value**                                       |
+| ------------- | ----------------------------------------------- |
+| Mode          | Basic mode (IP addresses/ranges only)           |
+| Match         | Enter the External IP of the **access-test** VM |
+| Action        | Deny                                            |
+| Response code | 404 (Not Found)                                 |
+| Priority      | 1000                                            |
+
+**Note:** Notice that you are setting the Deny status to 404.
+
+1. Click **SAVE CHANGE TO RULE**.
+2. Click **Next step**.
+3. Click **+ Add Target**.
+4. For **Type 1**, select **Backend service (external application load balancer)**.
+5. For **Backend Service target 1**, select **web-backend**.
+6. Click **Next step**.
+7. Click **Done**.
+8. Click **Create policy**.
+
+**Note:** Alternatively, you could set the default rule to Deny and only allow list traffic from authorized users/IP addresses.
+
+Wait for the policy to be created before moving to the next step.
+
+##### Verify the security policy
+
+1. Return to the SSH session of the access-test VM.
+2. Run the `curl` command again on the instance to access the load balancer:
+
+```
+curl -m1 {IP_ADDRESS}
+```
+
+Copied!
+
+The output should look as follows.
+
+**Output:**
+
+```
+<!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>404</title>404 Not Found
+```
+
+**Note:** It might take a couple of minutes for the security policy to take affect. If you are able to access the backends, keep trying until you get the **404** Not Found error.
+
+1. Try accessing the load balancer IP from your local browser. You should still be able to access it as we have only blocklisted the access-test VM.
+
+Click *Check my progress* to verify the objective.
+
+Create a security policy with Google Cloud Armor.
+
+
+
+Check my progress
+
+
+
+#### Task 4. View Google Cloud Armor logs
+
+1. In the Cloud console, from the **Navigation menu** > **View All Products**. Go to **Networking** section, click **Network Security** > **Cloud Armor policies**.
+2. Click **blocklist-access-test**.
+3. Click **Logs**.
+4. Click **View policy logs** and go to the latest logs. If prompted, close the notification.
+5. Locate a log with a **404** and expand the log entry.
+6. Expand **httpRequest**.
+7. The request should be from the **access-test** VM IP address.
+8. Explore some of the other log entries.
+
+#### Congratulations!
+
+In this lab, you have done the following:
+
+- Verified that the HTTP load balancer was deployed.
+- Created a VM to test access to the HTTP load balancer.
+- Used Google Cloud Armor to blocklist an IP address and restrict access to an HTTP load balancer.
+
+
+
+### QUIZ
+
+1. Choose the FOUR correct DDoS Mitigation Layers from the list below.
+
+- Botnet Detection API
+
+- Ping Report
+
+- **CDN Offloading**
+
+  Correct! Offload static content to a CDN to minimize impact.
+
+- **Attack Surface**
+
+  Correct! Reduce the attack surface by reducing externally facing resources.
+
+- Google Cloud Blocklist
+
+- **Internal Traffic**
+
+  Correct! Isolate internal traffic from the outside world by restricting access.
+
+- **Load Balancing**
+  
+  Correct! Use proxy-based load balancing to distribute load across resources.
+
+2. Which TWO of the following statements is TRUE about Google Cloud Armor?
+
+- Google Cloud Armor currently is not compatible with any third-party partner security products.
+
+- **Google Cloud Armor enforces access control based on IPv4 and IPv6 addresses or CIDRs.**
+
+  Correct! Google Cloud Armor assists you in customizing your defenses and mitigating multi-vector attacks.
+
+- Google Cloud Armor is a Ransomware defense service.
+
+- **Google Cloud Armor protection is delivered at the edge of Google’s network.**
+  
+  Correct! In this manner, it functions like a CDN and can block attacks close to their source, before they have a chance to affect your applications.
+
+3. Choose from the list below which way Google Cloud helps mitigate the risk of DDoS for its customers.
+- Google Cloud firewall rules rate limit the number of requests sent to VMs.
+
+- Isolation servers are available with no external or internal access.
+
+- **Internal capacity many times that of any traffic load we can anticipate.**
+
+- Google Blocklist API is automatically included within each project.
+
+     Correct! In fact, a single Google Data Center has a bisection bandwidth of 1,300 terabits per second (the whole internet has a bisection bandwidth of 200 terabits per second!)
+
+
+
+## Content-Related Vulnerabilities: Techniques and Best Practices
+
+### LAB - Redacting Sensitive Data with the DLP API
+
+#### Overview
+
+In this lab, you will set up the [Cloud Data Loss Prevention API (DLP API)](https://cloud.google.com/dlp/docs#docs) and use the API to inspect a string of data for sensitive information. The DLP API helps you better understand and manage sensitive data.
+
+It provides fast, scalable classification and redaction for sensitive data elements like credit card numbers, names, social security numbers, US and selected international identifier numbers, phone numbers and Google Cloud credentials.
+
+##### Objectives
+
+In this lab, you will learn how to do the following:
+
+- Enable the DLP API.
+- Install the Node JS DLP API and sample.
+- Inspect string data for sensitive data.
+- Redact sensitive data from string data and images.
+
+#### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+#### Task 1. Enable the DLP API
+
+In this task, you enable the DLP API through APIs & Services.
+
+1. Go to **Navigation menu > APIs & Services**.
+2. Click the **Enable APIs and Services** button.
+3. In the **Search for APIs & Services** field, enter `DLP` and then click on the **Cloud Data Loss Prevention (DLP) API** title.
+
+![Google Cloud Data Loss Prevention (DLP) API selection](images\otwsQGvohnG3pFLCRITjLRpJswBTSdSHBHaBckvzoTw%3D)
+
+1. Click the **Enable** button to enable the DLP API. If the API is already enabled, you will see a **Manage** button instead, along with an *API enabled* message. In that case you do not need to do anything.
+
+#### Task 2. Install the DLP API and Node JS samples
+
+In this task, you download the Node JS DLP API and samples and install the required dependencies.
+
+1. On the Google Cloud Console tile bar, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)) to open Cloud Shell. When prompted, click **Continue**. After a moment, in the lower part of the browser window, the Terminal appears.
+2. Run the following command to create the `GCLOUD_PROJECT` environment variable and set it to the project ID:
+
+```
+export GCLOUD_PROJECT=$DEVSHELL_PROJECT_ID
+```
+
+Copied!
+
+1. Run the following command in Cloud Shell to download the Node JS DLP API and samples:
+
+```
+git clone https://github.com/GoogleCloudPlatform/nodejs-docs-samples
+```
+
+Copied!
+
+1. Once the download is complete, change into the **nodejs-docs-samples/dlp** directory:
+
+```
+cd nodejs-docs-samples/dlp
+```
+
+Copied!
+
+There are several Node JS DLP sample programs in this folder. Before you run them, you need to install the dependencies.
+
+1. Run the following command to install the required dependencies:
+
+```
+npm install @google-cloud/dlp
+npm install yargs
+npm install mime@2.5.2
+```
+
+Copied!
+
+#### Task 3. Inspect and redact sensitive data
+
+In this task, you inspect and mask sensitive information from the string also use the DLP API to redact sensitive data from an image.
+
+##### Inspect a string for sensitive information
+
+1. In Cloud Shell run the command below. (If prompted, click **Authorize**.)
+
+```
+node inspectString.js $GCLOUD_PROJECT "My email address is joe@example.com."
+```
+
+Copied!
+
+You should receive the following output.
+
+**Output:**
+
+```
+Findings:
+        Info type: EMAIL_ADDRESS
+        Likelihood: LIKELY
+```
+
+The result shows what sensitive data was found, what type of information it is, and how certain the API is about that info type.
+
+1. In Cloud Shell, run the following command:
+
+```
+node inspectString.js $GCLOUD_PROJECT "My phone number is 555-555-5555."
+```
+
+Copied!
+
+You should receive the following output.
+
+**Output:**
+
+```
+Findings:
+        Info type: PHONE_NUMBER
+        Likelihood: VERY_LIKELY
+```
+
+1. Feel free to experiment with different input to the **inspectString.js** program. For example, try passing in values like `1234-5678-9876-5432` or `123-45-6789`.
+
+##### Mask sensitive information from a string
+
+- In Cloud Shell, run the following command:
+
+```
+node deidentifyWithMask.js $GCLOUD_PROJECT "My phone number is 555-555-5555."
+```
+
+Copied!
+
+You should receive the following output.
+
+**Output:**
+
+```
+My phone number is ************.
+```
+
+##### Redact sensitive data from images
+
+You will now use the DLP API to redact sensitive data from an image.
+
+1. Right-click on the image below and select **Save image as**. Save it locally on your computer as `dlp-input.png`.
+
+![Image with sample text and an email address](images\au1ucO0F7rzOgXmeZjuKq%2BO3TQsftlIdPT%2FIMpF7f%2B0%3D.png)
+
+1. In the bar above the terminal, click the button at the top right with three vertical dots and select **Upload**.
+
+![Upload menu selection](images\vo1KqPLevku8N4DrR8QQNGo2CgT90D5LVbF7O%2Fg%2FE24%3D)
+
+If **Upload** is not clickable ("grayed out"), then click **Restart**. After the Cloud Shell environment is restarted, the **Upload** Link should be active.
+
+Execute these commands commands before starting the next step in the lab.
+
+```
+export GCLOUD_PROJECT=$DEVSHELL_PROJECT_ID
+```
+
+Copied!
+
+1. Click **Choose Files**, select the downloaded **dlp-input.png** image file, and **Upload** it to Cloud Shell.
+2. From **Cloud Shell**, click **Open Editor** . This will launch the Cloud Shell code editor, which includes a file browser.
+3. In the Cloud Shell code editor, on the left, you should see the **dlp-input.png** file.
+4. Click the **dlp-input.png** file to display the image and verify it was uploaded.
+5. From **Cloud Shell**, click **Open Terminal** to return to the terminal window.
+6. In the terminal, run the following command to redact the email address values from the image:
+
+```
+node redactImage.js $GCLOUD_PROJECT ~/dlp-input.png "" EMAIL_ADDRESS ~/dlp-redacted.png
+```
+
+Copied!
+
+1. Open **Editor**.
+2. In the Cloud Shell code editor, on the left, click the **dlp-redacted.png** file.
+
+You will see the image with the domain name redacted.
+
+![Sample image has the email address redacted](images\9gK7DmzeoUMro5IuFCXxSjIzAcDlgnyeyXeEOOvdKgU%3D)
+
+When calling the redact API, you specified `EMAIL_ADDRESS` as the infotype to redact. In the image, you should notice that the email address is no longer visible.
+
+#### Congratulations!
+
+In this lab, you did the following:
+
+- Enabled the DLP API.
+- Installed the Node JS DLP API, and sample.
+- Inspected string data for sensitive data.
+- Redacted sensitive data from string data and images.
+
+
+
+### QUIZ
+
+1. Which TWO of the following options are ways that Google Cloud automates for customers the mitigation of many content threats?
+
+- In Compute Engine, all files are scanned for ransomware type security breaches before uploading,
+
+- **In Google Drive, all files will undergo a malware scan prior to any file download or file sharing attempt.**
+
+  Correct! In addition, Google Safe Browsing and our Chrome browser protects users by identifying potentially dangerous links in email and showing warnings if users do click on them.
+
+- **Google has global visibility into malicious sites and content, and is able to warn incoming users of suspected malware.**
+
+  Correct! This ongoing insight makes detecting malware attacks very effective, and there is nothing for you to monitor or configure.
+
+  
+
+2. Which TWO of the following tools does Google Cloud make available to customers for the mitigation of content-related security threats?
+
+- Text Redaction API
+
+- **Cloud Data Loss Prevention API**
+
+  Correct! The DLP API can scan for, and redact, sensitive textual data from your files and incoming content.
+
+- Clean Data API
+
+- **Cloud Natural Language API**
+
+  Correct! The Natural Language API can help classify your content when used with other APIs, such as the Vision API.
+
+  
+
+3. Which TWO of the following statements are TRUE when speaking about content-related security threats?
+
+- Tracking and unmasking ransomware attackers, via incoming ransom payments, is usually not very difficult with today's modern banking systems.
+
+- **Ransomware is a type of malicious software exploit that threatens to publish or perpetually block access to data unless money is paid.**
+
+  Correct! Recent Google research shows cyber thieves have made at least 25 million dollars from ransomware in the last two years and this figure is expected to grow.
+
+- Public, user-supplied reviews, images, or videos are considered "safe content" and generally do not require additional security oversight.
+
+- **Screenshots or other images that are made public without redaction can trigger a content-related cyber attack threat.**
+
+  Correct! To complicate matters further, this is a type of security breach that is not always recognized.
+
+
+
+## Monitoring, Logging, Auditing and Scanning
+
+### LAB - Configuring and Using Cloud Logging and Cloud Monitoring
+
+#### Overview
+
+In this lab, you will learn common configurations and uses of both [Cloud Logging](https://cloud.google.com/logging) and [Cloud Monitoring](https://cloud.google.com/monitoring).
+
+You will learn how to view logs with filtering mechanisms, export logs to BigQuery syncs, and create logging metrics. You will also learn how to use Cloud Monitoring to view consumption metrics and create dashboards..
+
+##### Objectives
+
+In this lab, you will learn how to perform the following tasks:
+
+- View logs using a variety of filtering mechanisms.
+- Exclude log entries and disable log ingestion.
+- Export logs and run reports against exported logs.
+- Create and report on logging metrics.
+- Use Cloud Monitoring to monitor different Google Cloud projects.
+- Create a metrics dashboard.
+
+#### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+##### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images\WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images\hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+**Output:**
+
+```
+Credentialed accounts:
+ - <myaccount>@<mydomain>.com (active)
+</mydomain></myaccount>
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = <project_id>
+</project_id>
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+#### Task 1. Set up resources in your first project
+
+In this task, you create the Google Cloud resources for the first project.
+
+In the Qwiklabs Connection Details section, you will see *two* projects listed. The first project will contain active Google Cloud resources, which will generate logs and monitoring metric data.
+
+The second project will contain your Monitoring account configuration data.
+
+**Note:** Make sure that you are working on project 1 for this task!
+
+1. If you have not activated cloud shell yet then, activate the Cloud Shell by clicking on **Activate cloud shell**. If prompted, click **Continue**.
+2. In the Cloud Shell, download and unpack an archive that contains setup code:
+
+```
+curl https://storage.googleapis.com/cloud-training/gcpsec/labs/stackdriver-lab.tgz | tar -zxf -
+```
+
+Copied!
+
+```
+cd stackdriver-lab
+```
+
+Copied!
+
+1. Click on the **Open Editor** icon in the top-right corner of your Cloud Shell session.
+2. Click **Open in a new window** if prompted.
+3. Open the **stackdriver-lab** folder and select the **linux_startup.sh** file.
+4. Replace the `# install Ops Agent` section with the following:
+
+```
+# install Ops Agent
+curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+```
+
+Copied!
+
+1. After pasting, make sure that your lines of code are properly indented.
+2. Save your file.
+3. Now open the `setup.sh` file.
+4. Update the image version in `# create vms` section for windows-server (row 17) after `--image` with the following:
+
+```
+windows-server-2016-dc-core-v20240214
+```
+
+Copied!
+
+1. Add the following flag at the end of line 16 to set the machine type for the Linux VM:
+
+```
+--machine-type=e2-micro
+```
+
+Copied!
+
+1. Add the following flag at the end of line 17 to set the machine type for the Windows VM:
+
+```
+--machine-type=e2-standard-2
+```
+
+Copied!
+
+1. After pasting, make sure that your lines of code are properly indented.
+2. Save your file.
+3. In the Cloud Console, click **Open Terminal** in the top-right corner.
+
+The created resources will include:
+
+- Service accounts (for use by VMs).
+- Role assignments (granting service accounts permissions to write to Monitoring).
+- A Linux VM with Apache and the Ops Agent installed.
+- A Windows VM with Ops Agent installed.
+- A Google Kubernetes Engine cluster with an Nginx deployment.
+- A Pub/Sub Topic and Subscription.
+
+1. Run the following command to replace the zones in the setup script with a new one:
+
+```
+sed -i 's/us-west1-b/us-west1-a/g' setup.sh
+```
+
+Copied!
+
+```
+sed -i 's/us-west1-b/us-west1-a/g' gke.sh
+```
+
+Copied!
+
+1. Now run the following command. If prompted, click **Authorize**.
+
+```
+./setup.sh
+```
+
+Copied!
+
+You can safely ignore errors about service accounts and firewalls already existing.
+
+Ensure you receive a similar output that states that both the Linux and Windows VMs are created:
+
+```
+Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-029875ba6255/zones/us-west1-a/instances/linux-server-qwiklabs-gcp-00-029875ba6255].
+NAME: linux-server-qwiklabs-gcp-00-029875ba6255
+ZONE: us-west1-a
+MACHINE_TYPE: e2-micro
+PREEMPTIBLE:
+INTERNAL_IP: 10.138.0.2
+EXTERNAL_IP: 34.83.92.58
+STATUS: RUNNING
+Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-029875ba6255/zones/us-west1-a/instances/windows-server-qwiklabs-gcp-00-029875ba6255].
+......
+......
+NAME: windows-server-qwiklabs-gcp-00-029875ba6255
+ZONE: us-west1-a
+MACHINE_TYPE: e2-standard-2
+PREEMPTIBLE:
+INTERNAL_IP: 10.138.0.3
+EXTERNAL_IP: 35.247.97.91
+STATUS: RUNNING
+Updated [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-029875ba6255/zones/us-west1-a/instances/linux-server-qwiklabs-gcp-00-029875ba6255].
+```
+
+Click *Check my progress* to verify the objective.
+
+Set up resources in the first project
+
+
+
+Check my progress
+
+
+
+#### Task 2. View and filter logs in first project
+
+In this task, you view VM instance logs with simple filtering.
+
+#### See which services are writing logs
+
+1. Ensure that you are on the Google Cloud Console homepage.
+2. Verify you are still working in project 1; the project ID in the Console's info panel should match **Project ID 1** in your lab's connection details panel.
+3. View Cloud Logging by opening **Navigation menu > Logging > Logs Explorer**. If prompted, close the notification.
+4. On the left-hand panel, **Log fields** will be visible. Under **Resource Type**, you will see several Google Cloud services that are creating logs.
+
+All of these services are writing log entries. Entries from all these logs appear on the right, in the Query results pane. You can also query for results from specific logs, or that match specific criteria.
+
+###### View VM instance logs with simple filtering
+
+1. In the **Log fields** panel, under **Resource Type**, click **VM Instance**.
+
+After you click this:
+
+- The contents of the Log fields panel changes. You will see a new field named `INSTANCE ID`. It shows all the instance IDs of the VM instances that are writing log entries.
+- The Query box near the top of the page is populated with `resource.type="gce_instance"`. This means that only entries from VM instances will be logged and displayed.
+- The Query results pane also updates automatically—entries from VM Instances are the only logs displayed.
+
+1. In the **Instance Id** field, select one of the instance IDs. Logs for the associated VM instance appear in the Query results pane.
+2. Click inside the **Query** box. This now becomes editable.
+3. In the **Query** box, remove everything after line 1. You should see only line 1, which contains `resource.type="gce_instance"`.
+4. Click **Run query** (located in the top-right corner). In the Query results, you should see entries from all VM instance logs.
+5. Note that the logs panel reverts to its previous state.
+
+1. Turn on streaming logs by clicking **Stream logs** (top-right corner, above the "Run query" button).
+2. You should see new log entries showing up every 1-2 seconds as the background activity is generating unauthorized requests against your Web servers.
+
+**Note:** You might need to click **Restart streaming** if it pauses.
+
+You will now view overall web activity on any Linux Apache server.
+
+1. Stop log streaming by clicking on **Stop stream** in the top-right corner.
+2. Now click on the **All Log Names** dropdown, and select **syslog**, and then click **Apply**.
+
+Entries from syslog appear in the Query results pane.
+
+**Note:** You can also control log entry displays by selecting the log severity and time windows.
+
+#### Task 3. Use log exports
+
+In this task, you configure and test log exports to BigQuery.
+
+Cloud Logging retains log entries for 30 days. In most circumstances, you'll want to retain some log entries for an extended time (and possibly perform sophisticated reporting on the archived logs).
+
+Google Cloud provides a mechanism to have all log entries ingested into Cloud Monitoring also written to one or more archival `sinks`.
+
+##### Configure the export to BigQuery
+
+1. Go to Cloud Logging Exports (**Navigation menu > Logging > Log Router**).
+2. Click **Create Sink**.
+3. For the **Sink name**, type `vm_logs` and then click **Next**.
+4. For **Select sink service**, select **BigQuery dataset**.
+5. For **Select BigQuery dataset**, select **Create new BigQuery dataset**.
+6. For the **Dataset ID**, type `project_logs`, and click **Create Dataset**.
+7. Click **Next**.
+8. In the **Build inclusion filter** list box, copy and paste `resource.type="gce_instance"`.
+9. Click **Create Sink**. You will now return to a Log Router *Create log sink next steps* page (a message at the top may appear that says "Your log sink was successfully created. Data should be available soon.")
+
+**Note:** You could also export log entries to Pub/Sub or Cloud Storage.
+
+
+
+Exporting to Pub/Sub can be useful if you want to flow through an ETL process prior to storing in a database (`Monitoring **>** Pub/Sub **>** Dataflow **>** BigQuery/Bigtable`).
+
+
+
+Exporting to Cloud Storage will batch up entries and write them into Cloud Storage objects approximately every hour.
+
+##### Configure HTTP load balancing exports to BigQuery
+
+You will now create an export for the **HTTP load balancing** logs to BigQuery.
+
+1. From the left-hand navigation menu, select **Log Router** to return to the service homepage.
+2. Click **Create Sink**.
+3. For the **Sink name**, type `load_bal_logs` and then click **Next**.
+4. For **Select sink service**, select **BigQuery dataset**.
+5. For **Select BigQuery dataset**, select **project_logs**. (You created this BigQuery dataset in the previous set of steps.)
+6. Click **Next**.
+7. In the **Build inclusion filter** list box, copy and paste `resource.type="http_load_balancer"`.
+8. Click **Create Sink**.
+9. You will now be on the *Create log sink next steps* page for the log sink.
+10. From the left-hand navigation menu, select **Log Router** to return to the service homepage.
+
+The Log Router page appears, displaying a list of sinks (including the one you just created—`load_bal_logs`).
+
+##### Investigate the exported log entries
+
+1. Open BigQuery (**Navigation menu > BigQuery**).
+2. The "Welcome to BigQuery in the Cloud Console" message box opens. This message box provides a link to the quickstart guide and lists UI updates.
+3. Click **Done**.
+4. In the left pane in the Explorer section, click the arrow next to your project (this starts with `qwiklabs-gcp-xxx`) and you should see a `project_logs` dataset revealed under it.
+
+You will now verify that the BigQuery dataset has appropriate permissions to allow the export writer to store log entries.
+
+1. Click on the three dotted menu item ("View actions") next to the `project_logs` dataset and click **Open**.
+2. Then from the top-right hand corner of the Console, click the **Sharing** dropdown and select **Permissions**.
+3. On the Dataset permission page, you will see that your service accounts have the "BigQuery Data Editor" role.
+4. Close the dataset permissions panel.
+5. Expand the `project_logs` dataset to see the tables with your exported logs—you should see multiple tables (one for each type of log that's receiving entries).
+6. Click on the **syslog_(1)** table, then click **Details** to see the number of rows and other metadata. If the **syslog_(1)** table is not visible, try refreshing the browser.
+7. In **Details** tab, under the table info you will see the full table name in the **Table ID**, copy this table name.
+
+**Note:** Because the log entries are being streamed into BigQuery as they arrive to Cloud Monitoring, they are stored in a BigQuery streaming buffer. Roughly 24 hours after arriving in the buffer, they will be moved into regular BigQuery storage. You can perform queries against the table and both the data in regular storage and the buffer will be scanned.
+
+1. To see a subset of your tables fields, paste the below query in the query editor tab (replacing `qwiklabs-gcp-xx.project_logs.syslog_xxxxx` with the table name you copied in the previous step).
+
+```
+SELECT
+  logName, resource.type, resource.labels.zone, resource.labels.project_id,
+FROM
+  `qwiklabs-gcp-xx.project_logs.syslog_xxxxx`
+```
+
+Copied!
+
+1. Then click **Run**.
+
+Feel free to experiment with some other queries that might provide interesting insights.
+
+**Note:** Cloud Logging exports incoming log entries before any decision is made about ingesting the entry into logging storage. As a result, only new log entries will be exported to the sink. As a result, you may not see a `syslog_(1)` table as all the syslog entries were generated prior to the export.
+
+
+
+Existing log entries already ingested into Cloud Logging can be extracted using commands like:
+
+
+
+`gcloud logging read "resource.type=gce_instance AND logName=projects/[PROJECT_ID]/logs/syslog AND textPayload:SyncAddress" --limit 10 --format json`.
+
+**Note:** You have set up an export for all the log entries generated by all services in the project. You can also create aggregate exports, which export log entries generated across projects, grouped by billing account, folder, or organization.
+
+Click *Check my progress* to verify the objective.
+
+Configure the export to BigQuery
+
+
+
+Check my progress
+
+
+
+#### Task 4. Create a logging metric
+
+In this task, you create a metric that you can use to generate alerts if too many web requests generate access denied log entries.
+
+Cloud Monitoring allows you to create custom metrics based on the arrival of specific log entries.
+
+1. Go back to the Logs Explorer page (**Navigation menu > Logging > Logs Explorer**).
+
+**Note:** If prompted, click **Leave** for unsaved work.
+
+1. Select **Create Metric** from **Actions** dropdown (right-hand side of the Console) to create a logging metric based on this filter.
+2. In the Log-based metric Editor, set **Metric Type** as **Counter**.
+3. Under the **Details** section, set the **Log-based metric name** to **403s**.
+4. Under the **Filter selection** for **Build filter**, enter the following and replace `PROJECT_ID` with **Project ID 1**:
+
+```
+resource.type="gce_instance"
+log_name="projects/PROJECT_ID/logs/syslog"
+```
+
+Copied!
+
+1. Leave all the other fields at their default.
+2. Click **Create Metric**.
+3. You will make use of this metric in the dashboarding portion of the lab.
+
+Click *Check my progress* to verify the objective.
+
+Create a logging metric
+
+
+
+Check my progress
+
+
+
+#### Task 5. Create a monitoring dashboard
+
+In this task, you switch to the second project created by Qwiklabs and setup a Monitoring workspace.
+
+##### Switch projects
+
+1. Switch to the second project created by Qwiklabs (use the **Project ID 2** from the Qwiklabs Connection Details). The current project ID is displayed at the top of the console.
+
+![GCP project identifier](https://cdn.qwiklabs.com/hMaK8sTDLPIpOww01F7%2Brr%2F6JnoaFR6ijZs2Jvj5vOw%3D)
+
+1. Click the project name at the top of the Cloud Console and click the **All** tab.
+
+![Google Cloud all projects tab](images\obzf4XQJAOwh8xAEBtPHaWm66eoLYAY5ltoFqqQiZ3c%3D)
+
+1. Click the second project you want to switch to. Verify it is the **Project ID 2** from the Qwiklabs Connection Details.
+2. Click **Open**.
+
+##### Create a Monitoring workspace
+
+You will now setup a Monitoring workspace that's tied to your Google Cloud Project. The following steps create a new account that has a free trial of Monitoring.
+
+1. In the Cloud Console, click on **Navigation menu > Monitoring**.
+2. Wait for your workspace to be provisioned.
+
+When the Monitoring dashboard opens, your workspace is ready.
+
+![Cloud Monitoring Dashboard](images\Tv6EOQEJQfXaWXfTpUKfaA%2FvAp5xwzJl1ss5SGnmsv0%3D)
+
+Now add the first project to your Cloud Monitoring workspace.
+
+1. In the left menu, click **Settings**, then click **Metric Scope** and click **+ Add Projects**.
+2. Click **Select Projects**
+3. Select the checkmark next to your first project ID and click **Select**.
+4. Click **Add Projects**.
+
+##### Create a monitoring dashboard
+
+1. In the left pane, click **Dashboards**.
+2. Click **+ Create Dashboard**.
+3. Replace the generic dashboard name at the top with `Example Dashboard`.
+4. Click **Add Widget** > **Line**.
+5. For **Widget Title**, enter in **CPU Usage**.
+6. Click the **Metric** dropdown.
+7. Click **Active** to deselect it. The tick should disappear.
+8. For **Metric**, select **VM Instance > Instance > CPU usage**. Make sure it's the one that follows the format: `compute.googleapis.com/instance/cpu/usage_time`.
+9. Click **Apply**.
+10. Now click **Apply** in the top-right corner.
+11. Click **Add Widget** > **Line**.
+12. For **Widget Title**, enter in **Memory Utilization**.
+13. Click the **Metric** dropdown.
+14. Click **Active** to deselect it. The tick should disappear.
+15. For **Metric**, select **VM Instance > Memory > Memory Utilization**. Make sure it's the one that follows the format: `agent.googleapis.com/memory/percent_used`.
+16. Click **Apply**.
+17. Now click **Apply** in the top-right corner.
+
+You should now see your two graphs—one for CPU usage and the other for memory utilization—populated.
+
+![CPU usage and netowrk traffic graphs in the monitoring dashboard](images\XFLxoosE2QP83OL8%2Ftis0n%2BAEvrVo6SUhlpmDVa7ZXY%3D)
+
+You can now explore some other options by editing the charts such as Filter, Group By, and Aggregation.
+
+#### Congratulations!
+
+In this lab, you learned how to do the following:
+
+1. View logs using a variety of filtering mechanisms.
+2. Exclude log entries and disable log ingestion.
+3. Export logs and run reports against exported logs.
+4. Create and report on logging metrics.
+5. Use Cloud Monitoring to monitor different Google Cloud projects.
+6. Create a metrics dashboard.
+
+
+
+### LAB - Configuring and Viewing Cloud Audit Logs
+
+#### Overview
+
+In this lab, you will investigate [Cloud Audit Logs](https://cloud.google.com/logging/docs/audit). Cloud Audit Logs maintains two audit logs for each project and organization: Admin Activity and Data Access.
+
+Google Cloud services write audit log entries to these logs to help you answer the questions of "who did what, where, and when" within your Google Cloud projects.
+
+#### Objectives
+
+In this lab, you will learn how to perform the following tasks:
+
+- View audit logs in the Activity page.
+- View and filter audit logs in Cloud Logging.
+- Retrieve log entries with gcloud.
+- Export audit logs.
+
+##### Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+##### Activate Google Cloud Shell
+
+Google Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud.
+
+Google Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. In Cloud console, on the top right toolbar, click the Open Cloud Shell button.
+
+   ![Highlighted Cloud Shell icon](images\WGBFVIap4CrFWut%2BGdNFzNxeelWYHF1IqYSMFH6Ouq4%3D.png)
+
+2. Click **Continue**.
+
+It takes a few moments to provision and connect to the environment. When you are connected, you are already authenticated, and the project is set to your *PROJECT_ID*. For example:
+
+![Project ID highlighted in the Cloud Shell Terminal](images\hmMK0W41Txk%2B20bQyuDP9g60vCdBajIS%2B52iI2f4bYk%3D)
+
+**gcloud** is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+- You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+**Output:**
+
+```
+Credentialed accounts:
+ - <myaccount>@<mydomain>.com (active)
+</mydomain></myaccount>
+```
+
+**Example output:**
+
+```
+Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+```
+
+- You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = <project_id>
+</project_id>
+```
+
+**Example output:**
+
+```
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+```
+
+**Note:** Full documentation of **gcloud** is available in the [gcloud CLI overview guide ](https://cloud.google.com/sdk/gcloud).
+
+##### Check project permissions
+
+Before you begin your work on Google Cloud, you need to ensure that your project has the correct permissions within Identity and Access Management (IAM).
+
+1. In the Google Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **IAM & Admin** > **IAM**.
+2. Confirm that the default compute Service Account `{project-number}-compute@developer.gserviceaccount.com` is present and has the `editor` role assigned. The account prefix is the project number, which you can find on **Navigation menu > Cloud overview > Dashboard**.
+
+![Compute Engine default service account name and editor status highlighted on the Permissions tabbed page](images\SMuu68pzAXGA%2F%2FgiwoeYr02rez30D0rBU8FvkNAciFM%3D)
+
+**Note:** If the account is not present in IAM or does not have the `editor` role, follow the steps below to assign the required role.
+
+1. In the Google Cloud console, on the **Navigation menu**, click **Cloud overview > Dashboard**.
+2. Copy the project number (e.g. `729328892908`).
+3. On the **Navigation menu**, select **IAM & Admin** > **IAM**.
+4. At the top of the **IAM** page, click **+ Grant Access**.
+5. For **New principals**, type:
+
+```
+  {project-number}-compute@developer.gserviceaccount.com
+```
+
+Copied!
+
+1. Replace `{project-number}` with your project number.
+2. For **Select a role**, select **Project** (or Basic) > **Editor**.
+3. Click **Save**.
+
+#### Task 1. Enable data access audit logs
+
+In this task, you enable data access audit logs.
+
+Data access audit logs (except for BigQuery) are disabled by default, so you must first enable all audit logs. Logging charges for the volume of log data that exceeds the free monthly logs allotment.
+
+All logs received by Logging count towards the logs allotment limit, except for the Cloud Audit Logs that are enabled by default. This includes all Google Cloud Admin Activity audit logs, System Event logs, plus data access audit logs from BigQuery only.
+
+1. If you have not activated cloud shell yet then, on the Google Cloud Console title bar, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)). If prompted, click **Continue**.
+2. At the command prompt, run this command to retrieve the current IAM policy for your project and save it as `policy.json`:
+
+```
+gcloud projects get-iam-policy $DEVSHELL_PROJECT_ID \
+--format=json >./policy.json
+```
+
+Copied!
+
+1. Click the **Open Editor** button to view the Cloud Shell code editor.
+
+If an error indicates that the code editor could not be loaded because third-party cookies are disabled, click **Open in New Window** and switch to the new tab.
+
+1. In the Cloud Shell code editor, click the **policy.json** file to expose its contents.
+2. Add the following text to the `policy.json` file to enable data Access audit logs for all services. This text should be added just after the first `{` and before `"bindings": [`. (Be careful not to change anything else in the file).
+
+```
+   "auditConfigs": [
+      {
+         "service": "allServices",
+         "auditLogConfigs": [
+            { "logType": "ADMIN_READ" },
+            { "logType": "DATA_READ"  },
+            { "logType": "DATA_WRITE" }
+         ]
+      }
+   ],
+```
+
+Copied!
+
+The file will look similar to below.
+
+![Contents of the policy.json file](https://cdn.qwiklabs.com/PTMujGrCTlnBGI7aaNg3n3MvDMqNRFxzDY0DRBWgb6U%3D)
+
+1. Click the **Open Terminal** button to return to the Cloud Shell command line.
+2. At the command line, run the following command to set the IAM policy:
+
+```
+gcloud projects set-iam-policy $DEVSHELL_PROJECT_ID \
+./policy.json
+```
+
+Copied!
+
+The command will return and display the new IAM policy.
+
+#### Task 2. Generate some account activity
+
+In this task, you create resources that generate log activty that you can view in Cloud Audit logs.
+
+- In Cloud Shell, run the following commands to create a few resources. This will generate some activity that you will view in the audit logs:
+
+```
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+echo "this is a sample file" > sample.txt
+gsutil cp sample.txt gs://$DEVSHELL_PROJECT_ID
+gcloud compute networks create mynetwork --subnet-mode=auto
+gcloud compute instances create default-us-vm \
+--machine-type=e2-micro \
+--zone=us-east4-c --network=mynetwork
+```
+
+Copied!
+
+```
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID
+```
+
+Copied!
+
+#### Task 3. View the Admin Activity logs
+
+In this task, you view the Admin Activity logs.
+
+Admin Activity logs contain log entries for API calls or other administrative actions that modify the configuration or metadata of resources. For example, the logs record when VM instances and App Engine applications are created and when permissions are changed.
+
+To view the logs, you must have the Cloud Identity and Access Management roles Logging/Logs Viewer or Project/Viewer.
+
+Admin Activity logs are always enabled so there is no need to enable them. There is no charge for your Admin Activity audit logs.
+
+**Note:** You can view audit log entries in the Logs Viewer, Cloud Logging, and in the Cloud SDK. You can also export audit log entries to Pub/Sub, BigQuery, or Cloud Storage.
+
+##### Use the Cloud Logging page
+
+1. From the Cloud Console, select **Navigation menu > Logging > Logs Explorer**.
+2. Paste the following in the **Query builder** field and replace `[PROJECT_ID]` with your project ID. You can copy the **PROJECT_ID** from the **Qwiklabs Connection Details**.
+
+```
+logName = ("projects/[PROJECT_ID]/logs/cloudaudit.googleapis.com%2Factivity")
+```
+
+Copied!
+
+1. Click the **Run Query** button.
+2. Locate the log entry indicating that a Cloud Storage bucket was deleted. This entry will refer to `storage.googleapis.com`, which calls the `storage.buckets.delete` method to delete a bucket. The bucket name is the same name as your project id.
+3. Within that entry, click on the **storage.googleapis.com** text and select **Show matching entries**.
+4. Notice a line was added to the query preview textbox (located where the query builder had been) to show only storage events.
+
+```
+logName = ("projects/qwiklabs-gcp-xxxxxxxxx/logs/cloudaudit.googleapis.com%2Factivity")
+protoPayload.serviceName="storage.googleapis.com"
+```
+
+Copied!
+
+You should now see only the cloud storage entries.
+
+1. Within that entry, click on the **storage.buckets.delete** text and select **Show matching entries**.
+2. Notice another line was added to the Query preview textbox and now you can only see storage delete entries.
+
+This technique can be used to easily locate desired events.
+
+1. In the Query results, expand the **Cloud Storage delete** entry and then expand the **protoPayload** field.
+2. Expand the **authenticationInfo** field and notice you can see the email address of the user that performed this action.
+
+Feel free to explore other fields in the entry.
+
+##### Use the Cloud SDK
+
+Log entries can also be read using the Cloud SDK command:
+
+**Example output:**
+
+```
+gcloud logging read [FILTER]
+```
+
+- In the Cloud Shell pane, use this command to retrieve only the audit activity for storage bucket deletion:
+
+**Note:** If Cloud Shell is disconnected, then click **reconnect**.
+
+```
+gcloud logging read \
+"logName=projects/$DEVSHELL_PROJECT_ID/logs/cloudaudit.googleapis.com%2Factivity \
+AND protoPayload.serviceName=storage.googleapis.com \
+AND protoPayload.methodName=storage.buckets.delete"
+```
+
+Copied!
+
+#### Task 4. Export the audit logs
+
+In this task, you export audit logs. Individual audit log entries are kept for a specified length of time and are then deleted. The Cloud Logging [Quota Policy](https://cloud.google.com/logging/quotas) explains how long log entries are retained. You cannot otherwise delete or modify audit logs or their entries.
+
+| **Audit log type** | **Retention period** |
+| :----------------- | :------------------- |
+| `Admin Activity`   | `400 days`           |
+| `Data Access`      | `30 days`            |
+
+For longer retention, you can export audit log entries like any other Cloud Logging log entries and keep them for as long as you wish.
+
+##### Export audit logs
+
+When exporting logs, the current filter will be applied to what is exported.
+
+1. In Logs Explorer, enter a query string in the **Query builder** to display all the audit logs. (This can be done by deleting all lines in the filter except the first one.) Your filter will look like what is shown below. (Note that your project ID will be different.)
+
+```
+logName = ("projects/[PROJECT_ID]/logs/cloudaudit.googleapis.com%2Factivity")
+```
+
+Copied!
+
+1. Click the **Run Query** button.
+2. Click on **Actions > Create Sink** button.
+3. For the **Sink Name** name, enter `AuditLogsExport` and click **Next**.
+4. For the **Sink service**, enter `BigQuery dataset`.
+5. Click **Select BigQuery dataset** and then select **Create new BigQuery dataset**.
+6. For the **Dataset ID**, enter `auditlogs_dataset` and click **Create Dataset**.
+7. Uncheck the **Use Partitioned Tables** checkbox, if it is already selected, and click **Next**.
+8. In the Build inclusion filter list box, make sure that this filter text is entered `logName = ("projects/[PROJECT_ID]/logs/cloudaudit.googleapis.com%2Factivity")`.
+9. Click the **Create Sink** button. The Logs Router Sinks page appears. Now, click on **Logs Router**.
+
+On this page, you should be able to see the AuditLogsExport sink.
+
+1. To the right of the AuditLogsExport sink, click the button with three dots (![More icon](https://cdn.qwiklabs.com/2ufrDePg5inKfodUoT2Kib4oE7II7emYn%2BypCC85FjQ%3D)) and select **View sink details**.
+
+This will show information about the sink that you created.
+
+1. Click **Cancel** when done.
+
+**Note:** You could also export log entries to Pub/Sub or Cloud Storage. Exporting to Pub/Sub can be useful if you want to flow through an ETL process prior to storing in a database **(Cloud Operations > PubSub > Dataflow > BigQuery/Bigtable)**. Exporting to Cloud Storage will batch up entries and write them into Cloud Storage objects approximately once an hour.
+
+**Note:** All future logs will now be exported to BigQuery and the BigQuery tools can be used to perform analysis on the audit log data. The export does not export existing log entries.
+
+1. In Cloud Shell, run the following commands to generate some more activity that you will view in the audit logs exported to BigQuery:
+
+```
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+gsutil mb gs://$DEVSHELL_PROJECT_ID-test
+echo "this is another sample file" > sample2.txt
+gsutil cp sample.txt gs://$DEVSHELL_PROJECT_ID-test
+gcloud compute instances delete --zone=us-east4-c \
+--delete-disks=all default-us-vm
+```
+
+Copied!
+
+When prompted, enter `y`.
+
+```
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID-test
+```
+
+Copied!
+
+#### Task 5. Use BigQuery to analyze logs
+
+In this task, you export logs to a BigQuery dataset. You then analyze the logs using Query editor.
+
+**Note:** When you export logs to a BigQuery dataset, Cloud Logging creates dated tables to hold the exported log entries. Log entries are placed in tables whose names are based on the entries' log names.
+
+1. Go to **Navigation menu > BigQuery**. If prompted, log in with the Qwiklabs-provided credentials.
+2. The *Welcome to BigQuery in the Cloud Console* message box opens. This message box provides a link to the quickstart guide and lists UI updates.
+3. Click **Done**.
+4. In the left pane, under the **Explorer** section, click your project. This starts with `(qwiklabs-gcp-xxx)`. You should see an **auditlogs_dataset** dataset under it.
+5. Verify that the BigQuery dataset has appropriate permissions to allow the export writer to store log entries. Click on the **auditlogs_dataset** dataset.
+6. From the **Sharing** dropdown, select **Permissions**.
+7. On the Dataset Permission page, you will see the service account listed as **BigQuery Data Editor** member. If it's not already listed, you can add a service account under **Add Principal** and grant it the data editor role.
+
+![Dataset permissions page](images\x8Ajmkj2uxvEjCGzcLWpWDjfinG656uLnPx5AmBuvME%3D)
+
+1. Click the **Close** button to close the **Share Dataset** screen.
+2. Expand the **dataset** to see the table with your exported logs. (Click on the expand icon to expand the dataset.)
+3. Click on the **table name** and take a moment to review the **schemas** and **details** of the tables that are being used.
+4. Click the **Query > In new tab** button.
+5. In Cloud Shell, run the following commands again to generate some more activity that you will view in the audit logs exported to BigQuery:
+
+```
+gcloud compute instances create default-us-vm \
+--zone=us-east4-c --network=mynetwork
+```
+
+Copied!
+
+```
+gcloud compute instances delete --zone=us-east4-c \
+--delete-disks=all default-us-vm
+```
+
+Copied!
+
+When prompted, enter `y`.
+
+```
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+gsutil mb gs://$DEVSHELL_PROJECT_ID-test
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID-test
+```
+
+Copied!
+
+1. Delete the text provided in the **Query editor** window and paste in the query below. This query will return the users that deleted virtual machines in the last 7 days.
+
+```
+#standardSQL
+SELECT
+  timestamp,
+  resource.labels.instance_id,
+  protopayload_auditlog.authenticationInfo.principalEmail,
+  protopayload_auditlog.resourceName,
+  protopayload_auditlog.methodName
+FROM
+`auditlogs_dataset.cloudaudit_googleapis_com_activity_*`
+WHERE
+  PARSE_DATE('%Y%m%d', _TABLE_SUFFIX) BETWEEN
+  DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AND
+  CURRENT_DATE()
+  AND resource.type = "gce_instance"
+  AND operation.first IS TRUE
+  AND protopayload_auditlog.methodName = "v1.compute.instances.delete"
+ORDER BY
+  timestamp,
+  resource.labels.instance_id
+LIMIT
+  1000
+```
+
+Copied!
+
+1. Click the **Run** button. After a couple of seconds you will see each time someone deleted a virtual machine within the past 7 days. You should see two entries, which is the activity you generated in this lab. Remember, BigQuery is only showing activity since the export was created.
+2. Delete the text in the **Query_editor** window and paste in the query below. This query will return the users that deleted storage buckets in the last 7 days.
+
+```
+#standardSQL
+SELECT
+  timestamp,
+  resource.labels.bucket_name,
+  protopayload_auditlog.authenticationInfo.principalEmail,
+  protopayload_auditlog.resourceName,
+  protopayload_auditlog.methodName
+FROM
+`auditlogs_dataset.cloudaudit_googleapis_com_activity_*`
+WHERE
+  PARSE_DATE('%Y%m%d', _TABLE_SUFFIX) BETWEEN
+  DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AND
+  CURRENT_DATE()
+  AND resource.type = "gcs_bucket"
+  AND protopayload_auditlog.methodName = "storage.buckets.delete"
+ORDER BY
+  timestamp,
+  resource.labels.instance_id
+LIMIT
+  1000
+```
+
+Copied!
+
+1. Click the **Run** button. After a couple seconds you will see entries showing each time someone deleted a storage bucket within the past 7 days.
+
+**Note:** As you can see, the ability to analyze audit logs in BigQuery is very powerful. In this activity, you viewed just two examples of querying audit logs.
+
+Click *Check my progress* to verify the objective.
+
+Export audit logs and use BigQuery to analyze logs
+
+
+
+Check my progress
+
+
+
+#### Congratulations!
+
+In this lab, you have done the following:
+
+1. Viewed audit logs on the activity page.
+2. Viewed and filtered audit logs in Cloud Operations.
+3. Retrieved log entries with `gcloud`.
+4. Exported audit logs.
+
+
+
+### QUIZ
+
+1. Which one of the following is NOT a benefit for automating security in Google Cloud environments?
+
+- Security automation allows scaling faster than the growth of threats and assets.
+
+- Security automation Improves consistency, quickness, and reliability.
+
+- **While beneficial in some situations, the time invested in automating certain tasks is not worth it due to a lack of Google Cloud services that support this framework.**
+
+  Correct! Investing in automation can save a significant amount of time and Google Cloud offers many services for automation, including Security Command Center, Web Security Scanner, and Artifact Registry.
+
+- Once you have encapsulated some task in automation, anyone can execute the task.
+  
+
+2. Which TWO of the following statements about Cloud Audit Logs are TRUE?
+
+- **Enabling Data Access audit logs might result in your project being charged for the additional logs usage.**
+
+  Correct! These logs are disabled by default because they can become quite large and incur extra charges.
+
+- Unlike Cloud Logging logs, you cannot export Cloud Audit Logs entries to BigQuery.
+
+- Data Access audit logs record data-access operations on resources that are publicly shared.
+
+- **Cloud Audit Logs maintains four audit logs for each project, folder, and organization.**
+
+- Correct! The four audit logs maintained are “Admin Activity logs”, “System Event logs”, “Data Access logs”, and “Policy Denied logs.”
+
+  
+
+3. Which one of the following statements about Security Command Center is NOT true?
+
+- Security Command Center helps you prevent, detect, and respond to threats.
+
+- **Security Command Center requires three IAM administrative permissions to set up**
+
+- Security Command Center provides a centralized view for cloud resources.
+
+- Security Command Center works by generating “findings” associated with assets.
+
+  Correct! Security Command Center requires only two IAM administrative permissions to set up—Organization Administrator and Security Center Admin roles.
+
+4. Which TWO of the following statements about Cloud Monitoring and Cloud Logging are TRUE?
+
+- While Cloud Logging is not built-in to most Google Cloud services, you can easily add it for a reasonable fee.
+
+- **You can analyze log data in BigQuery.**
+
+  Correct! This feature allows you to create sophisticated log analysis reports.
+
+- **The Cloud Logging Agent can be installed on both Compute Engine and AWS EC2 instances.**
+
+  Correct! This allows you to stream logs from third-party applications into Cloud Logging.
+
+- Cloud Monitoring and Cloud Logging retain logs for an indefinite period of time.
 
 
 
