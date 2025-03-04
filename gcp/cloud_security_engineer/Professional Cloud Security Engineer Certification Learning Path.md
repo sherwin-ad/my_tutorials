@@ -5536,7 +5536,7 @@ This completes our lab for the Network Connectivity Center as a Transit hub with
 
 
 
-### Configuring Network Connectivity Center as a Transit Hub
+### LAB - Configuring Network Connectivity Center as a Transit Hub
 
 #### Overview
 
@@ -20504,9 +20504,5912 @@ Check my progress
 
 In this lab you configured a default Kubernetes cluster in Google Kubernetes Engine. You then probed and exploited the access available to your pod, hardened the cluster, and validated those malicious actions were no longer possible.
 
-### Next steps / Learn more
+### 
+
+# 14 - Build a Secure Google Cloud Network
+
+
+
+## LAB - Securing Virtual Machines using BeyondCorp Enterprise (BCE)
+
+## Overview
+
+In this lab, you will learn how to use BeyondCorp Enterprise (BCE) and Identity-Aware Proxy (IAP) TCP forwarding to enable administrative access to VM instances that do not have external IP addresses or do not permit direct access over the internet.
+
+### What you'll learn
+
+- Enable IAP TCP forwarding in your Google Cloud project
+- Test connectivity to your Linux and Windows instances
+- Configure the required firewall rules for BCE
+- Grant permissions to use IAP TCP forwarding
+- Demonstrate tunneling using SSH and RDP connections
+
+## Setup
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources will be made available to you.
+
+This hands-on lab lets you do the lab activities yourself in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials that you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito or private browser window to run this lab. This prevents any conflicts between your personal account and the Student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab---remember, once you start, you cannot pause a lab.
+
+**Note:** If you already have your own personal Google Cloud account or project, do not use it for this lab to avoid extra charges to your account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a pop-up opens for you to select your payment method. On the left is the **Lab Details** panel with the following:
+
+   - The **Open Google Cloud console** button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the **Sign in** page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-04-e5ae9b12916a@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the **Username** in the **Lab Details** panel.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   AWZm7DHhCmiR
+   ```
+
+   Copied!
+
+   You can also find the **Password** in the **Lab Details** panel.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To view a menu with a list of Google Cloud products and services, click the **Navigation menu** at the top-left. ![Navigation menu icon](images\nUxFb6oRFr435O3t6V7WYJAjeDFcrFb16G9wHWp5BzU%3D)
+
+You will need a RDP client pre-installed so that you can connect and test Windows instances.
+
+## Task 1. Enable IAP TCP forwarding in your Google Cloud project
+
+1. Open the **Navigation Menu** and select **APIs and Services > Library.**
+2. Search for **IAP** and select **Cloud Identity-Aware Proxy API.**
+3. Click **Enable.**
+
+![Cloud Identity-Aware Proxy API](images\frFS%2FFAb%2FOnrEw6JvbOul9inaWHcjGCINDlXIf23S84%3D)
+
+## Task 2. Create Linux and Windows instances
+
+Create three instances for this lab: - Two for demonstration purposes (Linux and Windows) - One for testing connectivity (Windows)
+
+### Linux instance
+
+1. From the **Navigation Menu** and select **Compute Engine**.
+2. Click **Create instance** and use the following configuration to create a VM. Leave the rest as default.
+
+- Name: **linux-iap**
+- Zone: **`us-east4-a`**
+
+1. Click on **Advanced options** and select **Networking**. Under **network interfaces** click the defult network to edit. Then change the External IPV4 address to **None**.
+
+2. Click **Done**.
+
+   ![network interface fillout out](images\EYBOeI1oHeH6by7DMvWUi4aZqNj0CNGIPJj89%2BPpRvo%3D)
+
+3. Then click **create**. This VM will be referred to as **linux-iap**
+
+### Windows instances
+
+1. To create the **Windows Demo VM** click **Create instance** and use the following configuration to create a VM. Leave the rest as default.
+
+- Name: **windows-iap**
+- Zone: **`us-east4-a`**
+- Under the **boot disk** section, click on **Change**
+
+1. For the OS, select the following:
+
+   - Public Images **>** Operating system **>** Windows Server
+   - Version **>** Windows Server 2016 Datacenter
+
+   ![Windows Version Select](images\zWBJlzl8Q5W%2BawOogvBjDqGR6do%2FANerOjcULzqwnKc%3D)
+
+2. Click **Select**.
+
+3. Click on **Advanced options** and select **Networking**. Under **network interfaces** click the defult network to edit. Then change the External IPV4 address to **None**. Click **Done**.
+
+4. Then click **create**. This VM will be referred to as **windows-iap**
+
+5. To create the **Windows Connectivity VM**, click **Create instance** and use the following configuration to create a VM. Leave the rest as default.
+
+- Name: **windows-connectivity**
+- Zone: **`us-east4-a`**
+- Under the **boot disk** section, click on **Change**
+
+1. For the OS, set the following on the **Custom Images** tab:
+
+   - Source project for images: `Qwiklabs Resources`
+   - Image: `iap-desktop-v001`
+
+2. Click **Select**.
+
+3. For access scopes, select **Allow full access to all Cloud APIs**
+
+   **Do not** disable external IP for this instance
+
+4. Then click **create**. This VM will be referred to as **windows-connectivity**
+
+Check if all 3 instances have been created
+
+
+
+Check my progress
+
+
+
+## Task 3. Test connectivity to your Linux and Windows instances
+
+1. After the instances are created, You will test access to **linux-iap** and **windows-iap** to ensure that you aren’t able to access the VMs without the external IP.
+
+2. For **linux-iap** click on the SSH button to get into the machine and ensure you get a message similar to the following.
+
+   ![linux connection failed](images\BUgJZz42%2Blh5BOfztdxaIGNOxuSJzrhM5nOLdeBbhTw%3D)
+
+3. For **windows-iap:** click the RDP button and ensure you get a message similar to the following:
+
+   ![windows connection failed](https://cdn.qwiklabs.com/PlKmkge46380esSm%2BHO%2BkYmuukGqLzGGfnj1Y9LX78Y%3D)
+
+The following steps for configuring and using IAP will allow you to connect to the instances that don’t have external IPs.
+
+## Task 4. Configure the required firewall rules for BCE
+
+1. Open the **Navigation Menu** and select **VPC Network > Firewall** and click **Create Firewall Rule**
+2. Configure the following settings:
+
+| Field                | Setting                                                      |
+| :------------------- | :----------------------------------------------------------- |
+| Name                 | **allow-ingress-from-iap**                                   |
+| Direction of traffic | **Ingress**                                                  |
+| Target               | **All instances in the network**                             |
+| Source filter        | **IPv4 Ranges**                                              |
+| Source IPv4 Ranges   | **35.235.240.0/20**                                          |
+| Protocols and ports  | **Select TCP and enter 22, 3389** to allow both SSH and RDP respectively |
+
+1. Click **CREATE** to create the firewall rule.
+
+Check proper firewall rules have been created.
+
+
+
+Check my progress
+
+
+
+## Task 5. Grant permissions to use IAP TCP forwarding
+
+Use the following steps to configure the iap.tunnelResourceAccessor role by VM.
+
+1. Open **Navigation Menu** and select **Security > Identity-Aware Proxy**, switch to the **SSH and TCP Resources** tab (safely ignore the Oauth Consent screen error in the HTTPS section).
+2. Select the **linux-iap** and **windows-iap** VM instances.
+3. Click **Add principal**, then enter in the service account associated with your **Windows connectivity** VM. This should be of the form `265347518016`-compute@developer.gserviceaccount.com.
+4. Select **Cloud IAP > IAP-Secured Tunnel User** for the role.
+5. Click **SAVE**.
+6. From the top-right of the page click the "S" icon to open your profile and copy the email of the student account.
+7. Click **Add principal** again to add your student account.
+8. Enter in the **student account**. You can copy this value from the lab details pane.
+9. Select **Cloud IAP > IAP-Secured Tunnel User** for the role.
+10. Click **SAVE**.
+
+The IAP-Secured Tunnel User role will grant the windows-connectivity instance to connect to resources using IAP. Adding the student account will help verify the step was done correctly.
+
+![Add Principals](images\AGyfsxvO5f%2F5dsiIKH%2F%2FT8gjoa1OiStOAiej1dwXvAM%3D)
+
+Check that IAM roles have been set for the service account.
+
+
+
+Check my progress
+
+
+
+## Task 5. Use IAP Desktop to connect to the Windows and Linux instances
+
+It is possible to use IAP Desktop to connect to instances using a graphical user interface from an instance with Windows Desktop. You can read more about [IAP Desktop](https://github.com/GoogleCloudPlatform/iap-desktop) on the GitHub repository hosting the download for the tool.
+
+To use IAP Desktop to connect to the instances in this lab:
+
+1. RDP to the `windows-connectivity` instance by downloading the RDP file. Go to the **Compute Engine > VM Instances** page. Select the down arrow next to the **windows-connectivity** instance on the Compute Engine landing page and download the file.
+2. Open the RDP file to connect to the instance via Remote Desktop Protocol. You will use the credentials below to connect to the instance once prompted:
+
+- Username: student
+- Password: Learn123!
+
+1. Once connected to the **windows-connectivity** instance, locate and open the IAP Desktop application on the desktop of the instance.
+2. Once the application opens, click on the sign in with Google button to log in. Use the username and password provided in the lab console to authenticate with **IAP Desktop**. Make sure you select the option to "See, edit, configure and delete Google Cloud data."
+
+![oauth_permissions.png](images\1QtyF7%2B2Y7SvX4xtobOsSzE%2FLouBHJLxVMTPbY8UTho%3D)
+
+1. You will need to add the project to connect to Compute Engine instances within IAP Desktop after authentication. Select the lab project associated with your lab instance:
+
+![add_project.png](images\pFRf3EjFJqgsJ58BPCTRpu2Eb7yIMuQtKmRiZ6PKzIU%3D)
+
+Double click on the **windows-iap** instance in the IAP Desktop application to log into the the instance.
+
+1. You may be prompted to provide credentials for the instance the first time you try to connect to it through IAP Desktop. Select "Generate new credentials" the first time logging into the instance.
+
+![credentials.png](images\Aq6XFqrQc%2BFkFpnS%2BBKC0Hmy5se%2F6vzDHAGFJGUTyvk%3D)
+
+1. After the credentials are created you will be taken to the desktop of the `windows-iap` instance and can see the end user experience.
+
+![windows_iap.png](images\qI5Xc6iGs85ZuoxPle32U38JN9P0%2FZB4VuBogVMjPp4%3D)
+
+## Task 6. Demonstrate tunneling using SSH and RDP connections
+
+1. You will testconnectivity to the RDP instance using an RDP client. This is because you need to connect to the instance via an IAP tunnel locally.
+2. Go to the **Compute Engine > VM Instances** page.
+3. For the **windows-connectivity** instance click the down arrow and select **Set windows password**. Copy the password and save it.
+
+Then click down arrow next to connect and click download the RDP file. Open the RDP file with your client and enter in your password.
+
+1. Once you have connected to the **windows-connectivity** instance. Open the **Google Cloud Shell SDK**:
+
+![Google Cloud SDK Shell desktop icon](images\BCl691Ssf881O549%2FagVx5beKV0CF109wpHLf%2BLOISM%3D)
+
+Now from the command line enter the following command to see if you can connect to the **linux-iap instance**:
+
+```
+gcloud compute ssh linux-iap
+```
+
+Copied!
+
+Click **Y** when promopted to continue and to select the zone.
+
+Make sure that you select the right zone for the instance when prompted.
+
+Then **Accept** the Putty security alert.
+
+You should receive a message that no external IP address was found and that it will use IAP tunneling.
+
+![Output showing external IP address not found](images\%2BxgrSRTvVJbJdyJ3uLgKFkM6Dq81JAthRcPaJFFOH44%3D)
+
+Update Putty Settings to allow Tunnel connections locally. Click the top left corner of the Putty Window > Change Settings.
+
+![Putty Settings](images\9FEo0pSWmZRPXQja7crg43TFKtPtNi0e2ALxqSZ44qQ%3D)
+
+Allow local ports to accept connections from other hosts by checking the checkbox "Local ports accept connections from other hosts". ![Tunnel Settings](images\J65cQl1VUnCd3NkkEruYxp2zSruQ1HnNzjelNWUynU0%3D)
+
+1. Close the Putty session and click **Apply**. Use the following command to create an encrypted tunnel to the RDP port of the VM instance:
+
+```
+gcloud compute start-iap-tunnel windows-iap 3389 --local-host-port=localhost:0  --zone=us-east4-a
+```
+
+Copied!
+
+Once you see the message about “Listening on port [XXX].” Copy the tunnel port number.
+
+1. Return to the Google Cloud Console and go to the **Compute Engine > VM Instances** page.
+
+Set and copy the password for the **windows-iap** instance.
+
+Return to the RDP session now.
+
+Leave gcloud running and open the Microsoft Windows **Remote Desktop Connection** app.
+
+Enter the tunnel endpoint where the endpoint is the tunnel port number from the earlier step like so:
+
+- localhost:endpoint
+
+  
+
+Click **Connect**.
+
+Then enter the previous credentials you copied earlier. You will be successfully RDPed into your instance now!
+
+If prompted click **Yes**.
+
+![Windows 10 RDP instance page](\images\S%2BMwhPUkjzd1LkDzxOVJPtHbU3BcgpIyDtV2BWhDbk8%3D)
+
+You were able to access the instance even without an external IP address using IAP
+
+Confirm VM is accessible via IAP enabled SA
+
+
+
+Check my progress
+
+Congratulations! You were able to successfully connect to both instances using IAP.
+
+## Congratulations
+
+You learned how to use BeyondCorp Enterprise (BCE) and Identity-Aware Proxy (IAP) TCP forwarding by deploying 2 VM's, `windows-iap` and `linux-iap`, without IP addresses and configuring an IAP tunnel which gave you access to both instances using a third VM, `windows-connectivity`.
+
+
+
+## LAB - Multiple VPC Networks
+
+## Overview
+
+Virtual Private Cloud (VPC) networks allow you to maintain isolated environments within a larger cloud structure, giving you granular control over data protection, network access, and application security.
+
+In this lab you create several VPC networks and VM instances, then test connectivity across networks. Specifically, you create two custom mode networks (**managementnet** and **privatenet**) with firewall rules and VM instances as shown in this network diagram:
+
+![Network diagram](images\OBtRY37ZCmWiHi%2FHsG8XCSGDBfsuKk3IMJVgQscsg2E%3D)
+
+The **mynetwork** network with its firewall rules and two VM instances (**mynet-vm-1** and **mynet-vm-2**) have already been created for you for this lab.
+
+## Objectives
+
+In this lab, you will learn how to perform the following tasks:
+
+- Create custom mode VPC networks with firewall rules
+- Create VM instances using Compute Engine
+- Explore the connectivity for VM instances across VPC networks
+- Create a VM instance with multiple network interfaces
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-00-56936274bf09@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   Td8iY5FMBo8n
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-01-2d86450f8da2`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-01-2d86450f8da2
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-00-56936274bf09@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-01-2d86450f8da2
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Task 1. Create custom mode VPC networks with firewall rules
+
+Create two custom networks **managementnet** and **privatenet**, along with firewall rules to allow **SSH**, **ICMP**, and **RDP** ingress traffic.
+
+### Create the managementnet network
+
+Create the **managementnet** network using the Cloud console.
+
+1. In the Cloud console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **VPC network** > **VPC networks**.
+
+![Navigation menu](images\TX50KUD1Lzj2j5YG3d07lXCbUxcxrmIso8g%2BSWZxNQA%3D)
+
+1. Notice the **default** and **mynetwork** networks with their subnets.
+
+   Each Google Cloud project starts with the **default** network. In addition, the **mynetwork** network has been premade as part of your network diagram.
+
+2. Click **Create VPC Network**.
+
+3. Set the **Name** to `managementnet`.
+
+4. For **Subnet creation mode**, click **Custom**.
+
+5. Set the following values, leave all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Name       | managementsubnet-1                               |
+   | Region     | `us-west1`                                       |
+   | IPv4 range | 10.130.0.0/20                                    |
+
+6. Click **Done**.
+
+7. Click **EQUIVALENT COMMAND LINE**.
+
+   These commands illustrate that networks and subnets can be created using the Cloud Shell command line. You will create the **privatenet** network using these commands with similar parameters.
+
+8. Click **Close**.
+
+9. Click **Create**.
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have successfully created a managementnet network, you will see an assessment score.
+
+Create the managementnet network
+
+
+
+Check my progress
+
+
+
+### **Create the privatenet network**
+
+Create the **privatenet** network using the Cloud Shell command line.
+
+1. Run the following command to create the **privatenet** network:
+
+```
+gcloud compute networks create privatenet --subnet-mode=custom
+```
+
+Copied!
+
+1. Run the following command to create the **privatesubnet-1** subnet:
+
+```
+gcloud compute networks subnets create privatesubnet-1 --network=privatenet --region=us-west1 --range=172.16.0.0/24
+```
+
+Copied!
+
+1. Run the following command to create the **privatesubnet-2** subnet:
+
+```
+gcloud compute networks subnets create privatesubnet-2 --network=privatenet --region=europe-west4 --range=172.20.0.0/20
+```
+
+Copied!
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have successfully created a privatenet network, you will see an assessment score.
+
+Create the privatenet network
+
+
+
+Check my progress
+
+
+
+1. Run the following command to list the available VPC networks:
+
+```
+gcloud compute networks list
+```
+
+Copied!
+
+The output should look like this:
+
+```
+NAME: default
+SUBNET_MODE: AUTO
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE:
+GATEWAY_IPV4:
+
+NAME: managementnet
+SUBNET_MODE: CUSTOM
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE:
+GATEWAY_IPV4:
+
+...
+```
+
+**Note:** **default** and **mynetwork** are auto mode networks, whereas, **managementnet** and **privatenet** are custom mode networks. Auto mode networks create subnets in each region automatically, while custom mode networks start with no subnets, giving you full control over subnet creation
+
+1. Run the following command to list the available VPC subnets (sorted by VPC network):
+
+```
+gcloud compute networks subnets list --sort-by=NETWORK
+```
+
+Copied!
+
+The output should look like this:
+
+```
+NAME: default
+REGION: us-west1
+NETWORK: default
+RANGE: 10.128.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE:
+INTERNAL_IPV6_PREFIX:
+EXTERNAL_IPV6_PREFIX:
+
+...
+```
+
+**Note:** As expected, the **default** and **mynetwork** networks have subnets in [each region **(zones/regions may changes as per lab's requirements)**](https://cloud.google.com/compute/docs/regions-zones/#available) as they are auto mode networks. The **managementnet** and **privatenet** networks only have the subnets that you created as they are custom mode networks .
+
+1. In the Cloud console, navigate to **Navigation menu** > **VPC network** > **VPC networks**.
+2. You see that the same networks and subnets are listed in the Cloud console.
+
+### Create the firewall rules for managementnet
+
+Create firewall rules to allow **SSH**, **ICMP**, and **RDP** ingress traffic to VM instances on the **managementnet** network.
+
+1. In the Cloud console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **VPC network** > **Firewall**.
+
+2. Click **+ Create Firewall Rule**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified)             |
+   | :------------------ | :----------------------------------------------------------- |
+   | Name                | managementnet-allow-icmp-ssh-rdp                             |
+   | Network             | managementnet                                                |
+   | Targets             | All instances in the network                                 |
+   | Source filter       | IPv4 Ranges                                                  |
+   | Source IPv4 ranges  | 0.0.0.0/0                                                    |
+   | Protocols and ports | Specified protocols and ports, and then *check* tcp, *type:* 22, 3389; and *check* Other protocols, *type:* icmp. |
+
+**Note:** Make sure to include the **/0** in the **Source IPv4 ranges** to specify all networks.
+
+1. Click **EQUIVALENT COMMAND LINE**.
+
+   These commands illustrate that firewall rules can also be created using the Cloud Shell command line. You will create the **privatenet**'s firewall rules using these commands with similar parameters.
+
+2. Click **Close**.
+
+3. Click **Create**.
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have successfully created firewall rules for managementnet network, you will see an assessment score.
+
+Create the firewall rules for managementnet
+
+
+
+Check my progress
+
+
+
+### Create the firewall rules for privatenet
+
+Create the firewall rules for **privatenet** network using the Cloud Shell command line.
+
+1. In Cloud Shell, run the following command to create the **privatenet-allow-icmp-ssh-rdp** firewall rule:
+
+```
+gcloud compute firewall-rules create privatenet-allow-icmp-ssh-rdp --direction=INGRESS --priority=1000 --network=privatenet --action=ALLOW --rules=icmp,tcp:22,tcp:3389 --source-ranges=0.0.0.0/0
+```
+
+Copied!
+
+The output should look like this:
+
+```
+Creating firewall...done.
+NAME: privatenet-allow-icmp-ssh-rdp
+NETWORK: privatenet
+DIRECTION: INGRESS
+PRIORITY: 1000
+ALLOW: icmp,tcp:22,tcp:3389
+DENY:
+DISABLED: False
+```
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have successfully created firewall rules for privatenet network, you will see an assessment score.
+
+Create the firewall rules for privatenet
+
+
+
+Check my progress
+
+
+
+1. Run the following command to list all the firewall rules (sorted by VPC network):
+
+```
+gcloud compute firewall-rules list --sort-by=NETWORK
+```
+
+Copied!
+
+The output should look like this:
+
+```
+NAME: default-allow-icmp
+NETWORK: default
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: icmp
+DENY:
+DISABLED: False
+
+NAME: default-allow-internal
+NETWORK: default
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:0-65535,udp:0-65535,icmp
+DENY:
+DISABLED: False
+
+...
+```
+
+The firewall rules for **mynetwork** network have been created for you. You can define multiple protocols and ports in one firewall rule (**privatenet** and **managementnet**), or spread them across multiple rules (**default** and **mynetwork**).
+
+1. In the Cloud console, navigate to **Navigation menu** > **VPC network** > **Firewall**.
+2. You see that the same firewall rules are listed in the Cloud console.
+
+## Task 2. Create VM instances
+
+Create two VM instances:
+
+- **managementnet-vm-1** in **managementsubnet-1**
+- **privatenet-vm-1** in **privatesubnet-1**
+
+### Create the managementnet-vm-1 instance
+
+Create the **managementnet-vm-1** instance using the Cloud console.
+
+1. In the Cloud console, navigate to **Navigation menu** > **Compute Engine** > **VM instances**.
+
+   The **mynet-vm-2** and **mynet-vm-1** has been created for you, as part of your network diagram.
+
+2. Click **Create Instance**.
+
+3. In the **Machine configuration**:
+
+   Set the following values, leave all other values at their defaults:
+
+   | Property         | Value (type value or select option as specified) |
+   | :--------------- | :----------------------------------------------- |
+   | **Name**         | managementnet-vm-1                               |
+   | **Region**       | `us-west1`                                       |
+   | **Zone**         | `us-west1-a`                                     |
+   | **Series**       | `E2`                                             |
+   | **Machine Type** | `e2-micro`                                       |
+
+4. Click **Networking**.
+
+   For **Network interfaces**, click the dropdown to edit. Set the following values, leave all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Network    | managementnet                                    |
+   | Subnetwork | managementsubnet-1                               |
+
+5. Click **Done**.
+
+6. Click **EQUIVALENT CODE**.
+
+   This illustrate that VM instances can also be created using the Cloud Shell command line. You will create the **privatenet-vm-1** instance using these commands with similar parameters.
+
+7. Click **Create**.
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have successfully created VM instance in managementnet network, you will see an assessment score.
+
+Create the managementnet-vm-1 instance
+
+
+
+Check my progress
+
+
+
+### Create the privatenet-vm-1 instance
+
+Create the **privatenet-vm-1** instance using the Cloud Shell command line.
+
+1. In Cloud Shell, run the following command to create the **privatenet-vm-1** instance:
+
+```
+gcloud compute instances create privatenet-vm-1 --zone=us-west1-a --machine-type=e2-micro --subnet=privatesubnet-1
+```
+
+Copied!
+
+The output should look like this:
+
+```
+Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-972c7275ce91/zones/"us-west1-a"/instances/privatenet-vm-1].
+NAME: privatenet-vm-1
+ZONE: us-west1-a
+MACHINE_TYPE: e2-micro
+PREEMPTIBLE:
+INTERNAL_IP: 172.16.0.2
+EXTERNAL_IP: 34.135.195.199
+STATUS: RUNNING
+```
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have successfully created VM instance in privatenet network, you will see an assessment score.
+
+Create the privatenet-vm-1 instance
+
+
+
+Check my progress
+
+
+
+1. Run the following command to list all the VM instances (sorted by zone):
+
+```
+gcloud compute instances list --sort-by=ZONE
+```
+
+Copied!
+
+The output should look like this:
+
+```
+NAME: mynet-vm-2
+ZONE: europe-west4-a
+MACHINE_TYPE: e2-micro
+PREEMPTIBLE:
+INTERNAL_IP: 10.164.0.2
+EXTERNAL_IP: 34.147.23.235
+STATUS: RUNNING
+
+NAME: mynet-vm-1
+ZONE: us-west1-a
+MACHINE_TYPE: e2-micro
+PREEMPTIBLE:
+INTERNAL_IP: 10.128.0.2
+EXTERNAL_IP: 35.232.221.58
+STATUS: RUNNING
+...
+```
+
+1. In the Cloud console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **VM instances**.
+
+2. You see that the VM instances are listed in the Cloud console.
+
+3. Click on **Column display options**, then select **Network**. Click **Ok**.
+
+   There are three instances in **`us-west1`** and one instance in **`europe-west4`**. However, these instances are spread across three VPC networks (**managementnet**, **mynetwork** and **privatenet**), with no instance in the same zone and network as another. In the next section, you explore the effect this has on internal connectivity.
+
+## Task 3. Explore the connectivity between VM instances
+
+Explore the connectivity between the VM instances. Specifically, determine the effect of having VM instances in the same zone versus having instances in the same VPC network.
+
+### Ping the external IP addresses
+
+Ping the external IP addresses of the VM instances to determine if you can reach the instances from the public internet.
+
+1. In the Cloud console, navigate to **Navigation menu** > **Compute Engine** > **VM instances**.
+2. Note the external IP addresses for **mynet-vm-2**, **managementnet-vm-1**, and **privatenet-vm-1**.
+3. For **mynet-vm-1**, click **SSH** to launch a terminal and connect.
+4. To test connectivity to **mynet-vm-2**'s external IP, run the following command, replacing **mynet-vm-2**'s external IP:
+
+```
+ ping -c 3 'Enter mynet-vm-2 external IP here'
+```
+
+Copied!
+
+This should work!
+
+1. To test connectivity to **managementnet-vm-1**'s external IP, run the following command, replacing **managementnet-vm-1**'s external IP:
+
+```
+ ping -c 3 'Enter managementnet-vm-1 external IP here'
+```
+
+Copied!
+
+This should work!
+
+1. To test connectivity to **privatenet-vm-1**'s external IP, run the following command, replacing **privatenet-vm-1**'s external IP:
+
+```
+ping -c 3 'Enter privatenet-vm-1 external IP here'
+```
+
+Copied!
+
+This should work!
+
+**Note:** You are able to ping the external IP address of all VM instances, even though they are either in a different zone or VPC network. This confirms public access to those instances is only controlled by the **ICMP** firewall rules that you established earlier.
+
+### Ping the internal IP addresses
+
+Ping the internal IP addresses of the VM instances to determine if you can reach the instances from within a VPC network.
+
+1. In the Cloud console, navigate to **Navigation menu** > **Compute Engine** > **VM instances**.
+2. Note the internal IP addresses for **mynet-vm-2**, **managementnet-vm-1**, and **privatenet-vm-1**.
+3. Return to the **SSH** terminal for **mynet-vm-1**.
+4. To test connectivity to **mynet-vm-2**'s internal IP, run the following command, replacing **mynet-vm-2**'s internal IP:
+
+```
+ping -c 3 'Enter mynet-vm-2 internal IP here'
+```
+
+Copied!
+
+**Note:** You are able to ping the internal IP address of **mynet-vm-2** because it is on the same VPC network as the source of the ping (**mynet-vm-1**), even though both VM instances are in separate zones, regions and continents!
+
+1. To test connectivity to **managementnet-vm-1**'s internal IP, run the following command, replacing **managementnet-vm-1**'s internal IP:
+
+```
+ping -c 3 'Enter managementnet-vm-1 internal IP here'
+```
+
+Copied!
+
+**Note:** This should not work as indicated by a 100% packet loss!
+
+1. To test connectivity to **privatenet-vm-1**'s internal IP, run the following command, replacing **privatenet-vm-1**'s internal IP:
+
+```
+ping -c 3 'Enter privatenet-vm-1 internal IP here'
+```
+
+Copied!
+
+**Note:** This should not work either as indicated by a 100% packet loss! You are unable to ping the internal IP address of **managementnet-vm-1** and **privatenet-vm-1** because they are in separate VPC networks from the source of the ping (**mynet-vm-1**), even though they are all in the same region **`us-west1`**.
+
+VPC networks are by default isolated private networking domains. However, no internal IP address communication is allowed between networks, unless you set up mechanisms such as VPC peering or VPN.
+
+**Note:** For the below task consider **region_1 = `us-west1`** and **region_2 = `europe-west4`**
+
+`
+
+
+
+Which instance(s) should you be able to ping from mynet-region-1-vm using internal IP addresses?
+
+
+
+managementnet-region-1-vm
+
+
+
+privatenet-region-1-vm
+
+
+
+mynet-region-2-vm
+
+
+
+Submit
+
+
+
+## Task 4. Create a VM instance with multiple network interfaces
+
+Every instance in a VPC network has a default network interface. You can create additional network interfaces attached to your VMs. Multiple network interfaces enable you to create configurations in which an instance connects directly to several VPC networks (up to 8 interfaces, depending on the instance's type).
+
+### Create the VM instance with multiple network interfaces
+
+Create the **vm-appliance** instance with network interfaces in **privatesubnet-1**, **managementsubnet-1** and **mynetwork**. The CIDR ranges of these subnets do not overlap, which is a requirement for creating a VM with multiple network interface controllers (NICs).
+
+1. In the Cloud console, navigate to **Navigation menu** > **Compute Engine** > **VM instances**.
+
+2. Click **Create Instance**.
+
+3. In the **Machine configuration**:
+
+   Set the following values, leave all other values at their defaults:
+
+   | Property         | Value (type value or select option as specified) |
+   | :--------------- | :----------------------------------------------- |
+   | **Name**         | vm-appliance                                     |
+   | **Region**       | `us-west1`                                       |
+   | **Zone**         | `us-west1-a`                                     |
+   | **Series**       | `E2`                                             |
+   | **Machine Type** | `e2-standard-4`                                  |
+
+**Note:** The number of interfaces allowed in an instance is dependent on the instance's machine type and the number of vCPUs. The e2-standard-4 allows up to 4 network interfaces. Refer to [the Maximum number of network interfaces section of the Google Cloud Guide](https://cloud.google.com/vpc/docs/create-use-multiple-interfaces#max-interfaces) for more information.
+
+1. Click **Networking**.
+
+   For **Network interfaces**, click the dropdown to edit. Set the following values, leave all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Network    | privatenet                                       |
+   | Subnetwork | privatesubnet-1                                  |
+
+   Click **Done**.
+
+   Click **Add a network interface**.
+
+   Set the following values, leave all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Network    | managementnet                                    |
+   | Subnetwork | managementsubnet-1                               |
+
+   Click **Done**.
+
+   Click **Add a network interface**.
+
+   Set the following values, leave all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Network    | mynetwork                                        |
+   | Subnetwork | mynetwork                                        |
+
+2. Click **Done**.
+
+3. Click **Create**.
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have successfully created VM instance with multiple network interfaces, you will see an assessment score.
+
+Create a VM instance with multiple network interfaces
+
+
+
+Check my progress
+
+
+
+### Explore the network interface details
+
+Explore the network interface details of **vm-appliance** within the Cloud console and within the VM's terminal.
+
+1. In the Cloud console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **VM instances**.
+2. Click **nic0** within the **Internal IP** address of **vm-appliance** to open the **Network interface details** page.
+3. Verify that **nic0** is attached to **privatesubnet-1**, is assigned an internal IP address within that subnet (172.16.0.0/24), and has applicable firewall rules.
+4. Click **nic0** and select **nic1**.
+5. Verify that **nic1** is attached to **managementsubnet-1**, is assigned an internal IP address within that subnet (10.130.0.0/20), and has applicable firewall rules.
+6. Click **nic1** and select **nic2**.
+7. Verify that **nic2** is attached to **mynetwork**, is assigned an internal IP address within that subnet (10.128.0.0/20), and has applicable firewall rules.
+
+**Note:** Each network interface has its own internal IP address so that the VM instance can communicate with those networks.
+
+1. In the Cloud console, navigate to **Navigation menu** > **Compute Engine** > **VM instances**.
+2. For **vm-appliance**, click **SSH** to launch a terminal and connect.
+3. Run the following, to list the network interfaces within the VM instance:
+
+```
+sudo ifconfig
+```
+
+Copied!
+
+The output should look like this:
+
+```
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1460
+        inet 172.16.0.3  netmask 255.255.255.255  broadcast 172.16.0.3
+        inet6 fe80::4001:acff:fe10:3  prefixlen 64  scopeid 0x20<link>
+        ether 42:01:ac:10:00:03  txqueuelen 1000  (Ethernet)
+        RX packets 626  bytes 171556 (167.5 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 568  bytes 62294 (60.8 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1460
+        inet 10.130.0.3  netmask 255.255.255.255  broadcast 10.130.0.3
+        inet6 fe80::4001:aff:fe82:3  prefixlen 64  scopeid 0x20<link>
+        ether 42:01:0a:82:00:03  txqueuelen 1000  (Ethernet)
+        RX packets 7  bytes 1222 (1.1 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 17  bytes 1842 (1.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+eth2: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1460
+        inet 10.128.0.3  netmask 255.255.255.255  broadcast 10.128.0.3
+        inet6 fe80::4001:aff:fe80:3  prefixlen 64  scopeid 0x20<link>
+        ether 42:01:0a:80:00:03  txqueuelen 1000  (Ethernet)
+        RX packets 17  bytes 2014 (1.9 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 17  bytes 1862 (1.8 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+**Note:** The **sudo ifconfig** command lists a Linux VM's network interfaces along with the internal IP addresses for each interface.
+
+### Explore the network interface connectivity
+
+Demonstrate that the **vm-appliance** instance is connected to **privatesubnet-1**, **managementsubnet-1** and **mynetwork** by pinging VM instances on those subnets.
+
+1. In the Cloud console, navigate to **Navigation menu** > **Compute Engine** > **VM instances**.
+2. Note the internal IP addresses for **privatenet-vm-1**, **managementnet-vm-1**, **mynet-vm-1**, and **mynet-vm-2**.
+3. Return to the **SSH** terminal for **vm-appliance**.
+4. To test connectivity to **privatenet-vm-1**'s internal IP, run the following command, replacing **privatenet-vm-1**'s internal IP:
+
+```
+ping -c 3 'Enter privatenet-vm-1's internal IP here'
+```
+
+Copied!
+
+This works!
+
+1. Repeat the same test by running the following:
+
+```
+ping -c 3 privatenet-vm-1
+```
+
+Copied!
+
+**Note:** You are able to ping **privatenet-vm-1** by its name because VPC networks have an internal DNS service that allows you to address instances by their DNS names rather than their internal IP addresses. When an internal DNS query is made with the instance hostname, it resolves to the primary interface (nic0) of the instance. Therefore, this only works for **privatenet-vm-1** in this case.
+
+1. To test connectivity to **managementnet-vm-1**'s internal IP, run the following command, replacing **managementnet-vm-1**'s internal IP:
+
+```
+ping -c 3 'Enter managementnet-vm-1's internal IP here'
+```
+
+Copied!
+
+This works!
+
+1. To test connectivity to **mynet-vm-1**'s internal IP, run the following command, replacing **mynet-vm-1**'s internal IP:
+
+```
+ping -c 3 'Enter mynet-vm-1's internal IP here'
+```
+
+Copied!
+
+This works!
+
+1. To test connectivity to **mynet-vm-2**'s internal IP, run the following command, replacing **mynet-vm-2**'s internal IP:
+
+```
+ping -c 3 'Enter mynet-vm-2's internal IP here'
+```
+
+Copied!
+
+**Note:** This does not work! In a multiple interface instance, every interface gets a route for the subnet that it is in. In addition, the instance gets a single default route that is associated with the primary interface eth0. Unless manually configured otherwise, any traffic leaving an instance for any destination other than a directly connected subnet will leave the instance via the default route on eth0.
+
+1. To list the routes for **vm-appliance** instance, run the following command:
+
+```
+ip route
+```
+
+Copied!
+
+The output should look like this:
+
+```
+default via 172.16.0.1 dev eth0
+10.128.0.0/20 via 10.128.0.1 dev eth2
+10.128.0.1 dev eth2 scope link
+10.130.0.0/20 via 10.130.0.1 dev eth1
+10.130.0.1 dev eth1 scope link
+172.16.0.0/24 via 172.16.0.1 dev eth0
+172.16.0.1 dev eth0 scope link
+```
+
+**Note:** The primary interface eth0 gets the default route (default via 172.16.0.1 dev eth0), and all three interfaces eth0, eth1 and eth2 get routes for their respective subnets. Since, the subnet of **mynet-vm-2** (**10.132.0.0/20**) is not included in this routing table, the ping to that instance leaves **vm-appliance** on eth0 (which is on a different VPC network). You could change this behavior by configuring policy routing as documented in the [Configuring policy routing section of the Google Cloud Guide](https://cloud.google.com/vpc/docs/create-use-multiple-interfaces#configuring_policy_routing).
+
+## Congratulations!
+
+In this lab you created a VM instance with three network interfaces and verified internal connectivity for VM instances that are on the subnets that are attached to the multiple interface VM.
+
+You also explored the default network along with its subnets, routes, and firewall rules. You then created tested connectivity for a new auto mode VPC network.
+
+
+
+## LAB - VPC Networks - Controlling Access
+
+## Overview
+
+In the real-world you need to protect sensitive data and ensure the continued availability of your web applications at all times. Learn how to use the Google Cloud VPC network to create a more secure, scalable, and manageable web server deployment within your Google Cloud environment.
+
+In this lab, you create two nginx web servers on the default VPC network and control external HTTP access to the web servers using tagged firewall rules. Then, you explore IAM roles and service accounts.
+
+- Two web servers gives you redundancy - if one web server fails, the other can continue serving web traffic, preventing downtime.
+- Tagged firewall rules provide granular control over which traffic is allowed to reach specific web servers.
+- By assigning a service account permission to perform tasks, you're upholding the principal of least priviledge, keeping your Cloud resources safe.
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Create a nginx web server on a vpc network
+- Create tagged firewall rules
+- Create a service account with IAM roles
+- Explore permissions for the Network Admin and Security Admin roles
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   "Username"
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   "Password"
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](https://cdn.qwiklabs.com/9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `PROJECT_ID`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to "PROJECT_ID"
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: "ACCOUNT"
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = "PROJECT_ID"
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Task 1. Create the web servers
+
+In this section, you will create two web servers (**blue** and **green**) in the **default** VPC network. Then, you will install **nginx** on the web servers and modify the welcome page to distinguish the servers.
+
+### **Create the blue server**
+
+Create the **blue** server with a network tag.
+
+1. In the Cloud console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **VM instances**.
+
+2. To create a new instance, click **Create Instance**.
+
+3. In the **Machine configuration**.
+
+   Select the following values:
+
+   | Property | Value (type value or select option as specified) |
+   | :------- | :----------------------------------------------- |
+   | Name     | blue                                             |
+   | Region   | `REGION`                                         |
+   | Zone     | `ZONE`                                           |
+
+   For more information on available regions and zones, in the Google Cloud Compute Engine Region and Zone guide, see [the Available regions and zones section of the Compute Engine Guides](https://cloud.google.com/compute/docs/regions-zones/#available).
+
+4. Click **Networking**.
+
+   - For **Network tags**, type `web-server`.
+
+   **Note:** Networks use network tags to identify which VM instances are subject to certain firewall rules and network routes. Later in this lab, you create a firewall rule to allow HTTP access for VM instances with the **web-server** tag. Alternatively, you could check the **Allow HTTP traffic** checkbox, which would tag this instance as **http-server** and create the tagged firewall rule for tcp:80 for you.
+
+5. Click **Create**.
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have completed the task successfully you will be granted an assessment score.
+
+Create the blue server.
+
+
+
+Check my progress
+
+
+
+### **Create the green server**
+
+Create the **green** server without a network tag.
+
+1. Still in the Console, on the **VM instances** page, click **Create Instance**.
+
+2. In the **Machine configuration**.
+
+   Select the following values:
+
+   | Property | Value (type value or select option as specified) |
+   | :------- | :----------------------------------------------- |
+   | Name     | green                                            |
+   | Region   | `REGION`                                         |
+   | Zone     | `ZONE`                                           |
+
+3. Click **Create**.
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have completed the task successfully you will be granted an assessment score.
+
+Create the green server.
+
+
+
+Check my progress
+
+
+
+### **Install nginx and customize the welcome page**
+
+Install nginx on both VM instances and modify the welcome page to distinguish the servers.
+
+1. Still in the **VM instances** dialog, for **blue**, click **SSH** to launch a terminal and connect.
+2. In the SSH terminal to blue, run the following command to install nginx:
+
+```
+sudo apt-get install nginx-light -y
+```
+
+Copied!
+
+1. Open the welcome page in the nano editor:
+
+```
+sudo nano /var/www/html/index.nginx-debian.html
+```
+
+Copied!
+
+1. Replace the `<h1>Welcome to nginx!</h1>` line with `<h1>Welcome to the blue server!</h1>`.
+2. Press **CTRL+o**, **ENTER**, **CTRL+x**.
+3. Verify the change:
+
+```
+cat /var/www/html/index.nginx-debian.html
+```
+
+Copied!
+
+The output should contain the following:
+
+```
+<h1>Welcome to the blue server!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+```
+
+1. Close the SSH terminal to **blue**:
+
+```
+exit
+```
+
+Copied!
+
+Repeat the same steps for the **green** server:
+
+1. For **green**, click **SSH** to launch a terminal and connect.
+2. Install nginx:
+
+```
+sudo apt-get install nginx-light -y
+```
+
+Copied!
+
+1. Open the welcome page in the nano editor:
+
+```
+sudo nano /var/www/html/index.nginx-debian.html
+```
+
+Copied!
+
+1. Replace the `<h1>Welcome to nginx!</h1>` line with `<h1>Welcome to the green server!</h1>`.
+2. Press **CTRL+o**, **ENTER**, **CTRL+x**.
+3. Verify the change:
+
+```
+cat /var/www/html/index.nginx-debian.html
+```
+
+Copied!
+
+The output should contain the following:
+
+```
+<h1>Welcome to the green server!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+```
+
+1. Close the SSH terminal to **green**:
+
+```
+exit
+```
+
+Copied!
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have completed the task successfully you will be granted an assessment score.
+
+Install Nginx and customize the welcome page.
+
+
+
+Check my progress
+
+
+
+## Task 2. Create the firewall rule
+
+Create the tagged firewall rule and test HTTP connectivity.
+
+### Create the tagged firewall rule
+
+Create a firewall rule that applies to VM instances with the **web-server** network tag.
+
+1. In the Cloud console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **VPC network** > **Firewall**.
+2. Notice the **default-allow-internal** firewall rule.
+
+**Note:** The **default-allow-internal** firewall rule allows traffic on all protocols/ports within the **default** network. You want to create a firewall rule to allow traffic from outside this network to only the **blue** server, by using the network tag **web-server**.
+
+1. Click **Create Firewall Rule**.
+
+2. Set the following values, leave all other values at their defaults.
+
+   | Property            | Value (type value or select option as specified)             |
+   | :------------------ | :----------------------------------------------------------- |
+   | Name                | allow-http-web-server                                        |
+   | Network             | default                                                      |
+   | Targets             | Specified target tags                                        |
+   | Target tags         | web-server                                                   |
+   | Source filter       | IPv4 Ranges                                                  |
+   | Source IPv4 ranges  | 0.0.0.0/0                                                    |
+   | Protocols and ports | Specified protocols and ports, and then *check* tcp, *type:* 80; and *check* Other protocols, *type:* icmp. |
+
+**Note:** Make sure to include the **/0** in the **Source IP ranges** to specify all networks.
+
+1. Click **Create**.
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have completed the task successfully you will be granted an assessment score.
+
+Create the tagged firewall rule.
+
+
+
+Check my progress
+
+
+
+### Create a test-vm
+
+Create a **test-vm** instance using the Cloud Shell command line.
+
+1. Open a new Cloud Shell terminal.
+2. Run the following command to create a **test-vm** instance, in the `ZONE` zone:
+
+```
+gcloud compute instances create test-vm --machine-type=e2-micro --subnet=default --zone=ZONE
+```
+
+Copied!
+
+The output should look like this:
+
+```
+NAME     ZONE           MACHINE_TYPE  PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP    STATUS
+test-vm  ZONE  e2-micro                   10.142.0.4   35.237.134.68  RUNNING
+```
+
+**Note:** You can easily create VM instances from the Console or the gcloud command line.
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have completed the task successfully you will be granted an assessment score.
+
+Create a test-vm.
+
+
+
+Check my progress
+
+
+
+### Test HTTP connectivity
+
+From the **test-vm**, `curl` the internal and external IP addresses of **blue** and **green**.
+
+1. In the Console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **VM instances**.
+2. Note the internal and external IP addresses of **blue** and **green**.
+3. For **test-vm**, click **SSH** to launch a terminal and connect.
+4. To test HTTP connectivity to **blue**'s internal IP, run the following command, replacing **blue**'s internal IP:
+
+```
+curl <Enter blue's internal IP here>
+```
+
+Copied!
+
+You should see the `Welcome to the blue server!` header.
+
+1. To test HTTP connectivity to **green**'s internal IP, run the following command, replacing **green**'s internal IP:
+
+```
+curl -c 3 <Enter green's internal IP here>
+```
+
+Copied!
+
+You should see the `Welcome to the green server!` header.
+
+**Note:** You are able to HTTP access both servers using their internal IP addresses. The connection on tcp:80 is allowed by the **default-allow-internal** firewall rule, as **test-vm** is on the same VPC network as the web server's **default** network.
+
+1. To test HTTP connectivity to **blue**'s external IP, run the following command, replacing **blue**'s external IP:
+
+```
+curl <Enter blue's external IP here>
+```
+
+Copied!
+
+You should see the `Welcome to the blue server!` header.
+
+1. To test HTTP connectivity to **green**'s external IP, run the following command, replacing **green**'s external IP:
+
+```
+curl -c 3 <Enter green's external IP here>
+```
+
+Copied!
+
+**Note:** This should not work! The request hangs.
+
+1. Press **CTRL+c** to stop the HTTP request.
+
+**Note:** As expected, you are only able to HTTP access the external IP address of the **blue** server as the **allow-http-web-server** only applies to VM instances with the **web-server** tag.
+
+You can verify the same behavior from your browser by opening a new tab and navigating to `http://[External IP of server]`.
+
+## Task 3. Explore the Network and Security Admin roles
+
+Cloud IAM lets you authorize who can take action on specific resources, giving you full control and visibility to manage cloud resources centrally. The following roles are used in conjunction with single-project networking to independently control administrative access to each VPC Network:
+
+- **Network Admin**: Permissions to create, modify, and delete networking resources, except for firewall rules and SSL certificates.
+- **Security Admin**: Permissions to create, modify, and delete firewall rules and SSL certificates.
+
+Explore these roles by applying them to a service account, which is a special Google account that belongs to your VM instance, instead of to an individual end user. Rather than creating a new user, you will authorize **test-vm** to use the service account to demonstrate the permissions of the **Network Admin** and **Security Admin** roles.
+
+### Verify current permissions
+
+Currently, **test-vm** uses the [Compute Engine default service account](https://cloud.google.com/compute/docs/access/service-accounts#compute_engine_default_service_account), which is enabled on all instances created by Cloud Shell command-line and the Cloud Console.
+
+Try to list or delete the available firewall rules from **test-vm**.
+
+1. Return to the **SSH** terminal of the **test-vm** instance.
+2. Try to list the available firewall rules:
+
+```
+gcloud compute firewall-rules list
+```
+
+Copied!
+
+The output should look like this:
+
+```
+ERROR: (gcloud.compute.firewall-rules.list) Some requests did not succeed:
+ - Insufficient Permission
+```
+
+**Note:** This should not work!
+
+1. Try to delete the **allow-http-web-server** firewall rule:
+
+```
+gcloud compute firewall-rules delete allow-http-web-server
+```
+
+Copied!
+
+1. Enter **Y**, if asked to continue.
+
+The output should look like this:
+
+```
+ERROR: (gcloud.compute.firewall-rules.delete) Could not fetch resource:
+ - Insufficient Permission
+```
+
+**Note:** This should not work!
+
+**Note:** The **Compute Engine default service account** does not have the right permissions to allow you to list or delete firewall rules. The same applies to other users who do not have the right roles.
+
+### Create a service account
+
+Create a service account and apply the **Network Admin** role.
+
+1. In the Console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **IAM & admin** > **Service Accounts**.
+
+2. Notice the **Compute Engine default service account**.
+
+3. Click **Create service account**.
+
+4. Set the **Service account name** to `Network-admin` and click **CREATE AND CONTINUE**.
+
+5. For **Select a role**, select **Compute Engine** > **Compute Network Admin** and click **CONTINUE** then click **DONE**.
+
+6. After creating the service account `Network-admin`, click on the three dots at the right corner and click **Manage Keys** in the dropdown, then click on **Add Key** and select **Create new key** from the dropdown. Click **Create** to download your JSON output.
+
+7. Click **Close**.
+
+   A JSON key file download to your local computer. Find this key file, you will upload it into the VM in a later step.
+
+8. Rename the JSON key file on your local machine to **credentials.json**
+
+#### Test Completed Task
+
+Click **Check my progress** to verify your performed task. If you have completed the task successfully you will be granted an assessment score.
+
+Create a Network-admin service account.
+
+
+
+Check my progress
+
+
+
+### Authorize test-vm and verify permissions
+
+Authorize **test-vm** to use the **Network-admin** service account.
+
+
+
+The Network Admin role provides permissions to:
+
+
+
+Delete the available firewall rules
+
+
+
+List the available firewall rules
+
+
+
+Modify the available firewall rules
+
+
+
+Neither list, create, modify, or delete the available firewall rules
+
+
+
+Create a firewall rules
+
+
+
+Submit
+
+
+
+1. Return to the **SSH** terminal of the **test-vm** instance.
+2. To upload **credentials.json** through the SSH VM terminal, click on the **Upload file** icon in the upper-right corner.
+3. Select **credentials.json** and upload it.
+4. Click **Close** in the File Transfer window.**Note**: If prompted, click **Retry** on the *Connection via Cloud Identity-Aware Proxy Failed* dialog and re-upload the file.
+5. Authorize the VM with the credentials you just uploaded:
+
+```
+gcloud auth activate-service-account --key-file credentials.json
+```
+
+Copied!
+
+**Note:** The image you are using has the Cloud SDK pre-installed; therefore, you don’t need to initialize the Cloud SDK. If you are attempting this lab in a different environment, make sure you have followed the [procedures regarding installing the Cloud SDK](https://cloud.google.com/sdk/downloads).
+
+1. Try to list the available firewall rules:
+
+```
+gcloud compute firewall-rules list
+```
+
+Copied!
+
+The output should look like this:
+
+```
+NAME                    NETWORK  DIRECTION  PRIORITY  ALLOW     DENY
+allow-http-web-server   default  INGRESS    1000      tcp:80
+default-allow-icmp      default  INGRESS    65534     icmp
+default-allow-internal  default  INGRESS    65534     all
+default-allow-rdp       default  INGRESS    65534     tcp:3389
+default-allow-ssh       default  INGRESS    65534     tcp:22
+```
+
+This should work!
+
+1. Try to delete the **allow-http-web-server** firewall rule:
+
+```
+gcloud compute firewall-rules delete allow-http-web-server
+```
+
+Copied!
+
+1. Enter **Y**, if asked to continue.
+
+The output should look like this:
+
+```
+ERROR: (gcloud.compute.firewall-rules.delete) Could not fetch resource:
+ - Required 'compute.firewall.delete' permission for 'projects/[PROJECT_ID]/global/firewall/allow-http-web-server'
+```
+
+**Note:** This should not work!
+
+**Note:** As expected, the **Network Admin** role has permissions to list but not modify/delete firewall rules.
+
+### Update service account and verify permissions
+
+Update the **Network-admin** service account by providing it the **Security Admin** role.
+
+
+
+The Security Admin role, provides permissions to:
+
+
+
+List the available firewall rules
+
+
+
+Delete the available firewall rules
+
+
+
+Modify the available firewall rules
+
+
+
+Neither list, create, modify, or delete the available firewall rules
+
+
+
+Create a firewall rules
+
+
+
+Submit
+
+
+
+1. In the Console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **IAM & admin** > **IAM**.
+2. Find the **Network-admin** account. Focus on the **Name** column to identify this account.
+3. Click on the pencil icon for the **Network-admin** account.
+4. Change **Role** to **Compute Engine > Compute Security Admin**.
+5. Click **Save**.
+6. Return to the **SSH** terminal of the **test-vm** instance.
+7. Try to list the available firewall rules:
+
+```
+gcloud compute firewall-rules list
+```
+
+Copied!
+
+The output should look like this:
+
+```
+NAME                    NETWORK  DIRECTION  PRIORITY  ALLOW     DENY
+allow-http-web-server   default  INGRESS    1000      tcp:80
+default-allow-icmp      default  INGRESS    65534     icmp
+default-allow-internal  default  INGRESS    65534     all
+default-allow-rdp       default  INGRESS    65534     tcp:3389
+default-allow-ssh       default  INGRESS    65534     tcp:22
+```
+
+This should work!
+
+1. Try to delete the **allow-http-web-server** firewall rule:
+
+```
+gcloud compute firewall-rules delete allow-http-web-server
+```
+
+Copied!
+
+1. Enter **Y**, if asked to continue.
+
+The output should look like this:
+
+```
+Deleted [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00e186e4b1cec086/global/firewall/allow-http-web-server].
+```
+
+This should work!
+
+**Note:** As expected, the **Security Admin** role has permissions to list and delete firewall rules.
+
+### Verify the deletion of the firewall rule
+
+Verify that you can no longer HTTP access the external IP of the **blue** server, because you deleted the **allow-http-web-server** firewall rule.
+
+1. Return to the **SSH** terminal of the **test-vm** instance.
+2. To test HTTP connectivity to **blue**'s external IP, run the following command, replacing **blue**'s external IP:
+
+```
+curl -c 3 <Enter blue's external IP here>
+```
+
+Copied!
+
+**Note:** This should not work!
+
+1. Press **CTRL+c** to stop the HTTP request.
+
+**Note:** Provide the **Security Admin** role to the right user or service account to avoid any unwanted changes to your firewall rules!
+
+## Congratulations!
+
+In this lab, you created two nginx web servers and controlled external HTTP access using a tagged firewall rule. Then, you created a service account with first the **Network Admin** role and used the **Security Admin** role to explore the different permissions of these roles.
+
+
+
+## LAB - Application Load Balancer with Cloud Armor
+
+## Overview
+
+Google Cloud Application Load Balancing is implemented at the edge of Google's network in Google's points of presence (POP) around the world. User traffic directed to an Application Load Balancer enters the POP closest to the user and is then load balanced over Google's global network to the closest backend that has sufficient capacity available.
+
+Cloud Armor IP allowlist/denylist enable you to restrict or allow access to your Application Load Balancer at the edge of the Google Cloud, as close as possible to the user and to malicious traffic. This prevents malicious users or traffic from consuming resources or entering your Virtual Private Cloud (VPC) networks.
+
+In this lab, you configure an Application Load Balancer with global backends, as shown in the diagram below. Then, you stress test the Load Balancer and denylist the stress test IP with Cloud Armor.
+
+![Network diagram that illustrates load balancing](images\7wJtCqbfTFLwKCpOMzUSyPjVKBjUouWHbduOqMpfRiM%3D)
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Create HTTP and health check firewall rules
+- Configure two instance templates
+- Create two managed instance groups
+- Configure an Application Load Balancer with IPv4 and IPv6
+- Stress test an Application Load Balancer
+- Denylist an IP address to restrict access to an Application Load Balancer
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   "Username"
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   "Password"
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+## Task 1. Configure HTTP and health check firewall rules
+
+Configure firewall rules to allow HTTP traffic to the backends and TCP traffic from the Google Cloud health checker.
+
+### Create the HTTP firewall rule
+
+Create a firewall rule to allow HTTP traffic to the backends.
+
+1. In the Cloud console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **VPC network** > **Firewall**.
+
+2. Notice the existing **ICMP**, **internal**, **RDP**, and **SSH** firewall rules.
+
+   Each Google Cloud project starts with the **default** network and these firewall rules.
+
+3. Click **Create Firewall Rule**.
+
+4. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified)             |
+   | :------------------ | :----------------------------------------------------------- |
+   | Name                | default-allow-http                                           |
+   | Network             | default                                                      |
+   | Targets             | Specified target tags                                        |
+   | Target tags         | http-server                                                  |
+   | Source filter       | IPv4 Ranges                                                  |
+   | Source IPv4 ranges  | 0.0.0.0/0                                                    |
+   | Protocols and ports | Specified protocols and ports, and then *check* TCP, *type:* 80 |
+
+Make sure to include the **/0** in the **Source IPv4 ranges** to specify all networks.
+
+1. Click **Create**.
+
+### Create the health check firewall rules
+
+Health checks determine which instances of a load balancer can receive new connections. For Application Load Balancing, the health check probes to your load balanced instances come from addresses in the ranges `130.211.0.0/22` and `35.191.0.0/16`. Your firewall rules must allow these connections.
+
+1. Still in the **Firewall policies** page, click **Create Firewall Rule**.
+
+2. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified)    |
+   | :------------------ | :-------------------------------------------------- |
+   | Name                | default-allow-health-check                          |
+   | Network             | default                                             |
+   | Targets             | Specified target tags                               |
+   | Target tags         | http-server                                         |
+   | Source filter       | IPv4 Ranges                                         |
+   | Source IPv4 ranges  | `130.211.0.0/22`, `35.191.0.0/16`                   |
+   | Protocols and ports | Specified protocols and ports, and then *check* TCP |
+
+   **Note:** Make sure to enter the two **Source IPv4 ranges** one-by-one and press SPACE in between them.
+
+3. Click **Create**.
+
+Click *Check my progress* to verify the objective.
+
+Configure HTTP and health check firewall rules
+
+
+
+Check my progress
+
+
+
+## Task 2. Configure instance templates and create instance groups
+
+A managed instance group uses an instance template to create a group of identical instances. Use these to create the backends of the Application Load Balancer.
+
+### Configure the instance templates
+
+An instance template is an API resource that you use to create VM instances and managed instance groups. Instance templates define the machine type, boot disk image, subnet, labels, and other instance properties.
+
+Create one instance template for `Region 1` and one for `Region 2`.
+
+1. In the Cloud console, go to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **Instance templates**, and then click **Create instance template**.
+
+2. For **Name**, type **`Region 1`-template**.
+
+3. For **Location**, Select **Global**.
+
+4. For **Series**, select **E2**.
+
+5. For **Machine Type**, select **e2-micro**.
+
+6. Click **Advanced Options**.
+
+7. Click **Networking**. Set the following value and leave all other values at their defaults:
+
+   | Property     | Value (type value or select option as specified) |
+   | :----------- | :----------------------------------------------- |
+   | Network tags | http-server                                      |
+
+8. Click **default** under **Network interfaces**. Set the following values and leave all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Network    | default                                          |
+   | Subnetwork | default `Region 1`                               |
+
+   Click **Done**.
+
+The network tag **http-server** ensures that the **HTTP** and **Health Check** firewall rules apply to these instances.
+
+1. Click the **Management** tab.
+
+2. Under **Metadata**, click **+ ADD ITEM** and specify the following:
+
+   | Key                | Value                                        |
+   | :----------------- | :------------------------------------------- |
+   | startup-script-url | gs://cloud-training/gcpnet/httplb/startup.sh |
+
+The `startup-script-url` specifies a script that executes when instances are started. This script installs Apache and changes the welcome page to include the client IP and the name, region, and zone of the VM instance. Feel free to explore [this script](https://storage.googleapis.com/cloud-training/gcpnet/httplb/startup.sh).
+
+1. Click **Create**.
+2. Wait for the instance template to be created.
+
+Now create another instance template for **subnet-b** by copying **`Region 1`-template**:
+
+1. Click on **`Region 1`-template** and then click on the **+CREATE SIMILAR** option from the top.
+2. For **Name**, type **`Region 2`-template**.
+3. Ensure **Location** is selected **Global**.
+4. Click **Advanced Options**.
+5. Click **Networking**.
+6. Ensure **http-server** is added as a **network tag**.
+7. In **Network interfaces**, for **Subnetwork**, select **default (`Region 2`)**.
+8. Click **Done**.
+9. Click **Create**.
+
+### Create the managed instance groups
+
+Create a managed instance group in **`Region 1`** and one in **`Region 2`**.
+
+1. Still in **Compute Engine**, click **Instance groups** in the left menu.
+
+2. Click **Create instance group**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property                                           | Value (type value or select option as specified)             |
+   | :------------------------------------------------- | :----------------------------------------------------------- |
+   | Name                                               | `Region 1`-mig (if required, remove extra space from the name) |
+   | Instance template                                  | `Region 1`-template                                          |
+   | Location                                           | Multiple zones                                               |
+   | Region                                             | `Region 1`                                                   |
+   | Minimum number of instances                        | 1                                                            |
+   | Maximum number of instances                        | 2                                                            |
+   | Autoscaling signals > Click dropdown > Signal type | CPU utilization                                              |
+   | Target CPU utilization                             | 80, click **Done**.                                          |
+   | Initialization period                              | 45                                                           |
+
+Managed instance groups offer **autoscaling** capabilities that allow you to automatically add or remove instances from a managed instance group based on increases or decreases in load. Autoscaling helps your applications gracefully handle increases in traffic and reduces cost when the need for resources is lower. You just define the autoscaling policy and the autoscaler performs automatic scaling based on the measured load.
+
+1. Click **Create**.
+
+Now repeat the same procedure to create a second instance group for **`Region 2`-mig** in **`Region 2`**:
+
+1. Click **Create Instance group**.
+
+2. Set the following values, leave all other values at their defaults:
+
+   | Property                                           | Value (type value or select option as specified) |
+   | :------------------------------------------------- | :----------------------------------------------- |
+   | Name                                               | `Region 2`-mig                                   |
+   | Instance template                                  | `Region 2`-template                              |
+   | Location                                           | Multiple zones                                   |
+   | Region                                             | `Region 2`                                       |
+   | Minimum number of instances                        | 1                                                |
+   | Maximum number of instances                        | 2                                                |
+   | Autoscaling signals > Click dropdown > Signal type | CPU utilization                                  |
+   | Target CPU utilization                             | 80, click **Done**.                              |
+   | Initialization period                              | 45                                               |
+
+3. Click **Create**.
+
+Click *Check my progress* to verify the objective.
+
+Configure instance templates and instance group
+
+
+
+Check my progress
+
+
+
+### Verify the backends
+
+Verify that VM instances are being created in both regions and access their HTTP sites.
+
+1. Still in **Compute Engine**, click **VM instances** in the left menu.
+
+2. Notice the instances that start with `Region 1`-mig and `Region 2`-mig.
+
+   These instances are part of the managed instance groups.
+
+3. Click on the **External IP** of an instance of `Region 1`-mig.
+
+   You should see the **Client IP** (your IP address), the **Hostname** (starts with `Region 1`-mig) and the **Server Location** (a zone in `Region 1`).
+
+4. Click on the **External IP** of an instance of `Region 2`-mig.
+
+   You should see the **Client IP** (your IP address), the **Hostname** (starts with `Region 2`-mig) and the **Server Location** (a zone in `Region 2`).
+
+**Note:** The **Hostname** and **Server Location** identifies where the Application Load Balancer sends traffic.
+
+
+
+Which of these fields identify the region of the backend?
+
+
+
+Client IP
+
+
+
+Server Location
+
+
+
+Hostname
+
+
+
+Submit
+
+
+
+## Task 3. Configure the Application Load Balancer
+
+Configure the Application Load Balancer to balance traffic between the two backends (**`Region 1`-mig** in `Region 1` and **`Region 2`-mig** in `Region 2`), as illustrated in the network diagram:
+
+![Network diagram that illustrates load balancing](images\7wJtCqbfTFLwKCpOMzUSyPjVKBjUouWHbduOqMpfRiM%3D)
+
+### Start the configuration
+
+1. In the Cloud console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > click **VIEW ALL PRODUCTS** > **Networking** > **Network Services** > **Load balancing**.
+2. click **Create load balancer**.
+3. Under **Application Load Balancer HTTP(S)**, click Next.
+4. For **Public facing or internal**, select **Public facing (external)** and click Next.
+5. For **Global or single region deployment**, select **Best for global workloads** and click Next.
+6. For **Create load balancer**, click **Configure**.
+7. Set **Load Balancer Name** to `http-lb`.
+
+### Configure the frontend
+
+The host and path rules determine how your traffic will be directed. For example, you could direct video traffic to one backend and static traffic to another backend. However, you are not configuring the Host and path rules in this lab.
+
+1. Click on **Frontend configuration**.
+
+2. Specify the following, leaving all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Protocol   | HTTP                                             |
+   | IP version | IPv4                                             |
+   | IP address | Ephemeral                                        |
+   | Port       | 80                                               |
+
+3. Click **Done**.
+
+4. Click **Add Frontend IP and port**.
+
+5. Specify the following, leaving all other values at their defaults:
+
+   | Property   | Value (type value or select option as specified) |
+   | :--------- | :----------------------------------------------- |
+   | Protocol   | HTTP                                             |
+   | IP version | IPv6                                             |
+   | IP address | Auto-allocate                                    |
+   | Port       | 80                                               |
+
+6. Click **Done**.
+
+Application Load Balancing supports both IPv4 and IPv6 addresses for client traffic. Client IPv6 requests are terminated at the global load balancing layer, then proxied over IPv4 to your backends.
+
+### Configure the backend
+
+Backend services direct incoming traffic to one or more attached backends. Each backend is composed of an instance group and additional serving capacity metadata.
+
+1. Click on **Backend configuration**.
+
+2. For **Backend services & backend buckets**, click **Create a backend service**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property       | Value (select option as specified) |
+   | :------------- | :--------------------------------- |
+   | Name           | http-backend                       |
+   | Instance group | `Region 1`-mig                     |
+   | Port numbers   | 80                                 |
+   | Balancing mode | Rate                               |
+   | Maximum RPS    | 50                                 |
+   | Capacity       | 100                                |
+
+This configuration means that the load balancer attempts to keep each instance of **`Region 1`-mig** at or below 50 requests per second (RPS).
+
+1. Click **Done**.
+
+2. Click **Add a backend**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property                    | Value (select option as specified) |
+   | :-------------------------- | :--------------------------------- |
+   | Instance group              | `Region 2`-mig                     |
+   | Port numbers                | 80                                 |
+   | Balancing mode              | Utilization                        |
+   | Maximum backend utilization | 80                                 |
+   | Capacity                    | 100                                |
+
+This configuration means that the load balancer attempts to keep each instance of **`Region 2`-mig** at or below 80% CPU utilization.
+
+1. Click **Done**.
+
+2. For **Health Check**, select **Create a health check**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property | Value (select option as specified) |
+   | :------- | :--------------------------------- |
+   | Name     | http-health-check                  |
+   | Protocol | TCP                                |
+   | Port     | 80                                 |
+
+Health checks determine which instances receive new connections. This HTTP health check polls instances every 5 seconds, waits up to 5 seconds for a response and treats 2 successful or 2 failed attempts as healthy or unhealthy, respectively.
+
+1. Click **Save**.
+2. Check the **Enable Logging** box.
+3. Set the **Sample Rate** to `1`.
+4. Click **Create** to create the backend service.
+5. Click **Ok**.
+
+### Review and create the Application Load Balancer
+
+1. Click on **Review and finalize**.
+2. Review the **Backend** and **Frontend** services.
+3. Click on **Create**.
+4. Wait for the load balancer to be created.
+5. Click on the name of the load balancer (**http-lb**).
+6. Note the IPv4 and IPv6 addresses of the load balancer for the next task. They will be referred to as `[LB_IP_v4]` and `[LB_IP_v6]`, respectively.
+
+**Note:** The IPv6 address is the one in hexadecimal format.
+
+Click *Check my progress* to verify the objective.
+
+Configure the Application Load Balancer
+
+
+
+Check my progress
+
+
+
+## Task 4. Test the Application Load Balancer
+
+Now that you created the Application Load Balancer for your backends, verify that traffic is forwarded to the backend service.
+
+
+
+The Application Load Balancer should forward traffic to the region that is closest to you.
+
+
+
+True
+
+
+
+False
+
+
+
+### Access the Application Load Balancer
+
+To test IPv4 access to the Application Load Balancer, open a new tab in your browser and navigate to `http://[LB_IP_v4]`. Make sure to replace `[LB_IP_v4]` with the IPv4 address of the load balancer.
+
+**Note:** It might take up to 5 minutes to access the Application Load Balancer. In the meantime, you might get a 404 or 502 error. Keep trying until you see the page of one of the backends.
+
+**Note:** Depending on your proximity to **`Region 1`** and **`Region 2`**, your traffic is either forwarded to a **`Region 1`-mig** or **`Region 2`-mig** instance.
+
+If you have a local IPv6 address, try the IPv6 address of the Application Load Balancer by navigating to `http://[LB_IP_v6]`. Make sure to replace `[LB_IP_v6]` with the IPv6 address of the load balancer.
+
+### Stress test the Application Load Balancer
+
+Create a new VM to simulate a load on the Application Load Balancer using `siege`. Then, determine if traffic is balanced across both backends when the load is high.
+
+1. In the console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **VM instances**.
+
+2. Click **Create instance**.
+
+3. In the **Machine configuration**:
+
+   Select the following values:
+
+   | Property | Value (type value or select option as specified) |
+   | :------- | :----------------------------------------------- |
+   | Name     | siege-vm                                         |
+   | Region   | `Region 3`                                       |
+   | Zone     | `Zone 3`                                         |
+   | Series   | `E2`                                             |
+
+Given that **`Region 3`** is closer to **`Region 1`** than to **`Region 2`**, traffic should be forwarded only to **`Region 1`-mig** (unless the load is too high).
+
+1. Click **Create**.
+2. Wait for the **siege-vm** instance to be created.
+3. For **siege-vm**, click **SSH** to launch a terminal and connect.
+4. Run the following command, to install siege:
+
+```
+sudo apt-get -y install siege
+```
+
+Copied!
+
+1. To store the IPv4 address of the Application Load Balancer in an environment variable, run the following command, replacing `[LB_IP_v4]` with the IPv4 address:
+
+```
+export LB_IP=[LB_IP_v4]
+```
+
+Copied!
+
+1. To simulate a load, run the following command:
+
+```
+siege -c 150 -t120s http://$LB_IP
+```
+
+Copied!
+
+1. In the Cloud console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > click **VIEW ALL PRODUCTS** > **Networking** > **Network Services** > **Load balancing**.
+2. Click **Backends**.
+3. Click **http-backend**.
+4. Navigate to **http-lb**.
+5. Click on the **Monitoring** tab.
+6. Monitor the **Frontend Location (Total inbound traffic)** between North America and the two backends for 2 to 3 minutes.
+
+At first, traffic should just be directed to **`Region 1`-mig** but as the RPS increases, traffic is also directed to **`Region 2`**.
+
+This demonstrates that by default traffic is forwarded to the closest backend but if the load is very high, traffic can be distributed across the backends.
+
+1. Return to the **SSH** terminal of **siege-vm**.
+2. Press **CTRL+C** to stop siege if it's still running.
+
+The output should look like this:
+
+```
+New configuration template added to /home/student-02-dd02c94b8808/.siege
+Run siege -C to view the current settings in that file
+{       "transactions":                        24729,
+        "availability":                       100.00,
+        "elapsed_time":                       119.07,
+        "data_transferred":                     3.77,
+        "response_time":                        0.66,
+        "transaction_rate":                   207.68,
+        "throughput":                           0.03,
+        "concurrency":                        137.64,
+        "successful_transactions":             24729,
+        "failed_transactions":                     0,
+        "longest_transaction":                 10.45,
+        "shortest_transaction":                 0.03
+}
+```
+
+## Task 5. Denylist the siege-vm
+
+Use Cloud Armor to denylist the **siege-vm** from accessing the Application Load Balancer.
+
+### Create the security policy
+
+Create a Cloud Armor security policy with a denylist rule for the **siege-vm**.
+
+1. In the console, navigate to **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > **Compute Engine** > **VM instances**.
+2. Note the **External IP** of the **siege-vm**. This will be referred to as `[SIEGE_IP]`.
+
+**Note:** There are ways to identify the external IP address of a client trying to access your Application Load Balancer. For example, you could examine traffic captured by [VPC Flow Logs in BigQuery](https://cloud.google.com/vpc/docs/using-flow-logs#exporting_logs_to_bigquery_name_short_pubsub_name_short_and_custom_targets) to determine a high volume of incoming requests.
+
+1. In the Cloud console, click **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) > click **VIEW ALL PRODUCTS** > **Networking** > **Network Security** > **Cloud Armor policies**.
+
+2. Click **Create policy**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified) |
+   | :------------------ | :----------------------------------------------- |
+   | Name                | denylist-siege                                   |
+   | Default rule action | Allow                                            |
+
+4. Click **Next step**.
+
+5. Click **Add a rule**.
+
+6. Set the following values, leave all other values at their defaults:
+
+   | Property          | Value (type value or select option as specified) |
+   | :---------------- | :----------------------------------------------- |
+   | Condition > Match | *Enter the SIEGE_IP*                             |
+   | Action            | Deny                                             |
+   | Response code     | 403 (Forbidden)                                  |
+   | Priority          | 1000                                             |
+
+7. Click **Save Change to Rule**.
+
+8. Click **Next step**.
+
+9. Click **Add Target**.
+
+10. For **Type**, select **Backend service (external application load balancer)**.
+
+11. For **Target**, select **http-backend** and if prompted confirm **Replace**.
+
+12. Click **Create policy**.
+
+**Note:** Alternatively, you could set the default rule to **Deny** and only allowlist or allow traffic from authorized users/IP addresses.
+
+1. Wait for the policy to be created before moving to the next step.
+
+Click *Check my progress* to verify the objective.
+
+Denylist the siege-vm
+
+
+
+Check my progress
+
+
+
+### Verify the security policy
+
+Verify that the **siege-vm** cannot access the Application Load Balancer.
+
+1. Return to the **SSH** terminal of **siege-vm**.
+2. To access the load balancer, run the following:
+
+```
+curl http://$LB_IP
+```
+
+Copied!
+
+The output should look like this:
+
+```
+<!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>403</title>403 Forbidden
+```
+
+**Note:** It might take a couple of minutes for the security policy to take effect. If you are able to access the backends, keep trying until you get the **403 Forbidden error**.
+
+1. Open a new tab in your browser and navigate to `http://[LB_IP_v4]`. Make sure to replace `[LB_IP_v4]` with the IPv4 address of the load balancer.
+
+**Note:** You can access the Application Load Balancer from your browser because of the default rule to **allow** traffic; however, you cannot access it from the **siege-vm** because of the **deny** rule that you implemented.
+
+1. Back in the SSH terminal of siege-vm, to simulate a load, run the following command:
+
+```
+siege -c 150 -t120s http://$LB_IP
+```
+
+Copied!
+
+The command will not generate any output.
+
+Explore the security policy logs to determine if this traffic is also blocked.
+
+1. In the console, navigate to **Navigation menu** > **Network Security** > **Cloud Armor Policies**.
+2. Click **denylist-siege**.
+3. Click **Logs**.
+4. Click **View policy logs**.
+5. On the Logging page, make sure to clear all the text in the **Query preview**. Select resource to **Application Load Balancer** > **http-lb-forwarding-rule** > **http-lb** then click **Apply**.
+6. Now click **Run Query**.
+7. Expand a log entry in **Query results**.
+8. Expand **httpRequest**.
+
+The request should be from the **siege-vm** IP address. If not, expand another log entry.
+
+1. Expand **jsonPayload**.
+2. Expand **enforcedSecurityPolicy**.
+3. Notice that the **configuredAction** is to `DENY` with the **name** `denylist-siege`.
+
+![Query results page](images\kf8dX3SIyN706oBbZhyrAEC%2B9goZrVR%2BzWKqn0is0OM%3D)
+
+Cloud Armor security policies create logs that can be explored to determine when traffic is denied and when it is allowed, along with the source of the traffic.
+
+## Congratulations!
+
+You configured an Application Load Balancer with backends in `Region 1` and `Region 2`. Then, you stress tested the Load Balancer with a VM and denylisted the IP address of that VM with Cloud Armor. You were able to explore the security policy logs to identify why the traffic was blocked.
 
 
 
 
 
+## LAB - Create an Internal Load Balancer
+
+## Overview
+
+Google Cloud offers Internal Load Balancing for your TCP/UDP-based traffic. Internal Load Balancing enables you to run and scale your services behind a private load balancing IP address that is accessible only to your internal virtual machine instances.
+
+In this lab you create two managed instance groups in the same region. Then, you configure and test an Internal Load Balancer with the instances groups as the backends, as shown in this network diagram:
+
+![Network_Diagram.png](images\k3u04mphJhk%2F2yM84NjgPiZHrbCuzbdwAQ98vnaoHQo%3D)
+
+### Objectives
+
+In this lab you learn how to perform the following tasks:
+
+- Create HTTP and health check firewall rules
+- Configure two instance templates
+- Create two managed instance groups
+- Configure and test an internal load balancer
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   "Username"
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   "Password"
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](https://cdn.qwiklabs.com/9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+## Task 1. Configure HTTP and health check firewall rules
+
+Configure firewall rules to allow HTTP traffic to the backends and TCP traffic from the Google Cloud health checker.
+
+### Explore the my-internal-app network
+
+The network `my-internal-app` with subnet-a and subnet-b along with firewall rules for RDP, SSH, and ICMP traffic have been configured for you.
+
+1. In the console, navigate to **Navigation menu** > **VPC network** > **VPC networks**.
+
+2. Scroll down and notice the **my-internal-app** network with its subnets: **subnet-a** and **subnet-b**
+
+   Each Google Cloud project starts with the **default** network. In addition, the **my-internal-app** network has been created for you, as part of your network diagram.
+
+   You will create the managed instance groups in **subnet-a** and **subnet-b**. Both subnets are in the `REGION` region because an Internal Load Balancer is a regional service. The managed instance groups will be in different zones, making your service immune to zonal failures.
+
+### **Create the HTTP firewall rule**
+
+Create a firewall rule to allow HTTP traffic to the backends from the Load Balancer and the internet (to install Apache on the backends).
+
+1. Still in **VPC network**, in the left pane click **Firewall**.
+
+2. Notice the **app-allow-icmp** and **app-allow-ssh-rdp** firewall rules.
+
+   These firewall rules have been created for you.
+
+3. Click **+ Create Firewall Rule**.
+
+4. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified)             |
+   | :------------------ | :----------------------------------------------------------- |
+   | Name                | app-allow-http                                               |
+   | Network             | my-internal-app                                              |
+   | Targets             | Specified target tags                                        |
+   | Target tags         | lb-backend                                                   |
+   | Source filter       | IPv4 Ranges                                                  |
+   | Source IPv4 ranges  | 10.10.0.0/16                                                 |
+   | Protocols and ports | Specified protocols and ports, and then *check* tcp, *type:* 80 |
+
+**Note:** Make sure to include the **/16** in the **Source IPv4 ranges** to specify all networks.
+
+1. Click **Create**.
+
+### Create the health check firewall rules
+
+Health checks determine which instances of a Load Balancer can receive new connections. For Internal load balancing, the health check probes to your load balanced instances come from addresses in the ranges `130.211.0.0/22` and `35.191.0.0/16`. Your firewall rules must allow these connections.
+
+1. Still in the **Firewall rules** page, click **+ Create Firewall Rule**.
+
+2. Set the following values, leave all other values at their defaults:
+
+   | Property            | Value (type value or select option as specified)    |
+   | :------------------ | :-------------------------------------------------- |
+   | Name                | app-allow-health-check                              |
+   | Network             | my-internal-app                                     |
+   | Targets             | Specified target tags                               |
+   | Target tags         | lb-backend                                          |
+   | Source filter       | IPv4 Ranges                                         |
+   | Source IPv4 ranges  | 130.211.0.0/22 and 35.191.0.0/16                    |
+   | Protocols and ports | Specified protocols and ports, and then *check* tcp |
+
+**Note:** Make sure to enter the two **Source IPv4 ranges** one-by-one and pressing SPACE in between them.
+
+1. Click **Create**.
+
+Click Check my progress to verify the objective.
+
+Configure HTTP and health check firewall rules
+
+
+
+Check my progress
+
+
+
+## Task 2. Configure instance templates and create instance groups
+
+A managed instance group uses an instance template to create a group of identical instances. Use these to create the backends of the Internal Load Balancer.
+
+### Configure the instance templates
+
+An instance template is an API resource that you can use to create VM instances and managed instance groups. Instance templates define the machine type, boot disk image, subnet, labels, and other instance properties. Create an instance template for both subnets of the **my-internal-app** network.
+
+1. In the Console, navigate to **Navigation menu** > **Compute Engine** > **Instance templates**.
+
+2. Click **Create instance template**.
+
+3. For **Name**, type **instance-template-1**.
+
+4. For **Location**, Select **Global**.
+
+5. For **Series**, select **E2**.
+
+6. For **Machine type**, select **Shared-core** > **e2-micro**.
+
+7. Click **Advanced options**.
+
+8. Click **Networking**.
+
+9. For **Network tags**, specify **lb-backend**.
+
+   **Note:** The network tag **lb-backend** ensures that the **HTTP** and **Health Check** firewall rules apply to these instances.
+
+10. For **Network interfaces**, click the dropdown icon to edit.
+
+11. Set the following values, leave all other values at their defaults:
+
+    | Property              | Value (type value or select option as specified) |
+    | :-------------------- | :----------------------------------------------- |
+    | Network               | my-internal-app                                  |
+    | Subnetwork            | subnet-a                                         |
+    | External IPv4 Address | None                                             |
+
+12. Click **Done**.
+
+13. Click **Management**.
+
+14. Under **Metadata**, click **Add item** and specify the following:
+
+    | Key 1              | Value 1                                   |
+    | :----------------- | :---------------------------------------- |
+    | startup-script-url | gs://cloud-training/gcpnet/ilb/startup.sh |
+
+**Note:** The **startup-script-url** specifies a script that will be executed when instances are started. This script installs Apache and changes the welcome page to include the client IP and the name, region and zone of the VM instance. Feel free to explore [this script](https://storage.googleapis.com/cloud-training/gcpnet/ilb/startup.sh).
+
+1. Click **Create**.
+2. Wait for the instance template to be created.
+
+### Configure the next instance template
+
+Create another instance template for **subnet-b** by copying **instance-template-1**:
+
+1. Still in **Instance templates**, check the box next to **instance-template-1**, then click **Copy**. Make sure to update the name as **instance-template-2**.
+2. Click **Advanced options**.
+3. Click the **Networking** tab.
+4. For **Network interfaces**, click the dropdown icon to edit.
+5. Select **subnet-b** as the **Subnetwork**.
+6. Click **Done** and then click **Create**.
+
+### **Create the managed instance groups**
+
+Create a managed instance group in **subnet-a** and one **subnet-b**.
+
+**Note:** Identify one of the other zones in the same region as **subnet-a**. For example, if your zone of **subnet-a** is `us-west2-a`, you could select `us-west2-b` for **subnet-b**.
+
+1. Still in **Compute Engine**, in the left pane click **Instance groups**, and then click **Create Instance group**.
+
+2. Set the following values, leave all other values at their defaults:
+
+   | Property                                                     | Value (type value or select option as specified) |
+   | :----------------------------------------------------------- | :----------------------------------------------- |
+   | Name                                                         | instance-group-1                                 |
+   | Instance template                                            | instance-template-1                              |
+   | Location                                                     | Single-zone                                      |
+   | Region                                                       | `REGION`                                         |
+   | Zone                                                         | `ZONE`                                           |
+   | Autoscaling > Minimum number of instances                    | 1                                                |
+   | Autoscaling > Maximum number of instances                    | 5                                                |
+   | Autoscaling > Autoscaling signals (click the dropdown icon to edit) > Signal type | CPU utilization                                  |
+   | Target CPU utilization                                       | 80                                               |
+   | Initialization period                                        | 45                                               |
+
+**Note:** Managed instance groups offer **autoscaling** capabilities that allow you to automatically add or remove instances from a managed instance group based on increases or decreases in load. Autoscaling helps your applications gracefully handle increases in traffic and reduces cost when the need for resources is lower. You just define the autoscaling policy and the autoscaler performs automatic scaling based on the measured load.
+
+1. Click **Create**.
+
+   Repeat the same procedure for **instance-group-2** in the different zone of same region as **subnet-a**:
+
+2. Click **Create Instance group**.
+
+3. Set the following values, leave all other values at their defaults:
+
+   | Property                                                     | Value (type value or select option as specified)         |
+   | :----------------------------------------------------------- | :------------------------------------------------------- |
+   | Name                                                         | instance-group-2                                         |
+   | Instance template                                            | instance-template-2                                      |
+   | Location                                                     | Single-zone                                              |
+   | Region                                                       | `REGION`                                                 |
+   | Zone                                                         | Zone (Use the different zone in same region as subnet-a) |
+   | Autoscaling > Minimum number of instances                    | 1                                                        |
+   | Autoscaling > Maximum number of instances                    | 5                                                        |
+   | Autoscaling > Autoscaling signals (click the dropdown icon to edit) > Signal type | CPU utilization                                          |
+   | Target CPU utilization                                       | 80                                                       |
+   | Initialization period                                        | 45                                                       |
+
+4. Click **Create**.
+
+### Verify the backends
+
+Verify that VM instances are being created in both subnets and create a utility VM to access the backends' HTTP sites.
+
+1. Still in **Compute Engine**, click **VM instances**.
+
+2. Notice two instances that start with `instance-group-1` and `instance-group-2`.
+
+   These instances are in separate zones and their internal IP addresses are part of the **subnet-a** and **subnet-b** CIDR blocks.
+
+3. To create a new instance, click **Create Instance**.
+
+4. In the **Machine configuration**.
+
+   Select the following values:
+
+   | Property     | Value (type value or select option as specified) |
+   | :----------- | :----------------------------------------------- |
+   | Name         | utility-vm                                       |
+   | Region       | `REGION`                                         |
+   | Zone         | `ZONE`                                           |
+   | Series       | `E2`                                             |
+   | Machine Type | `e2-micro` (1 shared vCPU)                       |
+
+5. Click **Networking**.
+
+   For **Network interfaces**, click **Toggle** to Edit network interface.
+
+   Specify the following:
+
+   | Property                      | Value (type value or select option as specified) |
+   | :---------------------------- | :----------------------------------------------- |
+   | Network                       | my-internal-app                                  |
+   | Subnetwork                    | subnet-a                                         |
+   | Primary internal IPv4 address | Ephemeral (Custom)                               |
+   | Custom ephemeral IP address   | 10.10.20.50                                      |
+
+6. Click **Done** and then click **Create**.
+
+Click Check my progress to verify the objective.
+
+Configure instance templates and create instance groups
+
+
+
+Check my progress
+
+
+
+1. Note that the internal IP addresses for the backends are `10.10.20.2` and `10.10.30.2`.
+
+**Note:** If these IP addresses are different, replace them in the two **curl** commands below.
+
+1. For **utility-vm**, click **SSH** to launch a terminal and connect.
+2. To verify the welcome page for `instance-group-1-xxxx`, run the following command:
+
+```
+curl 10.10.20.2
+```
+
+Copied!
+
+The output should look like this:
+
+```
+<h1>Internal Load Balancing Lab</h1><h2>Client IP</h2>Your IP address : 10.10.20.50<h2>Hostname</h2>Server Hostname:
+ instance-group-1-1zn8<h2>Server Location</h2>Region and Zone: us-central1-a
+```
+
+1. To verify the welcome page for `instance-group-2-xxxx`, run the following command:
+
+```
+curl 10.10.30.2
+```
+
+Copied!
+
+The output should look like this:
+
+```
+<h1>Internal Load Balancing Lab</h1><h2>Client IP</h2>Your IP address : 10.10.20.50<h2>Hostname</h2>Server Hostname:
+ instance-group-2-q5wp<h2>Server Location</h2>Region and Zone: us-central1-b
+```
+
+
+
+Which of these fields identify the location of the backend?
+
+
+
+Server Hostname
+
+
+
+Server Location
+
+
+
+Client IP
+
+
+
+Submit
+
+
+
+**Note:** The **curl** commands demonstrate that each VM instance lists the Client IP and its own name and location. This will be useful when verifying that the Internal Load Balancer sends traffic to both backends.
+
+1. Close the SSH terminal to **utility-vm**:
+
+```
+exit
+```
+
+Copied!
+
+## Task 3. Configure the Internal Load Balancer
+
+Configure the Internal Load Balancer to balance traffic between the two backends (**instance-group-1** and **instance-group-2**), as illustrated in this diagram:
+
+![Network Diagram showing the Internal Load Balancer balancing traffic between the 2 backends](images\k3u04mphJhk%2F2yM84NjgPiZHrbCuzbdwAQ98vnaoHQo%3D)
+
+### Start the configuration
+
+1. From the Navigation Menu, select **View All Products**. Under **Networking**, select **Network Services**.
+2. Select the **Load balancing** page.
+3. Click **Create load balancer**.
+4. For **Type of load balancer**, select **Network Load Balancer (TCP/UDP/SSL)**.
+5. For **Proxy or passthrough**, select **Passthrough load balancer**.
+6. For **Public facing or internal**, select **Internal**.
+7. Click **CONFIGURE**.
+8. For **Name**, type `my-ilb`.
+9. For **Region**, select `REGION`.
+10. For **Network**, select **my-internal-app**.
+
+### Configure the regional backend service
+
+The backend service monitors instance groups and prevents them from exceeding configured usage.
+
+1. Click on **Backend configuration**.
+
+2. Set the following values, leave all other values at their defaults:
+
+   | Property       | Value (select option as specified) |
+   | :------------- | :--------------------------------- |
+   | Instance group | instance-group-1                   |
+
+3. Click **Add a backend**.
+
+4. For **Instance group**, select **instance-group-2**.
+
+5. For **Health Check**, select **Create a health check**.
+
+6. Set the following values, leave all other values at their defaults:
+
+   | Property | Value (select option as specified) |
+   | :------- | :--------------------------------- |
+   | Name     | my-ilb-health-check                |
+   | Protocol | TCP                                |
+   | Port     | 80                                 |
+
+**Note:** Health checks determine which instances can receive new connections. This HTTP health check polls instances every 5 seconds, waits up to 5 seconds for a response and treats 2 successful or 2 failed attempts as healthy or unhealthy, respectively.
+
+1. Click **Save**.
+2. Verify that there is a blue check mark next to **Backend configuration** in the Cloud Console. If not, double-check that you have completed all the steps above.
+
+### Configure the frontend
+
+The frontend forwards traffic to the backend.
+
+1. Click on **Frontend configuration**.
+
+2. Specify the following, leaving all other values with their defaults:
+
+   | Property    | Value (type value or select option as specified)  |
+   | :---------- | :------------------------------------------------ |
+   | Subnetwork  | subnet-b                                          |
+   | Internal IP | Under **IP address** select **Create IP address** |
+
+3. Specify the following, leaving all other values with their defaults:
+
+   | Property          | Value (type value or select option as specified) |
+   | :---------------- | :----------------------------------------------- |
+   | Name              | my-ilb-ip                                        |
+   | Static IP address | Let me choose                                    |
+   | Custom IP address | 10.10.30.5                                       |
+
+4. Click **Reserve**.
+
+5. In **Port number**, type `80`.
+
+6. Click **Done** .
+
+### **Review and create the Internal Load Balancer**
+
+1. Click on **Review and finalize**.
+2. Review the **Backend** and **Frontend**.
+3. Click on **Create**. Wait for the Load Balancer to be created, before moving to the next task.
+
+Click Check my progress to verify the objective.
+
+Configure the Internal Load Balancer
+
+
+
+Check my progress
+
+
+
+## Task 4. Test the Internal Load Balancer
+
+Verify that the `my-ilb` IP address forwards traffic to **instance-group-1** and **instance-group-2**.
+
+### **Access the Internal Load Balancer**
+
+1. In the Cloud Console, navigate to **Navigation menu** > **Compute Engine** > **VM instances**.
+2. For **utility-vm**, click **SSH** to launch a terminal and connect.
+3. To verify that the Internal Load Balancer forwards traffic, run the following command:
+
+```
+curl 10.10.30.5
+```
+
+Copied!
+
+The output should look like this:
+
+```
+<h1>Internal Load Balancing Lab</h1><h2>Client IP</h2>Your IP address : 10.10.20.50<h2>Hostname</h2>Server Hostname:
+ instance-group-1-1zn8<h2>Server Location</h2>Region and Zone: us-central1-a
+```
+
+**Note:** As expected, traffic is forwarded from the Internal Load Balancer (10.10.30.5) to the backend.
+
+1. Run the same command a couple more times.
+
+In the output, you should be able to see responses from **instance-group-1** in `Zone` and **instance-group-2** in the different zone of same region.
+
+## Congratulations!
+
+In this lab you created two managed instance groups in the `REGION` region, along with firewall rules to allow HTTP traffic to those instances and TCP traffic from the Google Cloud health checker. Then, you configured and tested an Internal Load Balancer for those instance groups.
+
+
+
+## LAB - Build a Secure Google Cloud Network: Challenge Lab
+
+## Introduction
+
+In a challenge lab you’re given a scenario and a set of tasks. Instead of following step-by-step instructions, you will use the skills learned from the labs in the course to figure out how to complete the tasks on your own! An automated scoring system (shown on this page) will provide feedback on whether you have completed your tasks correctly.
+
+When you take a challenge lab, you will not be taught new Google Cloud concepts. You are expected to extend your learned skills, like changing default values and reading and researching error messages to fix your own mistakes.
+
+To score 100% you must successfully complete all tasks within the time period!
+
+This lab is recommended for students who have enrolled in the [Build a Secure Google Cloud Network](https://www.cloudskillsboost.google/course_templates/654) skill badge. Are you ready for the challenge?
+
+## Setup
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+## Challenge scenario
+
+You are a security consultant brought in by Jeff, who owns a small local company, to help him with his very successful website (juice-shop). Jeff is new to Google Cloud and had his neighbour's son set up the initial site. The neighbour's son has since had to leave for college, but before leaving, he made sure the site was running.
+
+Below is the current set up:
+
+![Current Google Cloud environment](C:\Users\sherwinowen\Documents\my_tutorials\gcp\cloud_security_engineer\images\qEwFTP7%2FkyF3cRwfT3FGObt7L7VLB60%2Bvp92hZVnogw%3D)
+
+## Your challenge
+
+You need to create the appropriate security configuration for Jeff's site. Your first challenge is to set up firewall rules and virtual machine tags. You also need to ensure that SSH is only available to the bastion via IAP.
+
+For the firewall rules, make sure that:
+
+- The bastion host does not have a public IP address.
+- You can only SSH to the bastion and only via IAP.
+- You can only SSH to `juice-shop` via the bastion.
+- Only HTTP is open to the world for `juice-shop`.
+
+Tips and tricks:
+
+- Pay close attention to the network tags and the associated VPC firewall rules.
+- Be specific and limit the size of the VPC firewall rule source ranges.
+- Overly permissive permissions will not be marked correct.
+
+![The Google Cloud environment to configure](https://cdn.qwiklabs.com/BgxgsuLyqMkhxmO3jDlkHE7yGLIR%2B3rrUabKimlgrbo%3D)
+
+Suggested order of action.
+
+1. Check the firewall rules. Remove the overly permissive rules.
+
+Remove the overly permissive rules
+
+- Go to **VPC network** > **Firewall** > will see **open-access**
+- Use the following command from the cloud console:
+
+```
+gcloud compute firewall-rules delete open-access
+```
+
+Check my progress
+
+
+
+2. Navigate to Compute Engine in the Cloud console and identify the bastion host. The instance should be stopped. Start the instance.
+
+Start the bastion host instance
+
+- Go to **Compute Engine** > **VM Instances** > Select **bastion** > click on **Start**
+
+Check my progress
+
+
+
+3. The bastion host is the one machine authorized to receive external SSH traffic. Create a firewall rule that allows [SSH (tcp/22) from the IAP service](https://cloud.google.com/iap/docs/using-tcp-forwarding). The firewall rule must be enabled for the bastion host instance using a network tag of `accept-ssh-iap-ingress-ql-744`.
+
+Create a firewall rule that allows SSH (tcp/22) from the IAP service and add network tag on bastion
+
+- Run the following:
+- Make sure you replace with the tag provided on the Left Pane.
+
+```
+gcloud compute firewall-rules create SSH-IAP-FW --allow=tcp:22 --source-ranges 35.235.240.0/20 --target-tags accept-ssh-iap-ingress-ql-744 --network acme-vpc
+
+gcloud compute instances add-tags bastion --tags=accept-ssh-iap-ingress-ql-744 --zone=us-central1-c
+```
+
+Check my progress
+
+
+
+4. The `juice-shop` server serves HTTP traffic. Create a firewall rule that allows traffic on HTTP (tcp/80) to any address. The firewall rule must be enabled for the juice-shop instance using a network tag of `accept-http-ingress-ql-744`.
+
+Create a firewall rule that allows traffic on HTTP (tcp/80) to any address and add network tag on juice-shop
+
+- Run the following:
+
+- Make sure you replace with the tag provided on the Left Pane.
+
+```
+gcloud compute firewall-rules create allow-http --allow=tcp:80 --source-ranges 0.0.0.0/0 --target-tags accept-http-ingress-ql-744 --network acme-vpc
+
+gcloud compute instances add-tags juice-shop --tags=accept-http-ingress-ql-744 --zone=us-central1-c
+```
+
+Check my progress
+
+
+
+5. You need to connect to `juice-shop` from the bastion using SSH. Create a firewall rule that allows traffic on SSH (tcp/22) from `acme-mgmt-subnet` network address. The firewall rule must be enabled for the `juice-shop` instance using a network tag of ``.
+
+Create a firewall rule that allows traffic on SSH (tcp/22) from acme-mgmt-subnet
+
+- Run the following:
+- Make sure you replace with the tag provided on the Left Pane.
+
+```
+gcloud compute firewall-rules create ssh-internal --allow=tcp:22 --source-ranges 192.168.10.0/24 --target-tags accept-ssh-internal-ingress-ql-744 --network acme-vpc
+
+gcloud compute instances add-tags juice-shop --tags=accept-ssh-internal-ingress-ql-744 --zone=us-central1-c
+```
+
+Check my progress
+
+
+
+6. In the Compute Engine instances page, click the SSH button for the bastion host. Once connected, SSH to `juice-shop`.
+
+**Hint:** If you're having difficulties with the compute ssh connection or IAP tunnel, make use of the [--troubleshoot](https://cloud.google.com/sdk/gcloud/reference/compute/ssh) flag.
+
+SSH to bastion host via IAP and juice-shop via bastion
+
+- Go to **Compute Engine** > **VM instances** > **SSH** to **bastion** host
+- Run the following:
+
+```
+ssh <internalstudent-03-deb996e41e56@bastion:~$ ssh 192.168.11.2
+The authenticity of host '192.168.11.2 (192.168.11.2)' can't be established.
+ECDSA key fingerprint is SHA256:blNVdiCDyB+qVttS+NjLqat8AopajkcyF7Yg3OX1GSA.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '192.168.11.2' (ECDSA) to the list of known hosts.
+Linux juice-shop 5.10.0-33-cloud-amd64 #1 SMP Debian 5.10.226-1 (2024-10-03) x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Creating directory '/home/student-03-deb996e41e56'.
+student-03-deb996e41e56@juice-shop:~$  IP of the juice-shop>
+```
+
+Check my progress
+
+
+
+## Congratulations!
+
+You've completed the challenge lab and helped Jeff tighten security.
+
+![Build and Secure Networks in Google Cloud skill badge](images\9oELH8%2F%2FimbVfbdo6Ee0IwQdwEZe6tzNezoNO8TP6QY%3D)
+
+
+
+
+
+
+
+# 17 - Using DevSecOps in your Google Cloud Environment
+
+
+
+## LAB - Working with Artifact Registry
+
+## Overview
+
+As the evolution of Container Registry, [Artifact Registry](https://cloud.google.com/artifact-registry) is a single place for your organization to manage container images and language packages (such as Maven and npm). It is fully integrated with Google Cloud's tooling and runtimes and comes with support for native artifact protocols. This makes it simple to integrate it with your CI/CD tooling to set up automated pipelines.
+
+In this lab you will learn about some of the features available in Artifact Registry.
+
+## Objectives
+
+In this lab, you learn how to:
+
+- Create repositories for Containers and Language Packages
+- Manage container images with Artifact Registry
+- Integrate Artifact Registry with Cloud Code
+- Configure Maven to use Artifact Registry for Java Dependencies
+
+## Setup and requirement
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-4d9ed7863142@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   nPhedPImkx6C
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-04-21a41c4e5c02`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-04-21a41c4e5c02
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-4d9ed7863142@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-04-21a41c4e5c02
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+You must wait for the lab to provision before making any changes to the environment! The pre-configured parts of the environment that you need to work with will be available to you as soon as the lab indicates it is ready.
+
+## Task 1. Prepare the lab environment
+
+### Set up variables
+
+- In Cloud Shell, set your project ID and project number. Save them as `PROJECT_ID` and `PROJECT_NUMBER` variables:
+
+```
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+export REGION=us-east1
+gcloud config set compute/region $REGION
+```
+
+Copied!
+
+### Enable Google services
+
+- Run the following to enable necessary Google services:
+
+```
+gcloud services enable \
+  cloudresourcemanager.googleapis.com \
+  container.googleapis.com \
+  artifactregistry.googleapis.com \
+  containerregistry.googleapis.com \
+  containerscanning.googleapis.com
+```
+
+Copied!
+
+### Get the source code
+
+The source code for this lab is located in the GoogleCloudPlatform org on GitHub.
+
+- Clone the source code with the command below, then change into the directory.
+
+```
+git clone https://github.com/GoogleCloudPlatform/cloud-code-samples/
+cd ~/cloud-code-samples
+```
+
+Copied!
+
+### Provision the infrastructure used in this lab
+
+In this lab you will deploy code to Kubernetes Engine (GKE).
+
+- Run the setup script below to prepare this infrastructure:
+
+```
+gcloud container clusters create container-dev-cluster --zone=us-east1-b
+```
+
+Copied!
+
+Click **Check my progress** to verify the objective.
+
+Enable Google Services and create GKE cluster
+
+
+
+Check my progress
+
+
+
+## Task 2. Working with container images
+
+### Create a Docker Repository on Artifact registry
+
+Artifact Registry supports managing container images and language packages. Different artifact types require different specifications. For example, the requests for Maven dependencies are different from requests for Node dependencies.
+
+To support the different API specifications, Artifact Registry needs to know what format you want the API responses to follow. To do this you will create a repository and pass in the `--repository-format` flag indicating the type of repository desired.
+
+1. From Cloud Shell run the following command to create a repository for Docker images:
+
+```
+gcloud artifacts repositories create container-dev-repo --repository-format=docker \
+  --location=$REGION \
+  --description="Docker repository for Container Dev Workshop"
+```
+
+Copied!
+
+Click **Authorize** if the Cloud Shell authorization prompt appears.
+
+1. In the Cloud console, go to **Artifact Registry** > **Repositories** and notice your newly created Docker repository named `container-dev-repo`. If you click on it you can see that it's empty at the moment.
+
+Click **Check my progress** to verify the objective. (It may take a minute to validate. If you have completed successfully and it is not validating, wait a minute and try again.)
+
+Working with container images
+
+
+
+Check my progress
+
+
+
+### Configure Docker Authentication to Artifact Registry
+
+When connecting to Artifact Registry credentials are required in order to provide access. Rather than set up separate credentials, Docker can be configured to use your `gcloud` credentials seamlessly.
+
+1. From Cloud Shell run the following command to configure Docker to use the Google Cloud CLI to authenticate requests to Artifact Registry in the `us-east1` region:
+
+```
+gcloud auth configure-docker us-east1-docker.pkg.dev
+```
+
+Copied!
+
+1. The command will prompt for a confirmation to change the Cloud Shell docker configuration, click **ENTER**.
+
+### Explore the sample Application
+
+A sample application is provided in the git repository you cloned.
+
+- Change into the java directory and review the application code:
+
+```
+cd ~/cloud-code-samples/java/java-hello-world
+```
+
+Copied!
+
+The folder contains an example Java application that renders a simple web page: in addition to various files not relevant for this specific lab, it contains the source code, under the `src` folder, and a Dockerfile you will use to build a container image locally.
+
+### Build the Container Image
+
+Before you can store container images in Artifact Registry you need to create one.
+
+- Run the following command to build the container image and tag it properly:
+
+```
+docker build -t us-east1-docker.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-repo/java-hello-world:tag1 .
+```
+
+Copied!
+
+### Push the Container Image to Artifact Registry
+
+- Run the following command to push the container image to the repository you created:
+
+```
+docker push us-east1-docker.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-repo/java-hello-world:tag1
+```
+
+Copied!
+
+### Review the image in Artifact Registry
+
+1. In **Artifact Registry > Repositories**, click into `container-dev-repo` and check that the `java-hello-world` image is there.
+2. Click on the image and note the image tagged `tag1`. You can see that Vulnerability Scanning is running or already completed and the number of vulnerabilities detected is visible.
+
+![Artifact Registry](images\Fs3OTdcz9Ze%2F2ejwzgSPgbluaLT3YVESJWDQElxHwPU%3D)
+
+Click on the number of vulnerabilities and you will see the list of vulnerabilities detected in the image, with the CVE bulletin name and the severity. Click **VIEW** on each listed vulnerability to get more details:
+
+![CVE Readout](images\V6XVnPOuIjzX5496btWIthHrhmdCQcT998mk7Vg7PBg%3D)
+
+## Task 3. Integration with Cloud Code
+
+In this section you use the Artifact Registry Docker image repository with [Cloud Code](https://cloud.google.com/code).
+
+### Deploy the Application to GKE Cluster from Cloud Code
+
+1. From the `java-hello-world` folder run the following command to open Cloud Shell Editor and add the application folder to this workspace:
+
+```
+cd ~/cloud-code-samples/
+cloudshell workspace .
+```
+
+Copied!
+
+The Cloud Shell editor will open with the explorer in the application folder.
+
+1. From the left menu, select **Cloud Code** and then expand the **COMPUTE ENGINE** option and click on **Select a Project** and choose the project ID provided in the Lab Instruction.
+
+![Cloud Code select Project](images\uBkx5YV0EHDtJ2ZacT%2BaRfjw4UhzQlNrDEXOZN1CzN8%3D)
+
+Also, expand the **KUBERNETES** option. You will be able to see the cluster loading.
+
+Wait until you see the cluster listed under **KUBERNETES** as well as under **COMPUTE ENGINE**.
+
+1. The following steps will require you to enter your Artifact Registry repository location. The format for the location is:
+
+```
+us-east1-docker.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-repo
+```
+
+Click **Navigation menu** under the Cloud Shell Editor![navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D) **View > Command Palette...** and type **Run on Kubernetes** and select **Cloud Code: Run on Kubernetes**.
+
+![Cloud Code Status](images\5TNFJonK0%2F34Ptdn2bm1%2BLuv2MuSOEwPOglqWOdVJF8%3D)
+
+1. Choose **cloud-code-samples/java/java-hello-world/skaffold.yaml** and then **dockerfile**.
+2. If Prompted for a context, select **Yes** to use the current context.
+3. In the prompt for the image registry select **Enter the address of an image repository** and put the address location you located below and press **Enter**.
+
+![Cloud Code Select Image Repository](images\HUPQfy2YJyirTxggCIvJ03afLMwqC3LJyMkoWznkMhI%3D)
+
+```
+us-east1-docker.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-repo
+```
+
+Copied!
+
+1. When you execute **Run on Kubernetes** for the first time Cloud Code prompts you for the target image repository location. Once provided, the repository url is stored in the file `.vscode/launch.json` which is created in the application folder.
+
+In the output pane you see that the build starts for the application image `java-hello-world,` the image is uploaded to the Artifact Registry repository configured previously.
+
+1. In **Artifact Registry > Repositories** click into `container-dev-repo` and check that the `java-hello-world` image and note a new image tagged `latest`.
+
+### Review the Deployed Application
+
+1. Go back to Cloud Shell Editor. When deployment is complete Skaffold/Cloud Code will print the exposed url where the service have been forwarded, click on the link - **Follow link**:
+
+![URL Location](images\WqbdqnbpEwsfVgkxNO238fzw538d%2F%2BdUHX3SZoKVA7Y%3D)
+
+In the new browser window you see the hello world app page.
+
+![Hello World](images\EhYbCuh0BXpEitT%2BxC%2FwvcIdTfqZCTwDYA03NV9Y%2FIE%3D)
+
+### Update application code
+
+Now update the application to see the change implemented immediately in the deployment on the cluster:
+
+1. Open the `HelloWorldController.java` by clicking on the **Navigation menu** under the Cloud Shell Editor ![navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D) **View > Command Palette...** and then click one backspace and then enter the path **src/main/java/cloudcode/helloworld/web** and click the option starting with `Hello..` .
+2. Change the text in row 20 from "It's running!" to "It's updated!". You should see the build and deployment process starting immediately.
+3. At the end of the deploy click again on the forwarded url or refresh the browser window with the application to see your change deployed:
+
+![Hello World Updated](images\9MMRZmhhziw4WEb3SYlfGzSKCvV4YE0EvqQGXdqwerw%3D)
+
+1. In the Cloud console go to **Navigation Menu > Artifact Registry > Repositories** and click into `container-dev-repo` to check that the `java-hello-world` image and note the new image.
+
+Click **Check my progress** to verify the objective.
+
+Integration with Cloud Code
+
+
+
+Check my progress
+
+
+
+## Task 4. Working with language packages
+
+In this section you will set up an Artifact Registry Java repository and upload packages to it, leveraging them in different applications.
+
+### Create a Java package repository
+
+1. From Cloud Shell run the following command to create a repository for Java artifacts:
+
+```
+gcloud artifacts repositories create container-dev-java-repo \
+    --repository-format=maven \
+    --location=us-east1 \
+    --description="Java package repository for Container Dev Workshop"
+```
+
+Copied!
+
+1. Click Authorize if the Cloud Shell authorization prompt appears
+2. In the Cloud console go to **Artifact Registry > Repositories** and notice your newly created Maven repository named `container-dev-java-repo`, if you click on it you can see that it's empty at the moment.
+
+Click **Check my progress** to verify the objective.
+
+Create a Java package repository
+
+
+
+Check my progress
+
+
+
+### Set up authentication to Artifact Repository
+
+- Use the following command to update the well-known location for Application Default Credentials (ADC) with your user account credentials so that the Artifact Registry credential helper can authenticate using them when connecting with repositories:
+
+```
+gcloud auth login --update-adc
+```
+
+Copied!
+
+If prompted to authenticate:
+
+- Choose **Y**.
+- Paste the code into a browser window.
+- Select Google Sign In and sign in using the credentials in the lab.
+- Copy the authentication code from the browser back into the console to complete the authentication.
+
+### Configure Maven for Artifact Registry
+
+1. Run the following command to print the repository configuration to add to your Java project:
+
+```
+gcloud artifacts print-settings mvn \
+    --repository=container-dev-java-repo \
+    --location=us-east1
+```
+
+Copied!
+
+1. Open the `pom.xml` in Cloud Shell Editor and add the returned settings to the appropriate sections in the file:
+
+- Add the **distributionManagement** section.
+
+```
+  <distributionManagement>
+    <snapshotRepository>
+      <id>artifact-registry</id>
+      <url>artifactregistry://us-east1-maven.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-java-repo</url>
+    </snapshotRepository>
+    <repository>
+      <id>artifact-registry</id>
+      <url>artifactregistry://us-east1-maven.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-java-repo</url>
+    </repository>
+  </distributionManagement>
+```
+
+Copied!
+
+- Add the **repositories** section.
+
+```
+ <repositories>
+   <repository>
+     <id>artifact-registry</id>
+     <url>artifactregistry://us-east1-maven.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-java-repo</url>
+     <releases>
+       <enabled>true</enabled>
+     </releases>
+     <snapshots>
+       <enabled>true</enabled>
+     </snapshots>
+   </repository>
+ </repositories>
+```
+
+Copied!
+
+- Update the **extensions in the Builds** section.
+
+```
+<extensions>
+     <extension>
+       <groupId>com.google.cloud.artifactregistry</groupId>
+       <artifactId>artifactregistry-maven-wagon</artifactId>
+       <version>2.1.0</version>
+     </extension>
+   </extensions>
+```
+
+Copied!
+
+Here's an example of the complete file for your reference.
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+
+ <artifactId>hello-world</artifactId>
+ <packaging>jar</packaging>
+ <name>Cloud Code Hello World</name>
+ <description>Getting started with Cloud Code</description>
+ <version>1.0.0</version>
+<distributionManagement>
+   <snapshotRepository>
+     <id>artifact-registry</id>
+     <url>artifactregistry://us-east1-maven.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-java-repo</url>
+   </snapshotRepository>
+   <repository>
+     <id>artifact-registry</id>
+     <url>artifactregistry://us-east1-maven.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-java-repo</url>
+   </repository>
+ </distributionManagement>
+
+ <repositories>
+   <repository>
+     <id>artifact-registry</id>
+     <url>artifactregistry://us-east1-maven.pkg.dev/qwiklabs-gcp-04-21a41c4e5c02/container-dev-java-repo</url>
+     <releases>
+       <enabled>true</enabled>
+     </releases>
+     <snapshots>
+       <enabled>true</enabled>
+     </snapshots>
+   </repository>
+ </repositories>
+
+ <parent>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-parent</artifactId>
+   <version>2.6.3</version>
+ </parent>
+
+ <properties>
+   <java.version>1.8</java.version>
+   <checkstyle.config.location>./checkstyle.xml</checkstyle.config.location>
+ </properties>
+
+ <build>
+   <plugins>
+     <plugin>
+       <groupId>com.google.cloud.tools</groupId>
+       <artifactId>jib-maven-plugin</artifactId>
+       <version>3.2.0</version>
+     </plugin>
+     <plugin>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-maven-plugin</artifactId>
+     </plugin>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-checkstyle-plugin</artifactId>
+       <version>3.1.2</version>
+     </plugin>
+   </plugins>
+   <extensions>
+     <extension>
+       <groupId>com.google.cloud.artifactregistry</groupId>
+       <artifactId>artifactregistry-maven-wagon</artifactId>
+       <version>2.1.0</version>
+     </extension>
+   </extensions>
+ </build>
+
+ <!-- The Spring Cloud GCP BOM will manage spring-cloud-gcp version numbers for you. -->
+ <dependencyManagement>
+   <dependencies>
+     <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-gcp-dependencies</artifactId>
+       <version>1.2.8.RELEASE</version>
+       <type>pom</type>
+       <scope>import</scope>
+     </dependency>
+   </dependencies>
+ </dependencyManagement>
+
+ <dependencies>
+
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter</artifactId>
+   </dependency>
+
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-jetty</artifactId>
+   </dependency>
+
+   <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-webmvc</artifactId>
+   </dependency>
+
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-thymeleaf</artifactId>
+   </dependency>
+
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-test</artifactId>
+     <scope>test</scope>
+   </dependency>
+
+   <dependency>
+     <groupId>org.springframework.cloud</groupId>
+     <artifactId>spring-cloud-gcp-starter-logging</artifactId>
+   </dependency>
+
+ </dependencies>
+
+</project>
+```
+
+Copied!
+
+### Upload your Java package to Artifact Registry
+
+With Artifact Registry configured in Maven, you can now use Artifact Registry to store Java Jars for use by other projects in your organization.
+
+- Enter the below command to change to `java-hello-world` folder.
+
+```
+cd ~/cloud-code-samples/java/java-hello-world
+```
+
+Copied!
+
+- Run the following command to upload your Java package to Artifact Registry:
+
+```
+mvn deploy
+```
+
+Copied!
+
+### Check the Java package in Artifact Registry
+
+In the Cloud console go to **Artifact Registry > Repositories** and click into `container-dev-java-repo` to check that the `hello-world` binary artifact is there:
+
+![Artifact Registry](images\TyBBKDNjWzPuuh%2B6UVeVgOebFt%2BdpjwV55YmJymBU48%3D)
+
+## Congratulations!
+
+In this lab you learned about some of the features available in Artifact Registry. You first created repositories for containers and language packages. You then managed container images with Artifact Registry and integrated it with Cloud Code. Finally, you configured Maven to use Artifact Registry for Java dependencies. You now have a solid understanding of features available in Artifact Registry.
+
+
+
+# 19- Mitigate Threats and Vulnerabilities with Security Command Center
+
+
+
+## LAB - Get Started with Security Command Center
+
+
+
+## Overview
+
+[Security Command Center](https://cloud.google.com/security-command-center) (SCC) is a security monitoring platform that helps users accomplish the following:
+
+- Discover security-related misconfigurations of Google Cloud resources.
+- Report on active threats in Google Cloud environments.
+- Fix vulnerabilities across Google Cloud assets.
+
+In this lab, you take your first steps with Security Command Center by exploring the service's interface, configurations, and vulnerability findings.
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Explore SCC interface elements.
+- Configure SCC settings at the project level.
+- Analyze and fix SCC vulnerability findings.
+
+### Prerequisites
+
+It is recommended, but not required, that you are familiar with the following before starting this lab:
+
+- Cloud computing concepts.
+- The Google Cloud console.
+- The [severity classifications for findings](https://cloud.google.com/security-command-center/docs/finding-severity-classifications).
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-4d9ed7863142@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   nPhedPImkx6C
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-03-dc5d137c89b1`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-03-dc5d137c89b1
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-4d9ed7863142@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-03-dc5d137c89b1
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Scenario
+
+![5ce916afc496a60c.jpeg](images\qO2i8mve9e0jOrBbEsDzPFfEkM1ea6S0a7mXdN%2FNS%2BA%3D)
+
+
+
+Cymbal Bank is an American retail bank with over 2,000 branches in all 50 states. It offers comprehensive debit and credit services that are built on top of a robust payments platform. Cymbal Bank is a digitally transforming legacy financial services institution.
+
+Cymbal Bank was founded in 1920 under the name Troxler. Cymbal Group acquired the company in 1975 after it had been investing heavily in Cymbal Group's proprietary ATMs. As the bank grew into a national leader, they put strategic emphasis on modernizing the customer experience both in-person at their branches and digitally through an app they released in 2014. Cymbal Bank employs 42,000 people nationwide and, in 2019, reported $24 billion in revenue.
+
+Cymbal Bank is interested in integrating a centralized security monitoring platform to help monitor threats and remediate vulnerabilities across their Google Cloud resources in their corporate banking applications. As a Cloud Security Engineer, you are tasked with learning about Security Command Center's cutting-edge features so you can deliver a presentation to the CTO on the services' benefits.
+
+## Task 1. Explore SCC interface elements
+
+In this task, you explore the Security Command Center (SCC) interface to learn about the service's chief features.
+
+1. In the Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **Security > Risk Overview**.
+
+**Note:** If you receive a message informing you that you need to "Create an Organization", simply refresh the browser.
+
+1. On the **Risk overview** page, scroll down and investigate the information panels that refer to **New threats over time** and **Vulnerabilities per resource type**.
+
+Threats and vulnerabilities are two different types of *finding classes*, which SCC uses to categorize and report security issues in your environment. Refer to the [Finding classes](https://cloud.google.com/security-command-center/docs/finding-classes) documentation to learn more about finding classes.
+
+- **Threats** notify Google Cloud users about current suspicious activities happening in their Google Cloud environments, such as a service account investigating its own permissions.
+- **Vulnerabilities** provide information on misconfigurations or vulnerabilities of resources, such as an open TCP port or an outdated library running on a virtual machine.
+
+A *finding* is a record generated by SCC, which provides details on vulnerability or threat data in the Security Command Center dashboard.
+
+1. On the **New threats over time** card, click the **Findings by resource type** tab.
+
+This card enumerates currently active threats that have happened in your project during the period of time determined by the "Time range" dropdown on the right side of this information panel.
+
+**Note:** In this lab instance, the number of threats are zero because you are in a sandbox Google Cloud project that has never been attacked before. You explore how to protect yourself from threats in another lab, *Detect and Investigate Threats with Security Command Center*.
+
+By default, the time range dropdown shows all threats that appeared during the last 7 days, but you can view all threats that happened during the last 180 days.
+
+1. From the **Time range** selector, select **Last 180 days**.
+2. Scroll down to the **Vulnerabilities per resource type** card.
+
+![Active vulnerabilities in the last 180 days](images\QArEzwrf4TENUugm%2Fx4XdZL8%2BZRZ36yyqpexD1Bb9xM%3D)
+
+There should be around 80 active vulnerabilities listed.
+
+A majority of these findings are generated because you are using a default VPC network, which is insecure by design, for the purposes of this lab. For example, it contains firewall rules that allow SSH and RDP access from any IP address.
+
+1. Now scroll down to the **Active vulnerabilities** card.
+2. If it isn't selected by default, click the **Findings by category** tab.
+
+This shows your environment's vulnerabilities organized by different categories of vulnerabilities and their *severity*. The severity is a property of the finding that helps to estimate the potential risk that an issue poses to the Google Cloud environment.
+
+The level of severity cannot be changed—each type of finding has a severity level that is predetermined by SCC. Below is a list of the different types of severities and common examples:
+
+- **Critical** - For example, a Reverse Shell session launched from inside of a GKE Pod.
+- **High** - For example, an SSH port opened to the entire Internet (0.0.0.0/0);
+- **Medium** - For example, one of primitive IAM roles (Owner/Editor/Viewer) has been granted to a user or a service account.
+- **Low** - For example, no VPC Flow logs are collected.
+- **Unspecified** - Can appear in SCC, but is not common.
+
+Detailed criteria for how SCC sets a finding's severity are described on the [Finding severities](https://cloud.google.com/security-command-center/docs/finding-severity-classifications) page.
+
+**Note:** Take notice that the findings about open RDP and SSH ports have high severity levels.
+
+1. Now click the **Findings by resource type** tab. This shows vulnerabilities categorized by the different types of Google Cloud resources that are available.
+
+**Note:** This project has a default VPC Network, so most findings here are related to network components such as firewall, network or subnetwork.
+
+1. Finally, click the **Findings by project** tab. This tab is intended for use with SCC on the level of a folder or organization root node.
+
+**Note:** In our lab we have access only to one project, so this tab contains only the name of the current project.
+
+1. From the **Security** portal, which you access if you select **Security** from the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), note the various tabs listed under the Security Command Center header. Here is a description of each.
+
+| SCC section            | Description                                                  |
+| :--------------------- | :----------------------------------------------------------- |
+| **Risk Overview**      | Shows your environment's vulnerabilities organized by different categories of vulnerabilities and severity. |
+| **Threats**            | Gives you a quick overview of findings that are classified as threats in SCC. Some examples could be a successful attempt of a [Brute Force: SSH](https://cloud.google.com/security-command-center/docs/how-to-use-event-threat-detection#brute-force:-ssh) attack, cryptomining software running on compute resources, i.e. the [Execution: Cryptocurrency Mining YARA Rule](https://cloud.google.com/security-command-center/docs/how-to-use-vm-threat-detection#cryptocurrency-mining-yara-rule), and a [Reverse Shell](https://cloud.google.com/security-command-center/docs/how-to-use-container-threat-detection#reverse_shell) session that was launched from inside a GKE container. |
+| **Vulnerabilities**    | Gives you a quick overview of all misconfigurations or flaws in software that might exist in the current scope (whether that be inside your project, folder, or organization). This gives you more fine-grained access to the vulnerabilities, allowing you to drill down into each one. Some examples of vulnerabilities are an [Open MySQL port](https://cloud.google.com/security-command-center/docs/how-to-remediate-security-health-analytics-findings#open_mysql_port) that is open to the whole Internet, an instance of [Primitive roles used](https://cloud.google.com/security-command-center/docs/how-to-remediate-security-health-analytics-findings#primitive_roles_used) e.g. Owner/Editor/Viewer role assigned to a user or a Service Account, and a web-page or a web-application vulnerable to [XSS](https://cloud.google.com/security-command-center/docs/how-to-remediate-web-security-scanner-findings#xss) attacks. |
+| **Compliance**         | Shows information about compatibility of your Project with the most important compliance standards such as CIS, PCI DSS, NIST 800-53 and others. |
+| **Assets**             | Includes asset information from Cloud Asset Inventory, which continuously monitors assets in your cloud environment. |
+| **Findings**           | Allows you to explore all findings available in the SCC database. |
+| **Sources**            | Details the software modules that analyze configuration of Google Cloud resources and monitor current activities by reading log files and checking currently running processes. |
+| **Posture Management** | Lets you use the security posture service in the SCC. Refer to the [Manage a security posture](https://cloud.google.com/security-command-center/docs/how-to-use-security-posture) guide for more detail. |
+|                        |                                                              |
+
+
+
+What triggered the significant amount of findings in this project?
+
+- The project contains a default service accounts.
+
+- **The project contains default VPC network.**
+
+- All Google Cloud projects are insecure.
+
+- They were custom generated for this lab.
+
+Submit
+
+
+
+## Task 2. Configure SCC settings at the project level
+
+In this task, you explore how to configure SCC settings at the project level.
+
+1. Click **Settings** in the top right corner of the **Risk overview** page.
+2. Ensure you are on the **Services** tab.
+
+This tab allows you to set up parameters of SCC's integrated services, which are also called sources ("the brains of SCC" that you explored in the previous task). For the purposes of this lab, the terms *services* and *sources* are interchangeable.
+
+Services detect threats and vulnerabilities and provide information to SCC. Most of them are available only in the Premium edition of SCC, which is provisioned in this lab.
+
+The following are built-in services that you can configure:
+
+- **Security Health Analytics (SHA)**—Finds and reports misconfigurations of resources (disabled logs, extra IAM permissions, publicly exposed services). This is what we have currently enabled in our project and what detected the 76 vulnerabilities in our project.
+- **Web Security Scanner (WSS)**—Scans publicly available web applications exposed via external IP addresses and checks for [OWASP top 10](https://owasp.org/www-project-top-ten/) vulnerabilities.
+- **Container Threat Detection (CTD)**—Detects the most common container runtime attacks in a Container Optimized OS.
+- **Event Threat Detection (ETD)**—Provides log-based threat analysis that continuously monitors Google Cloud and Google Workspace logs to scan for potential threats.
+- **Virtual Machine Threat Detection**—Analyzes memory of VM instances on the level of a Hypervisor and can detect suspicious activities happening in VM memory. Examples are unexpected kernel modules or running crypto-mining software.
+
+1. Click on the **Manage settings** link for **Security Health Analytics**.
+2. Click on the **Modules** tab.
+
+*Modules* are pre-defined, or custom units of detection logic. As you can see, SCC offers many different types of modules that can help you detect different misconfigurations of resources. SCC makes it easy to enable and disable different types of modules to support your security posture and the resources you are interested in monitoring.
+
+1. In the filter field, type `VPC_FLOW_LOGS_SETTINGS_NOT_RECOMMENDED` and press **Enter**.
+2. Select **Enable** from the **Status** dropdown.
+
+With this enabled, Security Health Analytics checks whether the `enableFlowLogs` property of VPC subnetworks is missing or set to false.
+
+**Note:** There is a delay until SCC starts scanning resources using the newly enabled module.
+
+Now that you are familiar with Security Command Center's different services and how to configure them, you can explore how to identify and fix a vulnerability with SCC.
+
+## Task 3. Analyze and fix SCC vulnerability findings
+
+In this task, you learn how to manage and mitigate vulnerability findings.
+
+### Mark a finding as INACTIVE to change its state
+
+1. From the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **Security > Risk Overview**.
+2. In the left-hand menu, click on the **Findings** tab.
+3. Set the **Timge range** selector in the top-right corner to **All time**.
+
+
+
+Roughly how many findings in total are included in the list?
+
+- 50
+
+- 40
+
+- 60
+
+- **70**
+
+Submit
+
+
+
+1. In the top-left corner of the screen, find the **Query preview** window, which contains a filter for sorting through all available findings.
+
+By default, the **Findings** tab displays unmuted findings with a state of **ACTIVE**.
+
+The two properties *state* and *mute* of every finding define visibility of findings in many filters used for SCC.
+
+- The [mute](https://cloud.google.com/security-command-center/docs/reference/rest/v1/organizations.sources.findings#mute) value can be set on findings by the security analyst or it can be set automatically if the analyst does not want to see irrelevant and noisy findings in the SCC interface.
+- The [state](https://cloud.google.com/security-command-center/docs/reference/rest/v1/organizations.sources.findings#state) property indicates whether a finding requires attention and has not been addressed yet, or if it's been fixed or otherwise addressed and is no longer active.
+
+A recommended way to manage the lifecycle of findings and hide them is to use the `mute` property. Changing the `state` property is typically handled by software sources.
+
+1. On the **Quick filters** card, select the checkbox associated with the **Default network** category.
+
+1. Notice that the query string in the **Query preview** has changed (it now has `AND category="DEFAULT_NETWORK"` attached to it).
+2. In the **Findings query results** section, select the checkbox associated with **Default network** and select **More actions** (![More actions icon](https://cdn.qwiklabs.com/2ufrDePg5inKfodUoT2Kib4oE7II7emYn%2BypCC85FjQ%3D)) **> Change active state**.
+3. Set the state to **Inactive** for this finding.
+
+Now the finding has been deactivated and hidden from the screen because by default only active and unmuted findings are listed.
+
+### Filter findings results by applying a query
+
+1. You can reset the **Findings** tab view. To do this, select **Risk Overview** and then choose **Findings** under the SCC header.
+
+
+
+Roughly how many findings in total are in the list?
+
+
+
+60
+
+
+
+40
+
+
+
+50
+
+
+
+70
+
+
+
+Submit
+
+
+
+1. Click the **Edit query** button.
+
+2. Change the query string in the **Query editor** to `category="DEFAULT_NETWORK"`.
+
+3. When you're finished editing, click the **Apply** button.
+
+   It may take a minute or two for the change to take effect. Once it does, only one finding for **Default network** is listed.
+
+In the left-hand menu under **Quick filters**, note that the **Show inactive** checkbox is selected. SCC gives you the flexibility to search for active and inactive findings. Now, you can revert the state of this finding.
+
+1. In the **Findings query results** section, select the checkbox for **Default network** and select **More actions** (![More actions icon](https://cdn.qwiklabs.com/2ufrDePg5inKfodUoT2Kib4oE7II7emYn%2BypCC85FjQ%3D)) **> Change active state**.
+2. Set the state for this finding to **Active**.
+
+Findings can be activated and deactivated manually, but they can never be deleted by a user. They are deleted automatically only when a finding has not been refreshed by scanners during a period of 13 months.
+
+When a security scanner checks the same finding and does not detect the misconfiguration that kicked off the finding, it marks it as `INACTIVE`. If the vulnerability still presents in the system, the finding stays in an `ACTIVE` state.
+
+1. Click the **Clear All** button next to Quick Filters to reset the findings tab.
+2. In the **Query preview** window, click **Edit Query**.
+3. Now copy and paste the the following query:
+
+```
+state="ACTIVE" AND NOT mute="MUTED" AND resource.type="google.compute.Subnetwork"
+```
+
+Copied!
+
+1. When you're finished editing, click the **Apply** button.
+
+Now all findings related to subnetworks display. For this lab, the default VPC network is created with the `--subnet-mode=auto` parameter, so none of its subnets have [Private Google Access](https://cloud.google.com/vpc/docs/private-google-access) enabled and all subnets do not write VPC Flow logs.
+
+### Filter findings by category and mute them
+
+When working in a test environment, you sometimes want to hide certain findings. In this instance, you do not want to see SCC findings about Private Google Access in this network, so you want to mute those findings.
+
+1. In the **Quick filters** window, select the category, **Private google access disabled**.
+2. In the **Finding query results** pane, select the uppermost **Category** checkbox so all "Private google access disabled" findings are selected.
+
+![Category checkbox selected](images\ezC%2BQT7sCf5LgLFrk%2FJDa3AHa7UDld4iTZB%2Bz6%2BeFZY%3D)
+
+1. Select **More actions** (![More actions icon](https://cdn.qwiklabs.com/2ufrDePg5inKfodUoT2Kib4oE7II7emYn%2BypCC85FjQ%3D)) and click the **Mute options** button.
+2. In the dropdown, select **Apply mute override**. This operation mutes existing findings.
+3. Select **Risk Overview** in the left-hand menu and then select **Findings** to reset the findings view.
+
+
+
+Roughly how many findings in total can you see in the list?
+
+
+
+70
+
+
+
+60
+
+
+
+50
+
+
+
+40
+
+
+
+Submit
+
+
+
+Notice that the **Private google access disabled** findings are now muted and no longer display. Muting is a powerful way to filter SCC results and provides you the fine-grained control over your resources and findings you are interested in.
+
+### Create a mute rule to hide certain findings
+
+Another misconfiguration of the default network is that VPC Flow Logs are also disabled in the subnets of this network. Since you are working in a test environment, you don't need VPC Flow Logs enabled.
+
+In this section, you mute all existing and all future findings related to this category.
+
+1. In the **Findings query results** window, select **More actions** (![More actions icon](https://cdn.qwiklabs.com/2ufrDePg5inKfodUoT2Kib4oE7II7emYn%2BypCC85FjQ%3D)) **>** **Mute options > Manage mute rules**.
+2. Click the **Create mute rule** button.
+
+**Note:** You can create an SCC configuration that mutes existing and all new findings satisfying the criteria, defined in the **Finding query** field. Note that previously you muted existing "Private google access disabled" (PGA) findings.
+
+That was a one-time operation and newly detected findings reporting about disabled PGA still appear in SCC. However, if you create a mute rule, you effectively mute all existing and all new findings.
+
+1. In the new window, enter a Mute rule with ID: `muting-pga-findings`.
+2. For the mute rule description, enter `Mute rule for VPC Flow Logs`.
+3. In the **Findings query** filter input field, enter the following filter:
+
+```
+category="FLOW_LOGS_DISABLED"
+```
+
+Copied!
+
+1. Click the **Save** button.
+
+You should get a notification statig that a mute rule has been created.
+
+Click **Check my progress** to verify you've completed this objective.
+
+Create a mute rule
+
+
+
+Check my progress
+
+
+
+1. Now refresh the main SCC Dashboard by selecting **Findings** from the left-hand menu.
+
+   Ensure that you no longer get any **Private google access disabled** or **Flow logs disabled** findings.
+
+**Note:** If any of these findings still display, please refresh the browser tab.
+
+### Create another VPC network to test the findings mute rule
+
+In this section, you create one more network with automatically configured subnets to test out the recent modifications to your finding rules.
+
+1. Open a new Cloud Shell session (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)) and run the following command to create the network:
+
+```
+gcloud compute networks create scc-lab-net --subnet-mode=auto
+```
+
+Copied!
+
+**Note:** It may take a few minutes for the subnet to be created.
+
+Ensure the output you receive is similar to the following.
+
+**Output:**
+
+```
+Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-c6821aef4c0f/global/networks/SCC-lab-net].
+NAME: SCC-lab-net
+SUBNET_MODE: AUTO
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE:
+GATEWAY_IPV4:
+```
+
+Click **Check my progress** to verify you've completed this objective.
+
+Create a network
+
+
+
+Check my progress
+
+
+
+1. Close the Cloud Shell window after you have verified the above message.
+
+2. Refresh the SCC findings window and note the newly created **Private google access disabled** finding. However, there are no findings about VPC Flow Logs (this is because of the mute rule you created earlier).
+
+   Although you created mute rules for VPC Flow Logs, SCC still allows you to view them using the query editor.
+
+3. Click the **Edit Query** button and paste in the following to overwrite the existing query filter text:
+
+```
+category="FLOW_LOGS_DISABLED"
+```
+
+Copied!
+
+1. Click **Apply**.
+
+   Check the **Findings query results** window and note that in the **Resource display name** column, both the "defaults" and "SCC-lab-net" networks are listed.
+
+**Note:** If you do not see the default network listed, please make sure that the parameter `Rows per page` is set to 100. Also check that the `Time Range` parameter is set to the `All time` value.
+
+1. In the **Query preview** window, click **Edit Query**.
+2. Now copy and paste the the following query to overwrite the previous query text:
+
+```
+state="ACTIVE" AND NOT mute="MUTED"
+```
+
+Copied!
+
+1. When you're finished editing, click the **Apply** button.
+
+   This shows you the findings you had muted previously.
+
+### Investigate and fix two findings with high severity.
+
+In this section, you investigate and explore how to fix two findings with high severity.
+
+1. In the **Quick Filters** section, scroll down to the **Severity** type and select **High** from the list of severity options.
+
+You should see two findings: **Open RDP port** and **Open SSH port**. They have been initiated because the "default" network contains two firewall rules enabling SSH and RDP traffic to all instances in this network from the whole Internet.
+
+1. In the **Findings query results** window, click on the **Open RDP port** finding.
+
+A new window appears, which provides a detailed description of the issue itself, a list of affected resources, and "Next steps" to help you remediate it.
+
+1. In the **Next steps** section, click on the link to go to the *firewall rules page*, which opens in a new tab.
+2. Click the **default-allow-rdp** firewall rule.
+3. Click **Edit**.
+4. Delete the source IP range, `0.0.0.0/0`.
+5. Add the following source IP range `35.235.240.0/20` and press **Enter**.
+
+**Note:** This range of IP addresses is used for connecting to VM instances securely via Identity Aware Proxy. More information is available on the [Using IAP for TCP forwarding](https://cloud.google.com/iap/docs/using-tcp-forwarding) page.
+
+Do not change any other parameters!
+
+1. Click **Save**.
+
+2. Once saved, close the browser tab where you edited the firewall rule.
+
+3. Refresh the SCC findings browser tab.
+
+   You should now see only one finding with **High** severity - **Open SSH Port**.
+
+### Update the firewall rules to address a finding
+
+1. Click on the **Open SSH port** finding.
+
+2. Scroll down to the **Next steps** section and click on the link to go to the *firewall rules page*, which opens in a new tab.
+
+3. Click the **default-allow-ssh** firewall rule.
+
+4. Click **Edit**.
+
+5. Delete the source IP range, `0.0.0.0/0`.
+
+6. Add the following source IP range `35.235.240.0/20` and press **Enter**.
+
+   Do not change any other parameters!
+
+7. Click **Save**.
+
+8. Once saved, close the browser tab where you edited the firewall rule.
+
+Click **Check my progress** to verify you've completed this objective.
+
+Update the firewall rules
+
+
+
+Check my progress
+
+
+
+1. Now close the window with an open finding description and refresh the browser window.
+
+   You should see no findings with **High** severity.
+
+## Congratulations!
+
+Throughout this lab, you learned how to explore the Security Command Center interface elements, configure SCC settings at the project level, and analyze and fix SCC vulnerability. You have also used SCC to identify and remediate critical security vulnerabilities in your Google Cloud environment.
+
+
+
+
+
+
+
+## LAB - Analyze Findings with Security Command Center
+
+
+
+## Overview
+
+[Security Command Center](https://cloud.google.com/security-command-center) (SCC) is a security monitoring platform that helps users accomplish the following:
+
+- Discover security-related misconfigurations of Google Cloud resources.
+- Report on active threats in Google Cloud environments.
+- Fix vulnerabilities across Google Cloud assets.
+
+In this lab, you learn about Security Command Center by exploring the service’s analyzed assets and export features.
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Create a continuous export pipeline to Pub/Sub.
+- Export and analyze SCC findings in a BigQuery table.
+
+### Prerequisites
+
+It is recommended that you're familiar with the following before starting this lab:
+
+- Cloud computing concepts.
+- Google Cloud console.
+- The [severity classifications for findings](https://cloud.google.com/security-command-center/docs/finding-severity-classifications) (this is recommended but not required).
+- Pub/Sub and BigQuery (recommended but not required).
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-e33c941009e3@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   VRkOon286rTg
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+### Activate Cloud Shell
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-04-0f5774f16b5e`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-04-0f5774f16b5e
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-e33c941009e3@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-04-0f5774f16b5e
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+## Scenario
+
+![5ce916afc496a60c.jpeg](images\qO2i8mve9e0jOrBbEsDzPFfEkM1ea6S0a7mXdN%2FNS%2BA%3D)
+
+
+
+Cymbal Bank is an American retail bank with over 2,000 branches in all 50 states. It offers comprehensive debit and credit services that are built on top of a robust payments platform. Cymbal Bank is a digitally transforming legacy financial services institution.
+
+Cymbal Bank was founded in 1920 under the name Troxler. Cymbal Group acquired the company in 1975 after it had been investing heavily in Cymbal Group's proprietary ATMs. As the bank grew into a national leader, they put strategic emphasis on modernizing the customer experience both in-person at their branches and digitally through an app they released in 2014. Cymbal Bank employs 42,000 people nationwide and, in 2019, reported $24 billion in revenue.
+
+Cymbal Bank is interested in integrating a centralized security monitoring platform to help monitor threats and remediate vulnerabilities across their Google Cloud resources in their corporate banking applications. As a Cloud Security Engineer, you are tasked with learning about Security Command Center's export and analytics features so you can deliver a presentation to the CTO on the services' benefits.
+
+## Task 1. Create a continuous export pipeline to Pub/Sub
+
+Security Command Center can export security findings to external resources using several methods, including the following:
+
+- Continuous exports to a BigQuery dataset.
+- Continuous exports to Pub/Sub.
+- One-time exports to CSV files.
+- One-time exports to Cloud Storage buckets as JSON files.
+
+In this task, you explore how to configure continuous exports of findings to Pub/Sub.
+
+**Note:** Continuous exports of findings work only for newly created findings.
+
+Continuous exports to Pub/Sub are typically used for forwarding findings to external security management systems such as Splunk or QRadar.
+
+For the purposes of this lab, you export your findings to a Pub/Sub topic and then simulate an application by fetching the messages from a Pub/Sub subscription.
+
+**Note:** You can check the documentation page to explore more about [What is Pub/Sub?](https://cloud.google.com/pubsub/docs/overview)
+
+### Create a Pub/Sub topic and subscription
+
+Before you can start configuring an SCC export, you first need to create a Pub/Sub topic and subscription.
+
+1. On the Google Cloud console title bar, type `Pub/Sub` in the search field and press **Enter**. Then click on the uppermost search result, **Pub/Sub**.
+2. Click the **Create Topic** button on the **Topics** page.
+3. Enter in `export-findings-pubsub-topic` for the Topic ID.
+4. Leave all other settings as their defaults and click **Create**.
+
+This automatically kicks off the creation process for both a Pub/Sub topic and an associated subscription.
+
+1. Click **Subscriptions** in the left-hand menu.
+2. Click on **export-findings-pubsub-topic-sub**. If you don't see the subscription listed, refresh the browser page.
+
+This provides you with a dashboard of statistics and metrics related to the messages published in this subscription.
+
+### Create a continuous export of findings
+
+1. In the Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Security > Risk Overview** and then click **Settings** at the top of the page.
+2. Click on the **Continuous Exports** tab.
+3. Click the **Create Pub/Sub Export** button.
+4. For the **Continuous export name**, enter in `export-findings-pubsub`.
+5. For the **Continuous export description**, enter in `Continuous exports of Findings to Pub/Sub and BigQuery`.
+6. For the **Project name**, select **`qwiklabs-gcp-04-0f5774f16b5e`**, which is the project ID of the project you are working in. (*Do not* select Qwiklabs Resources).
+7. In the **Select a Cloud Pub/Sub topic** field, select the **projects/`qwiklabs-gcp-04-0f5774f16b5e`/topics/export-findings-pubsub-topic**.
+8. Set the findings query to the following:
+
+```
+state="ACTIVE"
+AND NOT mute="MUTED"
+```
+
+Copied!
+
+This query ensures that all new `ACTIVE` and `NOT MUTED` findings are forwarded to the newly created Pub/Sub topic.
+
+**Note:** You might see the message that there are several findings matched. Remember that existing findings are **not** forwarded to the Pub/Sub topic.
+
+1. Click **Save**.
+
+You have now created a continuous export from Security Command Center to Pub/Sub.
+
+### Create new findings to export to Pub/Sub
+
+In this section, you create new findings and check how they are exported to Pub/Sub.
+
+1. Open a new Cloud Shell session (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)).
+2. Run the following command to create a new virtual machine:
+
+```
+gcloud compute instances create instance-1 --zone=europe-west4-a \
+--machine-type e2-micro \
+--scopes=https://www.googleapis.com/auth/cloud-platform
+```
+
+Copied!
+
+1. Ensure you receive an output similar to the following.
+
+**Output:**
+
+```
+NAME: instance-1
+ZONE: us-central-a
+MACHINE_TYPE: e2-micro
+PREEMPTIBLE:
+INTERNAL_IP: 10.128.0.2
+EXTERNAL_IP: 34.69.82.225
+STATUS: RUNNING
+```
+
+**Note:** If you get an error message that says `ERROR: (gcloud.compute.instances.create) You do not currently have an active account selected`, re-run the command again.
+
+This command creates a new VM instance with a public IP address and a default service account attached.
+
+Performing this activity immediately generates three new vulnerability findings:
+
+- Public IP address
+- Default service account used
+- Compute secure boot disabled
+
+1. On the Google Cloud console title bar, type `Pub/Sub` in the search field and press **Enter**. Then click on the uppermost search result, **Pub/Sub**. Then click **Subscriptions** in the left-hand menu.
+2. Select the **export-findings-pubsub-topic-sub** subscription.
+3. Click the **Messages** tab.
+4. Select the **Enable ack messages** checkbox.
+5. Click the **Pull** button.
+
+You should receive a list of messages in this subscription. These relate to the public IP address, default service account used, and compute secure boot disabled vulnerabilities.
+
+**Note:** You can click the **Column display options** button in the Messages list to modify which message details display, such including the **body.finding.category** for more detail.
+
+By pulling the messages from the Pub/Sub subscription, you have simulated the behavior of an application that can forward these messages to another security monitoring system such as Splunk.
+
+Click **Check my progress** to verify the objective.
+
+Create a continuous export pipeline to Pub/Sub
+
+
+
+Check my progress
+
+
+
+## Task 2. Export and analyze SCC findings with BigQuery
+
+SCC findings can also be exported to a BigQuery dataset. This might be useful for building analytical dashboards that you can use to check what type of findings appear in your organization most often.
+
+As of now, configuring continuous exports can only be set using commands (i.e. not in the console).
+
+1. Open a Cloud Shell session (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)).
+2. In your Cloud Shell session, run the following command to create a new BigQuery dataset:
+
+```
+PROJECT_ID=$(gcloud config get project)
+bq --location=europe-west4 --apilog=/dev/null mk --dataset \
+$PROJECT_ID:continuous_export_dataset
+```
+
+Copied!
+
+1. You have not used an SCC command line interface in this project yet, so you need to enable the SCC service. Run the following command to enable the service in the current project:
+
+```
+gcloud services enable securitycenter.googleapis.com
+```
+
+Copied!
+
+1. Now create a new export by entering this command:
+
+```
+gcloud scc bqexports create scc-bq-cont-export --dataset=projects/qwiklabs-gcp-04-0f5774f16b5e/datasets/continuous_export_dataset --project=qwiklabs-gcp-04-0f5774f16b5e
+```
+
+Copied!
+
+Ensure you receive a similar output message to the following.
+
+**Output:**
+
+```
+Created.
+dataset: projects/qwiklabs-gcp-04-571fad72c1e8/datasets/continuous_export_dataset
+mostRecentEditor: student-03-fbc57ac17933@qwiklabs.net
+name: projects/102856953036/bigQueryExports/SCC-bq-cont-export
+principal: service-org-616463121992@gcp-sa-scc-notification.iam.gserviceaccount.com
+updateTime: '2023-05-31T15:44:22.097585Z'
+```
+
+Once new findings are exported to BigQuery, SCC creates a new table. You can now initiate new SCC findings.
+
+1. Run the following commands to create three new service accounts without any IAM permissions and create three user-managed service account keys for them.
+
+```
+for i in {0..2}; do
+gcloud iam service-accounts create sccp-test-sa-$i;
+gcloud iam service-accounts keys create /tmp/sa-key-$i.json \
+--iam-account=sccp-test-sa-$i@qwiklabs-gcp-04-0f5774f16b5e.iam.gserviceaccount.com;
+done
+```
+
+Copied!
+
+Once new findings are created in SCC, they are exported to BigQuery. For storing them, the export pipeline creates a new table called `findings`.
+
+1. Run the following command to fetch information from BigQuery about newly created findings:
+
+```
+bq query --apilog=/dev/null --use_legacy_sql=false  \
+"SELECT finding_id,event_time,finding.category FROM continuous_export_dataset.findings"
+```
+
+Copied!
+
+Soon after you should receive output similar to the following.
+
+**Output:**
+
+```
++----------------------------------+---------------------+------------------------------------------+
+|            finding_id            |     event_time      |                 category                 |
++----------------------------------+---------------------+------------------------------------------+
+| c5235ebb04b140198874ce52080422b8 | 2024-11-27 08:08:08 | Persistence: Service Account Key Created |
+| 94d933ee9803d0f1c807551fd22a0269 | 2024-11-27 08:08:04 | USER_MANAGED_SERVICE_ACCOUNT_KEY         |
++----------------------------------+---------------------+------------------------------------------+
+```
+
+**Note:** It may take **10+ minutes** for these findings to be generated. Rerun the above command if you don't receive a similar output.
+
+Click **Check my progress** to verify the objective.
+
+Export findings to a BigQuery dataset
+
+
+
+Check my progress
+
+
+
+### Export findings to a Cloud Storage bucket and create a BigQuery table
+
+Security Command Center is typically enabled in pre-existing and mature Google Cloud infrastructures. As soon as the SCC is enabled, it starts scanning existing vulnerabilities and eventually might report thousands of findings on existing infrastructure.
+
+The SCC interface might not provide the best way to sort and filter such findings, so exporting these findings to a BigQuery database is a common practice for running analytics against findings.
+
+Direct exporting of findings to BigQuery is not supported yet. Instead, you can use a Google Cloud Storage bucket as an interim storage solution.
+
+#### Create a Cloud Storage bucket
+
+To export *existing* findings to a BigQuery interface, you need to export them first to a Cloud Storage bucket. In this section, you create the storage bucket.
+
+1. In the Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Cloud Storage > Buckets**.
+2. Click the **Create** button.
+3. Every bucket name in Google Cloud must be unique. Set the bucket name to **scc-export-bucket-`qwiklabs-gcp-04-0f5774f16b5e`**.
+4. Click **Continue**.
+5. Set the **Location type** to **Region**.
+6. Choose **`europe-west4`** for the location.
+7. Do not change any other settings. Scroll down the page and click **Create**.
+8. Click the **Confirm** button when asked whether to "Enforce public access prevention" on this bucket.
+
+#### Export existing findings as JSONL data
+
+In this section, you export your findings for use in a BigQuery database.
+
+1. In the Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Security > Findings**.
+
+2. Click the **Export** button.
+
+3. From the dropdown list, select **Cloud Storage**.
+
+4. For the project name, **Select** the Project ID as **`qwiklabs-gcp-04-0f5774f16b5e`** (*do not* select Qwiklabs Resources).
+
+5. Then select the Export path by clicking the **Browse** button.
+
+6. Click the arrow next to the **scc-export-bucket-`qwiklabs-gcp-04-0f5774f16b5e`** button.
+
+7. Set the filename to `findings.jsonl` and click **Select**.
+
+8. In the Format drop-down list, select **JSONL**.
+
+9. Change the Time Range to **All time**.
+
+   Do not modify the default findings query.
+
+   The final "Export to" form should look similar to the following.
+
+![Sample of export to configuration](images\e1Bs3k4qI8jFPaRFOaNTcIRzNPTF3IIrLynUGWEh9hk%3D)
+
+1. Click the **Export** button.
+
+#### Create a table in BigQuery
+
+In this section, you use the exported findings data to create a table in BigQuery.
+
+1. In the Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **BigQuery > BigQuery Studio**.
+2. From the left-hand **Explore** menu, click on the **Add** button.
+3. In a new **Add** window, click on **Google Cloud Storage** and set the following parameters:
+
+| **Setting**                         | **Value**                                                    |
+| :---------------------------------- | :----------------------------------------------------------- |
+| **Create table from**               | `Google Cloud Storage`                                       |
+| **Select the file from GCS bucket** | `scc-export-bucket-qwiklabs-gcp-04-0f5774f16b5e/findings.jsonl` |
+| **File format**                     | `JSONL`                                                      |
+| **Dataset**                         | `continuous_export_dataset`                                  |
+| **Table**                           | `old_findings`                                               |
+| **Schema**                          | Enable the "Edit as text" toggle                             |
+
+1. Now paste in the following schema:
+
+```
+[   
+  {
+    "mode": "NULLABLE",
+    "name": "resource",
+    "type": "JSON"
+  },   
+  {
+    "mode": "NULLABLE",
+    "name": "finding",
+    "type": "JSON"
+  }
+]
+```
+
+Copied!
+
+1. Click the **Create table** button.
+2. Once the new table is created, click the link in the notification that says, **Go to table**.
+3. Click the **Preview** tab and confirm you can view your existing findings.
+
+![BigQuery table values](images\2k1HiII2HAmDhjRNaHLEFxrpUNBMLDxKbnWM%2FbyXufc%3D)
+
+
+
+Click **Check my progress** to verify the objective.
+
+Export findings to a Cloud Storage bucket and create a BigQuery table
+
+
+
+Check my progress
+
+
+
+## Congratulations!
+
+In this lab, you have learned about Security Command Center and analyzed assets as well as exported findings to BigQuery.
+
+
+
+
+
+
+
+## LAB - Identify Application Vulnerabilities with Security Command Center
+
+## Overview
+
+Web Security Scanner (WSS) is one of [Security Command Center's](https://cloud.google.com/security-command-center) built-in services that can be used to identify security vulnerabilities in App Engine, Google Kubernetes Engine (GKE), and Compute Engine web applications.
+
+This service crawls your application, following all links within the scope of your starting URLs, and attempts to exercise as many user inputs and event handlers as possible. It can automatically scan and detect four common vulnerabilities, including cross-site-scripting (XSS), flash injection, mixed content (HTTP in HTTPS), and outdated/insecure libraries.
+
+Web Security Scanner enables early identification of vulnerabilities and delivers very low false positive rates. You can easily set up, run, schedule, and manage security scans.
+
+In this lab, you use Web Security Scanner to scan a Python Flask application for vulnerabilities.
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Launch a vulnerable Python Flask application on a Compute Engine instance.
+- Use Web Security Scanner to scan the application and find vulnerabilities.
+- Fix the application vulnerability.
+- Scan the application again and verify vulnerabilities no longer exist.
+
+## Setup and requirements
+
+For each lab, you get a new Google Cloud project and set of resources for a fixed time at no cost.
+
+1. Sign in to Qwiklabs using an **incognito window**.
+2. Note the lab's access time (for example, `1:15:00`), and make sure you can finish within that time.
+   There is no pause feature. You can restart if needed, but you have to start at the beginning.
+3. When ready, click **Start lab**.
+4. Note your lab credentials (**Username** and **Password**). You will use them to sign in to the Google Cloud Console.
+5. Click **Open Google Console**.
+6. Click **Use another account** and copy/paste credentials for **this** lab into the prompts.
+   If you use other credentials, you'll receive errors or **incur charges**.
+7. Accept the terms and skip the recovery resource page.
+
+**Note:** Do not click **End Lab** unless you have finished the lab or want to restart it. This clears your work and removes the project.
+
+## Scenario
+
+![Cymbal Bank logo](images\7HNsRbL5DC5fTizZUhMXIP9PpTe%2F03j3kzaLp2KOqmI%3D)
+
+
+
+Cymbal Bank is an American retail bank with over 2,000 branches in all 50 states. It offers comprehensive debit and credit services that are built on top of a robust payments platform. Cymbal Bank is a digitally transforming legacy financial services institution.
+
+Cymbal Bank was founded in 1920 under the name Troxler. Cymbal Group acquired the company in 1975 after it had been investing heavily in Cymbal Group's proprietary ATMs. As the bank grew into a national leader, they put strategic emphasis on modernizing the customer experience both in-person at their branches and digitally through an app they released in 2014. Cymbal Bank employs 42,000 people nationwide and, in 2019, reported $24 billion in revenue.
+
+Cymbal Bank is interested in developing a new banking application for their corporate clients using Google Cloud technology. Application security is critical, and the CTO wants to see how Google Cloud can identify and mitigate application security vulnerabilities. As a Cloud Security Engineer, you are tasked with demonstrating Security Command Center's cutting-edge application vulnerability scanning features.
+
+## Task 1. Launch a virtual machine and create a firewall rule for WSS
+
+In this task, you set up the infrastructure to demonstrate an application vulnerability to Cymbal Bank's CTO. More specifically, you deploy a virtual machine and open a firewall rule for Web Security Scanner to be able to access the vulnerable application that you intend to deploy.
+
+1. On the Google Cloud console title bar, click **Activate Cloud Shell** (![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D)). If prompted, click **Continue**.
+2. Create a static IP address that can be used for scanning a vulnerable web application by running the following command:
+
+```
+gcloud compute addresses create xss-test-ip-address --region=us-central1
+```
+
+Copied!
+
+1. Run the following command to output the static IP address you just generated:
+
+```
+gcloud compute addresses describe xss-test-ip-address \
+--region=us-central1 --format="value(address)"
+```
+
+Copied!
+
+1. Copy the IP address (a single line of the output) and save it in a notepad.
+2. Run the following command to create a VM instance to run the vulnerable application:
+
+```
+gcloud compute instances create xss-test-vm-instance \
+--address=xss-test-ip-address --no-service-account \
+--no-scopes --machine-type=e2-micro --zone=us-central1-a \
+--metadata=startup-script='apt-get update; apt-get install -y python3-flask'
+```
+
+Copied!
+
+The startup script installs python-flask, a Web Application Framework, which is used for running a simple Python application demonstrating cross-site scripting (XSS) vulnerability, which is a common web application security vulnerability.
+
+1. Run the following command to open a firewall rule for Web Security Scanner to access a vulnerable application. Note the source ranges from which Web Security Scanner scans applications.
+
+```
+gcloud compute firewall-rules create enable-wss-scan \
+--direction=INGRESS --priority=1000 \
+--network=default --action=ALLOW \
+--rules=tcp:8080 --source-ranges=0.0.0.0/0
+```
+
+Copied!
+
+Click **Check my progress** to verify the objective.
+
+Create the VM with desired configurations
+
+
+
+Check my progress
+
+
+
+## Task 2. Deploy a vulnerable application to trigger an XSS vulnerability
+
+In this task, you obtain the application code and introduce a vulnerability for Web Security Scanner to detect. This is in the form of an application, which is a simple form that receives a user's input and outputs it without any changes.
+
+1. In the Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), click **Compute Engine** **>** **VM Instances**.
+
+   This may take a minute to initialize for the first time.
+
+2. Then click on the **SSH** button next to your instance:
+
+![SSH button in Cloud console](images\18AiGcc4NgZ78wIbJX3fPQOk4aECAx2liEiwXEEvhiQ%3D)
+
+1. A pop-up may appear, asking you to allow SSH in-browser to connect to VMs. Click **Authorize**.
+
+This opens an SSH connection to your VM instance in a new window.
+
+1. In this SSH window (***Not in Cloud Shell\***), run the following command to download and extract the vulnerable web application files:
+
+```
+gsutil cp gs://cloud-training/GCPSEC-ScannerAppEngine/flask_code.tar  . && tar xvf flask_code.tar
+```
+
+Copied!
+
+1. Now run the following command to deploy your application:
+
+```
+python3 app.py
+```
+
+Copied!
+
+1. Soon after, you should receive a message that indicates your application is up and running.
+
+**Output:**
+
+```
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
+```
+
+1. Find the static IP address of the VM you copied into your notepad earlier.
+2. Replace `YOUR_EXTERNAL_IP` in the URL field below with that IP address, and open the URL in a new browser tab:
+
+```
+http://<YOUR_EXTERNAL_IP>:8080
+```
+
+Copied!
+
+**Note:** You can also find the external IP address in the Google Cloud console, where it's listed as a field associated with your VM instance.
+
+**Note:** If you get a pop-up indicating that the external IP doesn't support a secure connection, click **Continue to site**.
+
+A Cymbal Bank corporate banking portal with a web form should appear.
+
+1. In the web form, enter the following string:
+
+```
+<script>alert('This is an XSS Injection')</script>
+```
+
+Copied!
+
+1. Now click the **POST** button.
+
+You should receive the following alert window.
+
+![Alert window in browser](images\2JDmvcyzlCfFS71m72VCY%2BEXkNpwbZbxGUnWSWIHnCo%3D)
+
+This is a common vulnerability in web applications: a cross-site scripting vulnerability. Cross-site scripting (XSS) is a vulnerability that enables attackers to run malicious scripts in users' browsers in the context of your application. Your browser interprets a string as a legitimate Javascript and executes it.
+
+An attacker who uses an XSS bug to inject JavaScript into an HTML page gains virtually unlimited access to the logged-in sessions of the victims who visit the page: they may steal user data, tamper with it, change privacy or security settings, or even completely alter the way the product looks and operates. Even more, an XSS vulnerability in one application, no matter how inconsequential, may jeopardize other content within the same domain.
+
+This is one of many application vulnerabilities that Web Security Scanner can help you identify.
+
+Click **Check my progress** to verify the objective.
+
+Download vulnerable web application files on the VM
+
+
+
+Check my progress
+
+
+
+## Task 3. Enable the Web Security Scanner API
+
+Now that the vulnerable application is launched, it's time to demonstrate Web Security Scanner's abilities to the CTO. But first, you need to configure the API that WSS uses to run.
+
+1. Switch back to the Cloud console browser tab.
+2. From the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **APIs & Services** **>** **Library**.
+3. In the Search for APIs and services field, type `Web Security Scanner` and press **Enter**.
+4. Select the **Web Security Scanner API**.
+5. Click **Enable** to enable the Web Security Scanner API.
+
+Click **Check my progress** to verify the objective.
+
+Enable the Web Security Scanner API
+
+
+
+Check my progress
+
+
+
+## Task 4. Scan the deployed application with WSS
+
+In this task, you configure and set up a scan of the application to check if it finds security vulnerabilities.
+
+1. Open the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), and select **Security** **>** **Web Security Scanner**.
+2. Click **+ New Scan**.
+3. In the **Starting URLs** section, the **Starting URL 1** field should be pre-populated with your static IP address.
+4. Add the port number **8080**, so that the Starting URL resembles the following:
+
+```
+  http://<EXTERNAL_IP>:8080
+```
+
+Copied!
+
+1. If present, delete **Starting URL 2**.
+2. Take a minute to review the remaining fields on the **Create a new scan** screen:
+
+- **Authentication:** a property that can be used to provide application credentials to allow the scanner to authenticate to an app while scanning.
+- **Schedule:** a property that can be used to schedule scans to run automatically.
+- **Export to Security Command Center:** a property that allows you to automatically export scan configurations and scan results to Cloud Security Command Center after scans are finished.
+
+1. Verify the **Authentication** is still set to **None** and that **Schedule** is set to **Never**.
+2. Click **Show More** to investigate the remaining settings.
+3. Click **Save** to create the scan.
+
+**Note:** This creates the scan, but do not run it yet. It must currently be run manually since you did not create a schedule yet.
+
+1. Click **Run** to start the scan
+
+**Note:** Given the number of possible tests, this can take a little over **10 minutes** to scan.
+
+1. Return to your SSH session in your separate browser window.
+
+If the session timed out, run the following command to restart your application:
+
+```
+python3 app.py
+```
+
+Copied!
+
+In your SSH Window, you should start to see logs generated similar to the example below—this is Web Security Scanner testing all possible URLs for potential vulnerabilities.
+
+**Output:**
+
+```
+34.29.3.21 - - [23/Mar/2023 23:30:41] "GET /output HTTP/1.1" 200 -
+35.184.129.44 - - [23/Mar/2023 23:31:06] "GET /output HTTP/1.1" 200 -
+35.184.129.44 - - [23/Mar/2023 23:31:07] "GET /favicon.ico HTTP/1.1" 404 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "POST / HTTP/1.1" 302 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "GET /output HTTP/1.1" 200 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "GET /favicon.ico HTTP/1.1" 404 -
+35.184.129.44 - - [23/Mar/2023 23:31:17] "POST / HTTP/1.1" 302 -
+35.184.129.44 - - [23/Mar/2023 23:31:17] "GET /output HTTP/1.1" 200 -
+```
+
+You may see log statements with the following HTTP status codes:
+
+- **200:** A successful request, where the HTTP server answered with an OK response.
+- **302:** Indicates a resource is temporarily located elsewhere according to the Location header.
+- **404:** indicates that one or more resources were not found.
+
+Check out the [HTTP Status and Error Codes](https://cloud.google.com/storage/docs/json_api/v1/status-codes#standardcodes) documentation for more information.
+
+While the scan is running, feel free to explore the **Results**, **URLs Crawled**, and **Details** tabs. You can also check out this [getting started video](https://www.youtube.com/watch?v=1BengAd2_cI), or this [vulnerability scanning video](https://www.youtube.com/watch?v=ai5Hr5zkn50) to learn more about Web Security Scanner.
+
+1. When the scan is done running, the **Results** tab should indicate the cross-site vulnerabilities.
+
+![Web Security Scanner results with vulnerabilities](images\zNjWH7Ajz8Vkduyrzuzfqd2sWL7fMuUdx%2BKGyE9zHNg%3D)
+
+The Web Security Scanner was able to scan all starting URLs and detect the XSS vulnerabilities in Cymbal Bank's application. The ability to automate the detection of these critical vulnerabilities is a major benefit for security-minded organizations like Cymbal Bank.
+
+Click **Check my progress** to verify the objective.
+
+Run a Web Security Scanner scan and detect application vulnerabilities
+
+
+
+Check my progress
+
+
+
+## Task 5. Correct the vulnerability and scan again
+
+Now that you have demonstrated Web Security Scanner can detect a XSS vulnerability, you remediate the vulnerability and run the application scan again.
+
+1. Return to your SSH window that's connected to your VM instance.
+2. Stop the running application by pressing **CTRL + C**.
+3. Edit the **app.py** file using the nano editor by running the following command:
+
+```
+nano app.py
+```
+
+Copied!
+
+1. Locate the two lines that set the output string:
+
+```
+#  output_string = "".join([html_escape_table.get(c, c) for c in input_string])
+  output_string = input_string
+```
+
+Copied!
+
+1. Remove the `#` symbol from the first line and add it to the beginning of the next line (*ensure that you indent your code properly!*)
+
+Your final lines must resemble the following:
+
+```
+@app.route('/output')
+def output():
+  output_string = "".join([html_escape_table.get(c, c) for c in input_string])
+  # output_string = input_string
+  return flask.render_template("output.html", output=output_string)
+```
+
+Copied!
+
+**Note:** `html_escape_table` is a dictionary that contains one-to-one pairings of special HTML characters like "<" to their text representation. You use this table to escape special HTML characters so your form ingests and interprets submissions as raw text only. You can refer to this [What is HTML Escape?](https://www.lambdatest.com/free-online-tools/html-escape#:~:text=What is HTML Escape%3F,HTML entities to plain text) documentation for more information.
+
+1. Now type **CTRL+X**, **Y**, and **Enter** to save your changes.
+2. Re-run the application:
+
+```
+python3 app.py
+```
+
+Copied!
+
+1. Return to the Google Cloud console browser tab (you should still have the Web Security Scanner page open):
+2. Click **Run** at the top of the page.
+
+In your SSH Window, you should start to see logs where Web Security Scanner tests application URLs for potential vulnerabilities.
+
+**Output:**
+
+```
+34.29.3.21 - - [23/Mar/2023 23:30:41] "GET /output HTTP/1.1" 200 -
+35.184.129.44 - - [23/Mar/2023 23:31:06] "GET /output HTTP/1.1" 200 -
+35.184.129.44 - - [23/Mar/2023 23:31:07] "GET /favicon.ico HTTP/1.1" 404 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "POST / HTTP/1.1" 302 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "GET /output HTTP/1.1" 200 -
+34.68.231.45 - - [23/Mar/2023 23:31:09] "GET /favicon.ico HTTP/1.1" 404 -
+35.184.129.44 - - [23/Mar/2023 23:31:17] "POST / HTTP/1.1" 302 -
+35.184.129.44 - - [23/Mar/2023 23:31:17] "GET /output HTTP/1.1" 200 -
+```
+
+1. While you are waiting for the results of the scan, login to the URL `http://<EXTERNAL_IP>:8080` using your browser in a separate tab.
+
+   The web form displays once again.
+
+2. In the web form, enter the same string that you entered in before:
+
+```
+<script>alert('This is an XSS Injection')</script>
+```
+
+Copied!
+
+1. Now click the **POST** button.
+2. Verify that this time you receive the following string in the browser:
+
+![Input displayed as text string](images\UuSnBBO%2BKVOGv47KPpzEBSOoa%2F%2FghXxJ8znqMt9TzL0%3D)
+
+**Note:** Although this technique works in this simple scenario, for proper protection of your web application you need to use more advanced techniques and frameworks which are out of scope of this lab.
+
+
+
+Explore the links below for more resources:
+
+- [Angular Security](https://angular.io/guide/security)
+- [Google XSS Game](https://xss-game.appspot.com/)
+- [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/)
+
+1. Return to the Google Cloud console, where you left off on the Web Security Scanner page.
+2. Click **Run** at the top of the page to re-scan your application.
+3. Soon after, you should notice that the results yield no more XSS vulnerabilities.
+
+![Web Security Scanner output with no vulnerabilities](images\nfsc%2B30HZrnOWepWCagx3F5tZlFOWKm03XuwQDa2kzQ%3D)
+
+Click **Check my progress** to verify the objective.
+
+Correct vulnerabilities and rescan your application using Web Security Scanner
+
+
+
+Check my progress
+
+
+
+## Congratulations!
+
+You have successfully demonstrated to the Cymbal Bank CTO how to identify and remediate XSS vulnerabilities with Google Cloud's powerful Web Security Scanner solution.
+
+
+
+
+
+## LAB - Detect and Investigate Threats with Security Command Center
+
+
+
+## Overview
+
+Event Threat Detection is an integrated service of Security Command Center (SCC) that monitors Google Cloud logs for patterns signaling suspicious activities.
+
+Container Threat Detection is another integrated service of SCC. This service can continuously monitor GKE working nodes. When it detects suspicious events, it analyzes them to confirm whether they can be treated as incidents or not.
+
+In this lab, you receive hands-on practice with SCC's threat detection features and learn how to investigate and triage common vulnerabilities associated with events and virtual machines. You learn how to surface and manage your findings with SCC's Event Threat Detection features.
+
+### Objectives
+
+In this lab, you learn how to perform the following tasks:
+
+- Initiate and mitigate a threat with Event Threat Detection.
+- Configure a cloud environment to detect threats.
+- Manage SCC findings with Event Threat Detection.
+
+### Prerequisites
+
+It is recommended that you are familiar with the following before starting this lab:
+
+- Cloud computing concepts.
+- The Google Cloud console.
+- The Security Command Center interface.
+- Containers and Google Kubernetes Engine (this is recommended, but not required).
+
+## Setup and requirements
+
+### Before you click the Start Lab button
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+### How to start your lab and sign in to the Google Cloud console
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-03-352f3bc3fa17@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   4mnnBMeMiRz5
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](images\9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+## Scenario
+
+![5ce916afc496a60c.jpeg](images\qO2i8mve9e0jOrBbEsDzPFfEkM1ea6S0a7mXdN%2FNS%2BA%3D)
+
+
+
+Cymbal Bank is an American retail bank with over 2,000 branches in all 50 states. It offers comprehensive debit and credit services that are built on top of a robust payments platform. Cymbal Bank is a digitally transforming legacy financial services institution.
+
+Cymbal Bank was founded in 1920 under the name Troxler. Cymbal Group acquired the company in 1975 after it had been investing heavily in Cymbal Group's proprietary ATMs. As the bank grew into a national leader, they put strategic emphasis on modernizing the customer experience both in-person at their branches and digitally through an app they released in 2014. Cymbal Bank employs 42,000 people nationwide and, in 2019, reported $24 billion in revenue.
+
+As a Cloud Security Engineer at Cymbal Bank, your task is to explore and implement robust security measures, leveraging Security Command Center's Event and Container Threat Detection capabilities for its Google Cloud resources. By integrating these services, you can ensure real-time monitoring, swift anomaly identification, and proactive vulnerability management for the event-driven architectures and containerized applications.
+
+## Enable the Security Command Center API
+
+1. Click on the **Navigation menu** in the top left corner of the Google Cloud console.
+2. Select **APIs & Services** from the drop down and click on **Enable APIs & Services**.
+3. Click **+ Enable APIs & Services**
+4. Search for `Security Command Center API` in the search box.
+5. Click on **Security Command Center API**, then click **Enable**
+
+## Task 1. Initiate and mitigate a threat with Event Threat Detection
+
+Your first task as a Cloud Security Engineer for Cymbal Bank is to initiate and mitigate non-compliant accounts threats with Event Threat Detection.
+
+![8da0945e074700f7.png](images\yLiATC2UXTI91KY5Deyh1yu%2Fc6bvGjp%2B81S94awhjZs%3D)
+
+
+
+The Event Threat Detection service of SCC detects many threats by monitoring suspicious activities reported in Google Cloud logs. One of these activities might be delegating sensitive roles to an external user, such as someone who has a miscellaneous `gmail.com` account that isn't tied to your corporate domain.
+
+This might happen in situations when an intruder has managed to access a GCP organization and now they are interested in establishing persistence. To do this, the hacker would grant sensitive roles to their `@gmail.com` account.
+
+This delegation simulates establishing persistence. If a hacker accidentally gets temporary access to your system, they will need to establish persistence and to get access to a more stable account.
+
+1. In the Cloud console, on the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **IAM & Admin > IAM**.
+2. Press the **Grant Access** button.
+3. In the "New principals" field, enter the demo email address `demouser1@gmail.com`.
+4. For the Role field, select **BigQuery > BigQuery Admin** and click **Save**.
+5. Open the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) and select **Security > Security Command Center > Findings**.
+6. Change the Time Range dropdown to the **Last 6 hours.**
+
+You should see three Findings, two of which are related to the access you just granted:
+
+- *Non org IAM member*
+- *Persistence: IAM anomalous grant*
+
+1. Click on the Finding **Non org IAM member** and scroll down to check the "Source display name" in the description of this Finding.
+2. Ensure that the display name is set to `Security Health Analytics`—this is the SCC service that detected a misconfiguration in your Google Cloud Project.
+3. Close the window with the Finding.
+4. Click on the other Finding, **Persistence: IAM anomalous grant**, and scroll down to check the "Source display name" in the description of this Finding.
+5. Ensure that the display name is set to `Event Threat Detection`—this is the SCC service that detected a misconfiguration in your Google Cloud Project.
+6. Scroll to the top of the window and select the **Source Properties** tab.
+7. In this tab, expand the **Properties > sensitiveRoleGrant** field.
+8. Here you can find the most important characteristics of this finding:
+
+- **principalEmail:** who performed the suspicious action
+- **bindingDetails:** information about the role and the member to whom this role has been granted
+- **members:** to whom the permission has been granted
+
+1. Close the Finding window.
+2. From the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **IAM & Admin > IAM**.
+3. Select the checkbox next to the `demouser1@gmail.com` principal and click the button **Remove Access**.
+4. Click **Confirm**.
+5. Open the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) and select **Security > Security Command Center > Findings**.
+
+Note that the "Non org IAM member" finding has disappeared from the list of findings. This is because the Security Health Analytics service has checked the updated configuration of IAM policies and deactivated this Finding.
+
+**Note:** If you still see this Finding in the list, please refresh the browser tab.
+
+The Finding "Persistence: IAM anomalous grant" has not changed its status. It was initiated by the ETD service, and cannot be deactivated automatically. You have already investigated this Finding and can be sure that the user from the gmail.com domain does not have access to your project.
+
+Click **Check my progress** to verify the objective.
+
+Initiate and mitigate a threat with Event Threat Detection
+
+
+
+Check my progress
+
+
+
+**Note:** If you are receiving less than 20 points for this task, in the "Checkpoints" right-hand column, click the **Check my progress** button a couple of times.
+
+## Task 2. Configure a cloud environment to detect threats
+
+Now that you've investigated and checked for non-compliant accounts, you need to configure Cymbal's environment to detect service account threats through logging.
+
+![fd5c653fce1f1a4.png](images\um2UhA%2B1%2F3jv2znF0TeprxbvqLtN8h8EeQ%2FvEib16io%3D)
+
+
+
+Many logs in Google Cloud are enabled by default, but for detecting specific threats, you need to enable additional data access logs. In this exercise, you investigate the [Service Account Self-Investigation](https://cloud.google.com/security-command-center/docs/how-to-investigate-threats#service_account_self-investigation) threat.
+
+In this scenario, a malicious actor exploits vulnerable software on a virtual machine and obtains access to the Default Service Account (which was used to create the instance). The actor wants to understand what they can do in the Google Cloud environment. To check their permissions, the actor calls the [projects.getIamPolicy method](https://cloud.google.com/resource-manager/reference/rest/v3/projects/getIamPolicy). SCC should detect and report this suspicious activity recorded in the logs.
+
+For SCC to detect this activity, you need to enable Resource Manager Admin Read logs.
+
+1. In the Cloud console, open the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) and select **IAM & Admin > Audit Logs.**
+
+**Note:** You can safely ignore the message: "You don't have permission to view inherited audit logs configuration data for one or more parent resources."
+
+1. In the list of services, find **Cloud Resource Manager API** and select the checkbox associated with it.
+
+**Note:** If you cannot find it, scroll down to the parameter "Rows per page" and set its value to 200.
+
+1. On the right side of the tab, find the configuration frame: **Cloud Resource Manager API - Permission Types**.
+2. Select the **Admin Read** checkbox and click **Save.**
+
+Now Resource Manager Data Read audit logs are collected and Event Threat Detection can analyze them.
+
+### Create a virtual machine with default service account access
+
+For reproducing the scenario, you need to create a new virtual machine with a default Service Account and `cloud-platform` access scope.
+
+1. Open the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) and select **Compute Engine > VM instances**.
+2. Click the **Create Instance** button.
+3. In the **Machine configuration**:
+   - Select region as **`europe-west1`** and set zone as **`europe-west1-b`**.
+4. Click **Security**.
+   - In the **Access scopes** section, select the **Allow full access to all Cloud APIs** value.
+5. Leave all other parameters set to their default value.
+6. Click **Create** to launch the new VM instance.
+7. Once the instance is created, click on the **SSH** button.
+8. Accept the authorization prompts when the new SSH window opens.
+9. In the SSH session, enter the following command:
+
+```
+gcloud projects get-iam-policy $(gcloud config get project)
+```
+
+Copied!
+
+You should see the list of IAM permissions granted to users in the Google Cloud project.
+
+1. Open the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) and select **Security > Security Command Center > Findings.**
+2. Set the value of the time range selector to **Last hour**.
+
+You should see **5** Security Findings related to the instance you just created:
+
+- *Discovery: Service Account Self-Investigation*
+- *Full API access*
+- *Default service account used*
+- *Compute secure boot disabled*
+- *Public IP address*
+
+The Finding "Discovery: Service Account Self-Investigation" was initiated by Event Threat Detection (ETD), which classifies findings with the *THREAT* Finding Class.
+
+Other findings have been initiated by the Security Health Analytics component, which classifies Findings by *MISCONFIGURATION*.
+
+1. Click on the Finding, **Discovery: service account self-investigation**.
+2. Select the **Source Properties** tab at the top of the window.
+3. Now expand the field **properties > serviceAccountGetsOwnIamPolicy**.
+4. Inspect the following values:
+
+- **principalEmail** - the email address of the Service Account that is investigating its own permissions
+- **callerIp** - IP address from which the `projects.getIamPolicy` method was called. In our case it should be the external IP address of the virtual machine `instance-1`.
+
+1. Exit out of the Finding window.
+
+Outside of this scenario, this Finding can inform you that your virtual machine and the default Service Account have been compromised and you need to investigate and contain this incident.
+
+### Mute the finding you've investigated
+
+Now that you've investigated the finding, mute it.
+
+1. Select the checkbox next to the **Discovery: Service Account Self-Investigation** Finding.
+2. Expand the **Mute options** drop-down list.
+3. Then select the **Apply mute override** option.
+4. Ensure that this Finding no longer appears in the SCC interface.
+
+Click **Check my progress** to verify the objective.
+
+Configure a cloud environment to detect threats
+
+
+
+Check my progress
+
+
+
+## Task 3. Manage SCC findings with Event Threat Detection
+
+When detecting some threats you may need to enable additional logs, which are not enabled by default. For detecting some findings, you also need to create additional configurations, such as DNS policies.
+
+This allows you to detect malicious software running on compute resources and to identify well-known malicious DNS addresses.
+
+When a DNS request is made on a virtual machine, this query is not logged by default, and in turn SCC cannot detect connections to malicious internet resources.
+
+In the previous task, you enabled logs for the Resource Manager service using an IAM configuration. For logging all DNS queries, you need to create a DNS policy with logging enabled.
+
+**Note:** You can refer to the [Use logging and monitoring](https://cloud.google.com/dns/docs/monitoring) reference guide to learn more about logging and monitoring metrics for Cloud DNS.
+
+1. To enable full DNS query logging, open the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), scroll down, click **View All Products**, and select **Network services > Cloud DNS.**
+2. Click the **DNS Server Policies** tab and click the **Create Policy** button.
+3. Enter `dns-test-policy` for the name of the DNS policy.
+4. Select the **On** radio button for DNS logs.
+5. In the "Alternate DNS servers" part, select **default** from the network dropdown and click **OK**.
+6. Click the **Create** button.
+7. Now return to the SSH session of your virtual machine and try connecting to the malicious URL by running the following command:
+
+```
+curl etd-malware-trigger.goog
+```
+
+Copied!
+
+You should receive output similar to the following.
+
+**Output:**
+
+```
+<!DOCTYPE html>
+<html lang="en-us">
+<meta charset="utf-8">
+<title>ETD Malware Trigger</title>
+<p>This domain is used to trigger a malware finding in Google Event Threat Detection. For more information, please visit <a href="https://cloud.google.com/event-threat-detection">https://cloud.google.com/event-threat-detection</a>
+```
+
+1. Return to the Google Cloud console browser tab.
+2. Open the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)) and select **Security > Security Command Center > Findings**.
+3. You should now see a new threat appear, "Malware: Bad Domain".
+
+**Note:** If you don't see the new threat, refresh your browser window.
+
+1. Click on this Finding.
+2. In the new window, click on the **Source properties** tab.
+3. Expand the **Properties** field and examine the following:
+
+- **Domains:** the list of domains for which the instance requested address resolution
+- **InstanceDetails:** the ID of the instance that connected to the "malicious" domain
+
+1. Close the Finding Window.
+2. Select the checkbox associated with the Finding, **Malware: Bad Domain**.
+3. Expand the **Mute Options** drop-down list.
+4. Click **Apply mute override**. This Finding is now removed from the SCC interface.
+5. From the **Navigation menu** (![Navigation menu icon](https://cdn.qwiklabs.com/tkgw1TDgj4Q%2BYKQUW4jUFd0O5OEKlUMBRYbhlCrF0WY%3D)), select **Compute Engine > VM instances.**
+6. Select the checkbox next to the virtual machine instance you created previously and click **Delete.**
+7. Confirm the delete action and click **Delete**.
+
+Click **Check my progress** to verify the objective.
+
+Manage SCC findings with Event Threat Detection
+
+
+
+Check my progress
+
+
+
+## Congratulations!
+
+In this lab, you learned how to initiate and mitigate a threat with Event Threat Detection, configure a cloud environment to detect threats, and manage SCC findings with Event Threat Detection.
