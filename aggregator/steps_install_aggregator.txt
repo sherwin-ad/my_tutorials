@@ -1,0 +1,64 @@
+sudo apt update && sudo apt upgrade -y
+
+sudo apt install apache2 php libapache2-mod-php php-mysql php-xml php-mbstring php-mcrypt php-curl php-zip -y
+
+# 1. pull aggregator repo
+git clone https://github.com/mybusybee-inc/aggregator-portal-management.git
+
+
+sudo mv aggregator-portal-management /var/www/html/aggregator
+
+
+# Set proper permissions:
+sudo chown -R www-data:www-data /var/www/html/aggregator
+sudo chmod -R 775 /var/www/html/aggregator/storage /var/www/html/aggregator/bootstrap/cache
+
+Create Apache virtual host configuration file:
+sudo vim /etc/apache2/sites-available/laravel.conf
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html/aggregator/public
+
+    <Directory /var/www/html/aggregator>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+sudo systemctl enable apache2
+sudo a2enmod rewrite
+sudo a2dissite 000-default.conf
+sudo a2ensite laravel.conf
+sudo systemctl reload apache2
+
+# 2. duplicate .env.example and rename to .env (make necessary changes to db name etc.)
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel_app
+DB_USERNAME=laravel_user
+DB_PASSWORD=changeme
+
+curl -sS https://getcomposer.org/installer | php
+
+sudo mv composer.phar /usr/local/bin/composer
+sudo chmod +x /usr/local/bin/composer
+
+# 3. run composer install
+composer install 
+
+# 4.run php artisan key:gen
+php artisan key:generate
+
+# Optional
+# 5. php artisan migrate
+php artisan migrate
+
+php artisan db:seed UserSeeder
+
