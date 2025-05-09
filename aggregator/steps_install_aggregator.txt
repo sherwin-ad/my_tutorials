@@ -2,6 +2,17 @@ sudo apt update && sudo apt upgrade -y
 
 sudo apt install apache2 php libapache2-mod-php php-mysql php-xml php-mbstring php-mcrypt php-curl php-zip -y
 
+sudo apt install apache2 mysql-server php php-curl php-bcmath php-json php-mysql php-mbstring php-xml php-tokenizer php-zip composer git
+
+# Setup Mysql
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+
+create database nexel_agg_db;
+
+CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
+
+GRANT ALL PRIVILEGES ON nexel_agg_db.* TO 'user'@'localhost';
+
 # 1. pull aggregator repo
 git clone https://github.com/mybusybee-inc/aggregator-portal-management.git
 
@@ -10,17 +21,17 @@ sudo mv aggregator-portal-management /var/www/html/aggregator
 
 
 # Set proper permissions:
-sudo chown -R www-data:www-data /var/www/html/aggregator
-sudo chmod -R 775 /var/www/html/aggregator/storage /var/www/html/aggregator/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/aggregator
+sudo chmod -R 775 /var/www/aggregator/storage /var/www/aggregator/bootstrap/cache
 
 Create Apache virtual host configuration file:
-sudo vim /etc/apache2/sites-available/laravel.conf
+sudo vim /etc/apache2/sites-available/aggre.conf
 
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/html/aggregator/public
+    DocumentRoot /var/www/aggregator/public
 
-    <Directory /var/www/html/aggregator>
+    <Directory /var/www/aggregator>
         Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
@@ -33,7 +44,7 @@ sudo vim /etc/apache2/sites-available/laravel.conf
 sudo systemctl enable apache2
 sudo a2enmod rewrite
 sudo a2dissite 000-default.conf
-sudo a2ensite laravel.conf
+sudo a2ensite aggre.conf
 sudo systemctl reload apache2
 
 # 2. duplicate .env.example and rename to .env (make necessary changes to db name etc.)
