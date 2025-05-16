@@ -2203,50 +2203,91 @@ A **missing 'Cache-Control' header** means that your web server or application i
 
 ### How to Add the `Cache-Control` Header
 
-#### 1. **Configuring Cache-Control in Apache**
+#### 1. **Using Apache Configuration in WHM**
 
-To set the `Cache-Control` header in Apache, you can use the `.htaccess` file or directly modify the Apache configuration file (`httpd.conf` or `apache2.conf`).
+If your WHM server runs **Apache**, follow these steps:
 
-Example `.htaccess` configuration:
+1. Log in to **WHM**.
+
+2. Navigate to **Service Configuration** → **Apache Configuration** → **Include Editor**.
+
+3. Under **Pre VirtualHost Include**, add:
+
+   ```
+   <IfModule mod_headers.c>
+       Header set Cache-Control "max-age=86400, public"
+   </IfModule>
+   ```
+
+4. Click **Save** and **Rebuild Apache Configuration**.
+
+5. Restart Apache:
+
+   ```
+   sudo systemctl restart httpd
+   ```
+
+   
+
+#### 2. **Configuring Cache-Control in Apache**
+
+To fix the missing `Cache-Control` header in your Apache server configuration, you can set it using the `.htaccess` file or modify the main Apache configuration file.
+
+**1. Using `.htaccess`**
+
+ If your site allows `.htaccess` overrides, add the following lines to your `.htaccess` file:
 
 ```
-apache
-Copy code
 <IfModule mod_headers.c>
-    # Cache all files for 1 week
-    <FilesMatch "\.(jpg|jpeg|png|gif|css|js|ico)$">
-        Header set Cache-Control "max-age=604800, public"
-    </FilesMatch>
-    
-    # Prevent caching of dynamic content
-    <FilesMatch "\.(php|html)$">
-        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
-    </FilesMatch>
+    Header set Cache-Control "max-age=3600, public"
 </IfModule>
 ```
 
-#### 2. **Configuring Cache-Control in Nginx**
+This sets a cache expiration of **3600 seconds (1 hour)** and allows public caching.
 
-To set the `Cache-Control` header in Nginx, you need to modify your server block configuration (`nginx.conf` or your site-specific configuration file).
+2. Using Apache Configuration (`httpd.conf` or `apache2.conf`)
 
-Example Nginx configuration:
+   If you prefer modifying the main Apache configuration file, add this inside your `<VirtualHost>` block:
+
+   ```
+   <IfModule mod_headers.c>
+       Header set Cache-Control "max-age=86400, public"
+   </IfModule>
+   ```
+
+   Then restart Apache:
+
+   ```
+   sudo systemctl restart apache2  # For Ubuntu/Debian
+   sudo systemctl restart httpd    # For CentOS/RHEL
+   ```
+
+   
+
+#### 3. **Configuring Cache-Control in Nginx**
+
+Edit your NGINX configuration file (`nginx.conf` or a specific site config in `/etc/nginx/sites-available/`):
 
 ```
-nginx
-Copy code
 server {
-    location ~* \.(jpg|jpeg|png|gif|css|js|ico)$ {
-        expires 7d;
-        add_header Cache-Control "public, max-age=604800";
-    }
-    
-    location ~* \.(php|html)$ {
-        add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0";
+    listen 80;
+    server_name example.com;
+
+    location / {
+        add_header Cache-Control "max-age=86400, public";
     }
 }
 ```
 
-#### 3. **Setting Cache-Control in WordPress**
+After making changes, restart NGINX to apply them:
+
+```
+sudo systemctl restart nginx
+```
+
+
+
+#### 4 . **Setting Cache-Control in WordPress**
 
 If you're using WordPress, you can either manually edit the `.htaccess` file as shown above or use a plugin like **W3 Total Cache** or **WP Super Cache** to handle caching settings. These plugins often provide an easy-to-use interface for setting up `Cache-Control` headers and other caching directives.
 
@@ -2259,27 +2300,32 @@ If you're using a Content Delivery Network (CDN) like Cloudflare, you can config
 
 ### Verifying the `Cache-Control` Header
 
-After implementing the `Cache-Control` header, you should verify that it is being set correctly. You can do this using browser developer tools or command-line tools like `curl`.
+You can check the `Cache-Control` header of a webpage using several methods:
 
-Example using `curl`:
+### 1. **Using Browser Developer Tools**
+
+Most modern browsers allow you to inspect HTTP headers:
+
+- Open the webpage in **Google Chrome**, **Firefox**, or **Edge**.
+- Press `F12` or `Ctrl+Shift+I` to open Developer Tools.
+- Navigate to the **Network** tab.
+- Reload the page and click on a request.
+- Look under the **Headers** section for `Cache-Control`.
+
+### 2. **Using Online Tools**
+
+There are free online tools that check cache headers:
+
+- [Cache-control header checker](https://ralfvanveen.com/en/tools/cache-control-header-checker/) lets you enter a URL and see its caching settings.
+- [Online HTTP Cache Checker](https://requestmetrics.com/resources/tools/http-cache-checker/) provides insights into how browsers cache your website.
+
+
+
+### 3. **Using Command Line (cURL)**
+
+If you prefer a terminal-based approach, use `cURL`:
 
 ```
-bash
-Copy code
-curl -I https://yourwebsite.com
+curl -I https://example.com	
 ```
-
-Look for the `Cache-Control` header in the response:
-
-```
-arduino
-Copy code
-Cache-Control: max-age=604800, public
-```
-
-### Summary
-
-A missing `Cache-Control` header can lead to suboptimal caching behavior, affecting your website's performance and security. By properly configuring the `Cache-Control` header on your web server, in your CMS, or through your CDN, you can take control over how your site's resources are cached. This ensures better performance, reduced bandwidth usage, and improved security.
-
-##### 
 

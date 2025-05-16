@@ -2,6 +2,11 @@
 
 # 01 Preparing for Your Professional Cloud Security Engineer Journey 
 
+## Introduction
+
+[Introduction](documents/T-GCPPCS-B-m0-l6-en-file-7.en.pdf)
+
+
 ## Configuring Access Within a Cloud Solution Environment
 
 
