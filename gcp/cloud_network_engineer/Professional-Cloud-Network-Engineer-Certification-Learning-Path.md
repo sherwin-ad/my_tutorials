@@ -1,5 +1,350 @@
 # Professional Cloud Network Engineer Certification Learning Path
 
+Mentor contact info:
+
+Name: Sanjeev Singh
+
+Email: sssskumar@google.com , sanjeev@gcptrain.org  
+
+Social Media:[ ](https://www.google.com/url?q=https://www.linkedin.com/in/sanjeevvepsun/&sa=D&source=editors&ust=1747368775419653&usg=AOvVaw3Od0tJJroC3aPS7TeTbg2w)[https://www.linkedin.com/in/sanjeevvepsun/](https://www.google.com/url?q=https://www.linkedin.com/in/sanjeevvepsun/&sa=D&source=editors&ust=1747368775419767&usg=AOvVaw2fPlrlX42ZivQvmxKNnFt-) 
+
+
+
+GCP Partner Support Team - [cloud-partner-training@google.com](mailto:cloud-partner-training@google.com)
+
+
+
+
+
+**Must for Cert voucher : \**\** (within 30 days from start of training)**
+
+**[https://partner.cloudskillsboost.google/course_templates/645](https://www.google.com/url?q=https://partner.cloudskillsboost.google/course_templates/645&sa=D&source=editors&ust=1747368775420256&usg=AOvVaw3NK8eQQm5CUQcParu_lqVk)**
+
+**[https://partner.cloudskillsboost.google/course_templates/785](https://www.google.com/url?q=https://partner.cloudskillsboost.google/course_templates/785&sa=D&source=editors&ust=1747368775420399&usg=AOvVaw3V8ryVk1FADtQwHJibPIF2)**
+
+**[https://partner.cloudskillsboost.google/course_templates/856](https://www.google.com/url?q=https://partner.cloudskillsboost.google/course_templates/856&sa=D&source=editors&ust=1747368775420538&usg=AOvVaw3z-sbKGPnJURpZoOLlYY69)** 
+
+**[https://partner.cloudskillsboost.google/course_templates/654](https://www.google.com/url?q=https://partner.cloudskillsboost.google/course_templates/654&sa=D&source=editors&ust=1747368775420677&usg=AOvVaw30lVYGGzyI_0LHGW1EFHXd)** 
+
+
+
+**PCNE Exam guide**
+
+
+
+**[https://services.google.com/fh/files/misc/professional_cloud_network_engineer_exam_guide_english.pdf](https://www.google.com/url?q=https://services.google.com/fh/files/misc/professional_cloud_network_engineer_exam_guide_english.pdf&sa=D&source=editors&ust=1747368775420972&usg=AOvVaw39vZOjeC3Em9c-LZDevojA)** 
+
+
+
+**Partner Skillboost for Self paced study**
+
+
+
+[https://partner.cloudskillsboost.google/paths/78%20](https://www.google.com/url?q=https://partner.cloudskillsboost.google/paths/78%20&sa=D&source=editors&ust=1747368775421229&usg=AOvVaw0iFs7JfjZd1uLhQXdgEcH6)
+
+
+
+
+
+**Slide deck**
+
+
+
+**[https://partner.cloudskillsboost.google/classrooms/28854/notes/4773335](https://www.google.com/url?q=https://partner.cloudskillsboost.google/classrooms/28854/notes/4773335&sa=D&source=editors&ust=1747368775421524&usg=AOvVaw2c8lT1ljZuyO7A-YyVsjwo)** 
+
+
+
+**Sample QA**
+
+
+
+**[https://docs.google.com/forms/d/e/1FAIpQLServ0tNGkr-dYAfmez_Gdk74dmVypZjzUKrkVFtFcArzhmPow/viewform](https://www.google.com/url?q=https://docs.google.com/forms/d/e/1FAIpQLServ0tNGkr-dYAfmez_Gdk74dmVypZjzUKrkVFtFcArzhmPow/viewform&sa=D&source=editors&ust=1747368775421818&usg=AOvVaw3VMd9IBtoSLbR03sXT40mg)** **(19 QA)**
+
+
+
+
+
+
+
+
+
+
+
+Labs
+
+
+
+[https://services.google.com/fh/files/misc/pcne_ca.pdf](https://www.google.com/url?q=https://services.google.com/fh/files/misc/pcne_ca.pdf&sa=D&source=editors&ust=1747368775422178&usg=AOvVaw0TRGZZqk-tpJUhXvb3azj4) 
+
+
+
+**GCP Networking Blog:**
+
+[https://cloud.google.com/blog/products/networking](https://www.google.com/url?q=https://cloud.google.com/blog/products/networking&sa=D&source=editors&ust=1747368775422399&usg=AOvVaw1vhJBzFkLb-RZfLsnL31Hs) 
+
+
+
+**[https://www.youtube.com/watch?v=X-kZ_eNtxyU&list=WL&index=5](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DX-kZ_eNtxyU%26list%3DWL%26index%3D5&sa=D&source=editors&ust=1747368775422619&usg=AOvVaw0GfJkgm1Tjjr-cZTf5wyYj)**
+
+
+
+**[https://www.youtube.com/watch?v=MHtg2Au78LI&list=PLIivdWyY5sqLO-4ePY-A2yROgONOA6Cz4](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DMHtg2Au78LI%26list%3DPLIivdWyY5sqLO-4ePY-A2yROgONOA6Cz4&sa=D&source=editors&ust=1747368775422817&usg=AOvVaw0FrzoP4dqLJzb1Be5AwxRI)**
+
+
+
+
+
+**[https://www.youtube.com/watch?v=cNb7xKyya5c&list=PLIivdWyY5sqJ0oXcnZYqOnuNRsLF9H48u](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DcNb7xKyya5c%26list%3DPLIivdWyY5sqJ0oXcnZYqOnuNRsLF9H48u&sa=D&source=editors&ust=1747368775423037&usg=AOvVaw2g3ze9xov36GGe2phT9WPC)** 
+
+
+
+**[https://www.youtube.com/watch?v=xXk1YlkKW_k&list=WL&index=4](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DxXk1YlkKW_k%26list%3DWL%26index%3D4&sa=D&source=editors&ust=1747368775423199&usg=AOvVaw31VVuAdSiDV4mUVCyvwEfG)**
+
+
+
+**[https://www.youtube.com/watch?v=bIL8Gb3D8Yg](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DbIL8Gb3D8Yg&sa=D&source=editors&ust=1747368775423344&usg=AOvVaw3lbpLU_BVlZ9f4b6eqjiwX)**
+
+
+
+
+
+**Professional Cloud Network Engineer Exam Prep**
+
+
+
+**Resources**
+
+- ​        **[Google Cloud documentation](https://www.google.com/url?q=https://cloud.google.com/docs&sa=D&source=editors&ust=1747368775423646&usg=AOvVaw0X8w27w1Sebx7Hbit2Btlj)**
+- ​        **[Partner Cloud Skills Boost Learning Path](https://www.google.com/url?q=https://partner.cloudskillsboost.google/paths/78%20&sa=D&source=editors&ust=1747368775423793&usg=AOvVaw3UspAXfHuz0YfaJUa-3WJh)**
+- ​        **[Google Cloud Practice Questions](https://www.google.com/url?q=https://docs.google.com/forms/d/e/1FAIpQLServ0tNGkr-dYAfmez_Gdk74dmVypZjzUKrkVFtFcArzhmPow/viewform&sa=D&source=editors&ust=1747368775423992&usg=AOvVaw0nnXgvRXU2UPsPFbTn73KO)**
+- ​        **[Ammett Williams’ Study Prep Notes](https://www.google.com/url?q=https://drive.google.com/file/d/1wcIzflC-Zc10izmQWauYmu-JZnO5QzLc/view&sa=D&source=editors&ust=1747368775424166&usg=AOvVaw2xWcPlMcwbUU47s3Ib_Sfb)**
+- ​        **[Networking: End to End - YouTube Playlist by Stephanie Wong](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DcNb7xKyya5c%26list%3DPLIivdWyY5sqJ0oXcnZYqOnuNRsLF9H48u%26ab_channel%3DGoogleCloudTech&sa=D&source=editors&ust=1747368775424407&usg=AOvVaw1NCwcv5LeHq6qU9_MeDVOo)**
+- ​        **[Google Cloud Network Professional Certification - YouTube Playlist](https://www.google.com/url?q=https://www.youtube.com/playlist?list%3DPLxQzKf1gjjCPfFXjRa1pa-ykwBhKs4T0J&sa=D&source=editors&ust=1747368775424621&usg=AOvVaw2GMsO9HBBizs3xRBqWZD9t)**
+- ​        **[ ](https://www.google.com/url?q=https://partner.cloudskillsboost.google/course_templates/383&sa=D&source=editors&ust=1747368775424740&usg=AOvVaw2-D-oX-P6Gj7stBWJjcfwN)****[Preparing for Your Professional Cloud Network Engineer Journey](https://www.google.com/url?q=https://partner.cloudskillsboost.google/course_templates/383&sa=D&source=editors&ust=1747368775424847&usg=AOvVaw0dFtFo8LzIWbnEwmRvCvcr)**
+
+
+
+**Network Topic Deep Dives**
+
+**The Google Cloud documentation is technical. Here are a few of my recommendations for topics you can read up on.**
+
+- ​        **[Network best practices](https://www.google.com/url?q=https://cloud.google.com/docs/enterprise/best-practices-for-enterprise-organizations%23networking_and_security&sa=D&source=editors&ust=1747368775425302&usg=AOvVaw3vXoMQGOf26qasIx6kKu9a)**
+- ​        **[Organizational constraints](https://www.google.com/url?q=https://cloud.google.com/resource-manager/docs/organization-policy/overview&sa=D&source=editors&ust=1747368775425451&usg=AOvVaw21F8MvG4uij8TjCLmcpK4h)**
+- ​        **[Private service access](https://www.google.com/url?q=https://cloud.google.com/vpc/docs/configure-private-services-access&sa=D&source=editors&ust=1747368775425587&usg=AOvVaw0YVE7QV-j3vpcJ7daGHZMR)****,** **[Private Google access](https://www.google.com/url?q=https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid%23config&sa=D&source=editors&ust=1747368775425680&usg=AOvVaw33wzWAB3hw3PHlyd6W2lPn)**
+- ​        **[Cloud router](https://www.google.com/url?q=https://cloud.google.com/network-connectivity/docs/router/concepts/overview&sa=D&source=editors&ust=1747368775425798&usg=AOvVaw2lKdcx1q0LjqT9PwOrHXIx)**
+- ​        **[DNS best practices](https://www.google.com/url?q=https://cloud.google.com/dns/docs/best-practices%23best_practices_for_dns_forwarding_zones_and_server_policies&sa=D&source=editors&ust=1747368775425972&usg=AOvVaw2RnJ0BZVmKxKRlcpheXfg2)**
+- ​        **[Choosing a Load balancer](https://www.google.com/url?q=https://cloud.google.com/load-balancing/docs/choosing-load-balancer&sa=D&source=editors&ust=1747368775426100&usg=AOvVaw0YGc7jGD9dFeg2x5jvVVkr)****,** **[Ingress](https://www.google.com/url?q=https://cloud.google.com/kubernetes-engine/docs/tutorials/http-balancer&sa=D&source=editors&ust=1747368775426176&usg=AOvVaw3aDDlANiwn8o0zA5js5URk)****,** **[Session affinity](https://www.google.com/url?q=https://cloud.google.com/load-balancing/docs/backend-service%23session_affinity&sa=D&source=editors&ust=1747368775426265&usg=AOvVaw099C1aOLnlJFnn8XI9g8oG)**
+- ​        **[Networking on GKE](https://www.google.com/url?q=https://cloud.google.com/kubernetes-engine/docs/concepts/network-overview&sa=D&source=editors&ust=1747368775426389&usg=AOvVaw09Bg4wTUwLgLHkdrrQjM2g)**
+- ​        **[Hybrid connectivity options](https://www.google.com/url?q=https://cloud.google.com/hybrid-connectivity/&sa=D&source=editors&ust=1747368775426518&usg=AOvVaw1Xbzy-_aBs9xA0szGWgYRW)**
+- ​        **[Cloud CDN](https://www.google.com/url?q=https://cloud.google.com/cdn/docs/overview&sa=D&source=editors&ust=1747368775426617&usg=AOvVaw0UnY-Iq-o_axVSo6X645zZ)**
+- ​        **[Invalidations](https://www.google.com/url?q=https://cloud.google.com/cdn/docs/cache-invalidation-overview&sa=D&source=editors&ust=1747368775426741&usg=AOvVaw1cp4bBByX-3f-Y6RxqDvPM)**
+- ​        **[Troubleshooting](https://www.google.com/url?q=https://cloud.google.com/cdn/docs/troubleshooting-steps%23compression-not-working&sa=D&source=editors&ust=1747368775426871&usg=AOvVaw1Hch51e88QG59Je4pjhM-N)**
+- ​        **[Signed urls](https://www.google.com/url?q=https://cloud.google.com/cdn/docs/using-signed-urls%23:~:text%3DSigned%20URLs%20contain%20authentication%20information,request%20associated%20with%20the%20URL.&sa=D&source=editors&ust=1747368775427006&usg=AOvVaw0Ar_NQ68mWTzrktGVJZFkg)**
+- ​        **[NGFW](https://www.google.com/url?q=https://cloud.google.com/architecture/architecture-centralized-network-appliances-on-google-cloud?hl%3Den%23choosing_an_option_for_attaching_network_segments&sa=D&source=editors&ust=1747368775427161&usg=AOvVaw0jrQ8GtkF2eb3NQ0X59mrH)**
+- ​        **[Cloud Armour](https://www.google.com/url?q=https://cloud.google.com/armor/docs/cloud-armor-overview&sa=D&source=editors&ust=1747368775427278&usg=AOvVaw0IjQh1EslmJGJ3Q_9Qh-Am)**
+- ​        **[Cloud NAT](https://www.google.com/url?q=https://cloud.google.com/nat/docs/overview&sa=D&source=editors&ust=1747368775427381&usg=AOvVaw2TcdKW8wjyzfev7X99zCvK)**
+- ​        **[VPC](https://www.google.com/url?q=https://cloud.google.com/vpc/docs/vpc&sa=D&source=editors&ust=1747368775427473&usg=AOvVaw1Xdlamm8LMwyg1jbd7x0hu)**
+- ​        **[VPC service controls](https://www.google.com/url?q=https://cloud.google.com/vpc-service-controls/docs/overview&sa=D&source=editors&ust=1747368775427591&usg=AOvVaw2osK_LGE_slLDkel_jgc2a)**
+- ​        **[Network Intelligence Centre](https://www.google.com/url?q=https://cloud.google.com/network-intelligence-center/docs&sa=D&source=editors&ust=1747368775427715&usg=AOvVaw0H7KjdGQXcZoeC7V9x4Wts)**
+
+
+
+
+
+
+
+**Additional Ref**
+
+
+
+
+
+[https://cloud.google.com/architecture/framework](https://www.google.com/url?q=https://cloud.google.com/architecture/framework&sa=D&source=editors&ust=1747368775428047&usg=AOvVaw3l5FrS2N539G2asIjuAHK0)
+
+
+
+[https://cloud.google.com/architecture/networking](https://www.google.com/url?q=https://cloud.google.com/architecture/networking&sa=D&source=editors&ust=1747368775428199&usg=AOvVaw2m2Ls1RZGQpVdg1knTR3wM)
+
+
+
+[https://cloud.google.com/products/networking?hl=en](https://www.google.com/url?q=https://cloud.google.com/products/networking?hl%3Den&sa=D&source=editors&ust=1747368775428398&usg=AOvVaw25ByWuerG5sa3NkcfsuUu1) 
+
+
+
+[https://cloud.google.com/architecture/best-practices-vpc-design](https://www.google.com/url?q=https://cloud.google.com/architecture/best-practices-vpc-design&sa=D&source=editors&ust=1747368775428617&usg=AOvVaw2SurgszptOX9tcDMmhB8kr)
+
+
+
+
+
+ 
+
+
+
+**Publicly accessible**
+
+
+
+\# 1 From your device to Google Cloud API: Networking basics
+
+[https://cloud.google.com/blog/topics/developers-practitioners/your-device-google-cloud-api-networking-basics](https://www.google.com/url?q=https://cloud.google.com/blog/topics/developers-practitioners/your-device-google-cloud-api-networking-basics&sa=D&source=editors&ust=1747368775429162&usg=AOvVaw0RK4ecgCFWc4RjVWusvWiG)
+
+
+
+\# 2- IP addressing options in Google Cloud: Networking basics
+
+[https://cloud.google.com/blog/topics/developers-practitioners/ip-addressing-options-google-cloud-networking-basics](https://www.google.com/url?q=https://cloud.google.com/blog/topics/developers-practitioners/ip-addressing-options-google-cloud-networking-basics&sa=D&source=editors&ust=1747368775429516&usg=AOvVaw1Jj5Ns5sqrzSO5fN6snjB9)
+
+
+
+
+
+\# 3 - 10 considerations to help you design cloud networks
+
+[https://cloud.google.com/blog/topics/developers-practitioners/10-considerations-help-you-design-cloud-networks](https://www.google.com/url?q=https://cloud.google.com/blog/topics/developers-practitioners/10-considerations-help-you-design-cloud-networks&sa=D&source=editors&ust=1747368775430023&usg=AOvVaw2CtdYvb-Mb6_L0bKzWxjRj)
+
+
+
+
+
+\# 4 bookmark and check out the repo- The networking 101 GCP reference sheet: Networking basics
+
+[https://cloud.google.com/blog/topics/developers-practitioners/networking-101-gcp-reference-sheet](https://www.google.com/url?q=https://cloud.google.com/blog/topics/developers-practitioners/networking-101-gcp-reference-sheet&sa=D&source=editors&ust=1747368775430598&usg=AOvVaw3ewPsVdzFL8h6iL9zxHwGH)
+
+
+
+
+
+\# 5 - Google Cloud Global External HTTP(S) Load Balancer - Deep Dive
+
+[https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-global-external-https-load-balancer-deep-dive](https://www.google.com/url?q=https://cloud.google.com/blog/topics/developers-practitioners/google-cloud-global-external-https-load-balancer-deep-dive&sa=D&source=editors&ust=1747368775431229&usg=AOvVaw2t9n1N4YGk3swIq7vfHvVG)
+
+
+
+\# 6 - Understanding basic networking in GKE - Networking basics
+
+[https://cloud.google.com/blog/topics/developers-practitioners/understanding-basic-networking-gke-networking-basics](https://www.google.com/url?q=https://cloud.google.com/blog/topics/developers-practitioners/understanding-basic-networking-gke-networking-basics&sa=D&source=editors&ust=1747368775431779&usg=AOvVaw3RqEmXY0cVR64WZBCN2WHT)
+
+
+
+
+
+\# 7 Must read - 6 Building blocks for cloud networking - Networking Architecture
+
+[https://cloud.google.com/blog/topics/developers-practitioners/6-building-blocks-cloud-networking-networking-architecture](https://www.google.com/url?q=https://cloud.google.com/blog/topics/developers-practitioners/6-building-blocks-cloud-networking-networking-architecture&sa=D&source=editors&ust=1747368775432376&usg=AOvVaw3CzInm42JnaTuHgvsv2bH8)
+
+
+
+
+
+\# 8 Must read - When should I use Cloud Armor?
+
+[https://cloud.google.com/blog/topics/developers-practitioners/when-should-i-use-cloud-armor/](https://www.google.com/url?q=https://cloud.google.com/blog/topics/developers-practitioners/when-should-i-use-cloud-armor/&sa=D&source=editors&ust=1747368775432848&usg=AOvVaw2yQd4buOrMkumZJ0zCExsi)
+
+
+
+
+
+Media CDN with Google Ad Manager Integration -
+
+Check out this demo with [Prakash Daga](https://www.google.com/url?q=https://www.linkedin.com/in/ACoAAAF8NRwBht0XkG-Zw_bb0B5AnAc_XgDzcSI&sa=D&source=editors&ust=1747368775433252&usg=AOvVaw2MzEUylKJnFZYl9CLxaA-e) [David Lin](https://www.google.com/url?q=https://www.linkedin.com/in/ACoAABHAdFIBlz8Jm7VG1_35IxN5wIwv6JqI5i0&sa=D&source=editors&ust=1747368775433374&usg=AOvVaw1nojmhVphqjJEt9BcpSnUJ)
+
+[https://www.youtube.com/watch?v=ETo6KufUWUM](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DETo6KufUWUM&sa=D&source=editors&ust=1747368775433509&usg=AOvVaw3CvEW6ipqtvZTm2_J3JQZ_)
+
+
+
+
+
+Designing networks for migrating enterprise workloads: Architectural approaches
+
+[https://cloud.google.com/architecture/network-architecture](https://www.google.com/url?q=https://cloud.google.com/architecture/network-architecture&sa=D&source=editors&ust=1747368775433808&usg=AOvVaw2quJEu920-_NmSk5kdjuYq)
+
+
+
+Google Cloud VPC Design Patterns
+
+[https://www.youtube.com/watch?v=dx37hzWr5wQ](https://www.google.com/url?q=https://www.youtube.com/watch?v%3Ddx37hzWr5wQ&sa=D&source=editors&ust=1747368775434006&usg=AOvVaw3oeagT45UZH0GNpk8XFJ3O)
+
+
+
+
+
+
+
+________________________________________________________________________________________________
+
+
+
+**For Partners only Resources to be accessed from** **[Partner Advantage](https://www.google.com/url?q=https://partneradvantage.goog/&sa=D&source=editors&ust=1747368775434379&usg=AOvVaw2ISeypPSxezxu98qIzg4QR)** (Connect with your partner login)
+
+help page ([https://support.google.com/googlecloud/topic/9198654#zippy=](https://www.google.com/url?q=https://support.google.com/googlecloud/topic/9198654%23zippy%3D&sa=D&source=editors&ust=1747368775434573&usg=AOvVaw1kToXcVIY4zMn9IBmCdA4S) )
+
+
+
+Cloud Foundations Networking Requirements Questionnaire | PSO | Y23
+
+[https://docs.google.com/spreadsheets/d/1CrT0djPLer6GjpjdLR7Q3U2VpFx5eMaCG82q-PVgHw4/edit?resourcekey=0-DEXphXH1T2ieCih84yb71g#gid=1932769610](https://www.google.com/url?q=https://docs.google.com/spreadsheets/d/1CrT0djPLer6GjpjdLR7Q3U2VpFx5eMaCG82q-PVgHw4/edit?resourcekey%3D0-DEXphXH1T2ieCih84yb71g%23gid%3D1932769610&sa=D&source=editors&ust=1747368775435079&usg=AOvVaw2Fl_StSFrKSRYbGdQQjU9L)
+
+
+
+Cloud Foundations Networking Technical Deep Dive | PSO | Y23
+
+[https://docs.google.com/presentation/d/1-AxfQ1LyBVy5XsWUk2nbG95Vnlx6oxD7iwc9QAqfyEI/edit#slide=id.g25db881308f_32_29273](https://www.google.com/url?q=https://docs.google.com/presentation/d/1-AxfQ1LyBVy5XsWUk2nbG95Vnlx6oxD7iwc9QAqfyEI/edit%23slide%3Did.g25db881308f_32_29273&sa=D&source=editors&ust=1747368775435510&usg=AOvVaw1huT9Kr1IMgDYlTIyqnZGR)
+
+
+
+Google Cloud Networking Design Patterns | Technical | Y22
+
+[https://docs.google.com/presentation/d/1aPMoRWCxp59hqXm43Cd51wYksq0NAQvyEzddx8u3ibw/edit?resourcekey=0-GzYqkDb2qAFGBY4EqYqtwA#slide=id.g1154b3b950f_2_2241](https://www.google.com/url?q=https://docs.google.com/presentation/d/1aPMoRWCxp59hqXm43Cd51wYksq0NAQvyEzddx8u3ibw/edit?resourcekey%3D0-GzYqkDb2qAFGBY4EqYqtwA%23slide%3Did.g1154b3b950f_2_2241&sa=D&source=editors&ust=1747368775436025&usg=AOvVaw1ZLhmupq_tewtgXcd7V1bf)
+
+
+
+Networking Cost Optimization | PSO | Y21
+
+[https://docs.google.com/document/d/1hXIvQwcpDAe1S6-o4o1E-ZBd0eJ3icUwKFrxSRlyLMc/edit](https://www.google.com/url?q=https://docs.google.com/document/d/1hXIvQwcpDAe1S6-o4o1E-ZBd0eJ3icUwKFrxSRlyLMc/edit&sa=D&source=editors&ust=1747368775436403&usg=AOvVaw2NuCADm6YkEJ39FO0G1R1B)
+
+
+
+AWS to Google Cloud - Network Design Patterns | PSO | Y21
+
+[https://docs.google.com/document/d/189nJZnqznaEZY21Q0wAAClqaPcZ4sYxbH3WB_rR_Meo/edit?pli=1&resourcekey=0-2HxyrWDmt1cPkrJcoQgAiw](https://www.google.com/url?q=https://docs.google.com/document/d/189nJZnqznaEZY21Q0wAAClqaPcZ4sYxbH3WB_rR_Meo/edit?pli%3D1%26resourcekey%3D0-2HxyrWDmt1cPkrJcoQgAiw&sa=D&source=editors&ust=1747368775436797&usg=AOvVaw2qC5M-nZRc1LOMHqOTQiFB)
+
+
+
+Google Cloud VMware Engine Networking Technical Design Document | PSO | Y21
+
+[https://docs.google.com/document/d/1WpB6JoIXY4AXU3eGEOm6wVBkNMM4z2F2m66hqC67fhE/edit#heading=h.rfygc3ssiug](https://www.google.com/url?q=https://docs.google.com/document/d/1WpB6JoIXY4AXU3eGEOm6wVBkNMM4z2F2m66hqC67fhE/edit%23heading%3Dh.rfygc3ssiug&sa=D&source=editors&ust=1747368775437138&usg=AOvVaw39-qyqxpBBGaTjKqd2P4Cp) 
+
+
+
+Anthos GKE deployed on-prem: Networking diagrams | Technical | Google Cloud | Professional Services | Y20
+
+[https://docs.google.com/presentation/d/1mCe0jxHzFv3UwAGhhYDu4Lcnxubn31lGb6YEh0YRTDo/edit#slide=id.g7291406d8d_2_153](https://www.google.com/url?q=https://docs.google.com/presentation/d/1mCe0jxHzFv3UwAGhhYDu4Lcnxubn31lGb6YEh0YRTDo/edit%23slide%3Did.g7291406d8d_2_153&sa=D&source=editors&ust=1747368775437521&usg=AOvVaw3jaMiYUJ0J9mcS9PWiLv47)
+
+
+
+GKE Networking Considerations | Technical | Kubernetes| Professional Services | Y19
+
+[https://docs.google.com/presentation/d/1hEFmXjGkiZhvFQ-ePvEqUK-JYk0WdKfJIcaa-v3f2vc/edit#slide=id.g7913b767fa_0_891](https://www.google.com/url?q=https://docs.google.com/presentation/d/1hEFmXjGkiZhvFQ-ePvEqUK-JYk0WdKfJIcaa-v3f2vc/edit%23slide%3Did.g7913b767fa_0_891&sa=D&source=editors&ust=1747368775437857&usg=AOvVaw24vEix0hbLA0M_54jhaZf3)
+
+
+
+
+
+
+
+
+
+**Network design - Partner Advantage** 
+
+
+
+[https://docs.google.com/presentation/d/1aPMoRWCxp59hqXm43Cd51wYksq0NAQvyEzddx8u3ibw/edit?resourcekey=0-GzYqkDb2qAFGBY4EqYqtwA#slide=id.g1154b3b950f_2_2370](https://www.google.com/url?q=https://docs.google.com/presentation/d/1aPMoRWCxp59hqXm43Cd51wYksq0NAQvyEzddx8u3ibw/edit?resourcekey%3D0-GzYqkDb2qAFGBY4EqYqtwA%23slide%3Did.g1154b3b950f_2_2370&sa=D&source=editors&ust=1747368775438347&usg=AOvVaw0nyw4hNBK9f0j5XZRmhYWJ) 
+
+Sanjeev Kumar
+
+Email: sssskumar@google.com , sanjeev@gcptrain.org
+
 
 
 
@@ -6237,6 +6582,1347 @@ This will display the summary information about the protocols, ports, paths and 
 ## Anthos Service Mesh
 
 ### Introduction to Anthos Service Mesh
+
+[Introduction to Anthos Service Mesh](documents/T-GKENET-I-m2-l1-file-en-4.pdf)
+
+### LAB: Installing Cloud Service Mesh on Google Kubernetes Engine
+
+**Overview**
+
+[Istio](http://istio.io/) is an open source framework for connecting, securing, and managing microservices. It can be used with any services, including but not limited to services that are hosted in a Kubernetes cluster. Istio lets you create a network of deployed services with load balancing, service-to-service authentication, monitoring, and more, without requiring any changes in service code.
+
+As one example - in reliable distributed systems, it's common for a system to want to retry a request after a failure, possibly with an exponential backoff delay. There are libraries for Java, Golang and NodeJS that do this. However, employing them within the app means each different app will need to solve that problem independently. The Istio sidecar could do this for the app, automatically.
+
+**Cloud Service Mesh**
+
+[Cloud Service Mesh (ASM)](https://cloud.google.com/anthos/service-mesh) is powered by Istio. With Cloud Service Mesh, you get an Anthos tested, fully supported, distribution of Istio, letting you create and deploy a service mesh with Anthos GKE, whether your cluster is operating in Google Cloud or on-premises.
+
+You can use included configuration profiles with recommended settings customized for either Google Kubernetes Engine or Anthos GKE on-prem.
+
+Finally, Cloud Service Mesh has a suite of additional features and tools that help you observe and manage secure, reliable services in a unified way:
+
+- **Service metrics and logs** for HTTP(S) traffic within your mesh's GKE cluster are automatically ingested to Google Cloud.
+- **Preconfigured service dashboards** give you the information you need to understand your services.
+- In-depth **telemetry** lets you dig deep into your metrics and logs, filtering and slicing your data on a wide variety of attributes.
+- **Service-to-service relationships** at a glance help you understand who connects to which service and the services that each service depends on.
+- **Service Level Objectives (SLOs)** provide insights into the health of your services. You can easily define an SLO and alert on your own standards of service health.
+
+Cloud Service Mesh is the easiest and richest way to implement an Istio-based service mesh on your Anthos clusters.
+
+In this lab, you will install Cloud Service Mesh on a GKE cluster.
+
+**What you'll learn**
+
+In this lab, you will learn how to perform the following tasks:
+
+- Provision a cluster on Google Kubernetes Engine (GKE)
+- Install and configure Cloud Service Mesh
+- Deploy Bookinfo, an Istio-enabled multi-service application
+- Enable external access using an Istio Ingress Gateway
+- Use the Bookinfo application
+- Monitor service performance with the Cloud Service Mesh Dashboard
+
+**Setup and requirements**
+
+**Before you click the Start Lab button**
+
+Read these instructions. Labs are timed and you cannot pause them. The timer, which starts when you click **Start Lab**, shows how long Google Cloud resources are made available to you.
+
+This hands-on lab lets you do the lab activities in a real cloud environment, not in a simulation or demo environment. It does so by giving you new, temporary credentials you use to sign in and access Google Cloud for the duration of the lab.
+
+To complete this lab, you need:
+
+- Access to a standard internet browser (Chrome browser recommended).
+
+**Note:** Use an Incognito (recommended) or private browser window to run this lab. This prevents conflicts between your personal account and the student account, which may cause extra charges incurred to your personal account.
+
+- Time to complete the lab—remember, once you start, you cannot pause a lab.
+
+**Note:** Use only the student account for this lab. If you use a different Google Cloud account, you may incur charges to that account.
+
+**How to start your lab and sign in to the Google Cloud console**
+
+1. Click the **Start Lab** button. If you need to pay for the lab, a dialog opens for you to select your payment method. On the left is the Lab Details pane with the following:
+
+   - The Open Google Cloud console button
+   - Time remaining
+   - The temporary credentials that you must use for this lab
+   - Other information, if needed, to step through this lab
+
+2. Click **Open Google Cloud console** (or right-click and select **Open Link in Incognito Window** if you are running the Chrome browser).
+
+   The lab spins up resources, and then opens another tab that shows the Sign in page.
+
+   ***Tip:\*** Arrange the tabs in separate windows, side-by-side.
+
+   **Note:** If you see the **Choose an account** dialog, click **Use Another Account**.
+
+3. If necessary, copy the **Username** below and paste it into the **Sign in** dialog.
+
+   ```
+   student-02-e6e1cfa62ccc@qwiklabs.net
+   ```
+
+   Copied!
+
+   You can also find the Username in the Lab Details pane.
+
+4. Click **Next**.
+
+5. Copy the **Password** below and paste it into the **Welcome** dialog.
+
+   ```
+   SDP5CwMYLouM
+   ```
+
+   Copied!
+
+   You can also find the Password in the Lab Details pane.
+
+6. Click **Next**.
+
+   **Important:** You must use the credentials the lab provides you. Do not use your Google Cloud account credentials.
+
+   **Note:** Using your own Google Cloud account for this lab may incur extra charges.
+
+7. Click through the subsequent pages:
+
+   - Accept the terms and conditions.
+   - Do not add recovery options or two-factor authentication (because this is a temporary account).
+   - Do not sign up for free trials.
+
+After a few moments, the Google Cloud console opens in this tab.
+
+**Note:** To access Google Cloud products and services, click the **Navigation menu** or type the service or product name in the **Search** field. ![Navigation menu icon and Search field](https://cdn.qwiklabs.com/9Fk8NYFp3quE9mF%2FilWF6%2FlXY9OUBi3UWtb2Ne4uXNU%3D)
+
+**Activate Cloud Shell**
+
+Cloud Shell is a virtual machine that is loaded with development tools. It offers a persistent 5GB home directory and runs on the Google Cloud. Cloud Shell provides command-line access to your Google Cloud resources.
+
+1. Click **Activate Cloud Shell** ![Activate Cloud Shell icon](https://cdn.qwiklabs.com/ep8HmqYGdD%2FkUncAAYpV47OYoHwC8%2Bg0WK%2F8sidHquE%3D) at the top of the Google Cloud console.
+2. Click through the following windows:
+   - Continue through the Cloud Shell information window.
+   - Authorize Cloud Shell to use your credentials to make Google Cloud API calls.
+
+When you are connected, you are already authenticated, and the project is set to your **Project_ID**, `qwiklabs-gcp-00-41830d28aab6`. The output contains a line that declares the **Project_ID** for this session:
+
+```
+Your Cloud Platform project in this session is set to qwiklabs-gcp-00-41830d28aab6
+```
+
+`gcloud` is the command-line tool for Google Cloud. It comes pre-installed on Cloud Shell and supports tab-completion.
+
+1. (Optional) You can list the active account name with this command:
+
+```
+gcloud auth list
+```
+
+Copied!
+
+1. Click **Authorize**.
+
+**Output:**
+
+```
+ACTIVE: *
+ACCOUNT: student-02-e6e1cfa62ccc@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+```
+
+1. (Optional) You can list the project ID with this command:
+
+```
+gcloud config list project
+```
+
+Copied!
+
+**Output:**
+
+```
+[core]
+project = qwiklabs-gcp-00-41830d28aab6
+```
+
+**Note:** For full documentation of `gcloud`, in Google Cloud, refer to [the gcloud CLI overview guide](https://cloud.google.com/sdk/gcloud).
+
+**Task 1. Set up your project**
+
+**Verify the SDK configuration**
+
+1. In Cloud Shell, verify your default **account** is configured.
+
+   Verify that the Cloud SDK is configured to use your Qwiklabs-generated user **account**.
+
+   ```
+   gcloud config list
+   ```
+
+   Copied!
+
+   **Output:**
+
+   ```
+   [component_manager]
+   disable_update_check = True
+   [compute]
+   gce_metadata_read_timeout_sec = 5
+   [core]
+   account = student-xx-xxxx@qwiklabs.net
+   disable_usage_reporting = False
+   project = qwiklabs-gcp-yy-####
+   [metrics]
+   environment = devshell
+   Your active configuration is: [cloudshell-#####]
+   ```
+
+2. Update **project** configuration if needed.
+
+   If the SDK does not have the default **project** set correctly, update the configuration. Replace `[project_id]` with the name of the project provided in the **credential** section of the Qwiklabs instructions page:
+
+   ```
+   gcloud config set project [project_id]
+   ```
+
+   Copied!
+
+**Configure environment variables**
+
+1. Configure environment variables that will be used in the setup and installation commands:
+
+```
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} \
+    --format="value(projectNumber)")
+export CLUSTER_NAME=central
+export CLUSTER_ZONE=europe-west1-d
+export WORKLOAD_POOL=${PROJECT_ID}.svc.id.goog
+export MESH_ID="proj-${PROJECT_NUMBER}"
+```
+
+Copied!
+
+**Note:****WORKLOAD_POOL** will be used to enable Workload Identity, which is the recommended way to safely access Google Cloud services from GKE applications.**MESH_ID** will be used to set the **mesh_id** label on the cluster, which is required for metrics to get displayed on the Cloud Service Mesh Dashboard in the Cloud Console.
+
+**Verify sufficient permissions**
+
+- In Cloud Shell, verify that your user account has the **Owner** role assigned:
+
+```
+gcloud projects get-iam-policy $PROJECT_ID \
+    --flatten="bindings[].members" \
+    --filter="bindings.members:user:$(gcloud config get-value core/account 2>/dev/null)"
+```
+
+Copied!
+
+**Output:**
+
+```
+bindings:
+members: user:student-xx-xxxx@qwiklabs.net
+role: roles/owner
+...
+```
+
+**Note:** Your student user also possesses **viewer** privileges.
+
+**Note:** To complete setup, you need the permissions associated with these roles:Project EditorKubernetes Engine AdminProject IAM AdminGKE Hub AdminService Account AdminService Account key AdminIf you have the **Owner** role, you have all these permissions and more, so you're ready to proceed.
+
+**Task 2. Set up your GKE cluster**
+
+**Create the cluster**
+
+1. Now run the following command in Cloud Shell to create the Kubernetes cluster `central`:
+
+```
+gcloud config set compute/zone ${CLUSTER_ZONE}
+gcloud container clusters create ${CLUSTER_NAME} \
+    --machine-type=e2-standard-4 \
+    --num-nodes=4 \
+    --subnetwork=default \
+    --release-channel=regular \
+    --labels mesh_id=${MESH_ID} \
+    --workload-pool=${WORKLOAD_POOL} \
+    --logging=SYSTEM,WORKLOAD
+```
+
+Copied!
+
+**Output:**
+
+```
+NAME: central
+LOCATION: zone
+MASTER_VERSION: 1.27.3-gke.100
+MASTER_IP: 35.245.2.147
+MACHINE_TYPE: e2-standard-4
+NODE_VERSION: 1.27.3-gke.100
+NUM_NODES: 4
+STATUS: RUNNING
+```
+
+It will take several minutes for cluster creation to complete.
+
+1. After your cluster finishes creating, run this command to ensure you have the `cluster-admin` role on your cluster:
+
+```
+kubectl create clusterrolebinding cluster-admin-binding   --clusterrole=cluster-admin   --user=$(whoami)@qwiklabs.net
+```
+
+Copied!
+
+1. Configure kubectl to point to the cluster.
+
+```
+gcloud container clusters get-credentials ${CLUSTER_NAME} \
+     --zone $CLUSTER_ZONE \
+     --project $PROJECT_ID
+```
+
+Copied!
+
+**Task 3. Prepare to install Cloud Service Mesh**
+
+Google provides a tool, `asmcli`, which allows you to install or upgrade Cloud Service Mesh. If you let it, `asmcli` will configure your project and cluster as follows:
+
+- Grant you the required Identity and Access Management (IAM) permissions on your Google Cloud project.
+- Enable the required Google APIs on your Cloud project.
+- Set a label on the cluster that identifies the mesh.
+- Create a service account that lets data plane components, such as the sidecar proxy, securely access your project's data and resources.
+- Register the cluster to the fleet if it isn't already registered.
+
+You will use `asmcli` to install Cloud Service Mesh on your cluster.
+
+1. Download the version that installs Cloud Service Mesh 1.20.3 to the current working directory:
+
+```
+curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.20 > asmcli
+```
+
+Copied!
+
+1. Make the script executable:
+
+```
+chmod +x asmcli
+```
+
+Copied!
+
+1. Enable the Service Mesh API:
+
+```
+gcloud services enable mesh.googleapis.com
+```
+
+Copied!
+
+**Task 4. Validate Cloud Service Mesh**
+
+You can run `asmcli validate` to make sure that your project and cluster are set up as required to install Cloud Service Mesh. With this option, `asmcli` doesn't make any changes to your project or cluster, and it doesn't install Cloud Service Mesh.
+
+asmcli validates that:
+
+- Your environment has the required tools.
+- The cluster meets the minimum requirements.
+- You have the required permissions on the specified project.
+- The project has all the required Google APIs enabled.
+
+1. Run the following command to validate your configuration and download the installation file and `asm` package to the **OUTPUT_DIR** directory:
+
+```
+./asmcli validate \
+  --project_id $PROJECT_ID \
+  --cluster_name $CLUSTER_NAME \
+  --cluster_location $CLUSTER_ZONE \
+  --fleet_id $PROJECT_ID \
+  --output_dir ./asm_output
+```
+
+Copied!
+
+**Note**: Please **ignore any validation errors** as in this case, the validation is confirming that the cluster has all necessary components to install ASM, not that ASM was installed correctly.
+
+On success, you should have output similar to the following:
+
+```
+asmcli: Setting up necessary files...
+asmcli: Using asm_kubeconfig as the kubeconfig...
+asmcli: Checking installation tool dependencies...
+asmcli: Fetching/writing GCP credentials to kubeconfig file...
+asmcli: Verifying connectivity (10s)...
+asmcli: kubeconfig set to asm_kubeconfig
+asmcli: using context gke_example-project-12345_us-west1_cluster-2
+asmcli: Getting account information...
+asmcli: Downloading ASM..
+asmcli: Downloading ASM kpt package...
+fetching package "/asm" from "https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages" to "asm"
+asmcli: Checking required APIs...
+asmcli: Checking for project example-project-12345...
+asmcli: Reading labels for us-west1/cluster-2...
+asmcli: Checking for istio-system namespace...
+asmcli: Confirming node pool requirements for example-project-12345/us-west1/cluster-2...
+asmcli: Checking Istio installations...
+asmcli: [WARNING]: There is no way to validate that the meshconfig API has been initialized.
+asmcli: [WARNING]: This needs to happen once per GCP project. If the API has not been initialized
+asmcli: [WARNING]: for example-project-12345, please re-run this tool with the --enable_gcp_components
+asmcli: [WARNING]: flag. Otherwise, installation will succeed but Cloud Service Mesh
+asmcli: [WARNING]: will not function correctly.
+asmcli: Successfully validated all requirements to install ASM.
+```
+
+**Note:** This lab will provide the necessary flags to handle the warnings from the validation command.
+
+**Task 5. Install Cloud Service Mesh**
+
+The following command will install Cloud Service Mesh. The --enable_all flag allows the script to enable the required Google APIs, set Identity and Access Management permissions, and make the required updates to your cluster, which includes enabling GKE Workload Identity.
+
+1. Run the following command to install Cloud Service Mesh:
+
+```
+./asmcli install \
+  --project_id $PROJECT_ID \
+  --cluster_name $CLUSTER_NAME \
+  --cluster_location $CLUSTER_ZONE \
+  --fleet_id $PROJECT_ID \
+  --output_dir ./asm_output \
+  --enable_all \
+  --option legacy-default-ingressgateway \
+  --ca mesh_ca \
+  --enable_gcp_components
+```
+
+Copied!
+
+You should see output similar to the following:
+
+```
+asmcli: *****************************
+asmcli: Successfully installed ASM.
+```
+
+Click *Check my progress* to verify the objective.
+
+Install Cloud Service Mesh
+
+
+
+Check my progress
+
+
+
+**Install an ingress gateway**
+
+Cloud Service Mesh gives you the option to deploy and manage gateways as part of your service mesh. A gateway describes a load balancer operating at the edge of the mesh receiving incoming or outgoing HTTP/TCP connections. Gateways are Envoy proxies that provide you with fine-grained control over traffic entering and leaving the mesh.
+
+1. Create a namespace for the ingress gateway if you don't already have one. Gateways are user workloads, and as a best practice, they shouldn't be deployed in the control plane namespace.
+
+```
+GATEWAY_NS=istio-gateway
+kubectl create namespace $GATEWAY_NS
+```
+
+Copied!
+
+1. Enable auto-injection on the gateway by applying a revision label on the gateway namespace. The revision label is used by the sidecar injector webhook to associate injected proxies with a particular control plane revision.
+
+   - Use the following command to locate the revision label on `istiod`:
+
+   ```
+   kubectl get deploy -n istio-system -l app=istiod -o \
+   jsonpath={.items[*].metadata.labels.'istio\.io\/rev'}'{"\n"}'
+   ```
+
+   Copied!
+
+   - Store that value in an environment variable:
+
+   ```
+   REVISION=$(kubectl get deploy -n istio-system -l app=istiod -o \
+   jsonpath={.items[*].metadata.labels.'istio\.io\/rev'}'{"\n"}')
+   ```
+
+   Copied!
+
+   - Apply the revision label to the namespace. In the following command, **REVISION** is the value of the istiod revision label that you noted in the previous step:
+
+   ```
+   kubectl label namespace $GATEWAY_NS \
+   istio.io/rev=$REVISION --overwrite
+   ```
+
+   Copied!
+
+   - Enable Istio's proxy injection
+
+   ```
+   kubectl label namespace default istio-injection=enabled
+   kubectl label namespace $GATEWAY_NS  istio-injection=enabled
+   ```
+
+   Copied!
+
+2. Change to the directory that you specified in `--output_dir`:
+
+```
+cd ~/asm_output
+```
+
+Copied!
+
+1. You can deploy the example ingress gateway configuration located in the `samples/gateways/istio-ingressgateway/` directory as is, or modify it as needed:
+
+```
+kubectl apply -n $GATEWAY_NS \
+  -f samples/gateways/istio-ingressgateway
+```
+
+Copied!
+
+**Enable sidecar injection**
+
+Cloud Service Mesh uses sidecar proxies to enhance network security, reliability, and observability. With Cloud Service Mesh, these functions are abstracted away from an application's primary container and implemented in a common out-of-process proxy delivered as a separate container in the same Pod.
+
+1. Before you deploy workloads, make sure to configure sidecar proxy injection so that Cloud Service Mesh can monitor and secure traffic.
+2. To enable auto-injection, apply the revision label and remove the istio-injection label if it exists.
+3. In the following command, you specify the namespace, **default**, where you want to enable auto-injection, and REVISION is the revision label you noted in the previous step:
+
+```
+kubectl label namespace default istio-injection-istio.io/rev=$REVISION --overwrite
+```
+
+Copied!
+
+**Note:** You can ignore the message `"istio-injection" not found` in the output. That means that the namespace didn't previously have the istio-injection label, which you should expect in new installations of Cloud Service Mesh or new deployments.
+
+**Note:** Sidecar proxy injection is now enabled for future workloads.
+
+If this cluster had already been running workloads, you would need to restart the pods to re-trigger auto injection.
+
+**Task 6. Deploy Bookinfo, an Istio-enabled multi-service application**
+
+In this task, you will set up the **Bookinfo** sample microservices application and explore the app.
+
+**Bookinfo overview**
+
+Now that ASM is configured and verified, you can deploy one of the sample applications provided with the installation — [BookInfo](https://istio.io/docs/guides/bookinfo.html). This is a simple mock bookstore application made up of four microservices - all managed using Istio. Each microservice is written in a different language, to demonstrate how you can use Istio in a multi-language environment, without any changes to code.
+
+The microservices are:
+
+- **productpage:** calls the details and reviews microservices to populate the page.
+- **details**: contains book information.
+- **reviews:** contains book reviews. It also calls the ratings microservice.
+- **ratings**: contains book ranking information that accompanies a book review.
+
+There are 3 versions of the **reviews** microservice:
+
+- Reviews **v1** doesn't call the ratings service.
+- Reviews **v2** calls the ratings service and displays each rating as 1 - 5 black stars.
+- Reviews **v3** calls the ratings service and displays each rating as 1 - 5 red stars.
+
+The end-to-end architecture of the application looks like this:
+
+![Bookinfo Architecture](images/On97et0X9b%2B5Ui6oDbLFh%2BH1duGarRbgZKGt7z3IJCk%3D.png)
+
+You can find the source code and all the other files used in this example in the Istio [samples/bookinfo](https://github.com/istio/istio/tree/master/samples/bookinfo) directory.
+
+**Deploy Bookinfo**
+
+1. Look at the `.yaml` which describes the bookInfo application:
+
+   ```
+   istio_dir=$(ls -d istio-* | tail -n 1)
+   cd $istio_dir
+   cat samples/bookinfo/platform/kube/bookinfo.yaml
+   ```
+
+   bookinfo.yaml
+
+   ```
+   # Copyright Istio Authors
+   #
+   #   Licensed under the Apache License, Version 2.0 (the "License");
+   #   you may not use this file except in compliance with the License.
+   #   You may obtain a copy of the License at
+   #
+   #       http://www.apache.org/licenses/LICENSE-2.0
+   #
+   #   Unless required by applicable law or agreed to in writing, software
+   #   distributed under the License is distributed on an "AS IS" BASIS,
+   #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   #   See the License for the specific language governing permissions and
+   #   limitations under the License.
+   
+   ##################################################################################################
+   # This file defines the services, service accounts, and deployments for the Bookinfo sample.
+   #
+   # To apply all 4 Bookinfo services, their corresponding service accounts, and deployments:
+   #
+   #   kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
+   #
+   # Alternatively, you can deploy any resource separately:
+   #
+   #   kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml -l service=reviews # reviews Service
+   #   kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml -l account=reviews # reviews ServiceAccount
+   #   kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml -l app=reviews,version=v3 # reviews-v3 Deployment
+   ##################################################################################################
+   
+   ##################################################################################################
+   # Details service
+   ##################################################################################################
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: details
+     labels:
+       app: details
+       service: details
+   spec:
+     ports:
+     - port: 9080
+       name: http
+     selector:
+       app: details
+   ---
+   apiVersion: v1
+   kind: ServiceAccount
+   metadata:
+     name: bookinfo-details
+     labels:
+       account: details
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: details-v1
+     labels:
+       app: details
+       version: v1
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: details
+         version: v1
+     template:
+       metadata:
+         labels:
+           app: details
+           version: v1
+       spec:
+         serviceAccountName: bookinfo-details
+         containers:
+         - name: details
+           image: docker.io/istio/examples-bookinfo-details-v1:1.18.0
+           imagePullPolicy: IfNotPresent
+           ports:
+           - containerPort: 9080
+   ---
+   ##################################################################################################
+   # Ratings service
+   ##################################################################################################
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: ratings
+     labels:
+       app: ratings
+       service: ratings
+   spec:
+     ports:
+     - port: 9080
+       name: http
+     selector:
+       app: ratings
+   ---
+   apiVersion: v1
+   kind: ServiceAccount
+   metadata:
+     name: bookinfo-ratings
+     labels:
+       account: ratings
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: ratings-v1
+     labels:
+       app: ratings
+       version: v1
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: ratings
+         version: v1
+     template:
+       metadata:
+         labels:
+           app: ratings
+           version: v1
+       spec:
+         serviceAccountName: bookinfo-ratings
+         containers:
+         - name: ratings
+           image: docker.io/istio/examples-bookinfo-ratings-v1:1.18.0
+           imagePullPolicy: IfNotPresent
+           ports:
+           - containerPort: 9080
+   ---
+   ##################################################################################################
+   # Reviews service
+   ##################################################################################################
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: reviews
+     labels:
+       app: reviews
+       service: reviews
+   spec:
+     ports:
+     - port: 9080
+       name: http
+     selector:
+       app: reviews
+   ---
+   apiVersion: v1
+   kind: ServiceAccount
+   metadata:
+     name: bookinfo-reviews
+     labels:
+       account: reviews
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: reviews-v1
+     labels:
+       app: reviews
+       version: v1
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: reviews
+         version: v1
+     template:
+       metadata:
+         labels:
+           app: reviews
+           version: v1
+       spec:
+         serviceAccountName: bookinfo-reviews
+         containers:
+         - name: reviews
+           image: docker.io/istio/examples-bookinfo-reviews-v1:1.18.0
+           imagePullPolicy: IfNotPresent
+           env:
+           - name: LOG_DIR
+             value: "/tmp/logs"
+           ports:
+           - containerPort: 9080
+           volumeMounts:
+           - name: tmp
+             mountPath: /tmp
+           - name: wlp-output
+             mountPath: /opt/ibm/wlp/output
+         volumes:
+         - name: wlp-output
+           emptyDir: {}
+         - name: tmp
+           emptyDir: {}
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: reviews-v2
+     labels:
+       app: reviews
+       version: v2
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: reviews
+         version: v2
+     template:
+       metadata:
+         labels:
+           app: reviews
+           version: v2
+       spec:
+         serviceAccountName: bookinfo-reviews
+         containers:
+         - name: reviews
+           image: docker.io/istio/examples-bookinfo-reviews-v2:1.18.0
+           imagePullPolicy: IfNotPresent
+           env:
+           - name: LOG_DIR
+             value: "/tmp/logs"
+           ports:
+           - containerPort: 9080
+           volumeMounts:
+           - name: tmp
+             mountPath: /tmp
+           - name: wlp-output
+             mountPath: /opt/ibm/wlp/output
+         volumes:
+         - name: wlp-output
+           emptyDir: {}
+         - name: tmp
+           emptyDir: {}
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: reviews-v3
+     labels:
+       app: reviews
+       version: v3
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: reviews
+         version: v3
+     template:
+       metadata:
+         labels:
+           app: reviews
+           version: v3
+       spec:
+         serviceAccountName: bookinfo-reviews
+         containers:
+         - name: reviews
+           image: docker.io/istio/examples-bookinfo-reviews-v3:1.18.0
+           imagePullPolicy: IfNotPresent
+           env:
+           - name: LOG_DIR
+             value: "/tmp/logs"
+           ports:
+           - containerPort: 9080
+           volumeMounts:
+           - name: tmp
+             mountPath: /tmp
+           - name: wlp-output
+             mountPath: /opt/ibm/wlp/output
+         volumes:
+         - name: wlp-output
+           emptyDir: {}
+         - name: tmp
+           emptyDir: {}
+   ---
+   ##################################################################################################
+   # Productpage services
+   ##################################################################################################
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: productpage
+     labels:
+       app: productpage
+       service: productpage
+   spec:
+     ports:
+     - port: 9080
+       name: http
+     selector:
+       app: productpage
+   ---
+   apiVersion: v1
+   kind: ServiceAccount
+   metadata:
+     name: bookinfo-productpage
+     labels:
+       account: productpage
+   ---
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: productpage-v1
+     labels:
+       app: productpage
+       version: v1
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: productpage
+         version: v1
+     template:
+       metadata:
+         annotations:
+           prometheus.io/scrape: "true"
+           prometheus.io/port: "9080"
+           prometheus.io/path: "/metrics"
+         labels:
+           app: productpage
+           version: v1
+       spec:
+         serviceAccountName: bookinfo-productpage
+         containers:
+         - name: productpage
+           image: docker.io/istio/examples-bookinfo-productpage-v1:1.18.0
+           imagePullPolicy: IfNotPresent
+           ports:
+           - containerPort: 9080
+           volumeMounts:
+           - name: tmp
+             mountPath: /tmp
+         volumes:
+         - name: tmp
+           emptyDir: {}
+   ---
+   ```
+
+   
+
+   Look for `containers` to see that each deployment has **one** container, for each version of each service in the Bookinfo application.
+
+2. In **Cloud Shell**, use the following command to `inject` the proxy sidecar along with each application Pod that is deployed:
+
+   ```
+   kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
+   ```
+
+   Copied!
+
+   **Note:**
+
+   Istio uses an extended version of the open-source [Envoy proxy](https://www.envoyproxy.io/), a high-performance proxy developed in C++, to mediate all inbound and outbound traffic for all services in the service mesh.
+
+   Istio leverages Envoy's many built-in features including dynamic service discovery, load balancing, TLS termination, HTTP/2 & gRPC proxying, circuit breakers, health checks, staged rollouts with %-based traffic split, fault injection, and rich metrics.
+
+   **Output:**
+
+   ```
+   service/details created
+   serviceaccount/bookinfo-details created
+   deployment.apps/details-v1 created
+   service/ratings created
+   serviceaccount/bookinfo-ratings created
+   deployment.apps/ratings-v1 created
+   service/reviews created
+   serviceaccount/bookinfo-reviews created
+   deployment.apps/reviews-v1 created
+   deployment.apps/reviews-v2 created
+   deployment.apps/reviews-v3 created
+   service/productpage created
+   serviceaccount/bookinfo-productpage created
+   deployment.apps/productpage-v1 created
+   ```
+
+Click *Check my progress* to verify the objective.
+
+Deploy the BookInfo application
+
+
+
+Check my progress
+
+
+
+**Enable external access using an Istio Ingress Gateway**
+
+Now that the Bookinfo services are up and running, you need to make the application accessible from outside of your Kubernetes cluster, e.g. from a browser. An **Istio Gateway** is used for this purpose.
+
+1. Look at the `.yaml` which describes the configuration for the application ingress gateway:
+
+   ```
+   cat samples/bookinfo/networking/bookinfo-gateway.yaml
+   ```
+
+   bookinfo-gateway.yaml
+
+   ```
+   apiVersion: networking.istio.io/v1alpha3
+   kind: Gateway
+   metadata:
+     name: bookinfo-gateway
+   spec:
+     # The selector matches the ingress gateway pod labels.
+     # If you installed Istio using Helm following the standard documentation, this would be "istio=ingress"
+     selector:
+       istio: ingressgateway # use istio default controller
+     servers:
+     - port:
+         number: 8080
+         name: http
+         protocol: HTTP
+       hosts:
+       - "*"
+   ---
+   apiVersion: networking.istio.io/v1alpha3
+   kind: VirtualService
+   metadata:
+     name: bookinfo
+   spec:
+     hosts:
+     - "*"
+     gateways:
+     - bookinfo-gateway
+     http:
+     - match:
+       - uri:
+           exact: /productpage
+       - uri:
+           prefix: /static
+       - uri:
+           exact: /login
+       - uri:
+           exact: /logout
+       - uri:
+           prefix: /api/v1/products
+       route:
+       - destination:
+           host: productpage
+           port:
+             number: 9080
+   ```
+
+   
+
+   Look for the `Gateway` and `VirtualService` mesh resources which get deployed. The `Gateway` exposes services to users outside the service mesh, and allows Istio features such as monitoring and route rules to be applied to traffic entering the cluster.
+
+2. Configure the **ingress gateway** for the application, which exposes an *external IP* you will use later:
+
+   ```
+   kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml
+   ```
+
+   Copied!
+
+   **Output:**
+
+   ```
+   gateway.networking.istio.io/bookinfo-gateway created
+   virtualservice.networking.istio.io/bookinfo created
+   ```
+
+**Verify the Bookinfo deployments**
+
+1. Confirm that the application has been deployed correctly, review services, pods, and the ingress gateway:
+
+   ```
+   kubectl get services
+   ```
+
+   Copied!
+
+   **Output:**
+
+   ```
+   NAME          TYPE        ...
+   details       ClusterIP   ...
+   kubernetes    ClusterIP   ...
+   productpage   ClusterIP   ...
+   ratings       ClusterIP   ...
+   reviews       ClusterIP   ...
+   ```
+
+2. Review running application pods:
+
+   ```
+   kubectl get pods
+   ```
+
+   Copied!
+
+   **Output:**
+
+   ```
+   NAME                              READY   STATUS    RESTARTS   AGE
+   details-v1-79f774bdb9-6l54w       2/2     Running   0          101s
+   productpage-v1-6b746f74dc-4xccm   2/2     Running   0          100s
+   ratings-v1-b6994bb9-7g4z2         2/2     Running   0          100s
+   reviews-v1-545db77b95-hkh9p       2/2     Running   0          100s
+   reviews-v2-7bf8c9648f-cmsxj       2/2     Running   0          100s
+   reviews-v3-84779c7bbc-8b8qp       2/2     Running   0          100s
+   ```
+
+   You may need to re-run this command until you see that all six pods are in **Running** status.
+
+3. Confirm that the Bookinfo application is running by sending a `curl` request to it from some Pod, within the cluster, for example from `ratings`:
+
+   ```
+   kubectl exec -it $(kubectl get pod -l app=ratings \
+       -o jsonpath='{.items[0].metadata.name}') \
+       -c ratings -- curl productpage:9080/productpage | grep -o "<title>.*</title>"
+   ```
+
+   Copied!
+
+   **Output:**
+
+   ```
+   <title>Simple Bookstore App</title>
+   ```
+
+4. Confirm the **ingress gateway** has been created:
+
+   ```
+   kubectl get gateway
+   ```
+
+   Copied!
+
+   **Output:**
+
+   ```
+   NAME               AGE
+   bookinfo-gateway   20m
+   ```
+
+5. Get the **external IP** address of the **ingress gateway**:
+
+   ```
+   kubectl get svc istio-ingressgateway -n istio-system
+   ```
+
+   Copied!
+
+   **Output:**
+
+   ```
+   NAME                   TYPE           ...   EXTERNAL-IP  ...
+   istio-ingressgateway   LoadBalancer   ...   34.72.220.30 ...
+   ```
+
+   In this example, the external IP of the ingress gateway is `34.72.220.30`.
+
+6. Now run the following command, replacing `[EXTERNAL-IP]` with the external IP that was outputted from the previous command:
+
+   ```
+   export GATEWAY_URL=[EXTERNAL-IP]
+   ```
+
+   Copied!
+
+7. Check that the Bookinfo app is running by sending a `curl` request to it from *outside* the cluster:
+
+   ```
+   curl -I http://${GATEWAY_URL}/productpage
+   ```
+
+   Copied!
+
+   **Output:**
+
+   ```
+   HTTP/1.1 200 OK
+   content-type: text/html; charset=utf-8
+   content-length: 4183
+   server: istio-envoy
+   ...
+   ```
+
+**Task 7. Use the Bookinfo application**
+
+**Try the application in your Web browser**
+
+1. Point your browser to `http://[$GATEWAY_URL]/productpage` to see the BookInfo web page. Don't forget to replace `[$GATEWAY_URL]` with your working **external IP** address.
+
+   ![Bookinfo Product Page](images/o%2BkrYMFDkucHExE%2BDZUa6BG2nvzR3T7iBqlHwfRTpZ0%3D.png)
+
+2. Refresh the page several times.
+
+   Notice how you see three different versions of reviews, since we have not yet used Istio to control the version routing.
+
+   There are three different book review services being called in a round-robin style:
+
+   - no stars
+   - black stars
+   - red stars
+
+   Switching among the three is normal Kubernetes routing/balancing behavior.
+
+**Generate a steady background load**
+
+Run the siege utility to simulate traffic to Bookinfo.
+
+1. In Cloud Shell, install **siege**:
+
+   Siege is a utility for generating load against Web sites.
+
+   ```
+   sudo apt install siege
+   ```
+
+   Copied!
+
+2. Use **siege** to create traffic against your services:
+
+   ```
+   siege http://${GATEWAY_URL}/productpage
+   ```
+
+   Copied!
+
+**Task 8. Evaluate service performance using the Cloud Service Mesh dashboard**
+
+**Gather data from the Services table view.**
+
+1. In the Console, go to **Navigation menu** > **Anthos** > **Service Mesh**.
+
+If prompted, click **Enable** to enable the Anthos API.
+
+1. On the bottom half of the window, you will see a **Service** section.
+
+   How many services are listed?
+
+2. Click on the **productpage** service to drill down and see more details.
+
+   ![productpage service highlighted](https://cdn.qwiklabs.com/i2V4C9sZJT6ilGkgGUtTpIHkCAZHQuLFdkmIdMDACb4%3D)
+
+   Note the summary at the top detailing current requests/second, error rates, latencies, and resource usage.
+
+   If you don't see **Requests > 0**, try exiting and re-entering the productpage service after a few minutes.
+
+3. On the left side of the window, click on the **Metrics** option. Explore the different graphs and their breakdown options.
+
+   - What is the current request rate, and how has it changed over time?
+   - What is the current error rate, and how has it changed over time?
+   - What latencies do you see charted?
+   - What is the median request size?
+   - What is median response size?
+   - What is the aggregate cpu usage?
+
+4. Click on the **Connected Services** option from the left side.
+
+   This lists other services that make inbound requests of the productpage, and services the productpage makes outbound requests to.
+
+   - What services make calls to the **productpage** service?
+   - What services does the **productpage** service call?
+   - Is mTLS enforced on inter-service calls?
+
+   **Note:** The **ratings** service does not normally send requests to the productpage service. The ratings service is shown here because you used the ratings service to issue a test request as part of this lab.
+
+5. Return to the Cloud Service Mesh dashboard by clicking on the **Cloud Service Mesh** logo in the upper left corner.
+
+At this time, you can explore or drill down on other services.
+
+**Note:**
+
+The top section of the dashboard shows information about Service Level Objectives (SLOs) and Alerts.
+
+SLOs are targets for Service Level Indicators (SLIs); they embody your definition of how well a service should perform. An example SLO would be 99.9% of hourly requests return a 200 response. You might define an alerting policy that pages on-call staff when your service is failing to meet its SLOs.
+
+Look for other labs where you can define and test SLOs!
+
+**Use the Topology view to better visualize your mesh**
+
+1. On the Cloud Service Mesh dashboard, view the topology on the right side of the window.
+
+   Here you may need to wait a few minutes for the topology graph to appear.
+
+2. Rearrange the nodes in the graph until you can easily visualize the relationships between services and workloads.
+
+   Remember, external requests start at productpage. You can scroll back and study the Bookinfo architecture diagram at the **Bookinfo Overview**.
+
+   Your drawing might look something like this:
+
+   ![Service Mesh diagram](images/qoQfmQRdRd%2BcBXjB0uRVZhCpslgGx2yRydDJ%2FnJ9yzU%3D.png)
+
+   **Note:** You may need to click on **Expand** to see all the nodes.
+
+3. Click on the **productpage** service node.
+
+   You should see a service details card:
+
+   ![Service details card](images/rRuP3aa47CgJggQLwPGLZ3N4KBXa2iaRdaS4qA2kadM%3D.png)
+
+   - How many requests per second is this service receiving?
+   - What are the median and 99% latencies?
+
+4. Now, hover over each of the service nodes and notice edge stats.
+
+   - How many requests/second is the **productpage** service receiving, and from where?
+   - How many requests per second is the service forwarding to the **productpage-v1** workload?
+
+   You should see traffic details like this:
+
+   ![Traffic details diagram](images/31n58%2FNtH6cgD3WHH2f6x6lJidNTEU1sGzBIKxgC9I0%3D.png)
+
+5. Drill down on one of the workloads until you can see the deployment, the replica set, and the Pods.
+
+   It should look something like this:
+
+   ![Deployment, the replica set, and the Pods diagram](images/Cv7GLwI1L88W%2BWT01mXyd1DGObOFzs3jtQTgjwV8VsE%3D.png)
+
+
+
+What is Istio?
+
+
+
+A managed, production-ready environment for deploying containerized applications
+
+
+
+An open source framework for connecting, securing, and managing microservices
+
+
+
+Software libraries that you build into your application to interact with the outside world
+
+
+
+A package manager for Kubernetes
+
+
+
+Submit
+
+
+
+**Congratulations!**
+
+
+
+### Lab Review
+
+[Lab Review](documents/T-GKENET-I-m2-l3-file-en-5.pdf)
+
+
+
+### Architecture
+
+[Architecture](documents/T-GKENET-I-m2-l4-file-en-6.pdf)
+
+
+
+### Installation
+
+[Installation](documents/T-GKENET-I-m2-l5-file-en-7.pdf)
+
+
+
+### Life of a request in the mesh
+
+[Life of a request in the mesh](documents/T-GKENET-I-m2-l6-file-en-8.pdf)
+
+
+
+### Mesh telemetry and instrumentation
+
+[Mesh telemetry and instrumentation](documents/T-GKENET-I-m2-l7-file-en-9.pdf)
+
+
+
+### Anthos Service Mesh pricing and support
+
+[Anthos Service Mesh pricing and support](documents/T-GKENET-I-m2-l9-file-en-11.pdf)
+
+
+
+### LAB: Observing Anthos Services
+
+
 
 
 
