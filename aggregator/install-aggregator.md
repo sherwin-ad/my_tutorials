@@ -7,7 +7,7 @@ sudo apt update && sudo apt upgrade -y
 
 sudo apt install apache2 php libapache2-mod-php php-mysql php-xml php-mbstring php-mcrypt php-curl php-zip -y
 
-sudo apt install apache2 mysql-server php php-curl php-bcmath php-json php-mysql php-mbstring php-xml php-tokenizer php-zip composer git
+sudo apt install apache2 mysql-server php php-curl php-bcmath php-json php-mysql php-mbstring php-xml php-tokenizer php-zip composer git -y
 ```
 
 
@@ -17,11 +17,17 @@ sudo apt install apache2 mysql-server php php-curl php-bcmath php-json php-mysql
 ```
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
 
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'cuZ18RreoFItcyxo9MAg';
+
 create database nexel_agg_db;
+
+create database db_project_agg;
 
 CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
 
-GRANT ALL PRIVILEGES ON nexel_agg_db.* TO 'user'@'localhost';
+CREATE USER 'db-user-1401253'@'localhost' IDENTIFIED BY 'w3w4AecBuEh1svTcGJKP';
+
+GRANT ALL PRIVILEGES ON pcckhub_db.* TO 'khubuser'@'localhost';
 ```
 
 

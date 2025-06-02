@@ -4,7 +4,111 @@
 
 ## Introduction
 
-[Introduction](documents/T-GCPPCS-B-m0-l6-en-file-7.en.pdf)
+1. Cymbal Bank has acquired anon-banking financial company(NBFC). This NBFC uses ActiveDirectory as their centraldirectory on an on-premisesWindows Server. You have been tasked with migrating all theNBFC users and employee information to  Cloud Identity.
+
+   A. Run Microsoft System Center Configuration Manager (SCCM) on aCompute Engine instance. Leave the channel unencrypted becauseyou are in a secure Google Cloud environment. Deploy Google CloudDirectory Sync on the Compute Engine instance. Connect to theon-premises Windows Server environment from the instance, and migrate users to Cloud Identity.
+
+   B. Run Configuration Manager on a Compute Engine instance. Copy the resulting configuration file fromthis machine onto a new Compute Engine instance to keep the production environment separate fromthe staging environment. Leave the channel unencrypted because you are in a secure Google Cloudenvironment. Deploy Google Cloud Directory Sync on this new instance. Connect to the on-premisesWindows Server environment from the new instance, and migrate users to Cloud Identity.
+
+   **C. Use Cloud VPN to connect the on-premises network to your Google Cloud environment. Select anon-premises domain-joined Windows Server. On the domain-joined Windows Server, run ConfigurationManager and Google Cloud Directory Sync. Use Cloud VPN’s encrypted channel to transfer users fromthe on-premises Active Directory to Cloud Identity.**
+
+   D. Select an on-premises domain-joined Windows Server. Run Configuration Manager on thedomain-joined Windows Server, and copy the resulting configuration file to a Compute Engine instance.Run Google Cloud Directory Sync on the Compute Engine instance over the internet, and use CloudVPN to sync users from the on-premises Active Directory to Cloud Identity.
+
+2. Cymbal Bank has certain defaultpermissions and access for their analyst, finance, and teller teams. These teams are organized into groups that have a set of role-based IAM permissions assigned to them. After a recent acquisition of a smallbank, you find that the small bank directly assigns permissions to their employees in IAM. You have been tasked with applying Cymbal Bank’s resource hierarchy to the small bank. Employees will need access to Google Cloud services.
+
+   A. Leave all user permissions as-is in thesmall bank’s IAM. Use the Directory API inthe Google Workspace Admin SDK to create Google Groups. Use a Python script toallocate users to the Google Groups.
+
+   **B. Reset all user permissions in the small bank’s IAM. Use Cloud Identity tocreate dynamic groups for each of the bank’s teams. Use the dynamic groups’ metadata field for team type to allocate users to theirappropriate group with a Python script.**
+
+   C. Reset all user permissions in the small bank’s IAM. Use Cloud Identity tocreate the required Google Groups. Upgrade the Google Groups toSecurity Groups. Use a Python script to allocate users to the groups.
+
+   D. Reset all user permissions in the small bank’s IAM. Use the Directory API in the Google Workspace Admin SDK to create Google Groups. Use a Python script to allocate users to the groups.
+
+3. Cymbal Bank leverages Google Cloud storage services, a non-premises Apache Spark Cluster,and a web application hosted on a third-party cloud. The Spark clusterand web application require limited access to Cloud Storage buckets anda Cloud SQL instance for only a few hours per day. You have been tasked with sharing credentials while minimizing the risk that the credentials will be compromised.
+
+   A. Create a service account with appropriate permissions. Authenticate the Spark Cluster and the web application as direct requestsand share the service account key.
+
+   **B. Create a service account with appropriate permissions. Have the Spark Cluster and the web application authenticate as delegated requests, and share the short-lived service account credential as a JWT.**
+
+   C. Create a service account with appropriate permissions. Authenticate theSpark Cluster and the web application as a delegated request, and share theservice account key.
+
+   D. Create a service account with appropriate permissions. Have the Spark Cluster and the web application authenticate as a direct request, and share the short-lived service account credentials as XML tokens.
+
+4. Cymbal Bank recently discovered service account key misuse in one of the teams during a security audit. As a precaution, going forward you do not want any team in your organization to generate new external service account keys.You also want to restrict every new service account’s usage to its associated Project.
+
+   **A. Navigate to Organizational policies in the Google Cloud Console. Select your organization. Select iam.disableServiceAccountKeyCreation. Customize the applied to property, and set Enforcement to ‘On’. Click Save. Repeat the process for iam.disableCrossProjectServiceAccountUsage.**
+
+   B. Run the gcloud resource-manager org-policies enable-enforce command withthe constraints iam.disableServiceAccountKeyCreation, andiam.disableCrossProjectServiceAccountUsage and the Project IDs you want theconstraints to apply to.
+
+   C. Navigate to Organizational policies in the Google Cloud Console. Select your organization.Select iam.disableServiceAccountKeyCreation. Under Policy Enforcement, selectMerge with parent. Click Save. Repeat the process foriam.disableCrossProjectServiceAccountLienRemoval.
+
+   D. Run the gcloud resource-manager org-policies allow command with the booleanconstraints iam.disableServiceAccountKeyCreation andiam.disableCrossProjectServiceAccountUsage with Organization ID
+
+5. Cymbal Bank publishes its APIs through Apigee. Cymbal Bank hasrecently acquired ABC Corp, whichuses a third-party identity provider. You have been tasked with connecting ABC Corp’s identityprovider to Apigee for single sign-on(SSO). You need to set up SSO so that Google is the service provider. You also want to monitor and log high-riskactivities. Which two choices would you select to enable SSO?
+
+   **A. Use openssl to generate public and private keys. Store the public key in anX.509 certificate, and encrypt using RSA orDSA for SAML. Sign in to the Google Admin console, and under Security,upload the certificate.**
+
+   B. Use openssl to generate a private key. Store the private key in an X.509 certificate, and encrypt using AES or DES for SAML. Sign in to the GoogleWorkspace Admin Console and upload the certificate.
+
+   C. Use openssl to generate public and private keys. Store the private key in anX.509 certificate, and encrypt using AES or DES for SAML. Sign in to theGoogle Admin console, and under Security, upload the certificate.
+
+   **D. Review Network mapping results, and assign SSO profiles to required users.**
+
+   E. Review Network mapping results, and assign SAML profiles to requiredusers.
+
+6. You are an administrator for Cymbal Bank’s Mobile Development Team. You want to control how long different users can access the Google Cloud console, the Cloud SDK, and any applications thatr equire user authorization for Google Cloud scopes without having to reauthenticate. More specifically, you want users with elevated privileges (project owners and billing administrators) to reauthenticate more frequently than regular users at the organization level. What should you do?
+
+   A. Open all Google Cloud projects that belong to Cymbal Bank’s Mobile Development team.Find each project’s Google Cloud session control setting, and configure a reauthentication policy that requires reauthentication. Choose the reauthentication frequency from the drop-down list.
+
+   **B. In the Admin console, select Google Cloud session control and set a reauthentication policy that requires reauthentication. Choose the reauthentication frequency from the drop-down list.**
+
+   C. Create a custom role for project owners and billing administrators at the organization level in the Google Cloud console. Add the reauthenticationRequiredpermission to this role. Assign this role to each project owner and billing administrator.
+
+   D. Create a custom role for project owners and billing administrators at the organizationlevel in the Google Cloud console. Add the reauthenticationRequiredpermission to this role. Create a Google Group that contains all billing administratorsand project owners. Apply the custom role to the group.
+
+7. Cymbal Bank’s organizational hierarchy divides theOrganization into departments. The Engineering Department has a ‘product team’ folder. This folder containsfolders for each of the bank’s products. Each product folderc ontains one Google Cloud Project, but more may be added. Each project contains an App Engine deployment.Cymbal Bank has hired a new technical product manager and a new web developer. The technical product manager must be able to interact with and manage all services in projects that roll up to the Engineering Department folder.The web developer needs read-only access to App Engine configurations and settings for a specific product. How should you provision the new employees’ roles into your hierarchy following principles of least privilege?
+
+   A. Assign the Project Editor role ineach individual project to thetechnical product manager. Assignthe Project Editor role in each individual project to the web developer.
+
+   B. Assign the Project Owner role in each individual project to thetechnical product manager. Assign the App Engine Deployer role ineach individual project to the web developer.
+
+   **C. Assign the Project Editor role at the Engineering Department folderlevel to the technical product manager. Assign the App EngineDeployer role at the specific product’s folder level to the webdeveloper.**
+
+   D. Assign the Project Editor role at the Engineering Department folderlevel to the technical product manager. Create a Custom Role in theproduct folder that the web developer needs access to. Add theappengine.versions.create and appengine.versions.delete permissionsto that role, and assign it to the web developer.
+
+8. Cymbal Bank’s organizational hierarchy divides the Organization into departments. The Engineering Department has a ‘product team’ folder. This folder contains folders for each of the bank’s products.One folder titled “analytics” contains a Google Cloud Project that contains an App Engine deployment and a Cloud SQL instance.A team needs specific access to this project. The team lead needs full administrative access to AppEngine and Cloud SQL. A developer must be able to configure and manage all aspects of App Engine deployments. There is also a code reviewer who may periodically review the deployed App Engine source code without making any changes. What types of permissions would youprovide to each of these users?
+
+   A. Create custom roles for all three user types at the“analytics” folder level. For the team lead, provideall appengine.* and cloudsql.* permissions.For the developer, provide appengine.applications.* andappengine.instances.* permissions. For the code reviewer, provide theappengine.instances.* permissions.
+
+   **B. Assign the basic ‘App Engine Admin’ and ‘Cloud SQL Admin” roles to the team lead.Assign the ‘App Engine Admin’ role to the developer. Assign the ‘App Engine CodeViewer’ role to the code reviewer. Assign all these permissions at the analytics projectlevel.**
+
+   C. Create custom roles for all three user types at the project level. For the team lead,provide all appengine.* and cloudsql.* permissions. For the developer, provideappengine.applications.* and appengine.instances.* permissions. For the code reviewer,provide the appengine.instances.* permissions.
+
+   D. Assign the basic ‘Editor’ role to the team lead. Create a custom role for the developer.Provide all appengine.* permissions to the developer. Provide the predefined ‘AppEngine Code Viewer’ role to the code reviewer. Assign all these permissions at the“analytics” folder level.
+
+9. Cymbal Bank is divided into separatedepartments. Each department is divided into teams. Each team works on a distinctproduct that requires Google Cloudresources for development. How would you design a GoogleCloud organization hierarchy to bestmatch Cymbal Bank’s organizationstructure and needs?
+
+   A. Create an Organization node. Under theOrganization node, create Departmentfolders. Under each Department, createProduct folders. Under each Product, create Teams folders. In the Teamsfolder, add Projects.
+
+   B. Create an Organization node. Under the Organization node, createDepartment folders. Under each Department, create Product folders. AddProjects to the Product folders.
+
+   C. Create an Organization node. Under the Organization node, createDepartment folders. Under each Department, create Teams folders. AddProjects to the Teams folders.
+
+   **D. Create an Organization node. Under the Organization node, createDepartment folders. Under each Department, create a Teams folder. Undereach Team, create Product folders. Add Projects to the Product folders.**
+
+10. Cymbal Bank has a team ofdevelopers and administratorsworking on different sets of Google Cloud resources. The Bank’s administrators should beable to access the serial ports on Compute Engine Instances andcreate service accounts. Developers should only be able toaccess serial ports. How would you design theorganization hierarchy to providethe required access?
+
+   A. Deny Serial Port Access and Service Account Creation at theOrganization level. Create an ‘admin’ folder and set enforced:false for constraints/compute.disableSerialPortAccess.Create a new ‘dev’ folder inside the ‘admin’ folder, and set enforced: false forconstraints/iam.disableServiceAccountCreation. Give developers access to the ‘dev’ folder, andadministrators access to the ‘admin’ folder.
+
+**B. Deny Serial Port Access and Service Account Creation at the organization level. Create a ‘dev’ folder andset enforced: false for constraints/compute.disableSerialPortAccess. Create a new ‘admin’ folder insidethe ‘dev’ folder, and set enforced: false for constraints/iam.disableServiceAccountCreation. Givedevelopers access to the ‘dev’ folder, and administrators access to the ‘admin’ folder.**
+   C. Deny Serial Port Access and Service Account Creation at the organization level. Create a ‘dev’ folder andset enforced: true for constraints/compute.disableSerialPortAccess and enforced: true forconstraints/iam.disableServiceAccountCreation. Create a new ‘admin’ folder inside the ‘dev’ folder, andset enforced: false for constraints/iam.disableServiceAccountCreation. Give developers access to the‘dev’ folder, and administrators access to the ‘admin’ folder.
+
+   D. Allow Serial Port Access and Service Account Creation at the organization level. Create a ‘dev’ folder andset enforced: true for constraints/iam.disableServiceAccountCreation. Create another ‘admin’ folder thatinherits from the parent inside the organization node. Give developers access to the ‘dev’ folder, andadministrators access to the ‘admin’ folder.
+
+
+
+
+
 
 
 ## Configuring Access Within a Cloud Solution Environment
@@ -17,19 +121,11 @@
 
 1. Cymbal Bank recently discovered service account key misuse in one of the teams during a security audit. As a precaution, going forward you do not want any team in your organization to generate new external service account keys. You also want to restrict every new service account’s usage to its associated Project. What should you do?
 
-
-
-- Navigate to Organizational policies in the Google Cloud Console. Select your organization. Select iam.disableServiceAccountKeyCreation. Under Policy Enforcement, select Merge with parent. Click Save. Repeat the process for iam.disableCrossProjectServiceAccountLienRemoval.
-
-
+- Navigate to Organizational policies in the Google Cloud Console. Select your organization. Select iam.disableServiceAccountKeyCreation. Under Policy Enforcement, select Merge with parent. Click Save. Repeat the process for iam.disableCrossProjectServiceAccountLienRemoval
 
 - Run the gcloud resource-manager org-policies enable-enforce command with the constraints iam.disableServiceAccountKeyCreation, and iam.disableCrossProjectServiceAccountUsage and the Project IDs you want the constraints to apply to.
 
-
-
 - **Navigate to Organizational policies in the Google Cloud Console. Select your organization. Select iam.disableServiceAccountKeyCreation. Customize the applied to property, and set Enforcement to ‘On’. Click Save. Repeat the process for iam.disableCrossProjectServiceAccountUsage.**
-
-
 
 - Run the gcloud resource-manager org-policies allow command with the boolean constraints iam.disableServiceAccountKeyCreation and iam.disableCrossProjectServiceAccountUsage with Organization ID.
 
