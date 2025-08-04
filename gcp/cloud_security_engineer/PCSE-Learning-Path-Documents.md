@@ -20,73 +20,73 @@
 
 ## 02 - Google Cloud Fundamentals: Core Infrastructure
 
-[Module 1: Introduction to Google Cloud](documents/M1 _ Introducing Google Cloud v5.2 _ ILT.pdf) 
+[Module 1: Introduction to Google Cloud](documents/M1-Introducing-Google-Cloudv5.2-ILT.pdf) 
 
-[Module 2: Resources and Access in the Cloud](documents/M2 _ Resouces and Access in the Cloud v5.2 _ ILT.pdf)
+[Module 2: Resources and Access in the Cloud](documents/M2-Resouces-and-Access-in-the-Cloudv5.2-ILT.pdf)
 
-[Module 3: Virtual Machines and Networks in the Cloud](documents/M3 _ Virtual Machines and Networks in the Cloud v5.2 _ ILT.pdf)
+[Module 3: Virtual Machines and Networks in the Cloud](documents/M3-Virtual-Machines-and-Networks-in-the-Cloudv5.2-ILT.pdf)
 
-[Module 4: Storage in the Cloud](documents/M4 _ Storage in the Cloud v5.2 _ ILT.pdf) 
+[Module 4: Storage in the Cloud](documents/M4-Storage-in-the-Cloudv5.2-ILT.pdf) 
 
-[Module 5: Containers in the Cloud](documents/M5 _ Containers in the Cloud v5.2 _ ILT.pdf) 
+[Module 5: Containers in the Cloud](documents/M5-Containers-in-the-Cloudv5.2-ILT.pdf) 
 
-[Module 6: Applications in the Cloud](documents/M6 _ Applications in the Cloud v5.2 _ ILT.pdf)
+[Module 6: Applications in the Cloud](documents/M6-Applications-in-the-Cloudv5.2-ILT.pdf)
 
-[Module 7: Prompt Engineering Course Summary](documents/M7 _ Prompt Engineering v5.2 _ ILT.pdf)
+[Module 7: Prompt Engineering Course Summary](documents/M7-Prompt-Engineeringv5.2-ILT.pdf)
 
-[Course Summary](documents/M8 _ Course Summary v5.2 _ ILT.pdf)
+[Course Summary](documents/M8-Course-Summaryv5.2-ILT.pdf)
 
 
 
 ## 03 - Networking in Google Cloud: Fundamentals
 
-[Module 1: VPC Networking Fundamentals](documents/01_ VPC Networking Fundamentals_ILT.pdf)
+[Module 1: VPC Networking Fundamentals](documents/01-VPC-Networking-Fundamentals-ILT.pdf)
 
-[Module 2: Sharing VPC Networks](documents/02_Sharing VPC Networks_ILT.pdf) 
+[Module 2: Sharing VPC Networks](documents/02-Sharing-VPC-Networks-ILT.pdf) 
 
-[Module 3: Network Monitoring and Logging](documents/03_Network Monitoring and Logging_ILT.pdf)
+[Module 3: Network Monitoring and Logging](documents/03-Network-Monitoring-and-Logging-ILT.pdf)
 
 
 
 ##  04 - Networking in Google Cloud: Routing and Addressing
 
-[Module 1: Network Routing and Addressing in Google Cloud](documents/04_Network Routing and Addressing in Google Cloud_ILT.pdf)
+[Module 1: Network Routing and Addressing in Google Cloud](documents/04-Network-Routing-and-Addressing-in-Google-Cloud-ILT.pdf)
 
-[Module 2: Private connection options](documents/05 Private Connection Options_ILT.pdf)
+[Module 2: Private connection options](documents/05-Private-Connection-Options-ILT.pdf)
 
 
 
 ## 05 - Networking in Google Cloud: Network Architecture
 
-[Module 1: Introduction to Network Architecture](documents/06_Introduction to Network Architecture_ILT.pdf)
+[Module 1: Introduction to Network Architecture](documents/06-Introduction-to-Network-Architecture-ILT.pdf)
 
-[Module 2: Network topology](documents/07 Network Topologies_ILT.pdf)
+[Module 2: Network topology](documents/07-Network-Topologies-ILT.pdf)
 
 
 
 ## 06 - Networking in Google Cloud: Network Security
 
-[Module 1: Distributed Denial of Service (DDoS) Protection](documents/08_Distributed Denial of Service (DDoS) Protection_ILT.pdf)
+[Module 1: Distributed Denial of Service (DDoS) Protection](documents/08-Distributed-Denial-of-Service-DDoS-Protection-ILT.pdf)
 
-[Module 2: Controlling Access to VPC Networks](documents/09_Controlling Access to VPC Networks_ILT.pdf)
+[Module 2: Controlling Access to VPC Networks](documents/09-Controlling-Access-to-VPC-Networks-ILT.pdf)
 
-[Module 3: Advanced Security Monitoring and Analysis](documents/10_Advanced Security Monitoring and Analysis.pdf)
+[Module 3: Advanced Security Monitoring and Analysis](documents/10-Advanced-Security-Monitoring-and-Analysis.pdf)
 
 
 
 ## 07 - Networking in Google Cloud: Load Balancing
 
-[Module 1: Hybrid Load Balancing and Traffic Management](documents/11_Hybrid Load Balancing and Traffic Management_ILT.pdf)
+[Module 1: Hybrid Load Balancing and Traffic Management](documents/11-Hybrid-Load-Balancing-and-Traffic-Management-ILT.pdf)
 
-[Module 2: Caching and optimizing load balancing](documents/12_Caching and Optimizing Load Balancing_ILT.pdf)
+[Module 2: Caching and optimizing load balancing](documents/12-Caching-and-Optimizing-Load-Balancing-ILT.pdf)
 
 
 
 ## 08 - Networking in Google Cloud: Hybrid and Multicloud
 
-[Module 1: Connectivity options](documents/13_Connectivity options_ILT.pdf)
+[Module 1: Connectivity options](documents/13-Connectivity-options-ILT.pdf)
 
-[Module 2: Cloud VPN](documents/14_Cloud VPN_ILT.pdf)
+[Module 2: Cloud VPN](documents/14-Cloud-VPN-ILT.pdf)
 
 
 
@@ -142,9 +142,9 @@
 
 [Course Introduction](documents/T-STACKD-B_00_Course2_introduction.pdf)
 
-[Module 1: Configuring Google Cloud Services for Observability](documents/T-STACKD-B_01_Configuring Google Cloud Services for Observability.pdf)
+[Module 1: Configuring Google Cloud Services for Observability](documents/T-STACKD-B_01_Configuring-Google-Cloud-Services-for-Observability.pdf)
 
-[Module 2: Monitoring Google Cloud Network](documents/T-STACKD-B_02_Monitoring Google Cloud Network.pdf)
+[Module 2: Monitoring Google Cloud Network](documents/T-STACKD-B_02_Monitoring-Google-Cloud-Network.pdf)
 
 [Module 3: Investigating Application Performance Issues](documents/T-STACKD-B_03_Investigating_Application_Performance_Issues.pdf )
 
