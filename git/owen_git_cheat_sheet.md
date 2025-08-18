@@ -230,9 +230,25 @@ git branch
 git branch -D [branchname]
 ```
 
+### git alias
+```
+git config --global alias.co "checkout"
+```
 
+```
+git co main
+```
 
+**git checkout main and git pull**
+```
+git config --global alias.copm '!git checkout main && git pull' 
 
+git copm
+Switched to branch 'main'
+Your branch is up to date with 'origin/main'.
+Already up to date.
+
+```
 
 
 
