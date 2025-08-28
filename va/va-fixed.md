@@ -325,7 +325,67 @@ cf-ray: 864afc5a2aa35df9-HKG
 
 ## Enable TLS 1.2 in Cloudflare
 
-Edit the following setting from the cloudflare panel. SSL/TLS > Edge Certificates > Minimum TLS Version > TLS 1.2
+ How to Check and Set TLS Versions in Cloudflare
+
+✅ 1. **Log in to Cloudflare Dashboard**
+
+- Go to [Cloudflare](https://dash.cloudflare.com/)
+- Select your domain (e.g., `coopbiz.ph`)
+
+
+
+✅ 2. **Go to SSL/TLS Settings**
+
+- Navigate to **SSL/TLS > Edge Certificates**
+- Scroll to **Minimum TLS Version**
+
+This setting controls the lowest TLS version Cloudflare will accept from clients. You can choose:
+
+- **TLS 1.0** (default, least secure)
+- **TLS 1.1**
+- **TLS 1.2**
+- **TLS 1.3** (most secure)
+
+
+
+Cloudflare always supports TLS 1.3 by default, and you can’t disable it.
+
+✅ 3. **Set a Higher Minimum TLS Version**
+
+To disable older, weaker versions:
+
+- Set **Minimum TLS Version** to **TLS 1.2** or **TLS 1.3**
+- Click **Save**
+
+This ensures clients using outdated browsers or systems won’t be able to connect unless they support modern encryption.
+
+###  **Verify Your Configuration**
+
+Use tools like:
+
+- [SSL Labs](https://www.ssllabs.com/ssltest/) to scan your domain
+- `nmap` from the command line:
+
+```
+nmap --script ssl-enum-ciphers -p 443 coopbiz.ph
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-08-27 17:08 Malay Peninsula Standard Time
+Nmap scan report for coopbiz.ph (104.21.96.1)
+Host is up (0.031s latency).
+Other addresses for coopbiz.ph (not scanned): 104.21.32.1 104.21.80.1 104.21.64.1 104.21.16.1 104.21.48.1 104.21.112.1
+
+PORT    STATE SERVICE
+443/tcp open  https
+| ssl-enum-ciphers:
+|   TLSv1.3:
+|     ciphers:
+|       TLS_AKE_WITH_AES_128_GCM_SHA256 (ecdh_x25519) - A
+|       TLS_AKE_WITH_AES_256_GCM_SHA384 (ecdh_x25519) - A
+|       TLS_AKE_WITH_CHACHA20_POLY1305_SHA256 (ecdh_x25519) - A
+|     cipher preference: client
+|_  least strength: A
+
+Nmap done: 1 IP address (1 host up) scanned in 7.58 seconds
+```
 
 
 
@@ -361,18 +421,9 @@ To enable HSTS using the dashboard:
 5. Add the following text.
 
    ```
-   <IfModule mod_headers.c>
    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-   Header always edit Set-Cookie (.*) "$1;HttpOnly;Secure"
-   Header always set X-Frame-Options "sameorigin"
-   Header setifempty Referrer-Policy: same-origin
-   Header set X-XSS-Protection "1; mode=block"
-   Header set X-Permitted-Cross-Domain-Policies "none"
-   Header set Referrer-Policy "no-referrer"
-   Header set X-Content-Type-Options: nosniff
-   </IfModule>
    ```
-
+   
 6. Click the "*Update*" button.
 
 7. Click the "*Restart Apache*" button.
