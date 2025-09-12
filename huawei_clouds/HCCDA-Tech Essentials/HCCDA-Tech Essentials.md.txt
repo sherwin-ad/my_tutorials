@@ -1,0 +1,166 @@
+# HCCDA-Tech Essentials
+
+Huawei Cloud Certified Developer Associate
+
+# Chapter 1: Diving into Huawei Cloud
+
+[PDF Chapter 1: Diving into Huawei Cloud](documents/01 Diving into Huawei Cloud.pdf)
+
+## 1. Basic Concepts and Values of Cloud Computing
+
+### Cloud Deployment Models
+
+**Private cloud**
+
+- Owned and managed for exclusive use by a single organization
+
+**Public cloud**
+
+- Owned and managed by a third party cloud service provider and shared with multiple
+  organizations over the Internet
+
+**Hybrid cloud**
+
+- A combination of public and private clouds, viewed as a single cloud externally
+
+
+
+### Cloud Service Models
+
+**Infrastructure as a service (IaaS)**
+
+- Intended for: enterprises (or a few individual users)
+- Offerings: infrastructure services such as computers, storage devices, and networks
+- Examples: AWS, Google Cloud, Azure, and OpenStack
+
+**Platform as a service (PaaS)**
+
+- Intended for: developers
+- Offerings: database middleware, MySQL, MongoDB, and Java
+- Examples: Cloud Foundry and OpenShift
+
+**Software as a service (SaaS)**
+
+- Intended for: enterprise/individual users
+- Examples: enterprise application services, email, instant messaging (IM), and microblogs
+
+
+
+## 2. Huawei Cloud Infrastructure Architecture
+
+### Huawei Cloud's Global Presence for One Stop Services
+
+![image-20250912102516983](images\image-20250912102516983.png)
+
+### Huawei Cloud Infrastructure Architecture
+
+![image-20250912102805142](images\image-20250912102805142.png)
+
+### Infrastructure at All Levels Extends to All Scenarios
+
+![image-20250912103024496](images\image-20250912103024496.png)
+
+## 3. Core Services on Huawei Cloud
+
+### Core Service: Computing Cloud Service
+
+1. Elastic Cloud Server (ECS)
+2. Image Management Service (IMS)
+3. Auto Scaling (AS)
+
+### Core Service: Container Service
+
+1. SoftWare Repository for Container (SWR)
+2. Cloud Container Engine (CCE)
+3. Cloud Container Instance (CCI)
+
+### Core Service: Storage Service
+
+1. Object Storage Service (OBS)
+2. Elastic Volume Service (EVS)
+3. Scalable File Service (SFS)
+
+### Core Service: Network Service
+
+1. Elastic Load Balance (ELB)
+2. Network ACL
+3. Elastic IP Address (EIP)
+4. Virtual Private Cloud (VPC)
+5. Network Address Translation Gateway (NAT Gateway)
+6. VPC Peering
+
+### Core Service: Database Service
+
+1. Cloud Database GaussDB
+2. Relational Database Service (RDS)
+3. Cloud native multi model database GeminiDB
+
+
+
+### Core Service: Security and Management Service
+
+1. Data encryption Workshop (DEW)
+2. Identity & Access Management (IAM)
+3. Cloud Trace Service (CTS)
+
+
+
+## 4. Huawei Cloud Ecosystem
+
+
+
+
+
+# Chapter 2: Compute Services
+
+[PDF Chapter 2: Compute Services](documents/02 Compute Services.pdf)
+
+## 1. Overview of Compute Cloud Services
+
+**A Broad Range of Compute Services**
+
+![image-20250912121521811](images\image-20250912121521811.png)
+
+###/ 2. Elastic Cloud Server (ECS)
+**ECS Features**
+
+After purchasing an ECS, you can:
+
+- Use an ECS just like a server.
+- Enjoy full permissions for the ECS.
+- You only need to deal with the OS and other upper layer components.
+- Adjust compute resources as needed.
+- Only p ay for the resources you use.
+- Treat an ECS as a disposable resources
+
+**ECS Purchase Process**
+
+![image-20250912122456823](images\image-20250912122456823.png)
+
+**Selecting a Billing Mode**
+
+![image-20250912122601608](images\image-20250912122601608.png)
+
+
+
+# Chapter 3: Storage Services
+
+[PDF Chapter 3: Storage Services](documents/03 Storage Services.pdf)
+
+## 1. Overview of Storage Services
+
+
+
+## 2. Object Storage Service (OBS)
+
+
+
+## 3. Elastic Volume Service and Local Disks
+
+## 4. Scalable File Service (SFS)
+
+
+
+# Chapter 4: Networking Services
+
+[PDF Chapter 4: Networking Services](documents/04 Networking Services.pdf)
