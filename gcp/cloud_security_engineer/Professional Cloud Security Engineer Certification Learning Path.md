@@ -1,20 +1,20 @@
 # Professional Cloud Security Engineer Certification Learning Path
 
-# 01 Preparing for Your Professional Cloud Security Engineer Journey 
+## 01 Preparing for Your Professional Cloud Security Engineer Journey 
 
 ## Introduction
 
-1. Cymbal Bank has acquired anon-banking financial company(NBFC). This NBFC uses ActiveDirectory as their centraldirectory on an on-premisesWindows Server. You have been tasked with migrating all theNBFC users and employee information to  Cloud Identity.
+1. Cymbal Bank has acquired anon-banking financial company(NBFC). This NBFC uses ActiveDirectory as their centraldirectory on an on-premises Windows Server. You have been tasked with migrating all theNBFC users and employee information to  Cloud Identity.
 
    A. Run Microsoft System Center Configuration Manager (SCCM) on aCompute Engine instance. Leave the channel unencrypted becauseyou are in a secure Google Cloud environment. Deploy Google CloudDirectory Sync on the Compute Engine instance. Connect to theon-premises Windows Server environment from the instance, and migrate users to Cloud Identity.
 
    B. Run Configuration Manager on a Compute Engine instance. Copy the resulting configuration file fromthis machine onto a new Compute Engine instance to keep the production environment separate fromthe staging environment. Leave the channel unencrypted because you are in a secure Google Cloudenvironment. Deploy Google Cloud Directory Sync on this new instance. Connect to the on-premisesWindows Server environment from the new instance, and migrate users to Cloud Identity.
 
-   **C. Use Cloud VPN to connect the on-premises network to your Google Cloud environment. Select anon-premises domain-joined Windows Server. On the domain-joined Windows Server, run ConfigurationManager and Google Cloud Directory Sync. Use Cloud VPN’s encrypted channel to transfer users fromthe on-premises Active Directory to Cloud Identity.**
+   **C. Use Cloud VPN to connect the on-premises network to your Google Cloud environment. Select a non-premises domain-joined Windows Server. On the domain-joined Windows Server, run ConfigurationManager and Google Cloud Directory Sync. Use Cloud VPN’s encrypted channel to transfer users from the on-premises Active Directory to Cloud Identity.**
 
    D. Select an on-premises domain-joined Windows Server. Run Configuration Manager on thedomain-joined Windows Server, and copy the resulting configuration file to a Compute Engine instance.Run Google Cloud Directory Sync on the Compute Engine instance over the internet, and use CloudVPN to sync users from the on-premises Active Directory to Cloud Identity.
 
-2. Cymbal Bank has certain defaultpermissions and access for their analyst, finance, and teller teams. These teams are organized into groups that have a set of role-based IAM permissions assigned to them. After a recent acquisition of a smallbank, you find that the small bank directly assigns permissions to their employees in IAM. You have been tasked with applying Cymbal Bank’s resource hierarchy to the small bank. Employees will need access to Google Cloud services.
+2. Cymbal Bank has certain default cpermissions and access for their analyst, finance, and teller teams. These teams are organized into groups that have a set of role-based IAM permissions assigned to them. After a recent acquisition of a smallbank, you find that the small bank directly assigns permissions to their employees in IAM. You have been tasked with applying Cymbal Bank’s resource hierarchy to the small bank. Employees will need access to Google Cloud services.
 
    A. Leave all user permissions as-is in thesmall bank’s IAM. Use the Directory API inthe Google Workspace Admin SDK to create Google Groups. Use a Python script toallocate users to the Google Groups.
 

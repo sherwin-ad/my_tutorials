@@ -164,3 +164,209 @@ After purchasing an ECS, you can:
 # Chapter 4: Networking Services
 
 [PDF Chapter 4: Networking Services](documents/04 Networking Services.pdf)
+
+## VPC Peering vs Cloud Connection
+
+| Item                      | VPC Peering Connections           | Cloud Connections                                            |           |
+| ------------------------- | --------------------------------- | ------------------------------------------------------------ | --------- |
+| Communication             | VPCs in the same region           | Supported                                                    | Supported |
+| VPCs in different regions | Not supported                     | Supported                                                    |           |
+| Cross-border compliance   | Not supported                     | Supported                                                    |           |
+| Network configuration     | Manual route configuration        | Automatic route configuration                                |           |
+| Bearer network            | Data center network in the region | Inter-region DCI backbone network                            |           |
+| Pricing                   | Free                              | Free for connecting VPCs in a region but billed for connecting VPCs in different regions |           |
+
+# Chapter 5: Database Services
+
+[PDF Chapter 5: Database Services](documents/05 Database Services.pdf)
+
+Here’s a **comparison table of Automated vs Manual Backups in Huawei Cloud RDS**:
+
+| **Feature**                | **Automated Backup**                            | **Manual Backup**                          |
+| -------------------------- | ----------------------------------------------- | ------------------------------------------ |
+| **Trigger**                | Scheduled by system (daily, based on retention) | Initiated by user on demand                |
+| **Contents**               | Full backup + **binlogs**                       | Full backup only                           |
+| **Point-in-Time Recovery** | Yes (because binlogs are included)              | No (restores only to backup time)          |
+| **Retention**              | Configurable (e.g., 7–732 days)                 | Permanent until manually deleted           |
+| **Storage Location**       | Stored in **OBS** for durability                | Stored in **OBS** for durability           |
+| **Use Case**               | Continuous protection and PITR                  | Long-term snapshot or before major changes |
+
+
+
+Here’s a **Huawei Cloud DMS Features Table** for quick reference:
+
+| **Category**         | **Features**                                                 |
+| -------------------- | ------------------------------------------------------------ |
+| **Database Access**  | - Web-based SQL console (no client needed) - Online login to DB |
+| **Development**      | - Create databases/tables - Online SQL execution - Intelligent SQL prompts - Data & schema synchronization |
+| **O&M (Ops & Mgmt)** | - Instance monitoring - Host & DB performance analysis - Real-time performance diagnostics |
+| **Security**         | - Role-based access control - Operation auditing - SSL/TLS encryption |
+| **Automation**       | - Scheduled tasks - Batch operations - Data migration tools  |
+
+✅ **Key Benefits:**
+
+- No need to install a local client
+- Integrated development + O&M in one platform
+- Intelligent features for faster SQL development
+- Built-in monitoring and diagnosticss
+
+# Chapter 6: Security Services
+
+[PDF Chapter 6: Security Services](documents/06 Security Services.pdf)
+
+
+
+# Chapter 7: Elastic Cloud Services for Distributed Deployment
+
+[Chapter 7: Elastic Cloud Services for Distributed Deployment](documents/07 Elastic Cloud Services for Distributed Deployment.pdf)
+
+
+
+# Chapter 8: Cloud Native and Transformation
+
+[PDF Chapter 8: Cloud Native and Transformation](documents/08 Cloud Native and Transformation.pdf)
+
+
+
+# Chapter 9: Exam Outline and Sample Questions
+
+
+
+True or False	
+
+1. If there are not enough servers, you can increase server quotas or upgrade the specifications of existing servers.(1 points)
+   - **<u>True</u>**
+   - False
+2. An RDS for MySQL primary/standby DB instance can be deployed only in one region.(1 points)
+   - **<u>True</u>**
+   - False
+3. A customer needs to migrate some applications to the cloud and use Direct Connect or Virtual Private Network (VPN) for communication between  cloud and on-premises applications. The customer needs to use different  CIDR blocks for the Virtual Private Cloud (VPC) and on-premises data  center to avoid address conflicts.(1 points)
+   - **<u>True</u>**
+   - False
+4. FunctionGraph enables users to focus on service logic instead of building container images.(1 points)
+   - True
+   - **<u>False</u>**
+5. If an availability zone (AZ) is paralyzed by a fault, the other AZ in the  same region will not be affected. The fault probability remains  unchanged.(1 points)
+   - **<u>True</u>**
+   - False
+6. You can purchase yearly/monthly ECSs to save money. If this billing mode is not suitable for your business requirements, the total costs may be  even higher.(1 points)
+   - **<u>True</u>**
+   - False
+7. ELB can route requests to backend servers across regions.(1 points)
+   - True
+   - **<u>False</u>**
+8. In addition to saving costs and maintaining the desired performance, elastic design improves reliability.(1 points)
+   - **<u>True</u>**
+   - False
+9. Huawei Cloud is responsible for the security of all cloud services, including tenant data security.(1 points)
+   - True
+   - **<u>False</u>**
+10. Both Object Storage Service (OBS) and Elastic Volume Service (EVS) are  storage services. When using OBS, you pay only for what you use, but  when using EVS, you need to pay for all the disk space allocated to  you.(1 points)
+    - **<u>True</u>**
+    - False
+
+Single Choice
+
+11. Which of the following can be used to prevent resources in a Virtual Private  Cloud (VPC) from communicating with each other?(1 points)
+    - A. VPC
+    - B. NAT gateway
+    - C. Route table
+    - **<u>D. Security group</u>**
+12. Which of the following statements is true about the features of the ECS service?(1 points)
+    - A. An ECS is a blade server.
+    - B. You only have limited permissions on the guest OS of ECSs in daily use.
+    - C. You need to purchase ECSs monthly or even yearly for long-term use.
+    - **<u>D. You cannot control the versions of the virtualization layer (Hypervisor) hosting the ECSs or the security patches for the hypervisor.</u>**
+13. Which of the following statements is true about VPC Peering and Cloud Connect?(1 points)
+    - A. VPC Peering can only connect VPCs of the same account.
+    - B. Cloud Connect is a free service.
+    - C. VPC Peering can connect VPCs across regions.
+    - <u>**D. Cloud Connect can connect different VPCs in the same region.**</u>
+14. Which of the following statements about cloud native is false?(1 points)
+    - **<u>A. Once an application is migrated to the cloud, it becomes cloud native.</u>**
+    - B. Cloud native applications do not simply mean containerization.
+    - C. Serverless development allows developers to focus on features.
+    - D. Containers help implement service logic and reduce attention and coupling to servers.
+15. Which of the following statements is true?(1 points)
+    - A. There are more regions than availability zones (AZs).
+    - B. AZ is a good basis for active-active DR. A region with three AZs can implement geo-redundancy disaster recovery.
+    - **<u>C. Edge nodes are closer to customers than regions and are more widely distributed.</u>**
+    - D. A VPN can be set up to enable access between nodes in two AZs.
+16. If the customer does not have special requirements for the availability  and performance of Document Database Service (DDS) for testing, which of the following deployment architectures is recommended?(1 points)
+    - **<u>A. Single node</u>**
+    - B. Replica set
+    - C. Cluster
+    - D. Primary/standby
+17. Which of the following statements is false about an ECS with the C6.2xlarge.4 flavor?(1 points)
+    - A. This is a general computing-plus ECS and is suitable for high-performance, high-stability computing.
+    - B. The configuration, capability, and price of this ECS are about half of those of an c6.4xlarge.4 ECS.
+    - <u>**C. This ECS has two vCPUs.**</u>
+    - D. The ratio of memory to vCPUs of this ECS is 4 GB of memory: 1 vCPU.
+18. What will ELB do if a health check detects a backend server is unhealthy?(1 points)
+    - A. Report to Auto Scaling and continue to distribute requests to the unhealthy backend server.
+    - **<u>B. Stop distributing requests to the unhealthy backend server.</u>**
+    - C. Send an alarm to the user and wait for the user to adjust the configuration.
+    - D. Replace the unhealthy backend server with a new one.
+19. Which of the following statements about Elastic Volume Service (EVS) is false?(1 points)
+    - A. EVS provides 12 nines durability.
+    - B. The storage space for EVS disks is pre-allocated, and one disk supports up to 32 TB.
+    - C. EVS disks are similar to physical disks. The storage space on EVS disks is managed by guest operating systems and can be access via OS APIs.
+    - **<u>D. Backups of EVS disks are stored in Object Storage Service (OBS) for improved reliability.</u>**
+20. According to the shared responsibility security model, which of the following is the responsibility of customers?(1 points)
+    - A. Provide security services protecting servers.
+    - B. Apply the firewall rules of a security group.
+    - C. Maintain and manage physical infrastructure.
+    - **<u>D. Control the login permission of Elastic Cloud Server (ECS).</u>**
+
+Multiple Choices
+
+21. Which of the following information can be used by Identity and Access Management (IAM) to identify a visitor?(1 points)
+    - A. The password of the root user in Linux
+    - B. The password of the administrator in Windows
+    - **<u>C. The account name, IAM user name, and password for logging in to the Huawei Cloud console</u>**
+    - **<u>D. The AK/SK for accessing Huawei Cloud APIs</u>**
+22. Which of the following benefits can a distributed system provide?(1 points)
+    - <u>**A. A huge resource pool using cloud computing**</u>
+    - <u>**B. Balanced request pressure for stable performance**</u>
+    - <u>***C. Better fault recovery when an error occurs***</u>
+    - D. A loosely coupled system
+23. Which of the following image types are available on Huawei Cloud?(1 points)
+    - **<u>A. Public images</u>**
+    - B. User data center images
+    - **<u>C. Private images</u>**
+    - **<u>D. Shared images</u>**
+24. Which of the following database engines are supported by Relational Database Service (RDS)?(1 points)
+    - **<u>A. MySQL</u>**
+    - B. MongoDB
+    - **<u>C. Postgre</u>**
+    - D. Oracle
+25. Which of the following statements about the benefits of cloud computing are false?(1 points)
+    - **<u>A. There is no need to worry about security attacks.</u>**
+    - B. You can provide services in different geographical locations.
+    - C. Abundant resources are available for users.
+    - **<u>D. You can quickly obtain the resources you need simply by making a phone call.</u>**
+26. Which of the following statements are true about Relational Database Service (RDS)?(1 points)
+    - **<u>A. Automated backups use database binlogs.</u>**
+    - B. Manual backups use database binlogs.
+    - C. Manual backups can be used to restore data to any point in time, but automated backups cannot.
+    - **<u>D. Backups are stored in Object Storage Service (OBS) to ensure high data reliability.</u>**
+27. Which of the following methods can be used by ELB to check the health of a backend server?(1 points)
+    - A. Ping the backend server.
+    - <u>**B. Establish a TCP connection with the specified port of the backend server.**</u>
+    - <u>**C. Send an HTTP request to the specified port of the backend server.**</u>
+    - D. Check the power supply and host status of the backend server.
+28. Which of the following components are related to Huawei Cloud Virtual Private Cloud (VPC)?(1 points)
+    - **<u>A. Subnet</u>**
+    - B. Router
+    - **<u>C. Security group</u>**
+    - D. Switch
+29. Which of the following statements are false about Cloud Trace Service (CTS)?(1 points)
+    - A. It records access to Huawei Cloud APIs.
+    - B. It is used for security audit to trace operations.
+    - **<u>C. CTS is not free of charge and must be used with caution.</u>**
+    - **<u>D. You can transfer traces to Object Storage Service (OBS) buckets for long-term storage of logs free of charge.</u>**
+30. What functions does Huawei Cloud database management service provide to support database development and O&M?(1 points)
+    - <u>**A. Users can log in to the database online, create databases and tables, and execute SQL statements without installing the client.**</u> 
+    - <u>**B. Analyze host and instance performance data.**</u>
+    - <u>**C. Analyze and diagnose real-time database performance.**</u>
+    - <u>**D. Provide rich database development functions, such as data and table structure synchronization, online editing, and intelligent prompt for SQL input.**</u>
