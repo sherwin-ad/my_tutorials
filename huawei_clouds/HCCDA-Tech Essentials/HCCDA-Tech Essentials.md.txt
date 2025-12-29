@@ -6,6 +6,134 @@ Huawei Cloud Certified Developer Associate
 
 [PDF Chapter 1: Diving into Huawei Cloud](documents/01 Diving into Huawei Cloud.pdf)
 
+## 🧾 **Summary**
+
+This document introduces the fundamentals of **cloud computing** and provides a comprehensive overview of **Huawei Cloud**, including its infrastructure, core services, ecosystem, and how to get started. It explains the **value of cloud adoption**, Huawei Cloud’s **global presence**, and its **service models**.
+
+------
+
+## 📚 **Detailed Breakdown**
+
+### 1. **Basic Concepts and Values of Cloud Computing**
+
+#### 🔹 Challenges with Traditional IT:
+
+- Slow service rollout
+- High total cost of ownership (TCO)
+- Complex scaling
+- Difficult operations and maintenance (O&M)
+
+#### 🔹 Cloud Computing Benefits:
+
+- On-demand resource access via APIs
+- Pay-as-you-go model
+- Quick provisioning
+- Global accessibility
+- Reduced fixed asset investment
+
+#### 🔹 Cloud Service Models:
+
+- **IaaS**: Infrastructure as a Service (e.g., ECS, EVS)
+- **PaaS**: Platform as a Service (e.g., databases, middleware)
+- **SaaS**: Software as a Service (e.g., email, IM)
+
+#### 🔹 Deployment Models:
+
+- **Public Cloud**: Shared infrastructure
+- **Private Cloud**: Exclusive use by one organization
+- **Hybrid Cloud**: Combination of public and private
+
+------
+
+### 2. **Huawei Cloud Infrastructure Architecture**
+
+#### 🔹 Global Reach:
+
+- 23 regions, 70+ availability zones (AZs)
+- 2,800+ CDN PoPs
+- Presence in 170+ countries
+
+#### 🔹 Architecture Layers:
+
+- Regions and AZs with isolated power and network
+- Private network communication within regions
+- Distributed cloud infrastructure for all scenarios
+
+#### 🔹 Edge and Central Services:
+
+- Intelligent EdgeCloud (IEC), EdgeSite (IES), EdgeFabric (IEF)
+- Central regions for core services
+
+------
+
+### 3. **Core Services on Huawei Cloud**
+
+#### 🔹 Compute:
+
+- **ECS**: Elastic Cloud Server
+- **IMS**: Image Management Service
+- **Auto Scaling**
+
+#### 🔹 Containers:
+
+- **CCI**: Cloud Container Instance
+- **CCE**: Cloud Container Engine
+- **SWR**: Software Repository for Container
+
+#### 🔹 Storage:
+
+- **EVS**: Elastic Volume Service
+- **SFS**: Scalable File Service
+- **OBS**: Object Storage Service
+
+#### 🔹 Networking:
+
+- **VPC**, **NAT Gateway**, **EIP**, **Network ACL**, **VPC Peering**, **ELB**
+
+#### 🔹 Database:
+
+- **RDS**, **GaussDB**, **GeminiDB**
+
+#### 🔹 Security & Management:
+
+- **IAM**, **DEW**, **CTS**
+
+------
+
+### 4. **Huawei Cloud Ecosystem**
+
+#### 🔹 Developer Enablement:
+
+- Huawei Cloud Developer Institute
+- CodeArts, ModelArts, DataArts, MetaStudio
+- Developer contests, certifications, and learning resources
+
+#### 🔹 Partner System:
+
+- GoCloud and GrowCloud programs
+- Roles: Software Partner, Service Partner, SI, Device Partner, Learning Partner, Distributor
+
+#### 🔹 KooGallery Marketplace:
+
+- One-stop shop for cloud applications
+- 11 delivery methods and 14 industry domains
+- Supports SaaS, APIs, containers, and more
+
+------
+
+### 5. **Getting Started with Huawei Cloud**
+
+- Register via https://www.huaweicloud.com/intl/en-us/
+- Access services through the Huawei Cloud Console
+- Explore the product catalog and ecosystem
+
+------
+
+### 6. **Quiz Highlight**
+
+**Q:** What are the deployment models of cloud computing?
+ **A:** ✅ Public cloud, ✅ Private cloud, ✅ Hybrid cloud
+
 ## 1. Basic Concepts and Values of Cloud Computing
 
 ### Cloud Deployment Models
@@ -115,31 +243,155 @@ Huawei Cloud Certified Developer Associate
 
 [PDF Chapter 2: Compute Services](documents/02 Compute Services.pdf)
 
-## 1. Overview of Compute Cloud Services
+##  **Summary**
 
-**A Broad Range of Compute Services**
+This document provides an overview of Huawei Cloud's **Compute Services**, focusing on:
 
-![image-20250912121521811](images\image-20250912121521811.png)
+- **Elastic Cloud Server (ECS)**
+- **Dedicated Host (DeH)**
+- **Bare Metal Server (BMS)**
+- **Image Management Service (IMS)**
 
-###/ 2. Elastic Cloud Server (ECS)
-**ECS Features**
+It explains the **concepts, features, use cases, and configuration steps** for each service, helping users understand how to deploy and manage compute resources effectively in Huawei Cloud.
 
-After purchasing an ECS, you can:
+------
 
-- Use an ECS just like a server.
-- Enjoy full permissions for the ECS.
-- You only need to deal with the OS and other upper layer components.
-- Adjust compute resources as needed.
-- Only p ay for the resources you use.
-- Treat an ECS as a disposable resources
+## 📚 **Detailed Breakdown**
 
-**ECS Purchase Process**
+### 1. **Overview of Compute Cloud Services**
 
-![image-20250912122456823](images\image-20250912122456823.png)
+Huawei Cloud offers a wide range of compute services including:
 
-**Selecting a Billing Mode**
+- ECS
+- BMS
+- DeH
+- FunctionGraph
+- Cloud Container Engine (CCE)
+- Cloud Container Instance (CCI)
 
-![image-20250912122601608](images\image-20250912122601608.png)
+------
+
+### 2. **Elastic Cloud Server (ECS)**
+
+#### 🔹 Features:
+
+- Full control over the server
+- Adjustable compute resources
+- Pay-as-you-go billing
+- Disposable and scalable
+
+#### 🔹 Purchase Process:
+
+Includes steps for:
+
+- Basic settings (region, AZ, instance type)
+- Network settings (VPC, subnet, security group)
+- Advanced settings (user data, key pair, backup)
+- Confirmation
+
+#### 🔹 Billing Modes:
+
+- **Spot Pricing**: Dynamic, cost-effective but resources may be reclaimed
+- **Pay-per-use**: Flexible, suitable for temporary workloads
+- **Yearly/Monthly**: Stable pricing for long-term use
+- **Reserved Instances**: Long-term commitment with discounts
+
+#### 🔹 Instance Types:
+
+Naming convention explained (e.g., `c6.8xlarge.4`):
+
+- `c`: compute-optimized
+- `6`: generation
+- `8xlarge`: size
+- `4`: memory-to-vCPU ratio
+
+#### 🔹 Network Configuration:
+
+- VPC, subnet, security group
+- Public/private network exposure
+- Security considerations
+
+#### 🔹 Advanced Settings:
+
+- User data scripts for initialization
+- Key pair login
+- Backup policies
+
+#### 🔹 Lifecycle Management:
+
+States include: Creating, Running, Stopping, Restarting, Deleting
+
+------
+
+### 3. **Dedicated Host (DeH)**
+
+#### 🔹 Overview:
+
+- Physical server dedicated to one user
+- Ensures resource isolation and performance
+
+#### 🔹 Features:
+
+- Exclusive use
+- Compliance support
+- Suitable for licensed software requiring specific hardware
+
+------
+
+### 4. **Bare Metal Server (BMS)**
+
+#### 🔹 Overview:
+
+- Physical server without virtualization
+- Combines cloud elasticity with hardware performance
+
+#### 🔹 Features:
+
+- No virtualization overhead
+- Dedicated compute and storage
+- Network isolation via VPC and security groups
+- Disk backup and restoration
+
+------
+
+### 5. **Image Management Service (IMS)**
+
+#### 🔹 Overview:
+
+- Images are templates for ECS environments
+- Include OS and configuration
+- Used for ECS initialization and restoration
+
+#### 🔹 Image Types:
+
+- **Public Images**: Pre-installed OS, maintained by Huawei
+- **Private Images**: Created by users, customizable
+- **Shared Images**: Shared between users with permission
+- **KooGallery Images**: Third-party, pre-installed apps
+
+------
+
+### 6. **Section Summary**
+
+- Overview of compute services
+- ECS concepts and usage
+- Features of DeH, BMS, and IMS
+
+------
+
+### 7. **Quiz Example**
+
+A sample question tests understanding of ECS specifications, such as vCPU count and memory ratio.
+
+------
+
+### 8. **Acronyms**
+
+- ECS: Elastic Cloud Server
+- EVS: Elastic Volume Service
+- DeH: Dedicated Host
+- BMS: Bare Metal Server
+- IMS: Image Management Service
 
 
 
@@ -147,23 +399,284 @@ After purchasing an ECS, you can:
 
 [PDF Chapter 3: Storage Services](documents/03 Storage Services.pdf)
 
-## 1. Overview of Storage Services
+## **Summary**
 
+This document introduces Huawei Cloud's **Storage Services**, explaining their **features, use cases, reliability, performance, and billing models**. It covers four main services:
 
+- **Object Storage Service (OBS)**
+- **Elastic Volume Service (EVS)**
+- **Local Disks**
+- **Scalable File Service (SFS)**
 
-## 2. Object Storage Service (OBS)
+It also includes comparisons between these services to help users choose the right storage solution based on their needs.
 
+------
 
+## 📚 **Detailed Breakdown**
 
-## 3. Elastic Volume Service and Local Disks
+### 1. **Overview of Storage Services**
 
-## 4. Scalable File Service (SFS)
+Huawei Cloud offers:
+
+- **OBS**: Object-based storage for massive data
+- **EVS**: Block storage for ECS
+- **Local Disks**: High-speed storage tied to ECS
+- **SFS**: Shared file storage
+
+------
+
+### 2. **Object Storage Service (OBS)**
+
+#### 🔹 Highlights:
+
+- Fully managed, internet-accessible
+- Unlimited storage (up to 48 TB per object)
+- 99.9999999999% reliability
+- Event triggering and cost-effective
+
+#### 🔹 Key Concepts:
+
+- **Buckets**: Containers for storing objects
+- **Objects**: Data + metadata, uniquely named
+- **Access**: Via URL, APIs, SDKs, CLI, or console
+
+#### 🔹 Features:
+
+- **Versioning**: Maintains multiple versions of objects
+- **Permission Control**: ACLs and bucket policies
+- **Lifecycle Management**: Hot (Standard), Warm (Infrequent Access), Cold (Archive)
+
+#### 🔹 Use Cases:
+
+- Backup and distribution
+- Static website hosting
+- Data lakes and analytics
+
+#### 🔹 Billing:
+
+- Pay-per-use (storage, traffic, API calls)
+- Free inbound traffic and intra-region transfers
+- Discounts for CDN traffic
+
+------
+
+### 3. **Elastic Volume Service (EVS)**
+
+#### 🔹 Highlights:
+
+- Block storage for ECS
+- 3-copy redundancy in one AZ
+- Up to 32 TB per disk
+- Backup stored in OBS
+
+#### 🔹 Reliability Features:
+
+- **Three-copy redundancy**: Ensures data durability
+- **Backups**: Restore or create disks from backups
+- **Snapshots**: Point-in-time recovery
+
+#### 🔹 Lifecycle:
+
+- Create → Attach → Use → Snapshot → Detach → Delete
+
+#### 🔹 Use Cases:
+
+- System disks, databases, durable services
+- Sensitive apps with encryption
+
+#### 🔹 Billing:
+
+- Yearly/monthly or pay-per-use
+- Charged based on allocated size
+- Region-based pricing
+
+------
+
+### 4. **Local Disks**
+
+#### 🔹 Highlights:
+
+- Ultra-low latency and high IOPS
+- Available only for specific ECS types (e.g., i3, d6)
+- No extra fees post ECS purchase
+- Data loss risk if ECS stops or crashes
+
+------
+
+### 5. **Scalable File Service (SFS)**
+
+#### 🔹 Highlights:
+
+- Shared file storage
+- Supports NFS and partial CIFS
+- 3-copy redundancy, 99.99999999% durability
+- Elastic and linear performance scaling
+
+#### 🔹 Network Management:
+
+- ECS must be in the same VPC as SFS
+- Supports internal access and Direct Connect
+
+------
+
+### 6. **Comparison Table**
+
+| Feature             | EVS                   | Local Disk         | OBS               | SFS                 |
+| ------------------- | --------------------- | ------------------ | ----------------- | ------------------- |
+| **Model**           | Block                 | Local              | Object            | File                |
+| **Reliability**     | 9 nines               | No HA              | 12 nines          | 10 nines            |
+| **Security**        | EVS encryption        | OS encryption      | OBS encryption    | SFS encryption      |
+| **Performance**     | High bandwidth        | Ultra-low latency  | High throughput   | Linear scaling      |
+| **Limits**          | 32 TB/disk            | Instance-dependent | 48 TB/object      | Varies by type      |
+| **Cost**            | High                  | Free (included)    | Low               | Relatively low      |
+| **Internet Access** | No                    | No                 | Yes               | No                  |
+| **Use Cases**       | Traditional workloads | Fast local access  | Big data, archive | HPC, media, sharing |
+
+------
+
+### 7. **Section Summary**
+
+- Introduced Huawei Cloud storage services
+- Explained OBS, EVS, local disks, and SFS
+- Compared features and use cases
 
 
 
 # Chapter 4: Networking Services
 
 [PDF Chapter 4: Networking Services](documents/04 Networking Services.pdf)
+
+## **Summary**
+
+This document introduces Huawei Cloud's **Networking Services**, focusing on:
+
+- **Virtual Private Cloud (VPC)**
+- **Security Groups and Network ACLs**
+- **VPC Peering and VPN**
+- **Elastic IP (EIP)**
+- **NAT Gateway (SNAT/DNAT)**
+
+It explains how to **build secure, scalable, and connected cloud networks**, enabling communication between cloud resources and external systems.
+
+------
+
+## 📚 **Detailed Breakdown**
+
+### 1. **Virtual Private Cloud (VPC)**
+
+#### 🔹 Overview:
+
+- A **logically isolated network** for cloud resources (ECS, RDS, etc.)
+- Acts like a **LAN on the cloud**
+- Custom IP ranges, subnets, and routing
+
+#### 🔹 Components:
+
+- **CIDR block**: Defines IP range
+- **Subnets**: Enable refined network control
+- **Route tables**: Manage traffic flow between subnets
+
+#### 🔹 Use Case:
+
+- Isolate environments (e.g., production vs. test systems)
+
+------
+
+### 2. **Access Control**
+
+#### 🔹 Security Groups:
+
+- Protect **instances**
+- Define **inbound/outbound rules**
+- Rules apply to all instances in the group
+
+#### 🔹 Network ACLs:
+
+- Protect **subnets**
+- Deny all traffic by default until rules are added
+- One ACL per subnet; ACLs can span multiple subnets
+
+------
+
+### 3. **Cloud Network Connectivity**
+
+#### 🔹 VPC Peering:
+
+- Connects **two VPCs** in the same region
+- Requires **route configuration**
+- Enables **private communication** between VPCs
+
+#### 🔹 VPN & Direct Connect:
+
+- For **cross-region** or **on-premises** connectivity
+
+------
+
+### 4. **Elastic IP (EIP)**
+
+#### 🔹 Overview:
+
+- Public IP for Internet access
+- Can be **bound/unbound** to cloud resources
+- Supports **bandwidth and traffic billing**
+- Flexible bandwidth adjustment
+
+#### 🔹 Use Case:
+
+- Assign EIP to ECS for Internet access
+
+------
+
+### 5. **NAT Gateway**
+
+#### 🔹 Overview:
+
+- Enables **multiple ECSs** to share one EIP
+- Supports **SNAT** and **DNAT**
+
+#### 🔹 SNAT (Source NAT):
+
+- ECSs access the Internet using shared EIP
+
+#### 🔹 DNAT (Destination NAT):
+
+- Internet users access ECS services via shared EIP
+
+#### 🔹 Configuration:
+
+- Create NAT gateway
+- Define SNAT/DNAT rules
+- Set default route to NAT gateway
+
+------
+
+### 6. **Best Practices**
+
+#### 🔹 Architecture Example:
+
+- VPC with subnets for frontend, application, and database
+- NAT Gateway for Internet access
+- VPN for on-premises connectivity
+
+------
+
+### 7. **Quizzes & Exercises**
+
+Includes practical tasks and questions to reinforce:
+
+- VPC creation
+- Security group setup
+- VPC peering
+- EIP and NAT gateway configuration
+
+------
+
+### 8. **Summary**
+
+- VPCs isolate and organize cloud networks
+- Security groups and ACLs secure resources
+- VPC peering and VPN connect networks
+- EIP and NAT Gateway enable Internet access
 
 ## VPC Peering vs Cloud Connection
 
@@ -179,6 +692,126 @@ After purchasing an ECS, you can:
 # Chapter 5: Database Services
 
 [PDF Chapter 5: Database Services](documents/05 Database Services.pdf)
+
+## **Summary**
+
+This document introduces Huawei Cloud's **Database Services**, covering:
+
+- **Relational and Non-Relational Databases**
+- **Database architectures and scaling**
+- **High availability and backup strategies**
+- **GeminiDB and GaussDB**
+- **Data Admin Service (DAS)**
+
+It explains how to choose and manage cloud-native databases for various workloads, ensuring performance, scalability, and reliability.
+
+------
+
+## 📚 **Detailed Breakdown**
+
+### 1. **Introduction to Database Services**
+
+- Huawei Cloud offers both **relational** and **non-relational** database services.
+- These services support structured, semi-structured, and unstructured data.
+- Examples: RDS, DDS, TaurusDB, GaussDB, GeminiDB.
+
+------
+
+### 2. **Relational vs Non-Relational Databases**
+
+| Feature           | Relational DB            | Non-Relational DB   |
+| ----------------- | ------------------------ | ------------------- |
+| **Use Case**      | Traditional apps         | Internet-scale apps |
+| **Performance**   | 10 ms-level              | ms-level            |
+| **Data Type**     | Structured               | Semi-structured     |
+| **Scalability**   | Vertical + read replicas | Cluster-based       |
+| **Consistency**   | Strong                   | Configurable        |
+| **Storage Limit** | DB engine-dependent      | Node-based          |
+
+------
+
+### 3. **Relational Database Services (RDS)**
+
+#### 🔹 Features:
+
+- Supports MySQL, PostgreSQL, SQL Server, MariaDB
+- Cloud-native with automated backups and patching
+- High availability (HA) with automatic failover
+- Read replicas for scaling
+
+#### 🔹 Architecture:
+
+- Primary/standby deployment across AZs
+- Read/write splitting via proxy
+- Backups stored in OBS
+- Point-in-time recovery (PITR) using binlogs
+
+#### 🔹 Scaling:
+
+- Up to 10 read replicas per DB instance
+- Read replicas can be added/removed dynamically
+
+------
+
+### 4. **Advanced Relational Services**
+
+#### 🔹 **TaurusDB**
+
+- Huawei-developed engine
+- Decoupled compute and storage
+- RDMA for high-speed data transfer
+- Supports up to 128 TB storage
+
+#### 🔹 **GaussDB**
+
+- Distributed relational DB
+- Shared-nothing architecture (sharding)
+- Supports 1,000+ nodes and petabyte-scale storage
+- High concurrency and fault tolerance
+
+------
+
+### 5. **Non-Relational Database Services**
+
+#### 🔹 **GeminiDB**
+
+- Multi-model NoSQL DB
+- Compatible with MongoDB, Cassandra, Redis, InfluxDB, HBase
+- Stateless compute nodes with shared storage
+- Scalable and highly available
+
+#### 🔹 Features:
+
+- Key-value access
+- No logical relationships between records
+- Fast data location via indexes
+- Supports clustering and sharding
+
+------
+
+### 6. **Data Admin Service (DAS)**
+
+#### 🔹 Overview:
+
+- Web-based database management platform
+- No client required
+- Visual operations for DBAs and developers
+
+#### 🔹 Capabilities:
+
+- SQL execution, table creation
+- Performance monitoring and diagnostics
+- Real-time and historical analysis
+- Slow query detection
+
+------
+
+### 7. **Key Advantages of Huawei Cloud Databases**
+
+- High availability and fault recovery
+- Elastic scaling and fast upgrades
+- Simplified operations and maintenance
+- Cost-effective and cloud-native
 
 Here’s a **comparison table of Automated vs Manual Backups in Huawei Cloud RDS**:
 
@@ -214,19 +847,368 @@ Here’s a **Huawei Cloud DMS Features Table** for quick reference:
 
 [PDF Chapter 6: Security Services](documents/06 Security Services.pdf)
 
+## **Summary**
+
+This document introduces Huawei Cloud's **Security Services**, focusing on:
+
+- The **Shared Responsibility Model**
+- **Security Certifications**
+- Systematic security design using:
+  - **IAM (Identity and Access Management)**
+  - **DEW (Data Encryption Workshop)**
+  - **CTS (Cloud Trace Service)**
+
+It explains how Huawei Cloud ensures platform security while empowering tenants to manage access, encryption, and auditing effectively.
+
+------
+
+## 📚 **Detailed Breakdown**
+
+### 1. **Shared Responsibility Model**
+
+- **Huawei Cloud** is responsible for:
+  - Infrastructure security
+  - Platform services
+  - Physical data center protection
+- **Tenants** are responsible for:
+  - Secure usage of cloud services
+  - Identity and access control
+  - Data encryption and integrity
+  - Network traffic protection
+
+------
+
+### 2. **Huawei Cloud Security Certifications**
+
+Huawei Cloud complies with global and regional standards, including:
+
+- **ISO 27001, 27017, 27018, 22301**
+- **PCI DSS**
+- **SOC Audit**
+- **CSA STAR Gold**
+- **Singapore MTCS Level 3**
+- **China DJCP MLPS**
+- **TRUCS Gold O&M Assessment**
+
+These certifications validate Huawei Cloud’s commitment to security and compliance.
+
+------
+
+### 3. **Systematic Security Design**
+
+Security is structured across multiple layers:
+
+- **Access Control**: IAM
+- **Application Security**: DEW
+- **Audit & Tracing**: CTS
+- **Data Security**: Encryption, key management
+- **Network Security**: ACLs, security groups
+- **Event Response & Compliance**: Logging and monitoring
+
+------
+
+### 4. **IAM (Identity and Access Management)**
+
+#### 🔹 Features:
+
+- Identity authentication (console login, AK/SK)
+- Access control via policies
+- User groups and agencies
+- Integration with third-party identity providers
+
+#### 🔹 IAM Components:
+
+- **Users**: Individual identities
+- **Groups**: Collections of users
+- **Policies**: JSON-based permission rules
+- **Agencies**: Delegated access without static credentials
+
+#### 🔹 Use Case:
+
+- Secure ECS access to OBS using IAM agencies
+- Attach policies to users/groups for fine-grained control
+
+------
+
+### 5. **DEW (Data Encryption Workshop)**
+
+#### 🔹 Features:
+
+- Manages secrets (e.g., passwords, keys)
+- Supports envelope encryption (CMK + DEK)
+- Integrates with IAM for secure access
+- Enables **keyless architecture** using CSMS
+
+#### 🔹 Use Case:
+
+- Store secrets centrally
+- Encrypt/decrypt data keys securely
+- Avoid hardcoding credentials in applications
+
+------
+
+### 6. **CTS (Cloud Trace Service)**
+
+#### 🔹 Features:
+
+- Tracks API calls and resource operations
+- Real-time log analysis via LTS
+- Stores logs in OBS
+- Free to use; charges apply for log transfers
+
+#### 🔹 Use Case:
+
+- Audit who deleted a server
+- Monitor changes and access patterns
+- Ensure accountability and traceability
+
+------
+
+### 7. **Quiz Highlight**
+
+**Q:** Which service helps identify who deleted a server?
+ **A:** ✅ Cloud Trace Service (CTS)
+
 
 
 # Chapter 7: Elastic Cloud Services for Distributed Deployment
 
 [Chapter 7: Elastic Cloud Services for Distributed Deployment](documents/07 Elastic Cloud Services for Distributed Deployment.pdf)
 
+## 🧾 **Summary**
 
+This document explains how to build **scalable and distributed systems** using Huawei Cloud services. It covers:
+
+- The importance of scalability
+- Methods for scaling applications
+- Key services: **Elastic Load Balance (ELB)**, **Cloud Eye**, and **Auto Scaling**
+- How to design scalable architectures for dynamic workloads
+
+------
+
+## 📚 **Detailed Breakdown**
+
+### 1. **Why Scalability Matters**
+
+- Traffic fluctuates due to business cycles, promotions, or unpredictable demand.
+- Scalable systems:
+  - Improve reliability and performance
+  - Optimize resource usage
+  - Reduce costs
+
+------
+
+### 2. **Scalability Methods**
+
+#### 🔹 **Scaling Up**
+
+- Increase resources (CPU, memory) on a single server.
+- Simple but limited and prone to bottlenecks.
+
+#### 🔹 **Scaling Out**
+
+- Add more servers to distribute load.
+- Ideal for **stateless applications**.
+- Requires coordination and distributed design.
+
+------
+
+### 3. **Distributed Deployment Models**
+
+- **Task polling**
+- **Synchronous coordination**
+- **Request distribution**
+
+#### 🔹 Benefits:
+
+- Fault recovery
+- Load balancing
+- Resource pooling
+
+------
+
+### 4. **Elastic Load Balance (ELB)**
+
+#### 🔹 Features:
+
+- Distributes traffic across backend servers
+- Supports Layer 4 and Layer 7 load balancing
+- Built-in health checks
+- Works with Auto Scaling
+
+#### 🔹 Components:
+
+- **Listener**: Defines protocol and port
+- **Backend Server Group**: Hosts ECS instances
+- **Forwarding Rules**: URL, domain, headers, etc.
+
+#### 🔹 Algorithms:
+
+- Weighted round robin
+- Weighted least connections
+- Source IP hash
+
+------
+
+### 5. **Health Checks**
+
+- Prevent routing to unhealthy servers
+- TCP or HTTP-based checks
+- Use dedicated health check pages
+
+------
+
+### 6. **Cloud Eye**
+
+#### 🔹 Features:
+
+- Real-time monitoring of cloud resources
+- Configurable alarms
+- Visual dashboards
+- API integration for third-party tools
+
+------
+
+### 7. **Auto Scaling**
+
+#### 🔹 Features:
+
+- Automatically adds/removes ECS instances
+- Supports dynamic and scheduled scaling
+- Replaces unhealthy instances
+- Works with ELB for traffic distribution
+
+#### 🔹 Scaling Policies:
+
+- **Dynamic**: Based on performance metrics
+- **Scheduled**: Based on predictable workload patterns
+
+#### 🔹 Configuration Steps:
+
+1. Create a scaling template
+2. Create a scaling group
+3. Define scaling policies
+
+------
+
+### 8. **Typical Scalable Architecture**
+
+- ELB distributes traffic
+- Cloud Eye monitors performance
+- Auto Scaling adjusts resources
+- Used in:
+  - High-traffic forums
+  - Livestreaming platforms
+  - E-commerce during promotions
+
+------
+
+### 9. **Quiz Highlight**
+
+**Q:** What service can create or delete servers in a scalable system?
+ **A:** ✅ Auto Scaling
 
 # Chapter 8: Cloud Native and Transformation
 
 [PDF Chapter 8: Cloud Native and Transformation](documents/08 Cloud Native and Transformation.pdf)
 
+## 🧾 **Summary**
 
+This document introduces the concept of **Cloud Native Transformation** and how Huawei Cloud supports enterprises in adopting cloud-native technologies. It highlights:
+
+- The benefits of cloud-native architecture
+- Key technologies: **Agile Development**, **Compute**, **Data Governance**, and **AI**
+- Tools and platforms that enable digital transformation
+
+------
+
+## 📚 **Detailed Breakdown**
+
+### 1. **Overview of Cloud Native Transformation**
+
+#### 🔹 Goals:
+
+- Enhance service maturity
+- Improve customer experience
+- Enable intelligent operations and strategic decision-making
+
+#### 🔹 Huawei Cloud’s Role:
+
+- Provides tools and platforms for innovation
+- Supports differentiated competitiveness
+- Helps replicate success and focus on core services
+
+------
+
+### 2. **Cloud Native 2.0 Benefits**
+
+| Category                   | Benefits                                             |
+| -------------------------- | ---------------------------------------------------- |
+| **Efficient Resource Use** | Smarter collaboration, better lifecycle management   |
+| **Service Intelligence**   | AI integration, decoupled storage-compute, lower TCO |
+| **Agile Applications**     | Microservices, secure and efficient development      |
+| **Security & Trust**       | Unified standards, global compliance                 |
+
+------
+
+### 3. **Key Technologies for Cloud Native Transformation**
+
+#### 🔹 **Agile Development**
+
+- DevOps tools like **CodeArts**
+- Integrated development environments
+- Fast go-to-market and customer responsiveness
+
+#### 🔹 **Compute**
+
+- **Containers**: Lightweight, scalable, and efficient
+  - Tools: CCE, CCI, SWR, AOS
+- **Serverless Architecture**: Event-driven, minimal maintenance
+  - Tool: FunctionGraph
+
+#### 🔹 **Data Governance**
+
+- Centralized platform: **DataArts Studio**
+- Capabilities:
+  - Data lakes, warehouses, lineage, quality checks
+  - API development and security
+  - Real-time and batch processing
+
+#### 🔹 **AI**
+
+- Platform: **ModelArts**
+- Full-stack AI development
+- Supports major engines (TensorFlow, PyTorch, etc.)
+- Features:
+  - Auto labeling, model compression, edge inference
+  - Inclusive AI with pre-trained models and knowledge graphs
+
+------
+
+### 4. **Transformation Tools and Platforms**
+
+| Tool                | Purpose                 |
+| ------------------- | ----------------------- |
+| **CodeArts**        | Agile DevOps            |
+| **CCE/CCI**         | Container orchestration |
+| **FunctionGraph**   | Serverless computing    |
+| **DataArts Studio** | Data governance         |
+| **ModelArts**       | AI development          |
+
+------
+
+### 5. **Application Scenarios**
+
+- **Finance, Government, Public Safety, Transportation**
+- **Heavy-traffic websites**
+- **Livestreaming and E-commerce platforms**
+
+------
+
+### 6. **Quiz Highlight**
+
+**Q:** In a serverless architecture, developers don’t manage servers. Does this mean there are no servers?
+ **A:** ❌ False — servers exist but are abstracted away from developers.
 
 # Chapter 9: Exam Outline and Sample Questions
 
