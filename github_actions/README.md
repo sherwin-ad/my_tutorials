@@ -221,3 +221,323 @@ https://github.com/sherwin-ad/gh-exercise1.git
 - Filter based on target branch and / or affected file paths
 
 ## III. Job Artifacts & Outputs
+# GitHub Actions Job Artifacts Explained
+
+## What Are Artifacts?
+
+Artifacts in GitHub Actions are files or directories that a workflow job creates and saves so they can be:
+
+- Downloaded later from the GitHub Actions UI
+- Shared between jobs in the same workflow
+- Preserved after the workflow finishes
+
+Common examples:
+
+- Build packages (`.jar`, `.zip`, `.exe`)
+- Test reports
+- Coverage reports
+- Log files
+- Generated documentation
+
+## Why Use Artifacts?
+
+Jobs run on separate runners, so files created in one job are not automatically available in another job.
+
+Artifacts allow you to transfer files between jobs.
+
+```text
+Build Job
+   |
+   | Upload Artifact
+   v
+GitHub Artifact Storage
+   |
+   | Download Artifact
+   v
+Test Job
+```
+
+## Uploading an Artifact
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build application
+        run: |
+          mkdir dist
+          echo "Hello World" > dist/app.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+```
+
+## Downloading an Artifact
+
+```yaml
+jobs:
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+
+      - name: List files
+        run: ls -R
+```
+
+## Example: Sharing Build Output Between Jobs
+
+```yaml
+name: CI Pipeline
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          mkdir output
+          echo "Build completed" > output/result.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: output/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-files
+
+      - run: cat output/result.txt
+```
+
+## Artifact Retention
+
+```yaml
+- uses: actions/upload-artifact@v4
+  with:
+    name: build-output
+    path: dist/
+    retention-days: 7
+```
+
+## Artifacts vs Cache
+
+| Feature | Artifact | Cache |
+|----------|----------|--------|
+| Purpose | Save workflow outputs | Speed up builds |
+| Shared Between Jobs | Yes | Yes |
+| Downloadable from UI | Yes | No |
+| Used for Build Results | Yes | Usually No |
+| Used for Dependencies | Not Ideal | Yes |
+
+## Common Use Cases
+
+### Store Test Reports
+
+```yaml
+- uses: actions/upload-artifact@v4
+  with:
+    name: test-reports
+    path: reports/
+```
+
+### Store Coverage Results
+
+```yaml
+- uses: actions/upload-artifact@v4
+  with:
+    name: coverage
+    path: coverage/
+```
+
+### Store Build Packages
+
+```yaml
+- uses: actions/upload-artifact@v4
+  with:
+    name: release-package
+    path: target/myapp.jar
+```
+
+## Key Points
+
+- Artifacts are files/directories produced by a workflow.
+- Use upload-artifact to save them.
+- Use download-artifact to retrieve them in another job.
+- Jobs run on separate runners, so artifacts are the standard way to transfer files between jobs.
+- Artifacts are retained for a configurable period.
+
+> Need a file later? Use an artifact. Need faster builds? Use a cache.
+
+## IV.  GitHub Actions Job Outputs Explained
+
+## What Are Job Outputs?
+
+Job outputs are values produced by one job and passed to another job in the same workflow.
+
+Unlike **artifacts**, which are used to transfer files, **job outputs** are used to transfer small pieces of data such as:
+
+- Version numbers
+- Build IDs
+- Commit hashes
+- Environment names
+- URLs
+- Status information
+
+---
+
+## Artifacts vs Job Outputs
+
+### Job Outputs
+
+- Transfer text values and metadata
+- Not intended for files
+- Available only during workflow execution
+- Best for versions, URLs, IDs, and other small values
+
+### Artifacts
+
+- Transfer files and directories
+- Downloadable from the GitHub Actions UI
+- Persist after workflow completion (based on retention settings)
+- Best for build packages, reports, and logs
+
+### Rule of Thumb
+
+- Need to share a **string or value** → Use **Job Outputs**
+- Need to share a **file or folder** → Use **Artifacts**
+
+---
+
+## How Job Outputs Work
+
+### Step 1: Create a Step Output
+
+A step writes a value to `$GITHUB_OUTPUT`.
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.set_version.outputs.version }}
+
+    steps:
+      - id: set_version
+        run: echo "version=1.2.3" >> $GITHUB_OUTPUT
+```
+
+In this example:
+
+- Step ID: `set_version`
+- Output name: `version`
+- Output value: `1.2.3`
+
+---
+
+### Step 2: Expose the Step Output as a Job Output
+
+```yaml
+outputs:
+  version: ${{ steps.set_version.outputs.version }}
+```
+
+This makes the value available to other jobs.
+
+---
+
+### Step 3: Consume the Job Output
+
+```yaml
+deploy:
+  needs: build
+  runs-on: ubuntu-latest
+
+  steps:
+    - run: echo "Deploying version ${{ needs.build.outputs.version }}"
+```
+
+Output:
+
+```text
+Deploying version 1.2.3
+```
+
+---
+
+## Complete Example
+
+```yaml
+name: Job Outputs Example
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - id: version
+        run: echo "version=2.5.0" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy
+        run: |
+          echo "Deploying version:"
+          echo "${{ needs.build.outputs.version }}"
+```
+### Caching Dependencies
+
+- In GitHub Actions, caching dependencies is a technique used to save downloaded packages, libraries, or build artifacts between workflow runs. This speeds up CI/CD pipelines because dependencies don't need to be downloaded and installed every time.
+
+**Why Cache Dependencies?**
+
+Without caching:
+
+1. Workflow starts.
+2. Downloads dependencies from the internet.
+3. Installs them.
+4. Runs tests/build.
+5. Finishes.
+
+Every run repeats the same downloads.
+
+With caching:
+
+1. Workflow checks if dependencies already exist in the cache.
+2. If found (cache hit), dependencies are restored immediately.
+3. If not found (cache miss), dependencies are downloaded and then stored in the cache for future runs.
+
+This can reduce build times significantly.
+
+## Using Environment Variables & Secrets
